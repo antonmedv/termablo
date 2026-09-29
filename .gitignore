@@ -7,6 +7,7 @@
 # screenshot/debug artifacts
 *.svg
 *.png
+!/demo/og.png
 err.log
 
 # editors / OS
