@@ -372,13 +372,13 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 		return colDim.C8()
 	}
 	s.TextBold(cx, row, "f", colOrange.C8())
-	s.Text(cx+2, row, fmt.Sprintf("Firebolt %d-%d", fl, fh), skc(costFirebolt))
-	s.Text(cx+bw-4, row, fmt.Sprintf("%2dmp", costFirebolt), C(.45, .6, 1).C8())
+	s.Text(cx+2, row, fmt.Sprintf("Firebolt %d-%d", fl, fh), skc(p.FireboltCost()))
+	s.Text(cx+bw-4, row, fmt.Sprintf("%2dmp", p.FireboltCost()), C(.45, .6, 1).C8())
 	row++
 	nl, nh := p.NovaDmg()
 	s.TextBold(cx, row, "r", colCyan.C8())
-	s.Text(cx+2, row, fmt.Sprintf("Frost Nova %d-%d", nl, nh), skc(costNova))
-	s.Text(cx+bw-4, row, fmt.Sprintf("%2dmp", costNova), C(.45, .6, 1).C8())
+	s.Text(cx+2, row, fmt.Sprintf("Frost Nova %d-%d", nl, nh), skc(p.NovaCost()))
+	s.Text(cx+bw-4, row, fmt.Sprintf("%2dmp", p.NovaCost()), C(.45, .6, 1).C8())
 	row += 2
 	// target
 	if row < h-10 {

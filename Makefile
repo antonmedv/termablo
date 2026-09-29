@@ -37,4 +37,4 @@ shots:
 	mkdir -p shots && SHOTDIR=$(CURDIR)/shots go test -count=1 -run Shot .
 
 report:
-	go test -count=1 -v -run BotBalance . | grep -v "^=== RUN"
+	go test -count=1 -v -run 'BotBalance|PowerCurve' . | grep -v "^=== RUN"

@@ -40,7 +40,7 @@ type bot struct {
 func (b *bot) wantsTown() bool {
 	p := b.g.P
 	hurt := p.HP+p.HealPool < float64(p.MaxHP())*0.5
-	need := p.HPot == 0 || (hurt && p.HPot <= 1) || (p.MP < costFirebolt && p.MPot == 0)
+	need := p.HPot == 0 || (hurt && p.HPot <= 1) || (p.MP < float64(p.FireboltCost()) && p.MPot == 0)
 	broke := p.Gold < b.g.buyPrice(NewPotion(IKHealth)) && len(p.Inv) == 0
 	return need && (!broke || hurt) // broke and healthy: go earn some
 
@@ -166,7 +166,7 @@ func (b *bot) turn() {
 		g.drinkHealth()
 		return
 	}
-	if p.MP < costFirebolt && p.MPot > 0 && p.MP+p.ManaPool < costFirebolt && g.nearestHostile() != nil {
+	if p.MP < float64(p.FireboltCost()) && p.MPot > 0 && p.MP+p.ManaPool < float64(p.FireboltCost()) && g.nearestHostile() != nil {
 		g.drinkMana()
 		return
 	}
@@ -183,7 +183,7 @@ func (b *bot) turn() {
 			adj++
 		}
 	}
-	if adj >= 3 && p.MP >= costNova {
+	if adj >= 3 && p.MP >= float64(p.NovaCost()) {
 		g.castNova()
 		return
 	}
@@ -192,7 +192,7 @@ func (b *bot) turn() {
 			g.move(t.X-p.X, t.Y-p.Y)
 			return
 		}
-		if p.MP >= costFirebolt && cheb(t.X, t.Y, p.X, p.Y) <= fireboltRange {
+		if p.MP >= float64(p.FireboltCost()) && cheb(t.X, t.Y, p.X, p.Y) <= fireboltRange {
 			g.Target = t
 			g.castFirebolt()
 			return

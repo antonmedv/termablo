@@ -21,8 +21,10 @@ Use a truecolor terminal that is at least 80x24. Bigger is better.
 
 ## Balance
 - Life and mana do not regenerate on their own. They come back from potions, shrines, Mirela and regeneration affixes on gear.
+- Mirela heals for free up to level 3. After that she charges 1g for every 2 points of life or mana, and heals only as much as you can pay for.
 - Potions restore over a few turns rather than at once. The belt holds 5 of each kind, and Mirela charges more as you level.
-- Spell damage grows with Energy only. Firebolt reaches 10 steps; bats, wolves, wisps, imps and spiders can dodge it.
+- Spell damage grows with Energy only, and slowly. Spell costs rise with level. "+% Spell Damage" rolls only on weapons, off-hands and amulets.
+- Monster life grows slowly at first and steeply deeper down. Champion packs get more common with depth. Firebolt reaches 10 steps; bats, wolves, wisps, imps and spiders can dodge it.
 - Frost Nova freezes for about 3 turns, and the target can't be frozen again for 6 turns. It never freezes uniques or bosses and freezes champions for 2 turns.
 - Merchants pay 1/12 of an item's worth, and next to nothing for plain gear. Plain monsters rarely drop items.
 
@@ -66,5 +68,7 @@ Tools: `brew install golangci-lint`, `go install golang.org/x/tools/cmd/deadcode
 - `testutil_test.go`: `newTestGame` builds a game from an ASCII map; `eachLevel` runs a check on every generated level over many seeds.
 - `gen_test.go`, `items_test.go`, `light_test.go`: invariants for levels, loot and lighting.
 - `combat_test.go`, `explore_test.go`, `scenario_test.go`: gameplay scenarios (shops, portals, stairs, death, level-up, gear), mostly driven through the real key handler.
+- `power_test.go`: an idealized caster clears the crypt and reports firebolts-to-kill per level (`go test -v -run PowerCurve`). It fails if a normal crypt monster dies to one bolt.
+- `balance_test.go`: the potion, price, spell and freeze rules.
 - `bot_test.go`: a scripted player runs 12 seeds and logs a balance report (`go test -v -run BotBalance`, `BOTSEEDS=n` for more).
 - `sim_test.go`, `tea_test.go`: smoke runs and benchmarks.

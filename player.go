@@ -68,7 +68,7 @@ func (p *Player) ENE() int     { return p.Ene + p.st[StEne] + p.st[StAllAttr] }
 
 func (p *Player) MaxHP() int { return 30 + p.VIT()*2 + (p.Lvl-1)*4 + p.st[StLife] }
 func (p *Player) MaxMP() int {
-	return 10 + int(float64(p.ENE())*1.5) + (p.Lvl-1)*2 + p.st[StMana]
+	return 14 + int(float64(p.ENE())*1.2) + (p.Lvl-1)*2 + p.st[StMana]
 }
 
 func (p *Player) ArmorVal() int {
@@ -101,13 +101,18 @@ func (p *Player) SpellMul() float64 { return 1 + float64(p.st[StSpellPct])/100 }
 // the starting Firebolt while monsters grow.
 func (p *Player) FireboltDmg() (int, int) {
 	e, m := float64(p.ENE()), p.SpellMul()
-	return int((2 + e*0.4) * m), int((6 + e*0.55) * m)
+	return int((5 + e*0.2) * m), int((9 + e*0.28) * m)
 }
 
 func (p *Player) NovaDmg() (int, int) {
 	e, m := float64(p.ENE()), p.SpellMul()
-	return int((1 + e*0.25) * m), int((4 + e*0.28) * m)
+	return int((3 + e*0.12) * m), int((6 + e*0.15) * m)
 }
+
+// Spells cost more as the caster grows, so a deeper mana pool does not
+// simply mean more casts.
+func (p *Player) FireboltCost() int { return costFirebolt + (p.Lvl-1)*2/3 }
+func (p *Player) NovaCost() int     { return costNova + p.Lvl - 1 }
 
 const (
 	costFirebolt = 6

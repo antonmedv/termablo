@@ -972,11 +972,11 @@ func (g *Game) castFirebolt() {
 		g.msg(colDim, "The %s is out of range.", t.Name)
 		return
 	}
-	if p.MP < costFirebolt {
+	if p.MP < float64(p.FireboltCost()) {
 		g.msg(C(.45, .6, 1), "Not enough mana.")
 		return
 	}
-	p.MP -= costFirebolt
+	p.MP -= float64(p.FireboltCost())
 	path, hit, _ := g.traceBolt(p.X, p.Y, t.X, t.Y, fireboltRange, true)
 	g.boltFx(path, C(1, .5, .15), '*', true)
 	if hit != nil && g.rng.Intn(100) < hit.T.Dodge {
@@ -998,11 +998,11 @@ func (g *Game) castFirebolt() {
 
 func (g *Game) castNova() {
 	p, l := g.P, g.Lv
-	if p.MP < costNova {
+	if p.MP < float64(p.NovaCost()) {
 		g.msg(C(.45, .6, 1), "Not enough mana.")
 		return
 	}
-	p.MP -= costNova
+	p.MP -= float64(p.NovaCost())
 	g.novaFx(p.X, p.Y, C(.5, .85, 1), 3.4)
 	lo, hi := p.NovaDmg()
 	for _, m := range l.Monsters {
@@ -1458,10 +1458,9 @@ func (g *Game) talkTo(m *Monster) {
 		g.Mode, g.cur, g.tab = ModeShop, 0, 0
 		g.msg(C(1, .6, .3), "Hadrik: \"Steel for the dark. Take a look.\"")
 	case "alch":
-		p.HP, p.MP = float64(p.MaxHP()), float64(p.MaxMP())
+		g.mirelaHeal()
 		g.shop = g.shops[1]
 		g.Mode, g.cur, g.tab = ModeShop, 0, 0
-		g.msg(colCyan, "Mirela tends your wounds. \"There. Now buy something, dear.\"")
 	case "captain":
 		lines := []string{}
 		reward := false
@@ -1538,6 +1537,43 @@ func (g *Game) buy(it *Item) {
 	}
 	p.Gold -= price
 	g.msg(colGold, "Bought %s for %dg.", it.DisplayName(), price)
+}
+
+// Mirela asks healCost per point of life or mana she restores, once the
+// hero is past freeHealLvl.
+const (
+	healCost    = 0.5
+	freeHealLvl = 3
+)
+
+// mirelaHeal restores life, then mana, as far as the hero can pay.
+func (g *Game) mirelaHeal() {
+	p := g.P
+	need := float64(p.MaxHP()) - p.HP + float64(p.MaxMP()) - p.MP
+	if need < 1 {
+		g.msg(colCyan, "Mirela looks you over. \"Hale as an ox. Buy something, dear.\"")
+		return
+	}
+	if p.Lvl <= freeHealLvl {
+		p.HP, p.MP = float64(p.MaxHP()), float64(p.MaxMP())
+		g.msg(colCyan, "Mirela tends your wounds. \"No charge for the young. Now buy something, dear.\"")
+		return
+	}
+	pts := math.Min(need, float64(p.Gold)/healCost)
+	if pts < 1 {
+		g.msg(colCyan, "Mirela shakes her head. \"Herbs cost coin, dear.\"")
+		return
+	}
+	cost := int(math.Ceil(pts * healCost))
+	p.Gold -= cost
+	hp := math.Min(pts, float64(p.MaxHP())-p.HP)
+	p.HP += hp
+	p.MP = math.Min(float64(p.MaxMP()), p.MP+pts-hp)
+	if pts < need {
+		g.msg(colCyan, "Mirela does what your %dg allows. \"Come back with more, dear.\"", cost)
+		return
+	}
+	g.msg(colCyan, "Mirela tends your wounds for %dg. \"There. Now buy something, dear.\"", cost)
 }
 
 // buyPrice: remedies cost more as the hero grows, so a stack of potions

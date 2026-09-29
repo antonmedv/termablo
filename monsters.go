@@ -153,8 +153,11 @@ func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int) *Monster {
 	if lvl < 1 {
 		lvl = 1
 	}
-	hpMul := 1 + 0.32*float64(lvl-1)
-	dMul := 1 + 0.24*float64(lvl-1)
+	// Life grows slowly at first, then steeply, so the fields stay gentle
+	// and the deep crypt keeps pace with a geared hero.
+	l1 := float64(lvl - 1)
+	hpMul := 1 + 0.32*l1 + 0.05*l1*l1
+	dMul := 1 + 0.24*l1 + 0.02*l1*l1
 	if t.AI == AIBoneKing || t.AI == AIOracle {
 		rank = RankBoss
 		hpMul = 1 + 0.22*float64(lvl-1)
@@ -305,7 +308,7 @@ func populate(l *Level, table string, packs int, safe []Pos) {
 			leaderRank = RankUnique
 			uniquePlaced = true
 			n += 2
-		} else if rng.Intn(100) < 12 {
+		} else if rng.Intn(100) < 8+3*l.Depth { // champions grow common deeper
 			leaderRank = RankChampion
 			n = maxi(n, 2)
 		}

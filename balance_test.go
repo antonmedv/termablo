@@ -88,7 +88,7 @@ func TestNovaFreezeWearsOff(t *testing.T) {
 		#######`))
 	z := monsters(g, "zombie")[0]
 	z.MaxHP, z.HP = 1000, 1000
-	g.P.MP = costNova
+	g.P.MP = float64(g.P.NovaCost())
 	g.castNova()
 	if z.Frozen == 0 || z.FreezeCD == 0 {
 		t.Fatalf("nova did not freeze: frozen %d, immune %d", z.Frozen, z.FreezeCD)
@@ -96,7 +96,7 @@ func TestNovaFreezeWearsOff(t *testing.T) {
 	for z.Frozen > 0 {
 		g.wait()
 	}
-	g.P.MP = costNova
+	g.P.MP = float64(g.P.NovaCost())
 	g.castNova()
 	if z.Frozen != 0 {
 		t.Errorf("refroze right after thawing: %d", z.Frozen)
@@ -124,7 +124,7 @@ func TestFireboltCanMissDodgers(t *testing.T) {
 	b := monsters(g, "bat")[0]
 	misses := 0
 	for range 200 {
-		g.P.MP = costFirebolt
+		g.P.MP = float64(g.P.FireboltCost())
 		b.X, b.Y, b.MaxHP, b.HP, b.Frozen = 5, 1, 1e6, 1e6, 99
 		hp := b.HP
 		g.Target = b

@@ -31,8 +31,8 @@ func TestFireboltSpendsManaInRange(t *testing.T) {
 	g.Target = z
 	mp, hp := g.P.MP, z.HP
 	g.castFirebolt()
-	if spent := mp - g.P.MP; spent < costFirebolt-1 || spent > costFirebolt { // minus one turn of regen
-		t.Errorf("mana %v -> %v, want about -%d", mp, g.P.MP, costFirebolt)
+	if spent := mp - g.P.MP; spent != float64(g.P.FireboltCost()) {
+		t.Errorf("mana %v -> %v, want -%d", mp, g.P.MP, g.P.FireboltCost())
 	}
 	for i := 0; i < 20 && len(g.Effects) > 0; i++ {
 		g.time += 0.1
