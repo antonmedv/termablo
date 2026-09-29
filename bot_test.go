@@ -31,14 +31,29 @@ type bot struct {
 	level   *Level
 	homing  bool // out of potions: portal to town, restock, come back
 	shopped bool
+	sold    bool
 	trips   int
 }
 
-// wantsTown: a sensible player goes home when the potions run out.
+// wantsTown: a sensible player goes home when the potions run low, or
+// when out of mana with no way to get it back.
 func (b *bot) wantsTown() bool {
 	p := b.g.P
-	return p.HPot == 0 && (p.Scrolls > 0 || b.g.Portal != nil)
+	hurt := p.HP+p.HealPool < float64(p.MaxHP())*0.5
+	need := p.HPot == 0 || (hurt && p.HPot <= 1) || (p.MP < costFirebolt && p.MPot == 0)
+	broke := p.Gold < b.g.buyPrice(NewPotion(IKHealth)) && len(p.Inv) == 0
+	return need && (!broke || hurt) // broke and healthy: go earn some
+
 }
+
+// botHome is the way back up: the reverse of botRoute.
+var botHome = func() map[string]string {
+	m := map[string]string{}
+	for from, to := range botRoute {
+		m[to] = from
+	}
+	return m
+}()
 
 // errand runs the town trip. It reports whether it used the turn.
 func (b *bot) errand() bool {
@@ -46,11 +61,14 @@ func (b *bot) errand() bool {
 	p, l := g.P, g.Lv
 	if l.Kind != KTown {
 		if b.shopped { // back from town
-			b.homing, b.shopped = false, false
+			b.homing, b.shopped, b.sold = false, false, false
 			return false
 		}
 		if g.Portal == nil || g.Portal.Level != l.ID {
-			if p.Scrolls == 0 {
+			if p.Scrolls == 0 { // walk home
+				if lk := l.LinkTo(botHome[l.ID]); lk != nil {
+					return b.walkTo(lk.X0, lk.Y0)
+				}
 				b.homing = false
 				return false
 			}
@@ -60,6 +78,16 @@ func (b *bot) errand() bool {
 			return true
 		}
 		return b.walkTo(g.Portal.X, g.Portal.Y)
+	}
+	if !b.sold && len(p.Inv) > 0 {
+		return b.visit("smith", func() {
+			for i := len(p.Inv) - 1; i >= 0; i-- {
+				if g.upgradeHint(p.Inv[i]) == "" {
+					g.sell(i)
+				}
+			}
+			b.sold = true
+		})
 	}
 	if !b.shopped {
 		alch := g.shops[1]
@@ -95,6 +123,26 @@ func (b *bot) errand() bool {
 	return true
 }
 
+// visit walks to a townsperson and runs trade once alongside them.
+func (b *bot) visit(id string, trade func()) bool {
+	g := b.g
+	p := g.P
+	for _, m := range g.Lv.Monsters {
+		if m.T.ID != id {
+			continue
+		}
+		if cheb(m.X, m.Y, p.X, p.Y) == 1 {
+			g.move(m.X-p.X, m.Y-p.Y) // opens the shop
+			trade()
+			g.Mode = ModePlay
+			return true
+		}
+		return b.walkTo(m.X, m.Y)
+	}
+	b.sold = true
+	return false
+}
+
 // walkTo takes one step toward (x,y) along a BFS map.
 func (b *bot) walkTo(x, y int) bool {
 	l := b.g.Lv
@@ -118,8 +166,12 @@ func (b *bot) turn() {
 		g.drinkHealth()
 		return
 	}
+	if p.MP < costFirebolt && p.MPot > 0 && p.MP+p.ManaPool < costFirebolt && g.nearestHostile() != nil {
+		g.drinkMana()
+		return
+	}
 	// out of potions and hurting: escape through a portal, even mid-fight
-	if p.HPot == 0 && p.HP+p.HealPool < float64(p.MaxHP())*0.45 && g.Lv.Kind != KTown && b.wantsTown() {
+	if p.HPot == 0 && p.HP+p.HealPool < float64(p.MaxHP())*0.45 && g.Lv.Kind != KTown && (p.Scrolls > 0 || g.Portal != nil) {
 		b.homing = true
 		if b.errand() {
 			return

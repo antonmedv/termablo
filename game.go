@@ -388,8 +388,10 @@ func drain(pool *float64) float64 {
 func (g *Game) endTurn() {
 	p := g.P
 	g.Turn++
-	hp := 0.02 + float64(p.S(StLifeRegen))*0.06 + float64(p.VIT())*0.0015 + drain(&p.HealPool)
-	mp := 0.25 + float64(p.ENE())*0.012 + float64(p.S(StManaRegen))*0.06 + drain(&p.ManaPool)
+	// No natural regeneration: life and mana come back from potions,
+	// shrines, Mirela, and regeneration affixes on gear.
+	hp := float64(p.S(StLifeRegen))*0.08 + drain(&p.HealPool)
+	mp := float64(p.S(StManaRegen))*0.08 + drain(&p.ManaPool)
 	p.HP = math.Min(float64(p.MaxHP()), p.HP+hp)
 	p.MP = math.Min(float64(p.MaxMP()), p.MP+mp)
 	g.computeDist()
@@ -731,10 +733,10 @@ func (g *Game) dropLoot(m *Monster) {
 	if g.rng.Intn(100) < 12 {
 		nItems = 1
 	}
-	goldChance := 40
+	goldChance := 30
 	switch m.Rank {
 	case RankChampion:
-		nItems, bonus, minR, goldChance = 1+g.rng.Intn(2), mf+1, RMagic, 90
+		nItems, bonus, minR, goldChance = 1, mf+1, RMagic, 70
 	case RankUnique:
 		nItems, bonus, minR, goldChance = 2+g.rng.Intn(2), mf+2.5, RMagic, 100
 	case RankBoss:
@@ -759,18 +761,18 @@ func (g *Game) dropLoot(m *Monster) {
 	if g.rng.Intn(100) < goldChance {
 		amt := m.Level*3 + g.rng.Intn(m.Level*6+6)
 		if m.Rank >= RankChampion {
-			amt *= 3
+			amt *= 2
 		}
 		amt = amt * (100 + p.S(StGoldFind)) / 100
 		g.dropItem(m.X, m.Y, &Item{Kind: IKGold, Amount: amt})
 	}
 	r := g.rng.Intn(100)
 	switch {
-	case r < 12:
+	case r < 5:
 		g.dropItem(m.X, m.Y, NewPotion(IKHealth))
-	case r < 18:
+	case r < 8:
 		g.dropItem(m.X, m.Y, NewPotion(IKMana))
-	case r < 20:
+	case r < 10:
 		g.dropItem(m.X, m.Y, NewPotion(IKScroll))
 	}
 }
@@ -1553,7 +1555,7 @@ func sellPrice(it *Item) int {
 	if it.Rarity == RNormal {
 		return maxi(1, it.Value()/20)
 	}
-	return it.Value() / 8
+	return it.Value() / 12
 }
 
 func (g *Game) sell(idx int) {
