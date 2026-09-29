@@ -78,3 +78,17 @@ func TestSessionLimit(t *testing.T) {
 	}
 	close(release)
 }
+
+func TestIdleNotice(t *testing.T) {
+	srv := &ssh.Server{Handler: idleNotice(time.Minute)(func(s ssh.Session) {
+		s.Context().SetValue(modelKey{}, &model{idledOut: true})
+	})}
+	addr := testsession.Listen(t, srv)
+	s, err := testsession.NewClientSession(t, addr, &gossh.ClientConfig{HostKeyCallback: gossh.InsecureIgnoreHostKey()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b, _ := s.CombinedOutput(""); !strings.Contains(string(b), "without input") {
+		t.Errorf("idle player told %q", b)
+	}
+}

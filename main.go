@@ -20,6 +20,7 @@ type model struct {
 	frame    time.Duration // tick interval, 1/20s when zero
 	idle     time.Duration // quit after this long without input, never when zero
 	lastSeen time.Time
+	idledOut bool
 }
 
 func (m *model) tick() tea.Cmd {
@@ -53,6 +54,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		g.SetHover(msg.X, msg.Y)
 	case tickMsg:
 		if m.idle > 0 && time.Since(m.lastSeen) > m.idle {
+			m.idledOut = true
 			return m, tea.Quit
 		}
 		g.time = time.Since(m.start).Seconds()
@@ -268,11 +270,12 @@ func main() {
 	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
 	addr := flag.String("ssh", "", "serve the game over SSH on this address (e.g. :2222)")
 	hostKey := flag.String("hostkey", ".ssh/termablo_ed25519", "SSH host key, created if missing")
-	maxSessions := flag.Int("max-sessions", 50, "SSH: most games at once")
+	maxSessions := flag.Int("max-sessions", 50, "SSH: most games at once (0 = no limit)")
 	idle := flag.Duration("idle", 15*time.Minute, "SSH: disconnect after this long without input")
+	connectEvery := flag.Duration("connect-every", 10*time.Second, "SSH: one new game per address this often, 3 at once (0 = no limit)")
 	flag.Parse()
 	if *addr != "" {
-		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *level, maxSessions: *maxSessions, idle: *idle})
+		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *level, maxSessions: *maxSessions, idle: *idle, connectEvery: *connectEvery})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
