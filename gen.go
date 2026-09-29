@@ -387,6 +387,8 @@ func genMarsh(seed int64) *Level {
 			l.Set(x, y, TCaveFloor)
 		}
 	})
+	// open the mouth on the south side so the road can reach the stairs
+	l.Fill(gx-1, gy+3, gx+1, gy+6, TCaveFloor)
 	l.Set(gx, gy, TStairsDown)
 	l.Links = append(l.Links, Link{gx, gy, gx, gy, "grotto1", -1, -1})
 	path := func(x, y int) {

@@ -541,12 +541,15 @@ func (g *Game) autoPickup() {
 
 func (g *Game) pickup() {
 	l, p := g.Lv, g.P
-	got := false
+	got, full := false, false
 	keep := l.Items[:0]
 	for _, fi := range l.Items {
 		if fi.X == p.X && fi.Y == p.Y && fi.It.Kind == IKEquip {
 			if len(p.Inv) >= invMax {
-				g.msg(colRed, "Your pack is full.")
+				if !full {
+					g.msg(colRed, "Your pack is full.")
+				}
+				full = true
 				keep = append(keep, fi)
 				continue
 			}
@@ -560,7 +563,7 @@ func (g *Game) pickup() {
 	l.Items = keep
 	if got {
 		g.endTurn()
-	} else {
+	} else if !full {
 		g.msg(colDim, "There is nothing here to pick up.")
 	}
 }
@@ -1504,6 +1507,20 @@ func (g *Game) equip(idx int) {
 			slot = EqRing2
 		}
 	default:
+		return
+	}
+	returning := 0
+	if p.Eq[slot] != nil {
+		returning++
+	}
+	if slot == EqWeapon && it.Base.TwoHanded && p.Eq[EqOffhand] != nil {
+		returning++
+	}
+	if slot == EqOffhand && p.Eq[EqWeapon] != nil && p.Eq[EqWeapon].Base.TwoHanded {
+		returning++
+	}
+	if len(p.Inv)-1+returning > invMax {
+		g.msg(colRed, "Your pack is too full to swap that.")
 		return
 	}
 	p.Inv = append(p.Inv[:idx], p.Inv[idx+1:]...)

@@ -390,11 +390,18 @@ func (it *Item) Lines() []struct {
 }
 
 func rollBase(rng *rand.Rand, ilvl int, slot Slot) *Base {
+	// best available base level per slot, so every slot keeps a pool at high ilvl
+	top := map[Slot]int{}
+	for _, b := range bases {
+		if b.Lvl <= ilvl+1 && b.Lvl > top[b.Slot] {
+			top[b.Slot] = b.Lvl
+		}
+	}
 	var pool []*Base
 	for _, b := range bases {
 		if b.Lvl <= ilvl+1 && (slot == SlotNone || b.Slot == slot) {
-			// Prefer bases near the item level.
-			if b.Lvl >= ilvl-8 || b.Slot == SlotRing || b.Slot == SlotAmulet {
+			// Prefer bases near the item level (or the slot's best if it tops out).
+			if b.Lvl >= ilvl-8 || b.Lvl >= top[b.Slot]-8 {
 				pool = append(pool, b)
 			}
 		}
