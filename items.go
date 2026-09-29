@@ -385,7 +385,7 @@ func (it *Item) Lines() []struct {
 	if it.Flavor != "" {
 		out = append(out, ln{it.Flavor, C(.75, .6, .35)})
 	}
-	out = append(out, ln{fmt.Sprintf("Item level %d  ·  worth %dg", it.ILvl, it.Value()/4), colDim})
+	out = append(out, ln{fmt.Sprintf("Item level %d  ·  worth %dg", it.ILvl, sellPrice(it)), colDim})
 	return out
 }
 

@@ -17,6 +17,8 @@ type Player struct {
 	HPot     int
 	MPot     int
 	Scrolls  int
+	HealPool float64 // life still to come from drunk potions
+	ManaPool float64
 	Torch    *Light
 	Kills    int
 	KilledBy string
@@ -95,23 +97,30 @@ func (p *Player) ToHit() int { return 70 + p.DEX()/4 + p.st[StToHit]/5 }
 
 func (p *Player) SpellMul() float64 { return 1 + float64(p.st[StSpellPct])/100 }
 
+// Spells scale with Energy alone: a fighter who never invests in it keeps
+// the starting Firebolt while monsters grow.
 func (p *Player) FireboltDmg() (int, int) {
-	base := float64(p.Lvl) + float64(p.ENE())/3
-	m := p.SpellMul()
-	return int((2 + base) * m), int((6 + base*1.3) * m)
+	e, m := float64(p.ENE()), p.SpellMul()
+	return int((2 + e*0.4) * m), int((6 + e*0.55) * m)
 }
 
 func (p *Player) NovaDmg() (int, int) {
-	base := float64(p.Lvl)*0.8 + float64(p.ENE())/4
-	m := p.SpellMul()
-	return int((1 + base) * m), int((4 + base) * m)
+	e, m := float64(p.ENE()), p.SpellMul()
+	return int((1 + e*0.25) * m), int((4 + e*0.28) * m)
 }
 
 const (
 	costFirebolt = 6
 	costNova     = 14
 
-	fireboltRange = 22 // steps
+	fireboltRange = 10 // steps
+
+	beltMax = 5 // potions of each kind the belt holds
+
+	// Nova freezes for a couple of turns, then the target shakes it off
+	// for a while.
+	novaFreeze   = 2
+	freezeImmune = 6
 )
 
 func xpNext(lvl int) int { return int(35 * math.Pow(float64(lvl), 1.8)) }

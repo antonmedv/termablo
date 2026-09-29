@@ -19,6 +19,12 @@ Use a truecolor terminal that is at least 80x24. Bigger is better.
 - **Sunken Grotto 1–3**: caves lit by blue crystals. The **Drowned Oracle** waits at the bottom.
 - **The Burning Abyss 1…∞**: lava caverns that keep going down and keep getting harder.
 
+## Balance
+- Potions restore over a few turns rather than at once. The belt holds 5 of each kind, and Mirela charges more as you level.
+- Spell damage grows with Energy only. Firebolt reaches 10 steps; bats, wolves, wisps, imps and spiders can dodge it.
+- Frost Nova freezes for about 2 turns, and the target can't be frozen again for 6 turns. It never freezes uniques or bosses and freezes champions for only 1 turn.
+- Merchants pay 1/8 of an item's worth, and next to nothing for plain gear. Plain monsters rarely drop items.
+
 ## Lighting
 - Every light casts its own rays and is blocked by walls. Lights add up by color: warm torches and braziers, cool crystals, lava, portals and glowing monsters.
 - Light falls off softly with distance and is tone-mapped. Light circles are corrected for the cell aspect ratio so they look round.

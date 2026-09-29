@@ -377,11 +377,21 @@ func (g *Game) cycleTarget() {
 
 // ------------------------------------------------------------ turns
 
+// drain takes this turn's share of a potion pool: most of it lands in the
+// first few turns.
+func drain(pool *float64) float64 {
+	d := math.Min(*pool, *pool*0.35+1)
+	*pool -= d
+	return d
+}
+
 func (g *Game) endTurn() {
 	p := g.P
 	g.Turn++
-	p.HP = math.Min(float64(p.MaxHP()), p.HP+0.02+float64(p.S(StLifeRegen))*0.06+float64(p.VIT())*0.0015)
-	p.MP = math.Min(float64(p.MaxMP()), p.MP+0.08+float64(p.ENE())*0.005+float64(p.S(StManaRegen))*0.06)
+	hp := 0.02 + float64(p.S(StLifeRegen))*0.06 + float64(p.VIT())*0.0015 + drain(&p.HealPool)
+	mp := 0.25 + float64(p.ENE())*0.012 + float64(p.S(StManaRegen))*0.06 + drain(&p.ManaPool)
+	p.HP = math.Min(float64(p.MaxHP()), p.HP+hp)
+	p.MP = math.Min(float64(p.MaxMP()), p.MP+mp)
 	g.computeDist()
 	for _, m := range g.Lv.Monsters {
 		if m.Dead {
@@ -534,12 +544,18 @@ func (g *Game) autoPickup() {
 		case IKGold:
 			p.Gold += it.Amount
 			g.msg(colGold, "You pick up %d gold.", it.Amount)
-		case IKHealth:
-			p.HPot++
-			g.msg(C(1, .4, .4), "You pick up a Healing Potion.")
-		case IKMana:
-			p.MPot++
-			g.msg(C(.45, .6, 1), "You pick up a Mana Potion.")
+		case IKHealth, IKMana:
+			n, name, col := &p.HPot, "Healing", C(1, .4, .4)
+			if it.Kind == IKMana {
+				n, name, col = &p.MPot, "Mana", C(.45, .6, 1)
+			}
+			if *n >= beltMax {
+				g.msg(colDim, "Your belt has no room for another %s Potion.", name)
+				keep = append(keep, fi)
+				continue
+			}
+			*n++
+			g.msg(col, "You pick up a %s Potion.", name)
 		case IKScroll:
 			p.Scrolls++
 			g.msg(C(.85, .8, .65), "You pick up a Scroll of Town Portal.")
@@ -712,7 +728,7 @@ func (g *Game) dropLoot(m *Monster) {
 	p := g.P
 	mf := float64(p.S(StMF)) / 100
 	nItems, bonus, minR := 0, mf, RNormal
-	if g.rng.Intn(100) < 20 {
+	if g.rng.Intn(100) < 12 {
 		nItems = 1
 	}
 	goldChance := 40
@@ -734,6 +750,9 @@ func (g *Game) dropLoot(m *Monster) {
 		}
 		if m.Rank == RankBoss && i == 0 {
 			r = RUnique
+		}
+		if r == RNormal && m.Rank == RankNormal && g.rng.Intn(2) == 0 {
+			continue // plain monsters mostly drop nothing worth a look
 		}
 		g.dropItem(m.X, m.Y, GenItem(g.rng, m.Level, r, SlotNone))
 	}
@@ -827,9 +846,13 @@ func (g *Game) drinkHealth() {
 		g.msg(colDim, "You have no healing potions.")
 		return
 	}
+	if p.HP+p.HealPool >= float64(p.MaxHP()) {
+		g.msg(colDim, "You are already at full life.")
+		return
+	}
 	p.HPot--
 	amt := float64(p.MaxHP())*0.5 + 12
-	p.HP = math.Min(float64(p.MaxHP()), p.HP+amt)
+	p.HealPool += amt
 	g.textFx(p.X, p.Y, "+"+strconv.Itoa(int(amt)), colGreen)
 	g.msg(C(1, .45, .45), "You drink a healing potion.")
 	g.endTurn()
@@ -841,8 +864,12 @@ func (g *Game) drinkMana() {
 		g.msg(colDim, "You have no mana potions.")
 		return
 	}
+	if p.MP+p.ManaPool >= float64(p.MaxMP()) {
+		g.msg(colDim, "Your mana is already full.")
+		return
+	}
 	p.MPot--
-	p.MP = math.Min(float64(p.MaxMP()), p.MP+float64(p.MaxMP())*0.6+8)
+	p.ManaPool += float64(p.MaxMP())*0.4 + 5
 	g.msg(C(.45, .6, 1), "You drink a mana potion.")
 	g.endTurn()
 }
@@ -951,7 +978,10 @@ func (g *Game) castFirebolt() {
 	p.MP -= costFirebolt
 	path, hit, _ := g.traceBolt(p.X, p.Y, t.X, t.Y, fireboltRange, true)
 	g.boltFx(path, C(1, .5, .15), '*', true)
-	if hit != nil {
+	if hit != nil && g.rng.Intn(100) < hit.T.Dodge {
+		g.textFx(hit.X, hit.Y, "miss", colDim)
+		hit.Awake = true
+	} else if hit != nil {
 		lo, hi := p.FireboltDmg()
 		dmg := lo + g.rng.Intn(hi-lo+1)
 		crit := g.rng.Intn(100) < p.Crit()/2
@@ -983,11 +1013,10 @@ func (g *Game) castNova() {
 		if math.Sqrt(dx*dx+dy*dy) > 3.4 || g.fov[l.Idx(m.X, m.Y)] != g.fovGen {
 			continue
 		}
-		fr := 4
-		if m.Rank >= RankUnique {
-			fr = 2
+		if fr := novaFreeze - min(m.Rank, novaFreeze); fr > 0 && m.FreezeCD == 0 {
+			m.Frozen = maxi(m.Frozen, fr)
+			m.FreezeCD = fr + freezeImmune
 		}
-		m.Frozen = maxi(m.Frozen, fr)
 		g.damageMonster(m, lo+g.rng.Intn(hi-lo+1), false, colCyan)
 	}
 	g.endTurn()
@@ -1006,6 +1035,9 @@ func (g *Game) monsterTurn(m *Monster) {
 			}
 		}
 		return
+	}
+	if m.FreezeCD > 0 {
+		m.FreezeCD--
 	}
 	if m.Frozen > 0 {
 		m.Frozen--
@@ -1471,16 +1503,22 @@ func (g *Game) talkTo(m *Monster) {
 
 func (g *Game) buy(it *Item) {
 	p := g.P
-	price := it.Value()
+	price := g.buyPrice(it)
 	if p.Gold < price {
 		g.msg(colRed, "You cannot afford that.")
 		return
 	}
 	switch it.Kind {
-	case IKHealth:
-		p.HPot++
-	case IKMana:
-		p.MPot++
+	case IKHealth, IKMana:
+		n := &p.HPot
+		if it.Kind == IKMana {
+			n = &p.MPot
+		}
+		if *n >= beltMax {
+			g.msg(colRed, "Your belt is full.")
+			return
+		}
+		*n++
 	case IKScroll:
 		p.Scrolls++
 	default:
@@ -1497,13 +1535,34 @@ func (g *Game) buy(it *Item) {
 	g.msg(colGold, "Bought %s for %dg.", it.DisplayName(), price)
 }
 
+// buyPrice: remedies cost more as the hero grows, so a stack of potions
+// stays a real expense.
+func (g *Game) buyPrice(it *Item) int {
+	lvl := g.P.Lvl - 1
+	switch it.Kind {
+	case IKHealth, IKMana:
+		return 20 + 4*lvl
+	case IKScroll:
+		return 40 + 6*lvl
+	}
+	return it.Value()
+}
+
+// sellPrice: merchants pay little for gear, next to nothing for plain gear.
+func sellPrice(it *Item) int {
+	if it.Rarity == RNormal {
+		return maxi(1, it.Value()/20)
+	}
+	return it.Value() / 8
+}
+
 func (g *Game) sell(idx int) {
 	p := g.P
 	if idx < 0 || idx >= len(p.Inv) {
 		return
 	}
 	it := p.Inv[idx]
-	price := it.Value() / 4
+	price := sellPrice(it)
 	p.Gold += price
 	p.Inv = append(p.Inv[:idx], p.Inv[idx+1:]...)
 	if g.shop != nil && g.shop.Kind == 0 {

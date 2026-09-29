@@ -17,7 +17,7 @@ func TestBuyPotion(t *testing.T) {
 		t.Fatalf("mode %v after walking into Mirela", g.Mode)
 	}
 	gold, pots := g.P.Gold, g.P.HPot
-	price := g.shopList()[0].Value()
+	price := g.buyPrice(g.shopList()[0])
 	press(m, "enter")
 	if g.P.HPot != pots+1 || g.P.Gold != gold-price {
 		t.Fatalf("potions %d->%d, gold %d->%d (price %d)", pots, g.P.HPot, gold, g.P.Gold, price)
@@ -47,8 +47,8 @@ func TestBuyAndSellGear(t *testing.T) {
 		t.Fatalf("buy: gold %d, pack %d, stock %d->%d", g.P.Gold, len(g.P.Inv), stock, len(g.shop.Items))
 	}
 	press(m, "tab", "enter")
-	if len(g.P.Inv) != 0 || g.P.Gold != it.Value()/4 || len(g.shop.Items) != stock {
-		t.Fatalf("sell: gold %d want %d, pack %d, stock %d", g.P.Gold, it.Value()/4, len(g.P.Inv), len(g.shop.Items))
+	if len(g.P.Inv) != 0 || g.P.Gold != sellPrice(it) || len(g.shop.Items) != stock {
+		t.Fatalf("sell: gold %d want %d, pack %d, stock %d", g.P.Gold, sellPrice(it), len(g.P.Inv), len(g.shop.Items))
 	}
 }
 

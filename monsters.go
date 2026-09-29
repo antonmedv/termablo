@@ -29,6 +29,7 @@ type MTemplate struct {
 	AI        AIKind
 	Range     int
 	Erratic   int
+	Dodge     int // percent chance to sidestep a firebolt
 	Light     *LightSpec
 	ProjColor RGB
 	ProjGlyph rune
@@ -40,22 +41,22 @@ type MTemplate struct {
 
 var mtList = []*MTemplate{
 	{ID: "rat", Name: "Plague Rat", Glyph: 'r', Color: C(.7, .55, .42), HP: 6, MinD: 1, MaxD: 3, Speed: 120, XP: 4, Pack: [2]int{2, 5}, Verb: "bites"},
-	{ID: "bat", Name: "Cave Bat", Glyph: 'b', Color: C(.7, .5, .62), HP: 5, MinD: 1, MaxD: 3, Speed: 150, XP: 4, Erratic: 45, Pack: [2]int{2, 4}, Verb: "bites"},
+	{ID: "bat", Name: "Cave Bat", Glyph: 'b', Color: C(.7, .5, .62), HP: 5, MinD: 1, MaxD: 3, Dodge: 35, Speed: 150, XP: 4, Erratic: 45, Pack: [2]int{2, 4}, Verb: "bites"},
 	{ID: "fallen", Name: "Fallen One", Glyph: 'f', Color: C(.95, .32, .25), HP: 8, MinD: 1, MaxD: 3, Speed: 100, XP: 6, Pack: [2]int{2, 5}, Verb: "stabs"},
 	{ID: "shaman", Name: "Fallen Shaman", Glyph: 'f', Color: C(1, .7, .25), HP: 10, MinD: 2, MaxD: 5, Speed: 100, XP: 11, AI: AIRanged, Range: 6, ProjColor: C(1, .5, .15), ProjGlyph: '*', ProjLight: true, Pack: [2]int{1, 1}, Verb: "hurls fire at"},
 	{ID: "zombie", Name: "Zombie", Glyph: 'z', Color: C(.5, .7, .38), HP: 18, MinD: 2, MaxD: 5, Speed: 70, XP: 8, Pack: [2]int{1, 3}, Undead: true, Verb: "claws"},
-	{ID: "wolf", Name: "Dire Wolf", Glyph: 'C', Color: C(.68, .68, .72), HP: 12, MinD: 2, MaxD: 5, Speed: 130, XP: 9, Pack: [2]int{2, 4}, Verb: "mauls"},
+	{ID: "wolf", Name: "Dire Wolf", Glyph: 'C', Color: C(.68, .68, .72), HP: 12, MinD: 2, MaxD: 5, Dodge: 20, Speed: 130, XP: 9, Pack: [2]int{2, 4}, Verb: "mauls"},
 	{ID: "skel", Name: "Skeleton", Glyph: 's', Color: C(.95, .92, .8), HP: 14, MinD: 2, MaxD: 6, Armor: 6, Speed: 100, XP: 10, Pack: [2]int{2, 4}, Undead: true, Verb: "slashes"},
 	{ID: "archer", Name: "Skeleton Archer", Glyph: 's', Color: C(.7, .8, 1), HP: 10, MinD: 2, MaxD: 5, Speed: 100, XP: 12, AI: AIRanged, Range: 8, ProjColor: C(.85, .8, .7), ProjGlyph: '-', Pack: [2]int{1, 2}, Undead: true, Verb: "shoots"},
 	{ID: "ghoul", Name: "Ghoul", Glyph: 'G', Color: C(.55, .75, .5), HP: 30, MinD: 3, MaxD: 8, Speed: 95, XP: 18, Pack: [2]int{1, 2}, Undead: true, Verb: "rends"},
 	{ID: "cultist", Name: "Ember Cultist", Glyph: 'c', Color: C(.85, .4, .95), HP: 16, MinD: 3, MaxD: 6, Speed: 100, XP: 16, AI: AIRanged, Range: 7, ProjColor: C(1, .45, .12), ProjGlyph: '*', ProjLight: true, Pack: [2]int{1, 3}, Verb: "casts fire at"},
 	{ID: "wraith", Name: "Wraith", Glyph: 'W', Color: C(.65, .8, 1), HP: 26, MinD: 4, MaxD: 9, Speed: 115, XP: 26, Light: &LightSpec{C(.4, .55, 1), 2.8, .55, .05, .2}, Pack: [2]int{1, 2}, Undead: true, Verb: "chills"},
-	{ID: "wisp", Name: "Will-o'-Wisp", Glyph: 'w', Color: C(.6, .95, 1), HP: 10, MinD: 2, MaxD: 6, Speed: 130, XP: 14, Erratic: 40, Light: &LightSpec{C(.3, .75, 1), 4, .9, .1, .25}, Pack: [2]int{1, 3}, Verb: "shocks"},
+	{ID: "wisp", Name: "Will-o'-Wisp", Glyph: 'w', Color: C(.6, .95, 1), HP: 10, MinD: 2, MaxD: 6, Dodge: 30, Speed: 130, XP: 14, Erratic: 40, Light: &LightSpec{C(.3, .75, 1), 4, .9, .1, .25}, Pack: [2]int{1, 3}, Verb: "shocks"},
 	{ID: "drowned", Name: "Drowned Dead", Glyph: 'z', Color: C(.4, .65, .7), HP: 28, MinD: 3, MaxD: 8, Speed: 80, XP: 18, Pack: [2]int{2, 3}, Undead: true, Verb: "grasps"},
 	{ID: "horror", Name: "Marsh Horror", Glyph: 'M', Color: C(.45, .6, .32), HP: 45, MinD: 5, MaxD: 12, Speed: 90, XP: 35, Pack: [2]int{1, 1}, Verb: "crushes"},
-	{ID: "spider", Name: "Grotto Spider", Glyph: 'x', Color: C(.75, .62, .42), HP: 16, MinD: 3, MaxD: 7, Speed: 130, XP: 16, Pack: [2]int{3, 5}, Verb: "bites"},
+	{ID: "spider", Name: "Grotto Spider", Glyph: 'x', Color: C(.75, .62, .42), HP: 16, MinD: 3, MaxD: 7, Dodge: 15, Speed: 130, XP: 16, Pack: [2]int{3, 5}, Verb: "bites"},
 	{ID: "golem", Name: "Crystal Golem", Glyph: 'g', Color: C(.6, .85, 1), HP: 55, MinD: 6, MaxD: 12, Armor: 20, Speed: 80, XP: 45, Light: &LightSpec{C(.3, .55, 1), 3.5, .8, .02, .15}, Pack: [2]int{1, 1}, Verb: "pummels"},
-	{ID: "imp", Name: "Fire Imp", Glyph: 'i', Color: C(1, .6, .22), HP: 20, MinD: 3, MaxD: 7, Speed: 110, XP: 25, AI: AIRanged, Range: 6, ProjColor: C(1, .45, .1), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(1, .45, .12), 3, .8, .3, 0}, Pack: [2]int{2, 4}, Verb: "spits fire at"},
+	{ID: "imp", Name: "Fire Imp", Glyph: 'i', Color: C(1, .6, .22), HP: 20, MinD: 3, MaxD: 7, Dodge: 20, Speed: 110, XP: 25, AI: AIRanged, Range: 6, ProjColor: C(1, .45, .1), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(1, .45, .12), 3, .8, .3, 0}, Pack: [2]int{2, 4}, Verb: "spits fire at"},
 	{ID: "hellspawn", Name: "Hellspawn", Glyph: 'H', Color: C(.95, .28, .22), HP: 70, MinD: 7, MaxD: 16, Armor: 15, Speed: 100, XP: 60, Light: &LightSpec{C(1, .2, .08), 2.5, .6, .2, 0}, Pack: [2]int{1, 2}, Verb: "cleaves"},
 
 	{ID: "boneking", Name: "The Bone King", Glyph: 'K', Color: C(1, 1, .75), HP: 150, MinD: 7, MaxD: 14, Armor: 25, Speed: 100, XP: 500, AI: AIBoneKing, Light: &LightSpec{C(.5, 1, .45), 4.5, 1, .08, .2}, Undead: true, Verb: "smites"},
@@ -113,6 +114,7 @@ type Monster struct {
 	Awake     bool
 	LostTurns int
 	Frozen    int
+	FreezeCD  int // turns until nova can freeze it again
 	Light     *Light
 	Dead      bool
 	Friendly  bool

@@ -704,9 +704,9 @@ func (g *Game) drawShop(s *Screen, mapW, mapH int) {
 			name = name[:bw-24]
 		}
 		s.Text(cx+2, yy, name, it.Color().C8())
-		price := it.Value()
+		price := g.buyPrice(it)
 		if g.tab == 1 {
-			price /= 4
+			price = sellPrice(it)
 		}
 		pc := colGold
 		if g.tab == 0 && price > p.Gold {
@@ -745,9 +745,9 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		{". or 5", "wait a turn"},
 		{"g or ,", "pick up equipment (gold & potions are automatic)"},
 		{"f", "Firebolt at target (lights up the dark!)"},
-		{"r", "Frost Nova: damage + freeze around you"},
+		{"r", "Frost Nova: damage + brief freeze around you"},
 		{"tab", "cycle target"},
-		{"q / w", "drink healing / mana potion"},
+		{"q / w", "drink healing / mana potion (works over a few turns)"},
 		{"t", "read Scroll of Town Portal"},
 		{"o", "auto-explore (stops when enemies appear)"},
 		{"i", "inventory & equipment"},

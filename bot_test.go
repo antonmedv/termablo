@@ -69,14 +69,16 @@ func (b *bot) errand() bool {
 			}
 			if cheb(m.X, m.Y, p.X, p.Y) == 1 {
 				g.move(m.X-p.X, m.Y-p.Y) // heals, opens the shop
-				for p.Gold >= 30+60 && p.HPot < 6 {
-					g.buy(alch.Items[0])
+				hp, mp, sc := alch.Items[0], alch.Items[1], alch.Items[2]
+				reserve := g.buyPrice(sc)
+				for p.Gold >= g.buyPrice(hp)+reserve && p.HPot < beltMax {
+					g.buy(hp)
 				}
-				if p.Scrolls == 0 && p.Gold >= 60 {
-					g.buy(alch.Items[2])
+				if p.Scrolls == 0 && p.Gold >= reserve {
+					g.buy(sc)
 				}
-				for p.Gold >= 30+60 && p.MPot < 3 {
-					g.buy(alch.Items[1])
+				for p.Gold >= g.buyPrice(mp)+reserve && p.MPot < 3 {
+					g.buy(mp)
 				}
 				g.Mode = ModePlay
 				b.shopped = true
@@ -112,12 +114,12 @@ func (b *bot) turn() {
 		b.level, b.onLevel = g.Lv, 0
 	}
 	b.onLevel++
-	if p.HP < float64(p.MaxHP())*0.4 && p.HPot > 0 {
+	if p.HP+p.HealPool < float64(p.MaxHP())*0.5 && p.HPot > 0 {
 		g.drinkHealth()
 		return
 	}
 	// out of potions and hurting: escape through a portal, even mid-fight
-	if p.HPot == 0 && p.HP < float64(p.MaxHP())*0.45 && g.Lv.Kind != KTown && b.wantsTown() {
+	if p.HPot == 0 && p.HP+p.HealPool < float64(p.MaxHP())*0.45 && g.Lv.Kind != KTown && b.wantsTown() {
 		b.homing = true
 		if b.errand() {
 			return
@@ -172,9 +174,9 @@ func (b *bot) turn() {
 			g.equip(i)
 		}
 	}
-	for p.Points > 0 {
+	for p.Points > 0 { // a caster: spells scale with Energy alone
 		p.Vit++
-		p.Str++
+		p.Ene++
 		p.Points -= 2
 	}
 }
