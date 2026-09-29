@@ -16,13 +16,21 @@ type model struct {
 	scr   *Screen
 	start time.Time
 	seed  int64
+
+	frame    time.Duration // tick interval, 1/20s when zero
+	idle     time.Duration // quit after this long without input, never when zero
+	lastSeen time.Time
 }
 
-func tick() tea.Cmd {
-	return tea.Tick(time.Second/20, func(t time.Time) tea.Msg { return tickMsg(t) })
+func (m *model) tick() tea.Cmd {
+	d := m.frame
+	if d == 0 {
+		d = time.Second / 20
+	}
+	return tea.Tick(d, func(t time.Time) tea.Msg { return tickMsg(t) })
 }
 
-func (m *model) Init() tea.Cmd { return tick() }
+func (m *model) Init() tea.Cmd { return m.tick() }
 
 var moveKeys = map[string]Pos{
 	"up": {0, -1}, "k": {0, -1}, "8": {0, -1},
@@ -41,8 +49,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.scr.Resize(msg.Width, msg.Height)
 	case tea.MouseMsg:
+		m.lastSeen = time.Now()
 		g.SetHover(msg.X, msg.Y)
 	case tickMsg:
+		if m.idle > 0 && time.Since(m.lastSeen) > m.idle {
+			return m, tea.Quit
+		}
 		g.time = time.Since(m.start).Seconds()
 		if g.auto && g.Mode == ModePlay && g.time >= g.autoNext {
 			g.autoNext = g.time + 0.055
@@ -50,8 +62,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				g.auto = false
 			}
 		}
-		return m, tick()
+		return m, m.tick()
 	case tea.KeyMsg:
+		m.lastSeen = time.Now()
 		g.time = time.Since(m.start).Seconds()
 		k := msg.String()
 		if k == "ctrl+c" {
@@ -246,7 +259,8 @@ func newModel(seed int64, level string) *model {
 	if level != "" {
 		g.changeLevel(level, "", nil)
 	}
-	return &model{g: g, scr: NewScreen(120, 40), start: time.Now(), seed: seed}
+	now := time.Now()
+	return &model{g: g, scr: NewScreen(120, 40), start: now, seed: seed, lastSeen: now}
 }
 
 func main() {
@@ -254,9 +268,12 @@ func main() {
 	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
 	addr := flag.String("ssh", "", "serve the game over SSH on this address (e.g. :2222)")
 	hostKey := flag.String("hostkey", ".ssh/termablo_ed25519", "SSH host key, created if missing")
+	maxSessions := flag.Int("max-sessions", 50, "SSH: most games at once")
+	idle := flag.Duration("idle", 15*time.Minute, "SSH: disconnect after this long without input")
 	flag.Parse()
 	if *addr != "" {
-		if err := serve(*addr, *hostKey, *seed, *level); err != nil {
+		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *level, maxSessions: *maxSessions, idle: *idle})
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
