@@ -1,4 +1,4 @@
-module termablo
+module github.com/antonmedv/termablo
 
 go 1.27.0
 

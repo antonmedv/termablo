@@ -240,11 +240,16 @@ func (m *model) View() string {
 
 func main() {
 	seed := flag.Int64("seed", 0, "world seed (0 = random)")
+	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
 	flag.Parse()
 	if *seed == 0 {
 		*seed = time.Now().UnixNano()
 	}
-	m := &model{g: NewGame(*seed), scr: NewScreen(120, 40), start: time.Now(), seed: *seed}
+	g := NewGame(*seed)
+	if *level != "" {
+		g.changeLevel(*level, "", nil)
+	}
+	m := &model{g: g, scr: NewScreen(120, 40), start: time.Now(), seed: *seed}
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseAllMotion())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
