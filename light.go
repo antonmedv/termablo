@@ -23,7 +23,7 @@ func castRays(l *Level, ox, oy int, radius float64, stamp []uint32, gen uint32, 
 	cx, cy := float64(ox)+0.5, float64(oy)+0.5
 	W, H := l.W, l.H
 	T := l.T
-	for r := 0; r < n; r++ {
+	for r := range n {
 		a := 2 * math.Pi * (float64(r) + 0.5) / float64(n)
 		dx, dy := math.Cos(a)*Aspect, math.Sin(a)
 		lx, ly := ox, oy

@@ -48,10 +48,14 @@ Use a truecolor terminal that is at least 80x24. Bigger is better.
 
 ## Tests
 ```
-go test ./...                     # everything (~5s); -short runs fewer seeds
-go test -fuzz FuzzKeys            # random key input vs. game invariants
-SHOTDIR=/tmp/shots go test -run Shot   # render screenshots (needs rsvg-convert)
+make check     # gofmt, golangci-lint, deadcode, tests — run before committing
+make test      # go test ./... (~8s); make test-short runs fewer seeds
+make fuzz      # 60s of random key input vs. game invariants
+make report    # bot balance report over 12 seeds
+make bench     # frame/turn benchmarks into bench.txt (compare with benchstat)
+make shots     # render screenshots into shots/ (needs rsvg-convert)
 ```
+Tools: `brew install golangci-lint`, `go install golang.org/x/tools/cmd/deadcode@latest`. Lint rules live in `.golangci.yml`.
 - `testutil_test.go`: `newTestGame` builds a game from an ASCII map; `eachLevel` runs a check on every generated level over many seeds.
 - `gen_test.go`, `items_test.go`, `light_test.go`: invariants for levels, loot and lighting.
 - `combat_test.go`, `explore_test.go`, `scenario_test.go`: gameplay scenarios (shops, portals, stairs, death, level-up, gear), mostly driven through the real key handler.

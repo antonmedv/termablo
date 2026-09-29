@@ -13,7 +13,7 @@ const (
 type Pos struct{ X, Y int }
 
 // Link connects a rectangle of tiles to another level. AX/AY is where a
-// traveller arriving through this link appears (-1 = next to the link).
+// traveler arriving through this link appears (-1 = next to the link).
 type Link struct {
 	X0, Y0, X1, Y1 int
 	To             string
@@ -138,7 +138,7 @@ func (l *Level) LinkTo(id string) *Link {
 // FreeNear finds the closest walkable, unoccupied, non-link cell to (x,y).
 func (l *Level) FreeNear(x, y int, px, py int) (int, int) {
 	best, bx, by := 1<<30, x, y
-	for r := 0; r < 12; r++ {
+	for r := range 12 {
 		for dy := -r; dy <= r; dy++ {
 			for dx := -r; dx <= r; dx++ {
 				nx, ny := x+dx, y+dy
@@ -168,8 +168,8 @@ func (l *Level) FreeNear(x, y int, px, py int) (int, int) {
 // finalize creates static lights for every light-emitting tile.
 func (l *Level) finalize() {
 	lavaCount := 0
-	for y := 0; y < l.H; y++ {
-		for x := 0; x < l.W; x++ {
+	for y := range l.H {
+		for x := range l.W {
 			t := l.At(x, y)
 			spec := tdefs[t].Light
 			if spec == nil {

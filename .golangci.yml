@@ -1,0 +1,31 @@
+version: "2"
+
+linters:
+  default: standard # errcheck, govet, ineffassign, staticcheck, unused
+  enable:
+    - gocritic
+    - misspell
+    - unconvert
+    - unparam
+    - nilerr
+    - bodyclose
+    - copyloopvar
+    - intrange
+  settings:
+    gocritic:
+      disabled-checks:
+        - ifElseChain   # switch vs if-chains is a style call
+        - singleCaseSwitch
+    misspell:
+      locale: US
+  exclusions:
+    presets:
+      - std-error-handling
+
+formatters:
+  enable:
+    - gofmt
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -581,9 +582,9 @@ func (g *Game) pickup() {
 func (g *Game) dropItem(x, y int, it *Item) {
 	l := g.Lv
 	fx, fy := x, y
-	for r := 0; r < 5; r++ {
+	for r := range 5 {
 		found := false
-		for tries := 0; tries < 12; tries++ {
+		for range 12 {
 			cx, cy := x+g.rng.Intn(2*r+1)-r, y+g.rng.Intn(2*r+1)-r
 			if l.Walkable(cx, cy) && l.LinkAt(cx, cy) == nil && len(l.ItemsAt(cx, cy)) == 0 && l.At(cx, cy) != TDoor {
 				fx, fy, found = cx, cy, true
@@ -651,7 +652,7 @@ func (g *Game) killMonster(m *Monster) {
 	i := l.Idx(m.X, m.Y)
 	if l.At(m.X, m.Y) != TWater && l.At(m.X, m.Y) != TDeepWater {
 		l.Decal[i] = DecalCorpse
-		for k := 0; k < 3; k++ {
+		for range 3 {
 			bx, by := m.X+g.rng.Intn(3)-1, m.Y+g.rng.Intn(3)-1
 			if l.In(bx, by) && l.Walkable(bx, by) && l.Decal[l.Idx(bx, by)] == DecalNone {
 				l.Decal[l.Idx(bx, by)] = DecalBlood
@@ -726,7 +727,7 @@ func (g *Game) dropLoot(m *Monster) {
 	if m.Minion {
 		nItems, goldChance = 0, 10
 	}
-	for i := 0; i < nItems; i++ {
+	for i := range nItems {
 		r := RollRarity(g.rng, bonus)
 		if r < minR {
 			r = minR
@@ -761,7 +762,7 @@ func (g *Game) openChest(x, y int) {
 	g.msg(C(.9, .7, .35), "You open the chest.")
 	lvl := maxi(1, l.Depth)
 	n := 1 + g.rng.Intn(2)
-	for i := 0; i < n; i++ {
+	for range n {
 		r := RollRarity(g.rng, 0.8+float64(g.P.S(StMF))/100)
 		if r == RNormal {
 			r = RMagic
@@ -880,7 +881,7 @@ func lineCells(x0, y0, x1, y1 int) []Pos {
 	}
 	err := dx + dy
 	x, y := x0, y0
-	for i := 0; i < 200; i++ {
+	for range 200 {
 		if x == x1 && y == y1 {
 			break
 		}
@@ -1055,7 +1056,7 @@ func (g *Game) monsterTurn(m *Monster) {
 	case AIBoneKing:
 		if sees && m.Timer%6 == 0 && g.countMinions() < 10 {
 			g.msg(C(.75, 1, .6), "The Bone King raises the dead!")
-			for i := 0; i < 2; i++ {
+			for range 2 {
 				s := placeMonsterAvoid(l, "skel", m.X, m.Y, m.Level, RankNormal, p.X, p.Y)
 				s.Awake, s.Minion = true, true
 			}
@@ -1064,7 +1065,7 @@ func (g *Game) monsterTurn(m *Monster) {
 		}
 	case AIOracle:
 		if sees && m.Timer%9 == 0 {
-			for tries := 0; tries < 30; tries++ {
+			for range 30 {
 				nx, ny := p.X+g.rng.Intn(13)-6, p.Y+g.rng.Intn(7)-3
 				if l.Walkable(nx, ny) && l.MonsterAt(nx, ny) == nil && cheb(nx, ny, p.X, p.Y) >= 3 && g.fov[l.Idx(nx, ny)] == g.fovGen {
 					g.novaFx(m.X, m.Y, colCyan, 2)
@@ -1076,7 +1077,7 @@ func (g *Game) monsterTurn(m *Monster) {
 		}
 		if sees && m.Timer%13 == 0 && g.countMinions() < 8 {
 			g.msg(colCyan, "Cold lights gather around the Oracle.")
-			for i := 0; i < 2; i++ {
+			for range 2 {
 				w := placeMonsterAvoid(l, "wisp", m.X, m.Y, m.Level-1, RankNormal, p.X, p.Y)
 				w.Awake, w.Minion = true, true
 			}
@@ -1376,8 +1377,8 @@ func (g *Game) autoStep() bool {
 func (g *Game) restock() {
 	p := g.P
 	smith := &Shop{Name: "Hadrik's Forge", Kind: 0}
-	for i := 0; i < 11; i++ {
-		r := RMagic
+	for range 11 {
+		var r Rarity
 		switch x := g.rng.Intn(100); {
 		case x < 30:
 			r = RNormal
@@ -1391,7 +1392,7 @@ func (g *Game) restock() {
 	}
 	alch := &Shop{Name: "Mirela's Remedies", Kind: 1}
 	alch.Items = append(alch.Items, NewPotion(IKHealth), NewPotion(IKMana), NewPotion(IKScroll))
-	for i := 0; i < 6; i++ {
+	for range 6 {
 		slots := []Slot{SlotRing, SlotAmulet, SlotRing, SlotHelm}
 		r := RMagic
 		if g.rng.Intn(6) == 0 {
@@ -1488,12 +1489,8 @@ func (g *Game) buy(it *Item) {
 			return
 		}
 		p.Inv = append(p.Inv, it)
-		items := g.shop.Items
-		for i, x := range items {
-			if x == it {
-				g.shop.Items = append(items[:i:i], items[i+1:]...)
-				break
-			}
+		if i := slices.Index(g.shop.Items, it); i >= 0 {
+			g.shop.Items = slices.Delete(g.shop.Items, i, i+1)
 		}
 	}
 	p.Gold -= price

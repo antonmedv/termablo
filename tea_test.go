@@ -18,7 +18,9 @@ func TestTeaRun(t *testing.T) {
 		time.Sleep(200 * time.Millisecond)
 		p.Send(tea.WindowSizeMsg{Width: 120, Height: 40})
 		for _, k := range []string{"x", "o", "l", "l", "i", "\x1b", "c", "\x1b", "?", "\x1b", "m", "\x1b", "f", "r", "t"} {
-			pw.Write([]byte(k))
+			if _, err := pw.Write([]byte(k)); err != nil {
+				return
+			}
 			time.Sleep(150 * time.Millisecond)
 		}
 		time.Sleep(500 * time.Millisecond)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -188,7 +189,7 @@ func (b *bot) descend() bool {
 	return b.walkTo(lk.X0, lk.Y0)
 }
 
-// stepDown moves to the neighbour closest to the goal of a BFS map.
+// stepDown moves to the neighbor closest to the goal of a BFS map.
 func (b *bot) stepDown(d []int) bool {
 	g := b.g
 	l, p := g.Lv, g.P
@@ -254,9 +255,12 @@ func TestBotBalance(t *testing.T) {
 	if testing.Short() {
 		seeds = 3
 	}
-	if n := 0; os.Getenv("BOTSEEDS") != "" {
-		fmt.Sscan(os.Getenv("BOTSEEDS"), &n)
-		seeds = maxi(n, 1)
+	if v := os.Getenv("BOTSEEDS"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 {
+			t.Fatalf("BOTSEEDS=%q: want a positive number", v)
+		}
+		seeds = n
 	}
 	var rs []botResult
 	for s := 1; s <= seeds; s++ {

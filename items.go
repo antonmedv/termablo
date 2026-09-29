@@ -331,11 +331,11 @@ func (it *Item) Value() int {
 	}
 	switch it.Rarity {
 	case RMagic:
-		v = v * 2
+		v *= 2
 	case RRare:
-		v = v * 4
+		v *= 4
 	case RUnique:
-		v = v * 7
+		v *= 7
 	}
 	return v
 }
@@ -506,14 +506,14 @@ func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot) *Item {
 		it.Name = pn + b.Name + sn
 	case RRare:
 		n := 3 + rng.Intn(3)
-		for i := 0; i < n; i++ {
+		for i := range n {
 			pool := pre
 			if i%2 == 1 {
 				pool = suf
 			}
 			if a, _, ok := pick(pool); ok {
 				// rares roll a little stronger
-				a.V = a.V + a.V/5
+				a.V += a.V / 5
 				it.Aff = append(it.Aff, a)
 			}
 		}

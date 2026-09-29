@@ -18,8 +18,8 @@ func (s *Screen) SVG() string {
 	cw, ch := 9.0, 18.0
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d"><rect width="100%%" height="100%%" fill="#000"/>`, int(float64(s.W)*cw), int(float64(s.H)*ch))
-	for y := 0; y < s.H; y++ {
-		for x := 0; x < s.W; x++ {
+	for y := range s.H {
+		for x := range s.W {
 			c := s.C[y*s.W+x]
 			if c.BG != (Col8{}) {
 				fmt.Fprintf(&b, `<rect x="%.0f" y="%.0f" width="%.0f" height="%.0f" fill="rgb(%d,%d,%d)"/>`, float64(x)*cw, float64(y)*ch, cw+0.5, ch+0.5, c.BG.R, c.BG.G, c.BG.B)
@@ -27,8 +27,8 @@ func (s *Screen) SVG() string {
 		}
 	}
 	fmt.Fprintf(&b, `<g font-family="Menlo" font-size="15">`)
-	for y := 0; y < s.H; y++ {
-		for x := 0; x < s.W; x++ {
+	for y := range s.H {
+		for x := range s.W {
 			c := s.C[y*s.W+x]
 			if c.Ch == ' ' {
 				continue
@@ -47,7 +47,9 @@ func (s *Screen) SVG() string {
 func shot(t *testing.T, s *Screen, name string) {
 	dir := os.Getenv("SHOTDIR")
 	svg := dir + "/" + name + ".svg"
-	os.WriteFile(svg, []byte(s.SVG()), 0644)
+	if err := os.WriteFile(svg, []byte(s.SVG()), 0o644); err != nil {
+		t.Fatal(err)
+	}
 	if out, err := exec.Command("rsvg-convert", "-o", dir+"/"+name+".png", svg).CombinedOutput(); err != nil {
 		t.Log(string(out), err)
 	}
@@ -70,7 +72,7 @@ func TestShots(t *testing.T) {
 	for _, id := range []string{"fields", "crypt1", "marsh", "grotto1", "abyss1"} {
 		g.changeLevel(id, "", nil)
 		g.P.HP = 1e9
-		for i := 0; i < 60; i++ {
+		for range 60 {
 			if !g.autoStep() {
 				break
 			}

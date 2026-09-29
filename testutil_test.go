@@ -58,7 +58,6 @@ type testOpts struct {
 
 type testOpt func(*testOpts)
 
-func withSeed(s int64) testOpt   { return func(o *testOpts) { o.seed = s } }
 func withMap(m string) testOpt   { return func(o *testOpts) { o.layout = m } }
 func withAmbient(c RGB) testOpt  { return func(o *testOpts) { o.ambient = c } }
 func withAwakeMonsters() testOpt { return func(o *testOpts) { o.awake = true } }

@@ -50,7 +50,7 @@ func TestCycleTargetNearestFirst(t *testing.T) {
 		################`))
 	near, mid, far := monsters(g, "rat")[0], monsters(g, "bat")[0], monsters(g, "zombie")[0]
 	var order []*Monster
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		g.cycleTarget()
 		order = append(order, g.Target)
 	}

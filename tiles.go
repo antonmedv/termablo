@@ -95,7 +95,7 @@ var tdefs = [TTileCount]TileDef{
 	TWater:      {Name: "shallow water", Glyphs: []rune("~≈~ ~"), Albedo: C(.3, .45, .8), BG: .18, Anim: true},
 	TDeepWater:  {Name: "deep water", Glyphs: []rune("≈~≈≈"), Albedo: C(.18, .3, .7), BG: .2, BlockMove: true, Anim: true},
 	TBridge:     {Name: "bridge", Glyphs: []rune("="), Albedo: C(.6, .42, .24), BG: .1},
-	TLava:       {Name: "lava", Glyphs: []rune("≈~≈~"), Albedo: C(1, .4, .1), BG: .5, BlockMove: true, Emit: true, Emissive: C(1, .38, .06), Anim: true},
+	TLava:       {Name: "lava", Glyphs: []rune("≈~≈~"), Albedo: C(1, .4, .1), BG: .5, BlockMove: true, Emit: true, Emissive: C(1, .38, .06), Anim: true, Light: lsLava},
 	TMud:        {Name: "mud", Glyphs: []rune(".,··~"), Albedo: C(.38, .3, .2), BG: .08},
 	TReeds:      {Name: "reeds", Glyphs: []rune("\"'\""), Albedo: C(.45, .55, .28), BG: .05},
 	TCaveFloor:  {Name: "cave floor", Glyphs: []rune("··.·,··"), Albedo: C(.44, .39, .35), BG: .18},

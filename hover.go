@@ -217,7 +217,7 @@ func hoverSummary(lines []hoverLine, w int) []hoverLine {
 	return out
 }
 
-// drawHover highlights the hovered cell and summarises it in a status line.
+// drawHover highlights the hovered cell and summarizes it in a status line.
 func (g *Game) drawHover(s *Screen, mapW, mapH int) {
 	lines := g.hoverLines
 	if lines == nil {

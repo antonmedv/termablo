@@ -11,14 +11,14 @@ func TestRollBaseSlot(t *testing.T) {
 	rng := rand.New(rand.NewSource(1))
 	for _, ilvl := range []int{1, 10, 19, 30} {
 		for _, s := range equipSlots {
-			for i := 0; i < 20; i++ {
+			for range 20 {
 				if b := rollBase(rng, ilvl, s); b.Slot != s {
 					t.Fatalf("ilvl %d slot %d got %s", ilvl, s, b.Name)
 				}
 			}
 		}
 		slots := map[Slot]bool{}
-		for i := 0; i < 400; i++ {
+		for range 400 {
 			slots[rollBase(rng, ilvl, SlotNone).Slot] = true
 		}
 		if len(slots) < len(equipSlots) {
@@ -34,7 +34,7 @@ func TestGenItemInvariants(t *testing.T) {
 	for ilvl := 1; ilvl <= 30; ilvl++ {
 		for _, r := range []Rarity{RNormal, RMagic, RRare, RUnique} {
 			for _, s := range append([]Slot{SlotNone}, equipSlots...) {
-				for i := 0; i < 5; i++ {
+				for range 5 {
 					it := GenItem(rng, ilvl, r, s)
 					checkItem(t, it, s)
 					if rg, ok := affixRange[it.Rarity]; ok && (len(it.Aff) < rg[0] || len(it.Aff) > rg[1]) {
@@ -81,13 +81,13 @@ func TestRollRarityDistribution(t *testing.T) {
 	count := func(bonus float64) [4]int {
 		rng := rand.New(rand.NewSource(3))
 		var n [4]int
-		for i := 0; i < 20000; i++ {
+		for range 20000 {
 			n[RollRarity(rng, bonus)]++
 		}
 		return n
 	}
 	base, boosted := count(0), count(1)
-	if !(base[RNormal] > base[RMagic] && base[RMagic] > base[RRare] && base[RRare] > base[RUnique] && base[RUnique] > 0) {
+	if base[RNormal] <= base[RMagic] || base[RMagic] <= base[RRare] || base[RRare] <= base[RUnique] || base[RUnique] == 0 {
 		t.Errorf("rarity counts not descending: %v", base)
 	}
 	if boosted[RUnique] <= base[RUnique] || boosted[RRare] <= base[RRare] {
@@ -99,13 +99,13 @@ func TestItemValueOrdering(t *testing.T) {
 	rng := rand.New(rand.NewSource(4))
 	avg := func(r Rarity) int {
 		sum := 0
-		for i := 0; i < 200; i++ {
+		for range 200 {
 			sum += GenItem(rng, 10, r, SlotArmor).Value()
 		}
 		return sum / 200
 	}
 	n, m, ra := avg(RNormal), avg(RMagic), avg(RRare)
-	if !(n < m && m < ra) {
+	if n >= m || m >= ra {
 		t.Errorf("average value normal %d, magic %d, rare %d", n, m, ra)
 	}
 }

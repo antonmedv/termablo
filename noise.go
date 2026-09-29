@@ -29,7 +29,7 @@ func (n Noise) At(x, y float64) float64 {
 
 func (n Noise) FBM(x, y float64, oct int) float64 {
 	sum, amp, norm := 0.0, 1.0, 0.0
-	for i := 0; i < oct; i++ {
+	for range oct {
 		sum += n.At(x, y) * amp
 		norm += amp
 		amp *= 0.5

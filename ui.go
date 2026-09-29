@@ -43,7 +43,7 @@ func (g *Game) Draw(s *Screen) {
 	case ModeHelp:
 		g.drawHelp(s, mapW, mapH)
 	case ModeMap:
-		g.drawOverview(s, mapW, mapH)
+		g.drawOverview(s, mapW)
 	case ModeTalk:
 		g.drawTalk(s, mapW, mapH)
 	case ModeDead:
@@ -93,9 +93,9 @@ func (g *Game) drawMap(s *Screen, x0, y0, w, h int) {
 	l := g.Lv
 	camX, camY := g.camera(w, h)
 	t := g.time
-	for sy := 0; sy < h; sy++ {
+	for sy := range h {
 		my := camY + sy
-		for sx := 0; sx < w; sx++ {
+		for sx := range w {
 			mx := camX + sx
 			if !l.In(mx, my) {
 				continue
@@ -284,7 +284,7 @@ func (g *Game) drawMap(s *Screen, x0, y0, w, h int) {
 func bar(s *Screen, x, y, w int, frac float64, full, empty RGB) {
 	frac = math.Max(0, math.Min(1, frac))
 	fill := frac * float64(w)
-	for i := 0; i < w; i++ {
+	for i := range w {
 		c := empty
 		ch := '░'
 		if float64(i)+1 <= fill {
@@ -301,7 +301,7 @@ func bar(s *Screen, x, y, w int, frac float64, full, empty RGB) {
 
 func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	s.Fill(x, y, w, h, bgDark)
-	for yy := 0; yy < h; yy++ {
+	for yy := range h {
 		s.Set(x, yy, '│', colBorder.C8(), bgDark)
 	}
 	p, l := g.P, g.Lv
@@ -472,7 +472,7 @@ func centerBox(s *Screen, mapW, mapH, w, h int, title string) (int, int) {
 	return x, y
 }
 
-func (g *Game) itemLines(s *Screen, x, y, w, maxRows int, it *Item) int {
+func (g *Game) itemLines(s *Screen, x, y, w, maxRows int, it *Item) {
 	row := 0
 	for _, ln := range it.Lines() {
 		if row >= maxRows {
@@ -481,9 +481,10 @@ func (g *Game) itemLines(s *Screen, x, y, w, maxRows int, it *Item) int {
 		txt := ln.S
 		for utf8.RuneCountInString(txt) > w {
 			// wrap long flavor text
-			cut := strings.LastIndex(string([]rune(txt)[:w]), " ")
+			head := string([]rune(txt)[:w])
+			cut := strings.LastIndex(head, " ")
 			if cut <= 0 {
-				cut = w
+				cut = len(head)
 			}
 			s.Text(x, y+row, txt[:cut], ln.C.C8())
 			txt = strings.TrimSpace(txt[cut:])
@@ -492,7 +493,6 @@ func (g *Game) itemLines(s *Screen, x, y, w, maxRows int, it *Item) int {
 		s.Text(x, y+row, txt, ln.C.C8())
 		row++
 	}
-	return row
 }
 
 func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
@@ -512,13 +512,13 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 	hdr(colL, "Equipped", g.pane == 0)
 	hdr(colR, fmt.Sprintf("Pack %d/%d", len(p.Inv), invMax), g.pane == 1)
 	sel := func(xx, yy, w int) {
-		for i := 0; i < w; i++ {
+		for i := range w {
 			if s.in(xx+i, yy) {
 				s.C[yy*s.W+xx+i].BG = C(.18, .1, .05).C8()
 			}
 		}
 	}
-	for i := 0; i < EqCount; i++ {
+	for i := range EqCount {
 		yy := y + 3 + i
 		if g.pane == 0 && g.cur == i {
 			sel(colL-1, yy, 27)
@@ -826,7 +826,7 @@ func (g *Game) drawDead(s *Screen, mapW, mapH int) {
 	s.Text(x+(50-len(h))/2, y+8, h, colOrange.C8())
 }
 
-func (g *Game) drawOverview(s *Screen, mapW, mapH int) {
+func (g *Game) drawOverview(s *Screen, mapW int) {
 	l := g.Lv
 	aw, ah := mapW-4, s.H-4
 	sx := int(math.Ceil(float64(l.W) / float64(aw)))
@@ -841,8 +841,8 @@ func (g *Game) drawOverview(s *Screen, mapW, mapH int) {
 		for mx := 0; mx < l.W; mx += sc {
 			var best Tile
 			pri := -1
-			for dy := 0; dy < sc; dy++ {
-				for dx := 0; dx < sc; dx++ {
+			for dy := range sc {
+				for dx := range sc {
 					xx, yy := mx+dx, my+dy
 					if !l.In(xx, yy) || !l.Seen[l.Idx(xx, yy)] {
 						continue
@@ -926,7 +926,7 @@ func (g *Game) drawTitle(s *Screen) {
 	}
 	// ground
 	for y := cy + 2; y < s.H; y++ {
-		for x := 0; x < s.W; x++ {
+		for x := range s.W {
 			L := lightAt(x, y)
 			if L.Max() < 0.02 {
 				continue
@@ -955,7 +955,7 @@ func (g *Game) drawTitle(s *Screen) {
 		}
 	}
 	// embers rising from the braziers
-	for k := 0; k < 14; k++ {
+	for k := range 14 {
 		src := lights[k%2]
 		ph := math.Mod(t*0.6+float64(k)*0.37, 1)
 		ex := int(src.x + math.Sin(t*2+float64(k)*1.7)*3*ph)

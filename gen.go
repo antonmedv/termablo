@@ -6,12 +6,12 @@ import (
 )
 
 // carvePath walks a wobbly path from a to b calling paint on a brush around
-// each step. Returns the visited centre points.
+// each step. Returns the visited center points.
 func (l *Level) carvePath(x0, y0, x1, y1, width int, paint func(x, y int)) []Pos {
 	x, y := x0, y0
 	var pts []Pos
 	r := width / 2
-	for steps := 0; steps < 8000; steps++ {
+	for range 8000 {
 		pts = append(pts, Pos{x, y})
 		for dy := -r; dy <= r+(width+1)%2-1; dy++ {
 			for dx := -r; dx <= r+(width+1)%2-1; dx++ {
@@ -63,9 +63,9 @@ func (l *Level) circle(cx, cy int, r float64, f func(x, y int, d float64)) {
 	}
 }
 
-func (l *Level) building(x0, y0, x1, y1 int, floor Tile, doorX, doorY int) {
+func (l *Level) building(x0, y0, x1, y1, doorX, doorY int) {
 	l.Fill(x0, y0, x1, y1, TWall)
-	l.Fill(x0+1, y0+1, x1-1, y1-1, floor)
+	l.Fill(x0+1, y0+1, x1-1, y1-1, TWoodFloor)
 	l.Set(doorX, doorY, TDoor)
 }
 
@@ -77,8 +77,8 @@ func genTown(seed int64) *Level {
 	l.Ambient = C(.07, .075, .12)
 	l.Lore = "Emberhold. The last lit town before the dark. Lanterns burn all night here."
 	nz := Noise{uint32(seed)}
-	for y := 0; y < H; y++ {
-		for x := 0; x < W; x++ {
+	for y := range H {
+		for x := range W {
 			l.Set(x, y, TGrass)
 			n := nz.FBM(float64(x)*0.12, float64(y)*0.24, 3)
 			if x < 4 || x > 79 || y < 3 || y > 42 {
@@ -117,27 +117,27 @@ func genTown(seed int64) *Level {
 	l.Links = append(l.Links, Link{W - 1, cy - 1, W - 1, cy + 1, "fields", W - 3, cy})
 
 	// Smithy with a forge
-	l.building(48, 11, 61, 19, TWoodFloor, 54, 19)
+	l.building(48, 11, 61, 19, 54, 19)
 	l.Set(50, 13, TBrazier)
 	l.Set(59, 13, TShelf)
 	l.Set(59, 14, TShelf)
 	// Alchemist with a crystal lamp
-	l.building(23, 11, 36, 19, TWoodFloor, 30, 19)
+	l.building(23, 11, 36, 19, 30, 19)
 	l.Set(25, 13, TCrystal)
 	for x := 28; x <= 34; x++ {
 		l.Set(x, 12, TShelf)
 	}
 	// Tavern
-	l.building(22, 27, 37, 36, TWoodFloor, 30, 27)
+	l.building(22, 27, 37, 36, 30, 27)
 	l.Fill(25, 30, 34, 34, TCarpet)
 	l.Set(23, 35, TBrazier)
 	l.Set(36, 35, TBrazier)
 	// Houses
-	l.building(48, 28, 56, 34, TWoodFloor, 52, 28)
+	l.building(48, 28, 56, 34, 52, 28)
 	l.Set(49, 33, TBrazier)
-	l.building(60, 28, 67, 35, TWoodFloor, 63, 28)
-	l.building(8, 6, 16, 12, TWoodFloor, 12, 12)
-	l.building(8, 32, 16, 39, TWoodFloor, 12, 32)
+	l.building(60, 28, 67, 35, 63, 28)
+	l.building(8, 6, 16, 12, 12, 12)
+	l.building(8, 32, 16, 39, 12, 32)
 	// Graveyard
 	l.Fill(64, 5, 76, 16, TDirt)
 	for y := 6; y <= 15; y += 3 {
@@ -216,8 +216,8 @@ func genFields(seed int64) *Level {
 	l.Lore = "The Ashen Fields. Moonlight, and the smell of old smoke."
 	nz := Noise{uint32(seed) + 7}
 	nz2 := Noise{uint32(seed) + 99}
-	for y := 0; y < H; y++ {
-		for x := 0; x < W; x++ {
+	for y := range H {
+		for x := range W {
 			n := nz.FBM(float64(x)*0.07, float64(y)*0.14, 4)
 			d := nz2.FBM(float64(x)*0.1, float64(y)*0.2, 2)
 			t := TGrass
@@ -255,7 +255,7 @@ func genFields(seed int64) *Level {
 		l.Set(p.X, p.Y, TBrazier)
 	}
 	l.Links = append(l.Links, Link{ex, ey, ex, ey, "crypt1", -1, -1})
-	for i := 0; i < 26; i++ {
+	for range 26 {
 		gx, gy := ex-16+l.rng.Intn(32), ey-14+l.rng.Intn(26)
 		if l.At(gx, gy) == TGrass && cheb(gx, gy, ex, ey) > 7 {
 			l.Set(gx, gy, TGrave)
@@ -299,7 +299,7 @@ func genFields(seed int64) *Level {
 	l.Start = Pos{3, cy}
 	safe := []Pos{{2, cy}}
 	// Ruins scattered in the fields
-	for i := 0; i < 7; i++ {
+	for range 7 {
 		rx, ry := 20+l.rng.Intn(W-50), 8+l.rng.Intn(H-20)
 		if cheb(rx, ry, ex, ey) < 16 || cheb(rx, ry, 2, cy) < 15 {
 			continue
@@ -330,7 +330,7 @@ func genFields(seed int64) *Level {
 		l.Set(fx, fy, TCampfire)
 		camps++
 		lvl := 1 + l.rng.Intn(2)
-		for i := 0; i < 3+l.rng.Intn(3); i++ {
+		for range 3 + l.rng.Intn(3) {
 			placeMonster(l, "fallen", fx+l.rng.Intn(5)-2, fy+l.rng.Intn(3)-1, lvl, RankNormal)
 		}
 		placeMonster(l, "shaman", fx, fy+1, lvl, RankNormal)
@@ -350,8 +350,8 @@ func genMarsh(seed int64) *Level {
 	l.Lore = "Blackmarsh. Cold lights drift over the water. Do not follow them."
 	nz := Noise{uint32(seed) + 3}
 	nz2 := Noise{uint32(seed) + 71}
-	for y := 0; y < H; y++ {
-		for x := 0; x < W; x++ {
+	for y := range H {
+		for x := range W {
 			n := nz.FBM(float64(x)*0.06, float64(y)*0.12, 4)
 			m := nz2.FBM(float64(x)*0.15, float64(y)*0.3, 2)
 			t := TMud
@@ -409,7 +409,7 @@ func genMarsh(seed int64) *Level {
 	l.Start = Pos{40, H - 3}
 
 	// Standing stones with crystals
-	for i := 0; i < 6; i++ {
+	for range 6 {
 		sx, sy := 10+l.rng.Intn(W-20), 8+l.rng.Intn(H-16)
 		if cheb(sx, sy, 40, H-3) < 10 {
 			continue
@@ -513,7 +513,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 	for i := 1; i < len(rooms); i++ {
 		corridor(rooms[i-1].Center(), rooms[i].Center())
 	}
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		a, b := l.rng.Intn(len(rooms)), l.rng.Intn(len(rooms))
 		if a != b {
 			corridor(rooms[a].Center(), rooms[b].Center())
@@ -568,7 +568,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 		if l.rng.Intn(4) == 0 {
 			l.Set(r.X0+l.rng.Intn(w+1), r.Y1, TChest)
 		}
-		for k := 0; k < w*h/12; k++ {
+		for range w * h / 12 {
 			x, y := r.X0+l.rng.Intn(w+1), r.Y0+l.rng.Intn(h+1)
 			if l.At(x, y) == TFloor {
 				if l.rng.Intn(2) == 0 {
@@ -593,7 +593,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 		c := last.Center()
 		b := placeMonster(l, s.Boss, c.X-2, c.Y, s.Depth, RankBoss)
 		b.Awake = false
-		for i := 0; i < 4; i++ {
+		for range 4 {
 			placeMonster(l, "skel", c.X+l.rng.Intn(5)-2, c.Y+l.rng.Intn(3)-1, s.Depth, RankNormal)
 		}
 	}
@@ -613,10 +613,10 @@ func genCave(s DungeonSpec, seed int64) *Level {
 		x, y := i%W, i/W
 		grid[i] = x == 0 || y == 0 || x == W-1 || y == H-1 || l.rng.Float64() < 0.46
 	}
-	for it := 0; it < 5; it++ {
+	for it := range 5 {
 		ng := make([]bool, W*H)
-		for y := 0; y < H; y++ {
-			for x := 0; x < W; x++ {
+		for y := range H {
+			for x := range W {
 				if x == 0 || y == 0 || x == W-1 || y == H-1 {
 					ng[y*W+x] = true
 					continue
@@ -754,14 +754,14 @@ func genCave(s DungeonSpec, seed int64) *Level {
 		}
 	}
 	if s.Style == 2 {
-		for k := 0; k < 10; k++ {
+		for range 10 {
 			i := best[l.rng.Intn(len(best))]
 			if l.T[i] == floor && !protect[i] {
 				l.T[i] = TBrazier
 			}
 		}
 	} else {
-		for k := 0; k < 4; k++ {
+		for range 4 {
 			i := best[l.rng.Intn(len(best))]
 			if l.T[i] == floor && !protect[i] {
 				l.T[i] = TChest
@@ -779,7 +779,7 @@ func genCave(s DungeonSpec, seed int64) *Level {
 	if s.Boss != "" {
 		b := placeMonster(l, s.Boss, fx, fy, s.Depth, RankBoss)
 		b.Awake = false
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			placeMonster(l, "wisp", fx+l.rng.Intn(5)-2, fy+l.rng.Intn(3)-1, s.Depth, RankNormal)
 		}
 	}

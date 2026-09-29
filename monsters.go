@@ -279,10 +279,10 @@ func populate(l *Level, table string, packs int, safe []Pos) {
 		return false
 	}
 	uniquePlaced := false
-	for p := 0; p < packs; p++ {
+	for range packs {
 		var x, y int
 		ok := false
-		for tries := 0; tries < 200; tries++ {
+		for range 200 {
 			x, y = rng.Intn(l.W), rng.Intn(l.H)
 			if reach[l.Idx(x, y)] && l.Walkable(x, y) && !tooClose(x, y) && l.MonsterAt(x, y) == nil && l.LinkAt(x, y) == nil {
 				ok = true
@@ -307,7 +307,7 @@ func populate(l *Level, table string, packs int, safe []Pos) {
 			leaderRank = RankChampion
 			n = maxi(n, 2)
 		}
-		for i := 0; i < n; i++ {
+		for i := range n {
 			rank := RankNormal
 			if leaderRank == RankChampion {
 				rank = RankChampion

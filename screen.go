@@ -129,7 +129,7 @@ func appendColor(b []byte, prefix string, c Col8) []byte {
 // String serializes the buffer, emitting escapes only when colors change.
 func (s *Screen) String() string {
 	b := s.buf[:0]
-	for y := 0; y < s.H; y++ {
+	for y := range s.H {
 		var fg, bg Col8
 		haveFG, haveBG, bold := false, false, false
 		row := s.C[y*s.W : (y+1)*s.W]

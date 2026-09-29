@@ -13,3 +13,5 @@ err.log
 .DS_Store
 .idea/
 .vscode/
+/shots/
+bench.txt

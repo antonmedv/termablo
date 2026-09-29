@@ -176,7 +176,7 @@ func TestEquipAndUnequipByKeys(t *testing.T) {
 		t.Fatalf("ring not equipped: eq %v, pack %d", g.P.Eq[EqRing1], len(g.P.Inv))
 	}
 	press(m, "tab")
-	for i := 0; i < EqRing1; i++ {
+	for range EqRing1 {
 		press(m, "down")
 	}
 	press(m, "enter")
