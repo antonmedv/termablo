@@ -119,7 +119,7 @@ const (
 
 	// Nova freezes for a couple of turns, then the target shakes it off
 	// for a while.
-	novaFreeze   = 2
+	novaFreeze   = 3
 	freezeImmune = 6
 )
 

@@ -23,7 +23,7 @@ Use a truecolor terminal that is at least 80x24. Bigger is better.
 - Life and mana do not regenerate on their own. They come back from potions, shrines, Mirela and regeneration affixes on gear.
 - Potions restore over a few turns rather than at once. The belt holds 5 of each kind, and Mirela charges more as you level.
 - Spell damage grows with Energy only. Firebolt reaches 10 steps; bats, wolves, wisps, imps and spiders can dodge it.
-- Frost Nova freezes for about 2 turns, and the target can't be frozen again for 6 turns. It never freezes uniques or bosses and freezes champions for only 1 turn.
+- Frost Nova freezes for about 3 turns, and the target can't be frozen again for 6 turns. It never freezes uniques or bosses and freezes champions for 2 turns.
 - Merchants pay 1/12 of an item's worth, and next to nothing for plain gear. Plain monsters rarely drop items.
 
 ## Lighting

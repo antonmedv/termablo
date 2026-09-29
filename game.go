@@ -1015,7 +1015,14 @@ func (g *Game) castNova() {
 		if math.Sqrt(dx*dx+dy*dy) > 3.4 || g.fov[l.Idx(m.X, m.Y)] != g.fovGen {
 			continue
 		}
-		if fr := novaFreeze - min(m.Rank, novaFreeze); fr > 0 && m.FreezeCD == 0 {
+		fr := novaFreeze // champions shake it off sooner; uniques and bosses never freeze
+		switch {
+		case m.Rank >= RankUnique:
+			fr = 0
+		case m.Rank == RankChampion:
+			fr--
+		}
+		if fr > 0 && m.FreezeCD == 0 {
 			m.Frozen = maxi(m.Frozen, fr)
 			m.FreezeCD = fr + freezeImmune
 		}
