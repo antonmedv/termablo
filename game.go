@@ -629,7 +629,6 @@ func (g *Game) meleeAttack(m *Monster) {
 	m.Awake = true
 	chance := clampi(p.ToHit()+10-m.Level*2-m.Armor/5, 30, 97)
 	if g.rng.Intn(100) >= chance {
-		g.textFx(m.X, m.Y, "miss", colGray)
 		return
 	}
 	lo, hi := p.DmgRange()
@@ -981,8 +980,7 @@ func (g *Game) castFirebolt() {
 	path, hit, _ := g.traceBolt(p.X, p.Y, t.X, t.Y, fireboltRange, true)
 	g.boltFx(path, C(1, .5, .15), '*', true)
 	if hit != nil && g.rng.Intn(100) < hit.T.Dodge {
-		g.textFx(hit.X, hit.Y, "miss", colDim)
-		hit.Awake = true
+		hit.Awake = true // sidestepped, and now it knows
 	} else if hit != nil {
 		lo, hi := p.FireboltDmg()
 		dmg := lo + g.rng.Intn(hi-lo+1)
@@ -1269,7 +1267,6 @@ func (g *Game) monsterDamage(m *Monster) int {
 func (g *Game) monsterMelee(m *Monster) {
 	p := g.P
 	if g.rng.Intn(100) >= g.monsterHitChance(m) {
-		g.textFx(p.X, p.Y, "dodge", colGray)
 		return
 	}
 	dmg := g.monsterDamage(m)
@@ -1297,7 +1294,6 @@ func (g *Game) monsterShoot(m *Monster) {
 		return
 	}
 	if g.rng.Intn(100) >= g.monsterHitChance(m)+5 {
-		g.textFx(p.X, p.Y, "miss", colGray)
 		return
 	}
 	name := "the " + m.Name
