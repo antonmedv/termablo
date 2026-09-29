@@ -1,0 +1,15 @@
+# build output
+/termablo
+*.exe
+*.test
+*.out
+
+# screenshot/debug artifacts
+*.svg
+*.png
+err.log
+
+# editors / OS
+.DS_Store
+.idea/
+.vscode/

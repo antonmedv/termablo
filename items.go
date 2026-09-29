@@ -1,0 +1,552 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+)
+
+type Slot int
+
+const (
+	SlotNone Slot = iota
+	SlotWeapon
+	SlotOffhand
+	SlotHelm
+	SlotArmor
+	SlotGloves
+	SlotBoots
+	SlotRing
+	SlotAmulet
+)
+
+const (
+	EqWeapon = iota
+	EqOffhand
+	EqHelm
+	EqArmor
+	EqGloves
+	EqBoots
+	EqRing1
+	EqRing2
+	EqAmulet
+	EqCount
+)
+
+var eqNames = [EqCount]string{"Weapon", "Off-hand", "Helm", "Armor", "Gloves", "Boots", "Ring", "Ring", "Amulet"}
+
+type Rarity int
+
+const (
+	RNormal Rarity = iota
+	RMagic
+	RRare
+	RUnique
+)
+
+var rarityColor = [...]RGB{C(.88, .86, .82), C(.45, .6, 1), C(1, 1, .4), C(.85, .65, .3)}
+var rarityName = [...]string{"", "Magic", "Rare", "Unique"}
+
+type Stat int
+
+const (
+	StStr Stat = iota
+	StDex
+	StVit
+	StEne
+	StLife
+	StMana
+	StDmgPct
+	StFlatDmg
+	StArmor
+	StArmorPct
+	StCrit
+	StLifeSteal
+	StLight
+	StSpellPct
+	StLifeRegen
+	StManaRegen
+	StMF
+	StThorns
+	StToHit
+	StAllAttr
+	StGoldFind
+	StCount
+)
+
+var statFmt = [StCount]string{
+	StStr: "+%d Strength", StDex: "+%d Dexterity", StVit: "+%d Vitality", StEne: "+%d Energy",
+	StLife: "+%d Life", StMana: "+%d Mana", StDmgPct: "+%d%% Enhanced Damage", StFlatDmg: "+%d Damage",
+	StArmor: "+%d Armor", StArmorPct: "+%d%% Enhanced Armor", StCrit: "+%d%% Critical Strike",
+	StLifeSteal: "%d%% Life Stolen per Hit", StLight: "+%d Light Radius", StSpellPct: "+%d%% Spell Damage",
+	StLifeRegen: "Regenerate %d Life", StManaRegen: "Regenerate %d Mana", StMF: "+%d%% Magic Find",
+	StThorns: "Attackers take %d Damage", StToHit: "+%d Attack Rating", StAllAttr: "+%d All Attributes",
+	StGoldFind: "+%d%% Extra Gold",
+}
+
+type Affix struct {
+	S Stat
+	V int
+}
+
+type Base struct {
+	Name      string
+	Slot      Slot
+	Glyph     rune
+	MinD      int
+	MaxD      int
+	Armor     int
+	Lvl       int
+	TwoHanded bool
+}
+
+var bases = []*Base{
+	{"Dagger", SlotWeapon, ')', 1, 4, 0, 1, false},
+	{"Short Sword", SlotWeapon, ')', 2, 6, 0, 1, false},
+	{"Club", SlotWeapon, ')', 1, 7, 0, 1, false},
+	{"Hand Axe", SlotWeapon, ')', 3, 7, 0, 2, false},
+	{"Mace", SlotWeapon, ')', 3, 9, 0, 3, false},
+	{"Long Sword", SlotWeapon, ')', 4, 10, 0, 4, false},
+	{"Battle Axe", SlotWeapon, ')', 5, 13, 0, 6, false},
+	{"War Hammer", SlotWeapon, ')', 7, 17, 0, 8, true},
+	{"Great Sword", SlotWeapon, ')', 8, 20, 0, 10, true},
+	{"Runeblade", SlotWeapon, ')', 9, 18, 0, 12, false},
+	{"Executioner's Axe", SlotWeapon, ')', 12, 27, 0, 13, true},
+	{"Doom Flail", SlotWeapon, ')', 13, 24, 0, 16, false},
+	{"Buckler", SlotOffhand, ']', 0, 0, 4, 1, false},
+	{"Kite Shield", SlotOffhand, ']', 0, 0, 8, 4, false},
+	{"Tower Shield", SlotOffhand, ']', 0, 0, 13, 9, false},
+	{"Bone Ward", SlotOffhand, ']', 0, 0, 18, 13, false},
+	{"Rags", SlotArmor, '[', 0, 0, 2, 1, false},
+	{"Leather Armor", SlotArmor, '[', 0, 0, 6, 1, false},
+	{"Studded Leather", SlotArmor, '[', 0, 0, 10, 3, false},
+	{"Ring Mail", SlotArmor, '[', 0, 0, 15, 5, false},
+	{"Chain Mail", SlotArmor, '[', 0, 0, 21, 7, false},
+	{"Scale Mail", SlotArmor, '[', 0, 0, 28, 9, false},
+	{"Plate Mail", SlotArmor, '[', 0, 0, 36, 12, false},
+	{"Gothic Plate", SlotArmor, '[', 0, 0, 47, 15, false},
+	{"Cap", SlotHelm, '^', 0, 0, 2, 1, false},
+	{"Skull Cap", SlotHelm, '^', 0, 0, 4, 3, false},
+	{"Helm", SlotHelm, '^', 0, 0, 7, 6, false},
+	{"Great Helm", SlotHelm, '^', 0, 0, 11, 10, false},
+	{"Grim Visage", SlotHelm, '^', 0, 0, 15, 14, false},
+	{"Leather Gloves", SlotGloves, '(', 0, 0, 2, 1, false},
+	{"Chain Gloves", SlotGloves, '(', 0, 0, 5, 5, false},
+	{"Gauntlets", SlotGloves, '(', 0, 0, 8, 10, false},
+	{"Boots", SlotBoots, '[', 0, 0, 2, 1, false},
+	{"Chain Boots", SlotBoots, '[', 0, 0, 5, 5, false},
+	{"Greaves", SlotBoots, '[', 0, 0, 8, 10, false},
+	{"Ring", SlotRing, '=', 0, 0, 0, 1, false},
+	{"Amulet", SlotAmulet, '"', 0, 0, 0, 1, false},
+}
+
+func baseByName(n string) *Base {
+	for _, b := range bases {
+		if b.Name == n {
+			return b
+		}
+	}
+	return bases[0]
+}
+
+const (
+	mWeapon = 1 << SlotWeapon
+	mOff    = 1 << SlotOffhand
+	mHelm   = 1 << SlotHelm
+	mArmor  = 1 << SlotArmor
+	mGloves = 1 << SlotGloves
+	mBoots  = 1 << SlotBoots
+	mRing   = 1 << SlotRing
+	mAmulet = 1 << SlotAmulet
+	mJewel  = mRing | mAmulet
+	mDef    = mOff | mHelm | mArmor | mGloves | mBoots
+	mAll    = 0xffff
+)
+
+type AffixDef struct {
+	S      Stat
+	Lo, Hi int
+	PerLvl float64
+	Prefix bool
+	Slots  int
+	Names  []string
+}
+
+var affixDefs = []AffixDef{
+	{StDmgPct, 10, 25, 3, true, mWeapon, []string{"Jagged", "Deadly", "Vicious", "Brutal", "Savage", "Merciless"}},
+	{StFlatDmg, 1, 3, .35, true, mWeapon | mGloves | mRing, []string{"Sharp", "Keen", "Cruel", "Wicked"}},
+	{StToHit, 10, 25, 3, true, mWeapon | mGloves | mRing | mAmulet, []string{"Bronze", "Iron", "Steel", "Silver", "Gold", "Platinum"}},
+	{StArmor, 3, 8, 1.5, true, mDef | mAmulet, []string{"Sturdy", "Strong", "Glorious", "Blessed", "Saintly", "Godly"}},
+	{StArmorPct, 15, 35, 3, true, mDef, []string{"Fine", "Warrior's", "Soldier's", "Knight's", "Lord's", "King's"}},
+	{StMana, 5, 12, 2, true, mAll &^ mWeapon, []string{"Lizard's", "Snake's", "Serpent's", "Drake's", "Dragon's"}},
+	{StSpellPct, 8, 18, 2.5, true, mWeapon | mOff | mRing | mAmulet | mHelm, []string{"Smoldering", "Fiery", "Blazing", "Infernal", "Hellfire"}},
+	{StCrit, 2, 5, .35, true, mWeapon | mGloves | mRing, []string{"Honed", "Precise", "Lethal", "Assassin's"}},
+	{StManaRegen, 1, 2, .2, true, mHelm | mRing | mAmulet | mOff, []string{"Humming", "Resonant", "Singing"}},
+	{StLife, 5, 12, 3, false, mAll &^ mWeapon, []string{"of the Jackal", "of the Fox", "of the Wolf", "of the Tiger", "of the Mammoth", "of the Whale"}},
+	{StStr, 2, 5, .6, false, mAll, []string{"of Strength", "of Might", "of Power", "of the Giant", "of the Titan"}},
+	{StDex, 2, 5, .6, false, mAll, []string{"of Dexterity", "of Skill", "of Accuracy", "of Precision", "of Perfection"}},
+	{StVit, 2, 5, .6, false, mAll, []string{"of Vigor", "of Vitality", "of Zest", "of Life"}},
+	{StEne, 2, 5, .6, false, mAll, []string{"of the Mind", "of Energy", "of Brilliance", "of Sorcery", "of Wizardry"}},
+	{StLifeSteal, 2, 3, .15, false, mWeapon | mGloves | mRing, []string{"of the Leech", "of the Bat", "of the Vampire"}},
+	{StLight, 1, 2, .05, false, mHelm | mRing | mAmulet | mOff | mWeapon, []string{"of Light", "of Radiance", "of the Sun"}},
+	{StLifeRegen, 1, 2, .2, false, mArmor | mHelm | mRing | mAmulet | mBoots, []string{"of Regeneration", "of Renewal", "of the Troll"}},
+	{StMF, 5, 12, 1.2, false, mRing | mAmulet | mHelm | mBoots | mGloves, []string{"of Fortune", "of Luck", "of Greed"}},
+	{StThorns, 2, 5, .8, false, mArmor | mOff, []string{"of Thorns", "of Spikes", "of Retribution"}},
+	{StAllAttr, 1, 3, .3, false, mAmulet | mRing, []string{"of the Sky", "of the Moon", "of the Stars", "of the Heavens"}},
+	{StGoldFind, 15, 40, 3, false, mRing | mAmulet | mGloves | mBoots, []string{"of Wealth", "of Avarice"}},
+}
+
+type UniqueDef struct {
+	Name   string
+	Base   string
+	Lvl    int
+	Aff    []Affix
+	Flavor string
+}
+
+var uniques = []UniqueDef{
+	{"Wanderer's Shroud", "Rags", 1, []Affix{{StAllAttr, 3}, {StLife, 20}, {StLight, 1}}, "Worn by one who never stopped walking."},
+	{"Shard of Night", "Dagger", 2, []Affix{{StCrit, 15}, {StDmgPct, 60}, {StDex, 8}}, "It drinks the torchlight."},
+	{"Hollow Crown", "Skull Cap", 3, []Affix{{StLife, 25}, {StToHit, 40}, {StStr, 6}}, "The king it belonged to did not need a skull."},
+	{"Emberbrand", "Long Sword", 4, []Affix{{StDmgPct, 70}, {StSpellPct, 30}, {StLight, 2}, {StFlatDmg, 3}}, "Its edge never cools."},
+	{"The Last Lantern", "Kite Shield", 4, []Affix{{StLight, 4}, {StLifeRegen, 3}, {StArmor, 12}}, "It burns when all else is dark."},
+	{"Moonstride", "Chain Boots", 5, []Affix{{StDex, 12}, {StCrit, 5}, {StLife, 20}}, "Footsteps like falling snow."},
+	{"Band of Ashes", "Ring", 5, []Affix{{StSpellPct, 40}, {StMana, 25}, {StLight, 1}}, "Warm to the touch, always."},
+	{"Gravewarden's Coat", "Chain Mail", 6, []Affix{{StArmorPct, 80}, {StLife, 35}, {StThorns, 8}}, "Stitched from the shrouds of the unquiet."},
+	{"Eye of the Deep", "Amulet", 7, []Affix{{StMF, 50}, {StAllAttr, 6}, {StManaRegen, 3}}, "It blinks when you are not looking."},
+	{"Crown of the Drowned", "Great Helm", 9, []Affix{{StMana, 45}, {StManaRegen, 4}, {StEne, 12}, {StLight, -1}}, "Water still drips from its rim."},
+	{"Bloodfist", "Gauntlets", 9, []Affix{{StLifeSteal, 7}, {StStr, 12}, {StFlatDmg, 5}}, "Never clean. Never dry."},
+	{"Kingsbane", "Executioner's Axe", 12, []Affix{{StDmgPct, 130}, {StCrit, 10}, {StLifeSteal, 5}}, "Seven crowns have rolled beneath it."},
+	{"Starfall Plate", "Gothic Plate", 14, []Affix{{StArmorPct, 110}, {StAllAttr, 10}, {StLight, 3}, {StLife, 60}}, "Forged from a fallen star; it remembers the sky."},
+}
+
+type ItemKind int
+
+const (
+	IKEquip ItemKind = iota
+	IKGold
+	IKHealth
+	IKMana
+	IKScroll
+)
+
+type Item struct {
+	Kind   ItemKind
+	Base   *Base
+	Name   string
+	Rarity Rarity
+	ILvl   int
+	MinD   int
+	MaxD   int
+	Armor  int
+	Aff    []Affix
+	Amount int
+	Flavor string
+}
+
+type FloorItem struct {
+	X, Y  int
+	It    *Item
+	Light *Light
+}
+
+func (it *Item) Slot() Slot {
+	if it.Base == nil {
+		return SlotNone
+	}
+	return it.Base.Slot
+}
+
+func (it *Item) Glyph() rune {
+	switch it.Kind {
+	case IKGold:
+		return '$'
+	case IKHealth, IKMana:
+		return '!'
+	case IKScroll:
+		return '?'
+	}
+	return it.Base.Glyph
+}
+
+func (it *Item) Color() RGB {
+	switch it.Kind {
+	case IKGold:
+		return colGold
+	case IKHealth:
+		return C(1, .25, .25)
+	case IKMana:
+		return C(.35, .5, 1)
+	case IKScroll:
+		return C(.85, .8, .65)
+	}
+	return rarityColor[it.Rarity]
+}
+
+func (it *Item) DisplayName() string {
+	switch it.Kind {
+	case IKGold:
+		return fmt.Sprintf("%d gold", it.Amount)
+	case IKHealth:
+		return "Healing Potion"
+	case IKMana:
+		return "Mana Potion"
+	case IKScroll:
+		return "Scroll of Town Portal"
+	}
+	return it.Name
+}
+
+func (it *Item) Stat(s Stat) int {
+	t := 0
+	for _, a := range it.Aff {
+		if a.S == s {
+			t += a.V
+		}
+	}
+	return t
+}
+
+// Value is the gold a shop charges for the item.
+func (it *Item) Value() int {
+	switch it.Kind {
+	case IKGold:
+		return it.Amount
+	case IKHealth:
+		return 30
+	case IKMana:
+		return 30
+	case IKScroll:
+		return 60
+	}
+	v := 20 + it.ILvl*12 + (it.MaxD+it.MinD)*6 + it.Armor*5
+	for _, a := range it.Aff {
+		w := a.V * 6
+		switch a.S {
+		case StCrit, StLifeSteal, StLight, StAllAttr, StManaRegen, StLifeRegen:
+			w = a.V * 60
+		case StLife, StMana, StToHit, StArmor:
+			w = a.V * 8
+		}
+		v += w
+	}
+	switch it.Rarity {
+	case RMagic:
+		v = v * 2
+	case RRare:
+		v = v * 4
+	case RUnique:
+		v = v * 7
+	}
+	return v
+}
+
+// Lines describes the item for tooltips.
+func (it *Item) Lines() []struct {
+	S string
+	C RGB
+} {
+	type ln = struct {
+		S string
+		C RGB
+	}
+	var out []ln
+	out = append(out, ln{it.DisplayName(), it.Color()})
+	if it.Kind != IKEquip {
+		switch it.Kind {
+		case IKHealth:
+			out = append(out, ln{"Restores a large portion of life", colGray})
+		case IKMana:
+			out = append(out, ln{"Restores a large portion of mana", colGray})
+		case IKScroll:
+			out = append(out, ln{"Opens a portal back to Emberhold", colGray})
+		}
+		return out
+	}
+	kind := it.Base.Name
+	if it.Rarity != RNormal {
+		kind = rarityName[it.Rarity] + " " + it.Base.Name
+	}
+	if it.Rarity == RRare || it.Rarity == RUnique {
+		out = append(out, ln{kind, it.Color().Scale(.75)})
+	}
+	if it.Base.Slot == SlotWeapon {
+		h := ""
+		if it.Base.TwoHanded {
+			h = " (two-handed)"
+		}
+		out = append(out, ln{fmt.Sprintf("Damage: %d-%d%s", it.MinD, it.MaxD, h), colWhite})
+	}
+	if it.Armor > 0 {
+		out = append(out, ln{fmt.Sprintf("Armor: %d", it.Armor), colWhite})
+	}
+	for _, a := range it.Aff {
+		out = append(out, ln{fmt.Sprintf(statFmt[a.S], a.V), C(.5, .65, 1)})
+	}
+	if it.Flavor != "" {
+		out = append(out, ln{it.Flavor, C(.75, .6, .35)})
+	}
+	out = append(out, ln{fmt.Sprintf("Item level %d  ·  worth %dg", it.ILvl, it.Value()/4), colDim})
+	return out
+}
+
+func rollBase(rng *rand.Rand, ilvl int, slot Slot) *Base {
+	var pool []*Base
+	for _, b := range bases {
+		if b.Lvl <= ilvl+1 && (slot == SlotNone || b.Slot == slot) {
+			// Prefer bases near the item level.
+			if b.Lvl >= ilvl-8 || b.Slot == SlotRing || b.Slot == SlotAmulet {
+				pool = append(pool, b)
+			}
+		}
+	}
+	if len(pool) == 0 {
+		return bases[0]
+	}
+	return pool[rng.Intn(len(pool))]
+}
+
+func rollAffix(rng *rand.Rand, d *AffixDef, ilvl int) (Affix, string) {
+	v := d.Lo + rng.Intn(d.Hi-d.Lo+1)
+	v += int(float64(ilvl) * d.PerLvl * (0.5 + rng.Float64()*0.5))
+	maxV := float64(d.Hi) + 18*d.PerLvl
+	tier := int(float64(v) / maxV * float64(len(d.Names)))
+	tier = clampi(tier, 0, len(d.Names)-1)
+	return Affix{d.S, v}, d.Names[tier]
+}
+
+var rareFirst = []string{"Grim", "Doom", "Blood", "Storm", "Death", "Shadow", "Rune", "Gloom", "Bone", "Ash", "Raven", "Soul", "Dread", "Havoc", "Wraith", "Corpse", "Ember", "Venom", "Night", "Hollow", "Cinder", "Pale"}
+var rareSecond = map[Slot][]string{
+	SlotWeapon:  {"Bite", "Edge", "Fang", "Song", "Reaver", "Cleaver", "Thirst", "Kiss", "Needle"},
+	SlotOffhand: {"Ward", "Bulwark", "Aegis", "Guard", "Wall"},
+	SlotArmor:   {"Shell", "Coat", "Hide", "Carapace", "Mantle", "Shroud"},
+	SlotHelm:    {"Crown", "Visor", "Cowl", "Brow", "Horn"},
+	SlotGloves:  {"Grip", "Fist", "Hand", "Claw", "Knuckle"},
+	SlotBoots:   {"Stride", "Track", "Trail", "Spur", "Tread"},
+	SlotRing:    {"Loop", "Coil", "Band", "Circle", "Spiral"},
+	SlotAmulet:  {"Eye", "Heart", "Charm", "Talisman", "Star"},
+}
+
+// GenItem creates an equipment item. rarity < 0 rolls rarity with mf bonus.
+func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot) *Item {
+	if ilvl < 1 {
+		ilvl = 1
+	}
+	if rarity == RUnique {
+		var pool []UniqueDef
+		for _, u := range uniques {
+			if u.Lvl <= ilvl+2 && (slot == SlotNone || baseByName(u.Base).Slot == slot) {
+				pool = append(pool, u)
+			}
+		}
+		if len(pool) > 0 {
+			u := pool[rng.Intn(len(pool))]
+			b := baseByName(u.Base)
+			it := &Item{Kind: IKEquip, Base: b, Name: u.Name, Rarity: RUnique, ILvl: maxi(ilvl, u.Lvl), Flavor: u.Flavor}
+			it.Aff = append(it.Aff, u.Aff...)
+			it.finishStats(rng)
+			return it
+		}
+		rarity = RRare
+	}
+	b := rollBase(rng, ilvl, slot)
+	it := &Item{Kind: IKEquip, Base: b, Rarity: rarity, ILvl: ilvl, Name: b.Name}
+	mask := 1 << b.Slot
+	var pre, suf []*AffixDef
+	for i := range affixDefs {
+		d := &affixDefs[i]
+		if d.Slots&mask == 0 {
+			continue
+		}
+		if d.Prefix {
+			pre = append(pre, d)
+		} else {
+			suf = append(suf, d)
+		}
+	}
+	used := map[Stat]bool{}
+	pick := func(pool []*AffixDef) (Affix, string, bool) {
+		for tries := 0; tries < 12 && len(pool) > 0; tries++ {
+			d := pool[rng.Intn(len(pool))]
+			if used[d.S] {
+				continue
+			}
+			used[d.S] = true
+			a, n := rollAffix(rng, d, ilvl)
+			return a, n, true
+		}
+		return Affix{}, "", false
+	}
+	switch rarity {
+	case RMagic:
+		hasPre, hasSuf := rng.Intn(2) == 0, rng.Intn(2) == 0
+		if !hasPre && !hasSuf {
+			hasPre = rng.Intn(2) == 0
+			hasSuf = !hasPre
+		}
+		pn, sn := "", ""
+		if hasPre {
+			if a, n, ok := pick(pre); ok {
+				it.Aff = append(it.Aff, a)
+				pn = n + " "
+			}
+		}
+		if hasSuf {
+			if a, n, ok := pick(suf); ok {
+				it.Aff = append(it.Aff, a)
+				sn = " " + n
+			}
+		}
+		it.Name = pn + b.Name + sn
+	case RRare:
+		n := 3 + rng.Intn(3)
+		for i := 0; i < n; i++ {
+			pool := pre
+			if i%2 == 1 {
+				pool = suf
+			}
+			if a, _, ok := pick(pool); ok {
+				// rares roll a little stronger
+				a.V = a.V + a.V/5
+				it.Aff = append(it.Aff, a)
+			}
+		}
+		sec := rareSecond[b.Slot]
+		it.Name = rareFirst[rng.Intn(len(rareFirst))] + " " + sec[rng.Intn(len(sec))]
+	}
+	it.finishStats(rng)
+	return it
+}
+
+func (it *Item) finishStats(rng *rand.Rand) {
+	b := it.Base
+	if b.Slot == SlotWeapon {
+		it.MinD, it.MaxD = b.MinD, b.MaxD
+		if it.Rarity == RUnique || it.ILvl > b.Lvl+3 {
+			it.MaxD += rng.Intn(3)
+		}
+	}
+	if b.Armor > 0 {
+		a := b.Armor + rng.Intn(b.Armor/3+2)
+		a = a * (100 + it.Stat(StArmorPct)) / 100
+		it.Armor = a
+	}
+}
+
+func NewPotion(k ItemKind) *Item { return &Item{Kind: k, Amount: 1} }
+
+// RollRarity picks a drop rarity. bonus shifts odds toward rarer items.
+func RollRarity(rng *rand.Rand, bonus float64) Rarity {
+	r := rng.Float64() * 100
+	u := 1.2 * (1 + bonus)
+	ra := 7 * (1 + bonus*0.8)
+	m := 32 * (1 + bonus*0.5)
+	switch {
+	case r < u:
+		return RUnique
+	case r < u+ra:
+		return RRare
+	case r < u+ra+m:
+		return RMagic
+	}
+	return RNormal
+}
