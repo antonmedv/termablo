@@ -1,0 +1,12 @@
+services:
+  termablo:
+    build: .
+    image: termablo
+    restart: unless-stopped
+    ports:
+      - "${PORT:-2222}:2222"
+    volumes:
+      - hostkey:/data   # keeps the host key across rebuilds
+
+volumes:
+  hostkey:

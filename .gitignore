@@ -16,3 +16,4 @@ err.log
 .vscode/
 /shots/
 bench.txt
+.ssh/

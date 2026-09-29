@@ -238,19 +238,31 @@ func (m *model) View() string {
 	return m.scr.String()
 }
 
+func newModel(seed int64, level string) *model {
+	if seed == 0 {
+		seed = time.Now().UnixNano()
+	}
+	g := NewGame(seed)
+	if level != "" {
+		g.changeLevel(level, "", nil)
+	}
+	return &model{g: g, scr: NewScreen(120, 40), start: time.Now(), seed: seed}
+}
+
 func main() {
 	seed := flag.Int64("seed", 0, "world seed (0 = random)")
 	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
+	addr := flag.String("ssh", "", "serve the game over SSH on this address (e.g. :2222)")
+	hostKey := flag.String("hostkey", ".ssh/termablo_ed25519", "SSH host key, created if missing")
 	flag.Parse()
-	if *seed == 0 {
-		*seed = time.Now().UnixNano()
+	if *addr != "" {
+		if err := serve(*addr, *hostKey, *seed, *level); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
 	}
-	g := NewGame(*seed)
-	if *level != "" {
-		g.changeLevel(*level, "", nil)
-	}
-	m := &model{g: g, scr: NewScreen(120, 40), start: time.Now(), seed: *seed}
-	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseAllMotion())
+	p := tea.NewProgram(newModel(*seed, *level), tea.WithAltScreen(), tea.WithMouseAllMotion())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
