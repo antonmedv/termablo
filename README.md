@@ -45,3 +45,14 @@ Use a truecolor terminal that is at least 80x24. Bigger is better.
 - `items.go`: bases, affixes and uniques.
 - `ui.go`: renderer.
 - `screen.go`: cell buffer and ANSI serializer.
+
+## Tests
+```
+go test ./...                     # everything (~5s); -short runs fewer seeds
+go test -fuzz FuzzKeys            # random key input vs. game invariants
+SHOTDIR=/tmp/shots go test -run Shot   # render screenshots (needs rsvg-convert)
+```
+- `testutil_test.go`: `newTestGame` builds a game from an ASCII map; `eachLevel` runs a check on every generated level over many seeds.
+- `gen_test.go`, `items_test.go`, `light_test.go`: invariants for levels, loot and lighting.
+- `combat_test.go`, `explore_test.go`: gameplay scenarios.
+- `sim_test.go`, `bot_test.go`, `tea_test.go`: smoke runs and benchmarks.

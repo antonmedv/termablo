@@ -1,0 +1,196 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+	"sync"
+	"testing"
+)
+
+// Shared fixtures for tests.
+//
+// newTestGame builds a game on a hand-made level. By default it is an open,
+// moonlit 120x30 grass field with no monsters; withMap replaces it with an
+// ASCII layout:
+//
+//	g := newTestGame(t, withMap(`
+//	    #########
+//	    #@..z...#
+//	    #...*...#
+//	    #########`))
+
+// Tiles by map character. Anything not listed (and not a monster or '@')
+// is a wall; short rows are padded with walls.
+var mapTiles = map[rune]Tile{
+	'#': TWall,
+	'.': TFloor,
+	',': TGrass,
+	'+': TDoor,
+	'~': TWater,
+	'=': TDeepWater,
+	'>': TStairsDown,
+	'<': TStairsUp,
+	'*': TBrazier,
+	'^': TCrystal,
+	'T': TTree,
+	'&': TChest,
+}
+
+// Monsters by map character; they stand on stone floor.
+var mapMonsters = map[rune]string{
+	'r': "rat",
+	'b': "bat",
+	'f': "fallen",
+	'z': "zombie",
+	's': "skel",
+	'a': "archer",
+	'w': "wolf",
+}
+
+type testOpts struct {
+	seed    int64
+	layout  string
+	ambient RGB
+	awake   bool
+}
+
+type testOpt func(*testOpts)
+
+func withSeed(s int64) testOpt   { return func(o *testOpts) { o.seed = s } }
+func withMap(m string) testOpt   { return func(o *testOpts) { o.layout = m } }
+func withAmbient(c RGB) testOpt  { return func(o *testOpts) { o.ambient = c } }
+func withAwakeMonsters() testOpt { return func(o *testOpts) { o.awake = true } }
+
+func newTestGame(t testing.TB, opts ...testOpt) *Game {
+	t.Helper()
+	o := testOpts{seed: 7, ambient: C(.05, .06, .12)}
+	for _, f := range opts {
+		f(&o)
+	}
+	g := NewGame(o.seed)
+	g.Mode = ModePlay
+	var l *Level
+	if o.layout == "" {
+		l = newLevel("test", "Test Field", KSurface, 120, 30, 1, o.seed)
+		l.Fill(0, 0, l.W-1, l.H-1, TGrass)
+		l.Start = Pos{5, 15}
+	} else {
+		l = parseMap(t, g, o.layout, o.seed, o.awake)
+	}
+	l.Ambient = o.ambient
+	l.finalize()
+	g.Levels[l.ID] = l
+	g.changeLevel(l.ID, "", nil)
+	if o.layout != "" && (g.P.X != l.Start.X || g.P.Y != l.Start.Y) {
+		t.Fatalf("player placed at %d,%d, map wants %d,%d", g.P.X, g.P.Y, l.Start.X, l.Start.Y)
+	}
+	return g
+}
+
+func parseMap(t testing.TB, g *Game, layout string, seed int64, awake bool) *Level {
+	t.Helper()
+	var rows [][]rune
+	for _, ln := range strings.Split(layout, "\n") {
+		if ln = strings.TrimSpace(ln); ln != "" {
+			rows = append(rows, []rune(ln))
+		}
+	}
+	w := 0
+	for _, r := range rows {
+		w = maxi(w, len(r))
+	}
+	l := newLevel("test", "Test Map", KDungeon, w, len(rows), 1, seed)
+	l.Fill(0, 0, w-1, len(rows)-1, TWall)
+	player := false
+	for y, r := range rows {
+		for x, ch := range r {
+			switch {
+			case ch == '@':
+				l.Set(x, y, TFloor)
+				l.Start = Pos{x, y}
+				player = true
+			case mapMonsters[ch] != "":
+				l.Set(x, y, TFloor)
+				m := NewMonster(g.rng, mtemps[mapMonsters[ch]], 1, RankNormal)
+				m.X, m.Y, m.HomeX, m.HomeY, m.Awake = x, y, x, y, awake
+				l.Monsters = append(l.Monsters, m)
+			default:
+				tile, ok := mapTiles[ch]
+				if !ok {
+					t.Fatalf("map: unknown character %q", ch)
+				}
+				l.Set(x, y, tile)
+			}
+		}
+	}
+	if !player {
+		t.Fatal("map: no '@'")
+	}
+	return l
+}
+
+// monsters returns living monsters of a template, in map (row-major) order.
+func monsters(g *Game, id string) []*Monster {
+	var r []*Monster
+	for _, m := range g.Lv.Monsters {
+		if !m.Dead && m.T.ID == id {
+			r = append(r, m)
+		}
+	}
+	return r
+}
+
+// spawnAt places a monster near an offset from the player.
+func spawnAt(g *Game, id string, dx, dy int, awake bool) *Monster {
+	l, p := g.Lv, g.P
+	m := NewMonster(g.rng, mtemps[id], 1, RankNormal)
+	m.X, m.Y = l.FreeNear(p.X+dx, p.Y+dy, p.X, p.Y)
+	m.Awake = awake
+	l.Monsters = append(l.Monsters, m)
+	g.computeVisibility()
+	return m
+}
+
+func lastLog(g *Game) string { return g.Log[len(g.Log)-1].Text }
+
+// ------------------------------------------------------------ generated world
+
+var worldIDs = []string{"town", "fields", "marsh", "crypt1", "crypt2", "crypt3", "crypt4", "grotto1", "grotto2", "grotto3", "abyss1", "abyss2"}
+
+const worldSeeds = 12
+
+var (
+	worldMu    sync.Mutex
+	worldCache = map[int64]*Game{}
+)
+
+// world returns a game with every level generated for seed. It is shared
+// between tests: treat it as read-only.
+func world(seed int64) *Game {
+	worldMu.Lock()
+	defer worldMu.Unlock()
+	if g, ok := worldCache[seed]; ok {
+		return g
+	}
+	g := NewGame(seed)
+	for _, id := range worldIDs {
+		g.getLevel(id)
+	}
+	worldCache[seed] = g
+	return g
+}
+
+// eachLevel runs f as a subtest for every level of every test seed.
+func eachLevel(t *testing.T, f func(t *testing.T, g *Game, l *Level)) {
+	n := int64(worldSeeds)
+	if testing.Short() {
+		n = 3
+	}
+	for seed := int64(1); seed <= n; seed++ {
+		g := world(seed)
+		for _, id := range worldIDs {
+			l := g.Levels[id]
+			t.Run(fmt.Sprintf("%s/seed%02d", id, seed), func(t *testing.T) { f(t, g, l) })
+		}
+	}
+}

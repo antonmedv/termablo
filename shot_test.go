@@ -9,6 +9,11 @@ import (
 	"testing"
 )
 
+// Screenshot tests render scenes to SVG/PNG for eyeballing. They check
+// nothing and only run with SHOTDIR set:
+//
+//	SHOTDIR=/tmp/shots go test -run Shot
+
 func (s *Screen) SVG() string {
 	cw, ch := 9.0, 18.0
 	var b strings.Builder
@@ -48,10 +53,14 @@ func shot(t *testing.T, s *Screen, name string) {
 	}
 }
 
-func TestShots(t *testing.T) {
+func needShotDir(t *testing.T) {
 	if os.Getenv("SHOTDIR") == "" {
-		t.Skip()
+		t.Skip("set SHOTDIR to write screenshots")
 	}
+}
+
+func TestShots(t *testing.T) {
+	needShotDir(t)
 	g := NewGame(42)
 	g.Mode = ModePlay
 	s := NewScreen(110, 34)
@@ -90,4 +99,63 @@ func TestShots(t *testing.T) {
 	g.Mode = ModeTitle
 	g.Draw(s)
 	shot(t, s, "title")
+}
+
+func TestShotsUI(t *testing.T) {
+	needShotDir(t)
+	g := NewGame(5)
+	g.Mode = ModePlay
+	s := NewScreen(120, 36)
+	for i, r := range []Rarity{RMagic, RRare, RUnique, RNormal, RMagic, RRare} {
+		g.P.Inv = append(g.P.Inv, GenItem(g.rng, 5+i, r, SlotNone))
+	}
+	g.time = 1
+	g.Mode, g.pane, g.cur = ModeInv, 1, 2
+	g.Draw(s)
+	shot(t, s, "ui_inv")
+	g.Mode, g.shop, g.tab, g.cur = ModeShop, g.shops[0], 0, 1
+	g.Draw(s)
+	shot(t, s, "ui_shop")
+	g.P.Points = 5
+	g.Mode = ModeChar
+	g.Draw(s)
+	shot(t, s, "ui_char")
+	// combat moment with a firebolt in flight
+	g.Mode = ModePlay
+	g.changeLevel("crypt2", "", nil)
+	l := g.Lv
+	m := placeMonster(l, "skel", g.P.X+6, g.P.Y, 3, RankChampion)
+	_ = m
+	g.computeVisibility()
+	g.Target = m
+	g.castFirebolt()
+	g.time += 0.08
+	g.Draw(s)
+	shot(t, s, "ui_bolt")
+}
+
+func TestShotHover(t *testing.T) {
+	needShotDir(t)
+	g := NewGame(42)
+	g.Mode = ModePlay
+	g.changeLevel("crypt1", "", nil)
+	s := NewScreen(110, 34)
+	l, p := g.Lv, g.P
+	mx, my := l.FreeNear(p.X+2, p.Y, p.X, p.Y)
+	m := placeMonsterAvoid(l, "skel", mx, my, 3, RankChampion, p.X, p.Y)
+	ix, iy := l.FreeNear(p.X-1, p.Y+1, p.X, p.Y)
+	g.dropItem(ix, iy, GenItem(g.rng, 5, RUnique, SlotNone))
+	g.computeVisibility()
+	g.time = 3
+	mapW, mapH := s.W-panelW, s.H-logH
+	camX, camY := g.camera(mapW, mapH)
+	for _, c := range []struct {
+		name string
+		x, y int
+	}{{"hover_monster", m.X, m.Y}, {"hover_item", l.Items[len(l.Items)-1].X, l.Items[len(l.Items)-1].Y}, {"hover_stairs", p.X - 1, p.Y}} {
+		g.SetHover(c.x-camX, c.y-camY)
+		t.Log(c.name, g.hoverInfo(c.x, c.y))
+		g.Draw(s)
+		shot(t, s, c.name)
+	}
 }
