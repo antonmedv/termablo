@@ -34,6 +34,8 @@ var mapTiles = map[rune]Tile{
 	'^': TCrystal,
 	'T': TTree,
 	'&': TChest,
+	'F': TFountain,
+	'A': TAltar,
 }
 
 // Monsters by map character; they stand on stone floor.
@@ -152,6 +154,48 @@ func spawnAt(g *Game, id string, dx, dy int, awake bool) *Monster {
 }
 
 func lastLog(g *Game) string { return g.Log[len(g.Log)-1].Text }
+
+// newTestModel wraps a game in the Bubble Tea model, to drive it by keys.
+func newTestModel(g *Game) *model { return &model{g: g, scr: NewScreen(100, 32), seed: g.Seed} }
+
+// press sends keys through the real key handler.
+func press(m *model, keys ...string) {
+	for _, k := range keys {
+		m.key(k)
+	}
+}
+
+// walkInto stands the player next to (x,y) and steps onto it. It reports
+// false when no free cell borders the target.
+func walkInto(g *Game, x, y int) bool {
+	l := g.Lv
+	for _, d := range dirs8 {
+		sx, sy := x-d.X, y-d.Y
+		if !l.Walkable(sx, sy) || l.MonsterAt(sx, sy) != nil || l.LinkAt(sx, sy) != nil {
+			continue
+		}
+		if t := l.At(sx, sy); t == TDoor || tdefs[t].BlockMove {
+			continue
+		}
+		g.P.X, g.P.Y = sx, sy
+		g.computeVisibility()
+		g.move(d.X, d.Y)
+		return true
+	}
+	return false
+}
+
+// npc finds a townsperson by template ID.
+func npc(t *testing.T, g *Game, id string) *Monster {
+	t.Helper()
+	for _, m := range g.getLevel("town").Monsters {
+		if m.T.ID == id {
+			return m
+		}
+	}
+	t.Fatalf("no %s in town", id)
+	return nil
+}
 
 // ------------------------------------------------------------ generated world
 

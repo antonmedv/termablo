@@ -54,5 +54,6 @@ SHOTDIR=/tmp/shots go test -run Shot   # render screenshots (needs rsvg-convert)
 ```
 - `testutil_test.go`: `newTestGame` builds a game from an ASCII map; `eachLevel` runs a check on every generated level over many seeds.
 - `gen_test.go`, `items_test.go`, `light_test.go`: invariants for levels, loot and lighting.
-- `combat_test.go`, `explore_test.go`: gameplay scenarios.
-- `sim_test.go`, `bot_test.go`, `tea_test.go`: smoke runs and benchmarks.
+- `combat_test.go`, `explore_test.go`, `scenario_test.go`: gameplay scenarios (shops, portals, stairs, death, level-up, gear), mostly driven through the real key handler.
+- `bot_test.go`: a scripted player runs 12 seeds and logs a balance report (`go test -v -run BotBalance`, `BOTSEEDS=n` for more).
+- `sim_test.go`, `tea_test.go`: smoke runs and benchmarks.
