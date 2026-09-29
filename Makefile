@@ -1,4 +1,4 @@
-.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og report
+.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones report
 
 GOBIN := $(shell go env GOPATH)/bin
 
@@ -39,6 +39,10 @@ shots:
 # GitHub social preview (Settings → Social preview), 1280×640
 og:
 	SHOTDIR=$(CURDIR)/demo go test -count=1 -run ShotOG .
+
+# README region postcards, demo/zones.png
+zones:
+	SHOTDIR=$(CURDIR)/demo go test -count=1 -run ShotZones .
 
 report:
 	go test -count=1 -v -run 'BotBalance|PowerCurve' . | grep -v "^=== RUN"

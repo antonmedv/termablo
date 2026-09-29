@@ -115,3 +115,119 @@ func ogSVG(s *Screen, rows int) string {
 	b.WriteString("</svg>")
 	return b.String()
 }
+
+// TestShotZones renders demo/zones.png for the README: six postcards, one per
+// region, each from the spot with the best view of what that region is known
+// for.
+//
+//	make zones
+func TestShotZones(t *testing.T) {
+	needShotDir(t)
+	const cols, rows, gap = 47, 13, 8
+	const tw, th = cols * 9, rows * 18
+	type zone struct {
+		id, title string
+		seed      int64
+		tiles     []Tile // the view to look for...
+		monster   string // ...or stand next to this monster, if present
+	}
+	zones := []zone{
+		{"town", "Emberhold", 42, []Tile{TFountain}, ""},
+		{"fields", "Ashen Fields", 148, []Tile{TCampfire}, ""},
+		{"crypt4", "Throne of the Bone King", 42, []Tile{TBrazier}, "boneking"},
+		{"marsh", "Blackmarsh", 42, []Tile{TCrystal}, "wisp"},
+		{"grotto1", "Sunken Grotto", 42, []Tile{TCrystal}, ""},
+		{"abyss1", "The Burning Abyss", 99, []Tile{TLava}, ""},
+	}
+	var b strings.Builder
+	W, H := tw*2+gap, th*3+gap*2
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">`, W, H, W, H)
+	b.WriteString(`<defs><linearGradient id="bottom" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".9"/></linearGradient></defs>`)
+	b.WriteString(`<rect width="100%" height="100%" fill="#000"/>`)
+	for i, z := range zones {
+		g := NewGame(z.seed)
+		g.Mode = ModePlay
+		g.changeLevel(z.id, "", nil)
+		l := g.Lv
+		free := func(x, y int) bool {
+			return l.Walkable(x, y) && l.MonsterAt(x, y) == nil && l.LinkAt(x, y) == nil
+		}
+		px, py := -1, -1
+		if z.monster != "" {
+			for _, m := range l.Monsters {
+				if m.T.ID != z.monster || m.Dead {
+					continue
+				}
+				// a few cells to the side, on the same rows, so it stays in view
+				best := 1 << 30
+				for dy := -2; dy <= 2; dy++ {
+					for dx := -12; dx <= 12; dx++ {
+						d := abs(dx) + 4*abs(dy)
+						if abs(dx) >= 3 && d < best && free(m.X+dx, m.Y+dy) {
+							px, py, best = m.X+dx, m.Y+dy, d
+						}
+					}
+				}
+				break
+			}
+		}
+		if px < 0 {
+			// the walkable cell that sees the most of the wanted tiles, close up
+			stamp := make([]uint32, l.W*l.H)
+			var gen uint32
+			best := -1.0
+			for j := range l.T {
+				x, y := j%l.W, j/l.W
+				if !free(x, y) {
+					continue
+				}
+				gen++
+				score := 0.0
+				castRays(l, x, y, 10, stamp, gen, func(k int, d float32) {
+					if abs(k%l.W-x) > cols/2-2 || abs(k/l.W-y) > rows/2-1 {
+						return
+					}
+					for _, want := range z.tiles {
+						if l.T[k] == want {
+							score += 12 - float64(d)
+						}
+					}
+				})
+				if x < cols/2 || x > l.W-cols/2 || y < rows/2 || y > l.H-rows/2 {
+					score /= 2 // near the edge the camera cannot center on it
+				}
+				if score > best {
+					px, py, best = x, y, score
+				}
+			}
+		}
+		if px < 0 {
+			t.Fatalf("%s: nowhere to stand", z.id)
+		}
+		g.P.X, g.P.Y = px, py
+		for _, m := range l.Monsters {
+			if cheb(m.X, m.Y, px, py) <= 8 {
+				m.Awake = true
+			}
+		}
+		g.computeVisibility()
+		g.time = 2.0 + float64(i)*0.7
+		g.composeLight(g.time, true)
+		s := NewScreen(cols, rows)
+		g.drawMap(s, 0, 0, cols, rows)
+		x, y := (i%2)*(tw+gap), (i/2)*(th+gap)
+		fmt.Fprintf(&b, `<svg x="%d" y="%d" width="%d" height="%d" viewBox="0 0 %d %d">%s</svg>`, x, y, tw, th, tw, th, s.SVG())
+		fmt.Fprintf(&b, `<rect x="%d" y="%d" width="%d" height="44" fill="url(#bottom)"/>`, x, y+th-44, tw)
+		fmt.Fprintf(&b, `<text x="%d" y="%d" font-family="Menlo" font-size="15" fill="#dcbb92">%s</text>`, x+10, y+th-12, z.title)
+	}
+	b.WriteString("</svg>")
+	dir := os.Getenv("SHOTDIR")
+	svg := dir + "/zones.svg"
+	if err := os.WriteFile(svg, []byte(b.String()), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if out, err := exec.Command("rsvg-convert", "-o", dir+"/zones.png", svg).CombinedOutput(); err != nil {
+		t.Fatal(string(out), err)
+	}
+	_ = os.Remove(svg)
+}

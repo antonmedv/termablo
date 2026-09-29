@@ -1,23 +1,47 @@
 <p align="center"><img src="demo/fields.gif" width="854" alt="A Fallen camp charges across the Ashen Fields"></p>
 
-**Termablo** is a Diablo-like roguelike for the terminal. Every torch, campfire, crystal, lava pool and spell casts real, colored, flickering light. You see only what the light reaches.
+<h1 align="center">Termablo</h1>
+
+<p align="center"><b>A Diablo-like roguelike for the terminal.</b><br>
+Every torch, campfire, crystal, lava pool and spell casts real, colored, flickering light.<br>
+You see only what the light reaches.</p>
+
+## Play
+
+Nothing to install:
 
 ```sh
 ssh medv.io -p 2222
 ```
 
+Or run it locally:
+
 ```sh
-go run github.com/antonmedv/termablo@latest            # random world
-go run github.com/antonmedv/termablo@latest -seed 42   # the same world every time
+go run github.com/antonmedv/termablo@latest
 ```
 
-Emberhold, the last lit town before the dark. The Ashen Fields. The Crypt of the Fallen, where the Bone King waits. Blackmarsh, with cold lights over the water. The Sunken Grotto and the Drowned Oracle. Then the Burning Abyss, which keeps going down.
+Add `-seed 42` and the world is the same every time. Share the seed, race a friend.
 
-### Keys
+## The descent
+
+<p align="center"><img src="demo/zones.png" width="854" alt="Emberhold, the Ashen Fields, the Throne of the Bone King, Blackmarsh, the Sunken Grotto and the Burning Abyss"></p>
+
+**Emberhold**, the last lit town before the dark. **The Ashen Fields**. **The Crypt of the Fallen**, four floors down to the Bone King, who raises the dead. **Blackmarsh**, with cold lights over the water. Do not follow them. **The Sunken Grotto**, and the Drowned Oracle at the bottom of it. Then **the Burning Abyss**, which keeps going down.
+
+## In the dark
+
+- **Light is the game.** Ray-cast, colored, stopped by walls. Firebolts light the corridor as they fly. Wraiths, wisps and fire imps carry their own glow, so you see them coming. So do they.
+- **Loot the Diablo way.** Magic, Rare and Unique gear with prefixes and suffixes. A Jagged Long Sword of the Whale. Emberbrand, whose edge never cools. Anything with Light Radius makes the dark smaller.
+- **Champions and uniques.** Bloodmaw the Hungry. Frostmarrow the Unburied. Extra Strong, Swift, Stone Skin, Fire Enchanted, Vampiric. The big ones shrug off Frost Nova.
+- **Town.** Hadrik's Forge for steel, Mirela's Remedies for potions and a patch-up, Captain Voss with a bounty on the Bone King. A portal home when it gets bad.
+- **Quick hands.** `o` auto-explores. Hover the mouse over anything to know what it is. Vim keys, arrows or numpad.
+
+## Keys
 
 | key | action |
 |---|---|
-| arrows / `hjkl` / numpad | move, attack |
+| arrows / `hjkl` `yubn` / numpad | move, attack |
+| `.` `s` | wait |
 | `f` `r` | Firebolt, Frost Nova |
 | `tab` | cycle target |
 | `q` `w` | healing potion, mana potion |
@@ -27,4 +51,18 @@ Emberhold, the last lit town before the dark. The Ashen Fields. The Crypt of the
 | `i` `c` `m` `?` | inventory, character, map, help |
 | `Q` | quit |
 
-[MIT](LICENSE)
+## Host your own
+
+```sh
+docker compose up -d        # then: ssh localhost -p 2222
+```
+
+or, without Docker:
+
+```sh
+go run github.com/antonmedv/termablo@latest -ssh :2222
+```
+
+Every connection gets its own game. `-seed` gives every player the same world. `-max-sessions` and `-idle` keep the box sane.
+
+<p align="center">Built with <a href="https://github.com/charmbracelet/bubbletea">Bubble Tea</a> and <a href="https://github.com/charmbracelet/wish">Wish</a>. <a href="LICENSE">MIT</a>.</p>
