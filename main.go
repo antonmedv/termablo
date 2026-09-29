@@ -40,6 +40,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.scr.Resize(msg.Width, msg.Height)
+	case tea.MouseMsg:
+		g.SetHover(msg.X, msg.Y)
 	case tickMsg:
 		g.time = time.Since(m.start).Seconds()
 		if g.auto && g.Mode == ModePlay && g.time >= g.autoNext {
@@ -243,7 +245,7 @@ func main() {
 		*seed = time.Now().UnixNano()
 	}
 	m := &model{g: NewGame(*seed), scr: NewScreen(120, 40), start: time.Now(), seed: *seed}
-	p := tea.NewProgram(m, tea.WithAltScreen())
+	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseAllMotion())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

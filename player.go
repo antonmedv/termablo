@@ -110,6 +110,8 @@ func (p *Player) NovaDmg() (int, int) {
 const (
 	costFirebolt = 6
 	costNova     = 14
+
+	fireboltRange = 22 // steps
 )
 
 func xpNext(lvl int) int { return int(35 * math.Pow(float64(lvl), 1.8)) }

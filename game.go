@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -76,6 +77,10 @@ type Game struct {
 	talkName       string
 	talkLines      []string
 	talkCol        RGB
+
+	hoverX, hoverY int
+	hoverOn        bool
+	hoverLines     []hoverLine // this frame's hover info (nil = nothing hovered)
 
 	auto       bool
 	autoNext   float64
@@ -349,12 +354,17 @@ func (g *Game) validTarget() *Monster {
 	return g.Target
 }
 
+// cycleTarget steps through visible enemies from nearest to farthest.
 func (g *Game) cycleTarget() {
 	hs := g.visibleHostiles()
 	if len(hs) == 0 {
 		g.Target = nil
 		return
 	}
+	p := g.P
+	sort.SliceStable(hs, func(i, j int) bool {
+		return cheb(hs[i].X, hs[i].Y, p.X, p.Y) < cheb(hs[j].X, hs[j].Y, p.X, p.Y)
+	})
 	idx := -1
 	for i, m := range hs {
 		if m == g.Target {
@@ -660,7 +670,7 @@ func (g *Game) killMonster(m *Monster) {
 	if m.HasMod(ModFire) {
 		g.novaFx(m.X, m.Y, colOrange, 2)
 		if cheb(m.X, m.Y, p.X, p.Y) <= 1 {
-			g.hurtPlayer(m.Level*2+3, m.Name+"'s death flames")
+			g.hurtPlayer(m.Level*2+3, m.Name+"'s death flames", "burn")
 		}
 	}
 	switch m.T.ID {
@@ -788,11 +798,16 @@ func (g *Game) useAltar(x, y int) {
 	g.novaFx(x, y, colPurple, 3)
 }
 
-func (g *Game) hurtPlayer(dmg int, by string) {
+// hurtPlayer applies damage and logs "<By> <verb> you for N." (by doubles as the killer's name).
+func (g *Game) hurtPlayer(dmg int, by, verb string) {
 	p := g.P
 	if dmg < 1 {
 		dmg = 1
 	}
+	if verb == "" {
+		verb = "hits"
+	}
+	g.msg(C(.9, .45, .4), "%s %s you for %d.", titleWord(by), verb, dmg)
 	p.HP -= float64(dmg)
 	p.Flash = g.time
 	g.auto = false
@@ -924,12 +939,16 @@ func (g *Game) castFirebolt() {
 		g.msg(colDim, "No target in sight.")
 		return
 	}
+	if cheb(p.X, p.Y, t.X, t.Y) > fireboltRange {
+		g.msg(colDim, "The %s is out of range.", t.Name)
+		return
+	}
 	if p.MP < costFirebolt {
 		g.msg(C(.45, .6, 1), "Not enough mana.")
 		return
 	}
 	p.MP -= costFirebolt
-	path, hit, _ := g.traceBolt(p.X, p.Y, t.X, t.Y, 22, true)
+	path, hit, _ := g.traceBolt(p.X, p.Y, t.X, t.Y, fireboltRange, true)
 	g.boltFx(path, C(1, .5, .15), '*', true)
 	if hit != nil {
 		lo, hi := p.FireboltDmg()
@@ -1222,7 +1241,7 @@ func (g *Game) monsterMelee(m *Monster) {
 	if m.Rank >= RankUnique {
 		name = m.Name
 	}
-	g.hurtPlayer(dmg, name)
+	g.hurtPlayer(dmg, name, m.T.Verb)
 	if th := p.S(StThorns); th > 0 && !m.Dead {
 		g.damageMonster(m, th, false, C(.8, .6, .4))
 	}
@@ -1243,16 +1262,35 @@ func (g *Game) monsterShoot(m *Monster) {
 	if m.Rank >= RankUnique {
 		name = m.Name
 	}
-	g.hurtPlayer(g.monsterDamage(m)*4/5+1, name)
+	g.hurtPlayer(g.monsterDamage(m)*4/5+1, name, m.T.Verb)
 }
 
 // ------------------------------------------------------------ auto-explore
 
+const (
+	autoStopNear  = 10 // any enemy this close stops auto-explore
+	autoStopAware = 18 // ...as does one this close that has noticed you
+)
+
+func monsterRef(m *Monster) string {
+	if m.Rank >= RankUnique {
+		return m.Name
+	}
+	if strings.ContainsRune("AEIOU", rune(m.Name[0])) {
+		return "an " + m.Name
+	}
+	return "a " + m.Name
+}
+
 func (g *Game) autoStep() bool {
 	l, p := g.Lv, g.P
-	if len(g.visibleHostiles()) > 0 {
-		g.msg(colOrange, "You spot an enemy.")
-		return false
+	// Distant, unaware enemies (common on the open fields) don't interrupt.
+	for _, m := range g.visibleHostiles() {
+		d := cheb(m.X, m.Y, p.X, p.Y)
+		if d <= autoStopNear || (m.Awake && d <= autoStopAware) {
+			g.msg(colOrange, "You spot %s.", monsterRef(m))
+			return false
+		}
 	}
 	nItems := 0
 	for _, it := range l.Items {

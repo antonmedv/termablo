@@ -30,7 +30,9 @@ func (g *Game) Draw(s *Screen) {
 	mapW, mapH := s.W-panelW, s.H-logH
 	g.drawMap(s, 0, 0, mapW, mapH)
 	g.drawLog(s, 0, mapH, mapW, logH)
+	g.hoverLines = g.currentHover(mapW, mapH)
 	g.drawPanel(s, mapW, 0, panelW, s.H)
+	g.drawHover(s, mapW, mapH)
 	switch g.Mode {
 	case ModeInv:
 		g.drawInventory(s, mapW, mapH)
@@ -339,11 +341,19 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	row++
 	bar(s, cx, row, bw, float64(p.XP)/float64(xpNext(p.Lvl)), C(.85, .7, .3), C(.15, .12, .05))
 	row += 2
+	// consumables: hotkey, name, count — in the same two columns as the stats below
+	hot := func(x, y int, key, label string, n int, c RGB) {
+		if n == 0 {
+			c = colDim
+		}
+		s.TextBold(x, y, key, c.C8())
+		s.Text(x+2, y, fmt.Sprintf("%s %d", label, n), c.Scale(.85).C8())
+	}
 	s.Text(cx, row, fmt.Sprintf("Gold %d", p.Gold), colGold.C8())
+	hot(cx+15, row, "t", "Portal", p.Scrolls, C(.85, .8, .65))
 	row++
-	n := s.Text(cx, row, fmt.Sprintf("q♥%d", p.HPot), C(1, .35, .35).C8())
-	n += s.Text(cx+n+2, row, fmt.Sprintf("w♦%d", p.MPot), C(.45, .6, 1).C8()) + 2
-	s.Text(cx+n+2, row, fmt.Sprintf("t?%d", p.Scrolls), C(.85, .8, .65).C8())
+	hot(cx, row, "q", "Heal", p.HPot, C(1, .35, .35))
+	hot(cx+15, row, "w", "Mana", p.MPot, C(.45, .6, 1))
 	row += 2
 	lo, hi := p.DmgRange()
 	s.Text(cx, row, fmt.Sprintf("Damage %d-%d", lo, hi), colGray.C8())
@@ -756,6 +766,7 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		"Blue names are champions; gold names are uniques.",
 		"Glowing drops are rare or unique. Look for the light.",
 		"Items with ▲ beat what you're wearing.",
+		"Hover the mouse over the map to see what things are.",
 	}
 	for i, t := range tips {
 		s.Text(x+3, y+17+i, "· "+t, C(.75, .65, .5).C8())
