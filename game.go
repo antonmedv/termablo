@@ -89,11 +89,16 @@ type Game struct {
 	usedAltars map[string]bool
 
 	Stats Stats
+	Rules *Rules
 }
 
-func NewGame(seed int64) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats()}
-	g.P = NewPlayer()
+func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
+
+// NewGameWith starts a game under a set of rules, which it shares with
+// its player, levels and monsters.
+func NewGameWith(seed int64, r *Rules) *Game {
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats(), Rules: r}
+	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
 	sw := &Item{Kind: IKEquip, Base: baseByName("Short Sword"), Name: "Short Sword", ILvl: 1}
@@ -136,14 +141,14 @@ func (g *Game) getLevel(id string) *Level {
 	num := func(prefix string) int { n, _ := strconv.Atoi(strings.TrimPrefix(id, prefix)); return n }
 	switch {
 	case id == "town":
-		l = genTown(seed)
+		l = genTown(seed, g.Rules)
 	case id == "fields":
-		l = genFields(seed)
+		l = genFields(seed, g.Rules)
 	case id == "marsh":
-		l = genMarsh(seed)
+		l = genMarsh(seed, g.Rules)
 	case strings.HasPrefix(id, "crypt"):
 		n := num("crypt")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Crypt of the Fallen %d", n), Depth: 1 + n, Style: 0, SpawnTable: "crypt"}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Crypt of the Fallen %d", n), Depth: 1 + n, Style: 0, SpawnTable: "crypt", Rules: g.Rules}
 		s.Up = "fields"
 		if n > 1 {
 			s.Up = fmt.Sprintf("crypt%d", n-1)
@@ -157,7 +162,7 @@ func (g *Game) getLevel(id string) *Level {
 		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "grotto"):
 		n := num("grotto")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Sunken Grotto %d", n), Depth: 6 + n, Style: 1, SpawnTable: "grotto"}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Sunken Grotto %d", n), Depth: 6 + n, Style: 1, SpawnTable: "grotto", Rules: g.Rules}
 		s.Up = "marsh"
 		if n > 1 {
 			s.Up = fmt.Sprintf("grotto%d", n-1)
@@ -172,7 +177,7 @@ func (g *Game) getLevel(id string) *Level {
 		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "abyss"):
 		n := num("abyss")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("The Burning Abyss %d", n), Depth: 9 + n, Style: 2, SpawnTable: "abyss"}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("The Burning Abyss %d", n), Depth: 9 + n, Style: 2, SpawnTable: "abyss", Rules: g.Rules}
 		s.Up = "grotto3"
 		if n > 1 {
 			s.Up = fmt.Sprintf("abyss%d", n-1)
@@ -180,7 +185,7 @@ func (g *Game) getLevel(id string) *Level {
 		s.Down = fmt.Sprintf("abyss%d", n+1)
 		l = genDungeon(s, seed)
 	default:
-		l = genTown(seed)
+		l = genTown(seed, g.Rules)
 	}
 	g.Levels[id] = l
 	return l
@@ -689,7 +694,7 @@ func (g *Game) meleeAttack(m *Monster) {
 	if crit {
 		dmg *= 2
 	}
-	dmg = int(float64(dmg) * (1 - float64(m.Armor)/float64(m.Armor+120)))
+	dmg = int(float64(dmg) * (1 - float64(m.Armor)/(float64(m.Armor)+g.Rules.MonArmorK)))
 	if dmg < 1 {
 		dmg = 1
 	}
@@ -768,8 +773,8 @@ func (g *Game) killMonster(m *Monster) {
 func (g *Game) gainXP(xp int) {
 	p := g.P
 	p.XP += xp
-	for p.XP >= xpNext(p.Lvl) {
-		p.XP -= xpNext(p.Lvl)
+	for p.XP >= g.Rules.xpNext(p.Lvl) {
+		p.XP -= g.Rules.xpNext(p.Lvl)
 		p.Lvl++
 		p.Points += 5
 		p.recalc()
@@ -780,13 +785,13 @@ func (g *Game) gainXP(xp int) {
 }
 
 func (g *Game) dropLoot(m *Monster) {
-	p := g.P
+	p, r := g.P, g.Rules
 	mf := float64(p.S(StMF)) / 100
 	nItems, bonus, minR := 0, mf, RNormal
-	if g.rng.Intn(100) < 12 {
+	if g.rng.Intn(100) < int(r.DropChance) {
 		nItems = 1
 	}
-	goldChance := 30
+	goldChance := int(r.GoldChance)
 	switch m.Rank {
 	case RankChampion:
 		nItems, bonus, minR, goldChance = 1, mf+1, RMagic, 70
@@ -799,33 +804,33 @@ func (g *Game) dropLoot(m *Monster) {
 		nItems, goldChance = 0, 10
 	}
 	for i := range nItems {
-		r := RollRarity(g.rng, bonus)
-		if r < minR {
-			r = minR
+		rar := RollRarity(g.rng, bonus)
+		if rar < minR {
+			rar = minR
 		}
 		if m.Rank == RankBoss && i == 0 {
-			r = RUnique
+			rar = RUnique
 		}
-		if r == RNormal && m.Rank == RankNormal && g.rng.Intn(2) == 0 {
+		if rar == RNormal && m.Rank == RankNormal && g.rng.Intn(2) == 0 {
 			continue // plain monsters mostly drop nothing worth a look
 		}
-		g.dropItem(m.X, m.Y, GenItem(g.rng, m.Level, r, SlotNone))
+		g.dropItem(m.X, m.Y, GenItem(g.rng, m.Level, rar, SlotNone, r))
 	}
 	if g.rng.Intn(100) < goldChance {
-		amt := m.Level*3 + g.rng.Intn(m.Level*6+6)
+		base := int(float64(m.Level) * r.GoldPerLvl)
+		amt := base + g.rng.Intn(2*base+6)
 		if m.Rank >= RankChampion {
 			amt *= 2
 		}
 		amt = amt * (100 + p.S(StGoldFind)) / 100
 		g.dropItem(m.X, m.Y, &Item{Kind: IKGold, Amount: amt, Src: GoldDrop})
 	}
-	r := g.rng.Intn(100)
-	switch {
-	case r < 5:
+	switch x := g.rng.Intn(100); {
+	case x < 5:
 		g.dropItem(m.X, m.Y, NewPotion(IKHealth))
-	case r < 8:
+	case x < 8:
 		g.dropItem(m.X, m.Y, NewPotion(IKMana))
-	case r < 10:
+	case x < 10:
 		g.dropItem(m.X, m.Y, NewPotion(IKScroll))
 	}
 }
@@ -841,7 +846,7 @@ func (g *Game) openChest(x, y int) {
 		if r == RNormal {
 			r = RMagic
 		}
-		g.dropItem(x, y, GenItem(g.rng, lvl, r, SlotNone))
+		g.dropItem(x, y, GenItem(g.rng, lvl, r, SlotNone, g.Rules))
 	}
 	g.dropItem(x, y, &Item{Kind: IKGold, Amount: lvl*10 + g.rng.Intn(lvl*15+10), Src: GoldChest})
 	if g.rng.Intn(2) == 0 {
@@ -863,12 +868,12 @@ func (g *Game) useAltar(x, y int) {
 		p.HP = float64(p.MaxHP())
 		g.msg(colPurple, "Blood-light washes over you. You are restored.")
 	case 1:
-		xp := xpNext(p.Lvl) / 4
+		xp := g.Rules.xpNext(p.Lvl) / 4
 		g.msg(colPurple, "Forbidden knowledge floods your mind. (+%d XP)", xp)
 		g.gainXP(xp)
 	default:
 		g.msg(colPurple, "The altar offers up a gift.")
-		g.dropItem(x, y+1, GenItem(g.rng, g.Lv.Depth+1, RRare, SlotNone))
+		g.dropItem(x, y+1, GenItem(g.rng, g.Lv.Depth+1, RRare, SlotNone, g.Rules))
 	}
 	g.novaFx(x, y, colPurple, 3)
 }
@@ -908,7 +913,7 @@ func (g *Game) drinkHealth() {
 	}
 	p.HPot--
 	g.Stats.HPots++
-	amt := float64(p.MaxHP())*0.5 + 12
+	amt := float64(p.MaxHP())*g.Rules.PotionHeal + 12
 	p.HealPool += amt
 	g.textFx(p.X, p.Y, "+"+strconv.Itoa(int(amt)), colGreen)
 	g.msg(C(1, .45, .45), "You drink a healing potion.")
@@ -1318,10 +1323,10 @@ func (g *Game) monsterHitChance(m *Monster) int {
 // monsterDamage rolls the monster's blow and takes off the armor's share,
 // at most half.
 func (g *Game) monsterDamage(m *Monster) int {
-	p := g.P
+	p, r := g.P, g.Rules
 	dmg := m.MinD + g.rng.Intn(m.MaxD-m.MinD+1)
 	a := float64(p.ArmorVal())
-	red := math.Min(0.5, a/(a+50+10*float64(m.Level)))
+	red := math.Min(r.ArmorCap, a/(a+r.ArmorK+r.ArmorPerLvl*float64(m.Level)))
 	return maxi(1, int(float64(dmg)*(1-red)+0.5))
 }
 
@@ -1486,7 +1491,7 @@ func (g *Game) restock() {
 			r = RRare
 		}
 		slots := []Slot{SlotWeapon, SlotWeapon, SlotOffhand, SlotArmor, SlotHelm, SlotGloves, SlotBoots}
-		smith.Items = append(smith.Items, GenItem(g.rng, p.Lvl+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))]))
+		smith.Items = append(smith.Items, GenItem(g.rng, p.Lvl+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))], g.Rules))
 	}
 	alch := &Shop{Name: "Mirela's Remedies", Kind: 1}
 	alch.Items = append(alch.Items, NewPotion(IKHealth), NewPotion(IKMana), NewPotion(IKScroll))
@@ -1496,7 +1501,7 @@ func (g *Game) restock() {
 		if g.rng.Intn(6) == 0 {
 			r = RRare
 		}
-		alch.Items = append(alch.Items, GenItem(g.rng, p.Lvl+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))]))
+		alch.Items = append(alch.Items, GenItem(g.rng, p.Lvl+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))], g.Rules))
 	}
 	g.shops = [2]*Shop{smith, alch}
 }
@@ -1552,11 +1557,12 @@ func (g *Game) talkTo(m *Monster) {
 			}
 		}
 		if reward {
-			p.Gold += 250 * p.Lvl
-			g.Stats.In[GoldQuest] += 250 * p.Lvl
-			it := GenItem(g.rng, p.Lvl+2, RUnique, SlotNone)
+			gold := int(g.Rules.QuestGoldPerLvl * float64(p.Lvl))
+			p.Gold += gold
+			g.Stats.In[GoldQuest] += gold
+			it := GenItem(g.rng, p.Lvl+2, RUnique, SlotNone, g.Rules)
 			g.dropItem(p.X, p.Y, it)
-			g.msg(colGold, "Voss gives you %d gold and %s.", 250*p.Lvl, it.Name)
+			g.msg(colGold, "Voss gives you %d gold and %s.", gold, it.Name)
 		}
 		g.talkName, g.talkLines, g.talkCol, g.Mode = m.Name, lines, m.T.Color, ModeTalk
 	default:
@@ -1602,16 +1608,13 @@ func (g *Game) buy(it *Item) {
 	g.msg(colGold, "Bought %s for %dg.", it.DisplayName(), price)
 }
 
-// Mirela asks healCost per point of life or mana she restores, once the
-// hero is past freeHealLvl.
-const (
-	healCost    = 0.5
-	freeHealLvl = 3
-)
+// Mirela heals for free until the hero is past freeHealLvl.
+const freeHealLvl = 3
 
-// mirelaHeal restores life, then mana, as far as the hero can pay.
+// mirelaHeal restores life, then mana, as far as the hero can pay, at
+// HealCost a point.
 func (g *Game) mirelaHeal() {
-	p := g.P
+	p, healCost := g.P, g.Rules.HealCost
 	need := float64(p.MaxHP()) - p.HP + float64(p.MaxMP()) - p.MP
 	if need < 1 {
 		g.msg(colCyan, "Mirela looks you over. \"Hale as an ox. Buy something, dear.\"")
@@ -1643,12 +1646,12 @@ func (g *Game) mirelaHeal() {
 // buyPrice: remedies cost more as the hero grows, so a stack of potions
 // stays a real expense.
 func (g *Game) buyPrice(it *Item) int {
-	lvl := g.P.Lvl - 1
+	lvl, r := float64(g.P.Lvl-1), g.Rules
 	switch it.Kind {
 	case IKHealth, IKMana:
-		return 20 + 4*lvl
+		return int(r.PotionPrice + r.PotionPricePerLvl*lvl)
 	case IKScroll:
-		return 40 + 6*lvl
+		return int(r.ScrollPrice + r.ScrollPricePerLvl*lvl)
 	}
 	return it.Value()
 }

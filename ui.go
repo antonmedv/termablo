@@ -339,7 +339,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	row++
 	s.Text(cx, row, "Experience", C(.8, .7, .4).C8())
 	row++
-	bar(s, cx, row, bw, float64(p.XP)/float64(xpNext(p.Lvl)), C(.85, .7, .3), C(.15, .12, .05))
+	bar(s, cx, row, bw, float64(p.XP)/float64(g.Rules.xpNext(p.Lvl)), C(.85, .7, .3), C(.15, .12, .05))
 	row += 2
 	// consumables: hotkey, name, count — in the same two columns as the stats below
 	hot := func(x, y int, key, label string, n int, c RGB) {
@@ -605,7 +605,7 @@ func (g *Game) drawChar(s *Screen, mapW, mapH int) {
 	x, y := centerBox(s, mapW, mapH, 56, 24, "Character")
 	cx := x + 3
 	s.TextBold(cx, y+2, fmt.Sprintf("Wanderer · Level %d", p.Lvl), colWhite.C8())
-	s.Text(cx, y+3, fmt.Sprintf("Experience %d / %d", p.XP, xpNext(p.Lvl)), colDim.C8())
+	s.Text(cx, y+3, fmt.Sprintf("Experience %d / %d", p.XP, g.Rules.xpNext(p.Lvl)), colDim.C8())
 	attrs := []struct {
 		k    string
 		name string

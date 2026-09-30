@@ -29,13 +29,13 @@ func TestRollBaseSlot(t *testing.T) {
 
 // Every generated item must be well-formed, whatever it rolled.
 func TestGenItemInvariants(t *testing.T) {
-	rng := rand.New(rand.NewSource(2))
+	rng, rules := rand.New(rand.NewSource(2)), DefaultRules()
 	affixRange := map[Rarity][2]int{RNormal: {0, 0}, RMagic: {1, 2}, RRare: {1, 5}}
 	for ilvl := 1; ilvl <= 30; ilvl++ {
 		for _, r := range []Rarity{RNormal, RMagic, RRare, RUnique} {
 			for _, s := range append([]Slot{SlotNone}, equipSlots...) {
 				for range 5 {
-					it := GenItem(rng, ilvl, r, s)
+					it := GenItem(rng, ilvl, r, s, rules)
 					checkItem(t, it, s)
 					if rg, ok := affixRange[it.Rarity]; ok && (len(it.Aff) < rg[0] || len(it.Aff) > rg[1]) {
 						t.Errorf("%s %s: %d affixes", rarityName[it.Rarity], it.Name, len(it.Aff))
@@ -96,11 +96,11 @@ func TestRollRarityDistribution(t *testing.T) {
 }
 
 func TestItemValueOrdering(t *testing.T) {
-	rng := rand.New(rand.NewSource(4))
+	rng, rules := rand.New(rand.NewSource(4)), DefaultRules()
 	avg := func(r Rarity) int {
 		sum := 0
 		for range 200 {
-			sum += GenItem(rng, 10, r, SlotArmor).Value()
+			sum += GenItem(rng, 10, r, SlotArmor, rules).Value()
 		}
 		return sum / 200
 	}

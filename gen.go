@@ -74,9 +74,9 @@ func (l *Level) building(x0, y0, x1, y1, doorX, doorY int) {
 
 // ---------------------------------------------------------------- town
 
-func genTown(seed int64) *Level {
+func genTown(seed int64, r *Rules) *Level {
 	W, H := 84, 46
-	l := newLevel("town", "Emberhold", KTown, W, H, 0, seed)
+	l := newLevel("town", "Emberhold", KTown, W, H, 0, seed, r)
 	l.Ambient = C(.07, .075, .12)
 	l.Lore = "Emberhold. The last lit town before the dark. Lanterns burn all night here."
 	nz := Noise{uint32(seed)}
@@ -176,7 +176,7 @@ func genTown(seed int64) *Level {
 	l.Set(l.PortalAt.X, l.PortalAt.Y, TRoad)
 
 	npc := func(id string, x, y int) {
-		m := NewMonster(l.rng, mtemps[id], 1, RankNormal)
+		m := NewMonster(l.rng, mtemps[id], 1, RankNormal, r)
 		m.X, m.Y, m.HomeX, m.HomeY = x, y, x, y
 		l.Monsters = append(l.Monsters, m)
 	}
@@ -212,9 +212,9 @@ func (l *Level) ruin(x0, y0, w, h int, keep float64) {
 	}
 }
 
-func genFields(seed int64) *Level {
+func genFields(seed int64, r *Rules) *Level {
 	W, H := 150, 90
-	l := newLevel("fields", "Ashen Fields", KSurface, W, H, 1, seed)
+	l := newLevel("fields", "Ashen Fields", KSurface, W, H, 1, seed, r)
 	l.Ambient = C(.05, .06, .12)
 	l.Lore = "The Ashen Fields. Moonlight, and the smell of old smoke."
 	nz := Noise{uint32(seed) + 7}
@@ -355,9 +355,9 @@ func genFields(seed int64) *Level {
 
 // ---------------------------------------------------------------- marsh
 
-func genMarsh(seed int64) *Level {
+func genMarsh(seed int64, r *Rules) *Level {
 	W, H := 130, 80
-	l := newLevel("marsh", "Blackmarsh", KSurface, W, H, 6, seed)
+	l := newLevel("marsh", "Blackmarsh", KSurface, W, H, 6, seed, r)
 	l.Ambient = C(.04, .07, .09)
 	l.Lore = "Blackmarsh. Cold lights drift over the water. Do not follow them."
 	nz := Noise{uint32(seed) + 3}
@@ -466,6 +466,7 @@ type DungeonSpec struct {
 	Up, Down   string
 	Boss       string
 	SpawnTable string
+	Rules      *Rules
 }
 
 func genDungeon(s DungeonSpec, seed int64) *Level {
@@ -477,7 +478,7 @@ func genDungeon(s DungeonSpec, seed int64) *Level {
 
 func genCrypt(s DungeonSpec, seed int64) *Level {
 	W, H := 92, 56
-	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed)
+	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed, s.Rules)
 	l.Ambient = C(0, 0, 0)
 	l.Fill(0, 0, W-1, H-1, TWall)
 	var rooms []Room
@@ -625,7 +626,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 
 func genCave(s DungeonSpec, seed int64) *Level {
 	W, H := 96, 60
-	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed)
+	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed, s.Rules)
 	l.Ambient = C(0, 0, 0)
 	wall, floor := TCaveWall, TCaveFloor
 	grid := make([]bool, W*H)

@@ -109,7 +109,7 @@ func TestShotsUI(t *testing.T) {
 	g.Mode = ModePlay
 	s := NewScreen(120, 36)
 	for i, r := range []Rarity{RMagic, RRare, RUnique, RNormal, RMagic, RRare} {
-		g.P.Inv = append(g.P.Inv, GenItem(g.rng, 5+i, r, SlotNone))
+		g.P.Inv = append(g.P.Inv, GenItem(g.rng, 5+i, r, SlotNone, g.Rules))
 	}
 	g.time = 1
 	g.Mode, g.pane, g.cur = ModeInv, 1, 2
@@ -146,7 +146,7 @@ func TestShotHover(t *testing.T) {
 	mx, my := l.FreeNear(p.X+2, p.Y, p.X, p.Y)
 	m := placeMonsterAvoid(l, "skel", mx, my, 3, RankChampion, p.X, p.Y)
 	ix, iy := l.FreeNear(p.X-1, p.Y+1, p.X, p.Y)
-	g.dropItem(ix, iy, GenItem(g.rng, 5, RUnique, SlotNone))
+	g.dropItem(ix, iy, GenItem(g.rng, 5, RUnique, SlotNone, g.Rules))
 	g.computeVisibility()
 	g.time = 3
 	mapW, mapH := s.W-panelW, s.H-logH

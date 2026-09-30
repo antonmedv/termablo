@@ -156,9 +156,9 @@ func TestMeleeKillGivesXP(t *testing.T) {
 func TestEquipRespectsInvMax(t *testing.T) {
 	g := NewGame(1)
 	p := g.P
-	p.Eq[EqOffhand] = GenItem(g.rng, 1, RNormal, SlotOffhand)
+	p.Eq[EqOffhand] = GenItem(g.rng, 1, RNormal, SlotOffhand, g.Rules)
 	for len(p.Inv) < invMax-1 {
-		p.Inv = append(p.Inv, GenItem(g.rng, 1, RNormal, SlotRing))
+		p.Inv = append(p.Inv, GenItem(g.rng, 1, RNormal, SlotRing, g.Rules))
 	}
 	p.Inv = append(p.Inv, &Item{Kind: IKEquip, Base: baseByName("War Hammer"), Name: "War Hammer", MinD: 7, MaxD: 17})
 	g.equip(len(p.Inv) - 1)

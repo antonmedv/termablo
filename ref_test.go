@@ -66,7 +66,7 @@ func refRolls() int {
 // refHero builds a policy's hero at lvl, points spent in its pattern
 // through spendPoint, so fixtures and bot agree.
 func refHero(g *Game, pol *botPolicy, lvl int) *Player {
-	p := NewPlayer()
+	p := NewPlayer(g.Rules)
 	p.Lvl, p.Points = lvl, 5*(lvl-1)
 	old := g.P
 	g.P = p
@@ -94,7 +94,7 @@ func startKit(rng *rand.Rand) [EqCount]*Item {
 // gearTier rolls n items of ilvl per slot, weapon first, and keeps the
 // best by the policy's gearScore. A two-handed weapon leaves the off-hand
 // empty.
-func gearTier(rng *rand.Rand, pol *botPolicy, ilvl, n int, rarity func() Rarity) [EqCount]*Item {
+func gearTier(rng *rand.Rand, r *Rules, pol *botPolicy, ilvl, n int, rarity func() Rarity) [EqCount]*Item {
 	var eq [EqCount]*Item
 	for slot := range EqCount {
 		if slot == EqOffhand && eq[EqWeapon] != nil && eq[EqWeapon].Base.TwoHanded {
@@ -102,7 +102,7 @@ func gearTier(rng *rand.Rand, pol *botPolicy, ilvl, n int, rarity func() Rarity)
 		}
 		its := make([]*Item, n)
 		for i := range its {
-			its[i] = GenItem(rng, ilvl, rarity(), eqSlotFor[slot])
+			its[i] = GenItem(rng, ilvl, rarity(), eqSlotFor[slot], r)
 		}
 		sort.SliceStable(its, func(i, j int) bool {
 			a, _ := pol.gearScore(its[i])
@@ -117,13 +117,13 @@ func gearTier(rng *rand.Rand, pol *botPolicy, ilvl, n int, rarity func() Rarity)
 // parKit is the par tier: the start kit where the checkpoint says so,
 // otherwise the median by gearTotal of parKits kits, each the best of the
 // checkpoint's par rolls per slot at drop rarities.
-func parKit(rng *rand.Rand, pol *botPolicy, cp refCheckpoint) [EqCount]*Item {
+func parKit(rng *rand.Rand, r *Rules, pol *botPolicy, cp refCheckpoint) [EqCount]*Item {
 	if cp.par == 0 {
 		return startKit(rng)
 	}
 	kits := make([][EqCount]*Item, parKits)
 	for i := range kits {
-		kits[i] = gearTier(rng, pol, cp.depth, cp.par, func() Rarity { return RollRarity(rng, 1.0) })
+		kits[i] = gearTier(rng, r, pol, cp.depth, cp.par, func() Rarity { return RollRarity(rng, 1.0) })
 	}
 	sort.SliceStable(kits, func(i, j int) bool { return gearTotal(pol, kits[i]) < gearTotal(pol, kits[j]) })
 	return kits[parKits/2]
@@ -158,23 +158,23 @@ type refRow struct {
 
 // refMonsters builds a checkpoint's monsters at depth: two normals, an
 // Extra Strong champion, and the boss where there is one.
-func refMonsters(rng *rand.Rand, cp refCheckpoint, depth int) []*Monster {
+func refMonsters(rng *rand.Rand, r *Rules, cp refCheckpoint, depth int) []*Monster {
 	ms := []*Monster{
-		NewMonster(rng, mtemps[cp.normals[0]], depth, RankNormal),
-		NewMonster(rng, mtemps[cp.normals[1]], depth, RankNormal),
-		strongChampion(rng, mtemps[cp.champion], depth),
+		NewMonster(rng, mtemps[cp.normals[0]], depth, RankNormal, r),
+		NewMonster(rng, mtemps[cp.normals[1]], depth, RankNormal, r),
+		strongChampion(rng, r, mtemps[cp.champion], depth),
 	}
 	if cp.boss != "" {
-		ms = append(ms, NewMonster(rng, mtemps[cp.boss], depth, RankBoss))
+		ms = append(ms, NewMonster(rng, mtemps[cp.boss], depth, RankBoss, r))
 	}
 	return ms
 }
 
 // strongChampion rolls a champion until its one mod is Extra Strong, so
 // the champion column compares across checkpoints.
-func strongChampion(rng *rand.Rand, t *MTemplate, depth int) *Monster {
+func strongChampion(rng *rand.Rand, r *Rules, t *MTemplate, depth int) *Monster {
 	for {
-		if m := NewMonster(rng, t, depth, RankChampion); m.HasMod(ModStrong) {
+		if m := NewMonster(rng, t, depth, RankChampion, r); m.HasMod(ModStrong) {
 			return m
 		}
 	}
@@ -275,12 +275,13 @@ func refBlock(ar *arena, cp refCheckpoint, rng *rand.Rand, n int) []string {
 	var out []string
 	logf := func(f string, a ...any) { out = append(out, fmt.Sprintf(f, a...)) }
 	{
+		r := ar.g.Rules
 		var rows []refRow
 		for _, pol := range botPolicies {
 			start, par, lucky := refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl)
 			wear(start, startKit(rng))
-			wear(par, parKit(rng, pol, cp))
-			wear(lucky, gearTier(rng, pol, cp.depth, luckyRolls, func() Rarity {
+			wear(par, parKit(rng, r, pol, cp))
+			wear(lucky, gearTier(rng, r, pol, cp.depth, luckyRolls, func() Rarity {
 				if rng.Intn(uniqueOdds) == 0 {
 					return RUnique
 				}
@@ -293,8 +294,8 @@ func refBlock(ar *arena, cp refCheckpoint, rng *rand.Rand, n int) []string {
 				rows = append(rows, refRow{"wrong", r.pol, r.p, cp.depth + wrongWay})
 			}
 		}
-		ms := refMonsters(rng, cp, cp.depth)
-		far := refMonsters(rng, cp, cp.depth+wrongWay)
+		ms := refMonsters(rng, r, cp, cp.depth)
+		far := refMonsters(rng, r, cp, cp.depth+wrongWay)
 		var labels []string
 		hdr := fmt.Sprintf("%-14s %4s %5s %-8s %4s %-6s %4s %4s", "hero", "HP", "armor", "melee", "crit", "bolt", "gear", "bot")
 		for _, m := range ms {

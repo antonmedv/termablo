@@ -72,7 +72,7 @@ func newTestGame(t testing.TB, opts ...testOpt) *Game {
 	g.Mode = ModePlay
 	var l *Level
 	if o.layout == "" {
-		l = newLevel("test", "Test Field", KSurface, 120, 30, 1, o.seed)
+		l = newLevel("test", "Test Field", KSurface, 120, 30, 1, o.seed, g.Rules)
 		l.Fill(0, 0, l.W-1, l.H-1, TGrass)
 		l.Start = Pos{5, 15}
 	} else {
@@ -100,7 +100,7 @@ func parseMap(t testing.TB, g *Game, layout string, seed int64, awake bool) *Lev
 	for _, r := range rows {
 		w = maxi(w, len(r))
 	}
-	l := newLevel("test", "Test Map", KDungeon, w, len(rows), 1, seed)
+	l := newLevel("test", "Test Map", KDungeon, w, len(rows), 1, seed, g.Rules)
 	l.Fill(0, 0, w-1, len(rows)-1, TWall)
 	player := false
 	for y, r := range rows {
@@ -112,7 +112,7 @@ func parseMap(t testing.TB, g *Game, layout string, seed int64, awake bool) *Lev
 				player = true
 			case mapMonsters[ch] != "":
 				l.Set(x, y, TFloor)
-				m := NewMonster(g.rng, mtemps[mapMonsters[ch]], 1, RankNormal)
+				m := NewMonster(g.rng, mtemps[mapMonsters[ch]], 1, RankNormal, g.Rules)
 				m.X, m.Y, m.HomeX, m.HomeY, m.Awake = x, y, x, y, awake
 				l.Monsters = append(l.Monsters, m)
 			default:
@@ -144,7 +144,7 @@ func monsters(g *Game, id string) []*Monster {
 // spawnAt places a monster near an offset from the player.
 func spawnAt(g *Game, id string, dx, dy int, awake bool) *Monster {
 	l, p := g.Lv, g.P
-	m := NewMonster(g.rng, mtemps[id], 1, RankNormal)
+	m := NewMonster(g.rng, mtemps[id], 1, RankNormal, g.Rules)
 	m.X, m.Y = l.FreeNear(p.X+dx, p.Y+dy, p.X, p.Y)
 	m.Awake = awake
 	l.Monsters = append(l.Monsters, m)

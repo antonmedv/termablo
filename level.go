@@ -42,6 +42,7 @@ type Level struct {
 	Lore     string
 	visited  bool
 	rng      *rand.Rand
+	rules    *Rules
 }
 
 const (
@@ -51,8 +52,8 @@ const (
 	DecalScorch
 )
 
-func newLevel(id, name string, kind LevelKind, w, h, depth int, seed int64) *Level {
-	l := &Level{ID: id, Name: name, Kind: kind, W: w, H: h, Depth: depth}
+func newLevel(id, name string, kind LevelKind, w, h, depth int, seed int64, r *Rules) *Level {
+	l := &Level{ID: id, Name: name, Kind: kind, W: w, H: h, Depth: depth, rules: r}
 	l.T = make([]Tile, w*h)
 	l.V = make([]uint8, w*h)
 	l.Seen = make([]bool, w*h)

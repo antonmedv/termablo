@@ -413,10 +413,10 @@ func rollBase(rng *rand.Rand, ilvl int, slot Slot) *Base {
 	return pool[rng.Intn(len(pool))]
 }
 
-func rollAffix(rng *rand.Rand, d *AffixDef, ilvl int) (Affix, string) {
+func rollAffix(rng *rand.Rand, d *AffixDef, ilvl int, r *Rules) (Affix, string) {
 	v := d.Lo + rng.Intn(d.Hi-d.Lo+1)
-	v += int(float64(ilvl) * d.PerLvl * (0.5 + rng.Float64()*0.5))
-	maxV := float64(d.Hi) + 18*d.PerLvl
+	v += int(float64(ilvl) * d.PerLvl * r.AffixLvlScale * (0.5 + rng.Float64()*0.5))
+	maxV := float64(d.Hi) + 18*d.PerLvl*r.AffixLvlScale
 	tier := int(float64(v) / maxV * float64(len(d.Names)))
 	tier = clampi(tier, 0, len(d.Names)-1)
 	return Affix{d.S, v}, d.Names[tier]
@@ -434,8 +434,8 @@ var rareSecond = map[Slot][]string{
 	SlotAmulet:  {"Eye", "Heart", "Charm", "Talisman", "Star"},
 }
 
-// GenItem creates an equipment item. rarity < 0 rolls rarity with mf bonus.
-func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot) *Item {
+// GenItem creates an equipment item of a rarity for a slot (SlotNone: any).
+func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Item {
 	if ilvl < 1 {
 		ilvl = 1
 	}
@@ -479,7 +479,7 @@ func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot) *Item {
 				continue
 			}
 			used[d.S] = true
-			a, n := rollAffix(rng, d, ilvl)
+			a, n := rollAffix(rng, d, ilvl, r)
 			return a, n, true
 		}
 		return Affix{}, "", false
@@ -514,7 +514,7 @@ func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot) *Item {
 			}
 			if a, _, ok := pick(pool); ok {
 				// rares roll a little stronger
-				a.V += a.V / 5
+				a.V += int(float64(a.V) * r.RareBonus)
 				it.Aff = append(it.Aff, a)
 			}
 		}

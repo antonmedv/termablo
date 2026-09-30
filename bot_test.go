@@ -177,7 +177,7 @@ func botTable(t *testing.T, name string, rs []botRun) {
 		var lvl, hp, armor, lo, hi, blo, bhi, crit, gear, gold []int
 		var swings, bolts, turns []float64
 		area, _ := splitID(cp)
-		m := NewMonster(rng, mtemps[botTypical[area]], botDepth(cp), RankNormal)
+		m := NewMonster(rng, mtemps[botTypical[area]], botDepth(cp), RankNormal, ar.g.Rules)
 		for _, r := range rs {
 			for i := range r.snaps {
 				s := &r.snaps[i]

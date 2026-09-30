@@ -59,7 +59,7 @@ func TestPotionPriceGrows(t *testing.T) {
 func TestPlainGearSellsForLittle(t *testing.T) {
 	g := newTestGame(t)
 	for _, r := range []Rarity{RNormal, RMagic, RRare} {
-		it := GenItem(g.rng, 5, r, SlotArmor)
+		it := GenItem(g.rng, 5, r, SlotArmor, g.Rules)
 		if sp := sellPrice(it); sp < 1 || sp > it.Value()/12 {
 			t.Errorf("%s sells for %d, worth %d", rarityName[r], sp, it.Value())
 		}
@@ -67,7 +67,7 @@ func TestPlainGearSellsForLittle(t *testing.T) {
 }
 
 func TestSpellsScaleWithEnergyOnly(t *testing.T) {
-	p := NewPlayer()
+	p := NewPlayer(DefaultRules())
 	lo, hi := p.FireboltDmg()
 	p.Lvl = 20
 	if l, h := p.FireboltDmg(); l != lo || h != hi {

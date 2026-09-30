@@ -149,26 +149,26 @@ func (m *Monster) Color() RGB {
 var uniqueFirst = []string{"Bloodmaw", "Grimtooth", "Ashfang", "Hollowgrin", "Rotgut", "Blackvein", "Skullcleave", "Mournwind", "Gravelurk", "Emberskull", "Frostmarrow", "Dreadhowl", "Cinderjaw", "Wormheart"}
 var uniqueLast = []string{"the Hungry", "the Vile", "the Unburied", "the Defiler", "the Pale", "the Cruel", "the Wretched", "the Weeping", "the Gnawer"}
 
-func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int) *Monster {
+func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int, r *Rules) *Monster {
 	if lvl < 1 {
 		lvl = 1
 	}
 	// Life grows slowly at first, then steeply, so the fields stay gentle
 	// and the deep crypt keeps pace with a geared hero.
 	l1 := float64(lvl - 1)
-	hpMul := 1 + 0.32*l1 + 0.05*l1*l1
-	dMul := 1 + 0.24*l1 + 0.02*l1*l1
+	hpMul := 1 + r.HpLin*l1 + r.HpQuad*l1*l1
+	dMul := 1 + r.DmgLin*l1 + r.DmgQuad*l1*l1
 	if t.AI == AIBoneKing || t.AI == AIOracle {
 		rank = RankBoss
-		hpMul = 1 + 0.22*float64(lvl-1)
+		hpMul = 1 + r.BossHpLin*l1
 	}
 	m := &Monster{T: t, Name: t.Name, Level: lvl, Rank: rank, Speed: t.Speed}
 	hp := float64(t.HP) * hpMul
 	xp := float64(t.XP) * (1 + 0.45*float64(lvl-1))
 	switch rank {
 	case RankChampion:
-		hp *= 2.2
-		dMul *= 1.3
+		hp *= r.ChampHp
+		dMul *= r.ChampDmg
 		xp *= 3
 	case RankUnique:
 		hp *= 3
@@ -184,8 +184,8 @@ func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int) *Monster {
 	m.HP = m.MaxHP
 	m.MinD = maxi(1, int(float64(t.MinD)*dMul))
 	m.MaxD = maxi(m.MinD, int(float64(t.MaxD)*dMul))
-	m.Armor = t.Armor + lvl*2
-	m.ToHit = 55 + lvl*3
+	m.Armor = t.Armor + int(float64(lvl)*r.MonArmorPerLvl)
+	m.ToHit = 55 + int(float64(lvl)*r.MonToHitPerLvl)
 	m.XP = int(xp)
 	if rank == RankChampion || rank == RankUnique {
 		n := 1
@@ -273,7 +273,7 @@ func pickSpawn(rng *rand.Rand, table string, lvl int) *MTemplate {
 
 // populate places monster packs across a level, keeping clear of safe spots.
 func populate(l *Level, table string, packs int, safe []Pos) {
-	rng := l.rng
+	rng, r := l.rng, l.rules
 	reach := l.reachable(l.Start.X, l.Start.Y)
 	tooClose := func(x, y int) bool {
 		for _, s := range safe {
@@ -303,12 +303,13 @@ func populate(l *Level, table string, packs int, safe []Pos) {
 			lvl++
 		}
 		n := t.Pack[0] + rng.Intn(t.Pack[1]-t.Pack[0]+1)
+		n = maxi(1, int(float64(n)*r.PackMul))
 		leaderRank := RankNormal
 		if !uniquePlaced && rng.Intn(100) < 30 {
 			leaderRank = RankUnique
 			uniquePlaced = true
 			n += 2
-		} else if rng.Intn(100) < 8+3*l.Depth { // champions grow common deeper
+		} else if rng.Intn(100) < int(r.ChampBase+r.ChampPerDepth*float64(l.Depth)) { // champions grow common deeper
 			leaderRank = RankChampion
 			n = maxi(n, 2)
 		}
@@ -323,7 +324,7 @@ func populate(l *Level, table string, packs int, safe []Pos) {
 			if !reach[l.Idx(mx, my)] {
 				continue
 			}
-			m := NewMonster(rng, t, lvl, rank)
+			m := NewMonster(rng, t, lvl, rank, r)
 			m.X, m.Y, m.HomeX, m.HomeY = mx, my, mx, my
 			if rank == RankUnique {
 				m.Minion = false
@@ -338,7 +339,7 @@ func placeMonster(l *Level, id string, x, y, lvl, rank int) *Monster {
 }
 
 func placeMonsterAvoid(l *Level, id string, x, y, lvl, rank, px, py int) *Monster {
-	m := NewMonster(l.rng, mtemps[id], lvl, rank)
+	m := NewMonster(l.rng, mtemps[id], lvl, rank, l.rules)
 	m.X, m.Y = l.FreeNear(x, y, px, py)
 	m.HomeX, m.HomeY = m.X, m.Y
 	l.Monsters = append(l.Monsters, m)

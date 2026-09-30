@@ -146,7 +146,7 @@ func TestLevelUpAndSpendPoints(t *testing.T) {
 	g := newTestGame(t)
 	m := newTestModel(g)
 	g.P.HP = 1
-	g.gainXP(xpNext(1))
+	g.gainXP(g.Rules.xpNext(1))
 	p := g.P
 	if p.Lvl != 2 || p.Points != 5 || p.HP != float64(p.MaxHP()) {
 		t.Fatalf("lvl %d points %d hp %v/%d", p.Lvl, p.Points, p.HP, p.MaxHP())
@@ -169,7 +169,7 @@ func TestLevelUpAndSpendPoints(t *testing.T) {
 func TestEquipAndUnequipByKeys(t *testing.T) {
 	g := newTestGame(t)
 	m := newTestModel(g)
-	ring := GenItem(g.rng, 5, RMagic, SlotRing)
+	ring := GenItem(g.rng, 5, RMagic, SlotRing, g.Rules)
 	g.P.Inv = []*Item{ring}
 	press(m, "i", "enter")
 	if g.P.Eq[EqRing1] != ring || len(g.P.Inv) != 0 {
