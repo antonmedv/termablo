@@ -275,6 +275,11 @@ func TestBotKeys(t *testing.T) {
 	if m.botTPS != 10 {
 		t.Fatalf("speed %d after + + -", m.botTPS)
 	}
+	for _, c := range []struct{ tps, dir, want int }{{7, 1, 10}, {7, -1, 5}, {200, 1, 200}, {200, -1, 60}, {1, -1, 1}} {
+		if got := botSpeed(c.tps, c.dir); got != c.want {
+			t.Errorf("botSpeed(%d, %d) = %d, want %d", c.tps, c.dir, got, c.want)
+		}
+	}
 	key(" ")
 	key("i")
 	if m.botRun || g.Mode != ModeInv {

@@ -261,12 +261,16 @@ func (m *model) shopKey(k string) {
 
 // ------------------------------------------------------------ bot mode
 
-// drive hands the game to a scripted player, running.
+// drive hands the game to a scripted player, running at the speed set
+// before, or 5 turns a second.
 func (m *model) drive(pol *botPolicy) {
 	m.policy = pol
 	m.bot = NewBot(m.g, pol)
 	m.g.Mode = ModePlay
-	m.botRun, m.botTPS, m.botNext = true, 5, m.g.time
+	if m.botTPS <= 0 {
+		m.botTPS = 5
+	}
+	m.botRun, m.botNext = true, m.g.time
 }
 
 // botTick plays the bot's turns that have come due.
@@ -310,11 +314,20 @@ func (m *model) botKey(k string) bool {
 	return true
 }
 
-// botSpeed steps through botSpeeds from tps.
+// botSpeed steps through botSpeeds from tps: the next one up or down,
+// from wherever -tps put it.
 func botSpeed(tps, dir int) int {
-	for i, s := range botSpeeds {
-		if s == tps {
-			return botSpeeds[clampi(i+dir, 0, len(botSpeeds)-1)]
+	if dir > 0 {
+		for _, s := range botSpeeds {
+			if s > tps {
+				return s
+			}
+		}
+		return tps
+	}
+	for i := len(botSpeeds) - 1; i >= 0; i-- {
+		if botSpeeds[i] < tps {
+			return botSpeeds[i]
 		}
 	}
 	return botSpeeds[0]
@@ -373,6 +386,7 @@ func main() {
 	seed := flag.Int64("seed", 0, "world seed (0 = random)")
 	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
 	bot := flag.String("bot", "", "watch a scripted player: fighter or caster (ignored with -ssh)")
+	tps := flag.Int("tps", 5, "bot: turns per second to start at; + and - change it")
 	addr := flag.String("ssh", "", "serve the game over SSH on this address (e.g. :2222)")
 	hostKey := flag.String("hostkey", ".ssh/termablo_ed25519", "SSH host key, created if missing")
 	maxSessions := flag.Int("max-sessions", 50, "SSH: most games at once (0 = no limit)")
@@ -394,6 +408,11 @@ func main() {
 			fmt.Fprintf(os.Stderr, "-bot %q: want fighter or caster\n", *bot)
 			os.Exit(2)
 		}
+		if *tps < 1 {
+			fmt.Fprintf(os.Stderr, "-tps %d: want at least 1\n", *tps)
+			os.Exit(2)
+		}
+		m.botTPS = *tps
 		m.drive(pol)
 	}
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseAllMotion())
