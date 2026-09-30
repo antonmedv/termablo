@@ -87,10 +87,12 @@ type Game struct {
 	autoNext   float64
 	autoItems  int
 	usedAltars map[string]bool
+
+	Stats Stats
 }
 
 func NewGame(seed int64) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}}
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats()}
 	g.P = NewPlayer()
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
@@ -413,6 +415,7 @@ func drain(pool *float64) float64 {
 func (g *Game) endTurn() {
 	p := g.P
 	g.Turn++
+	g.Stats.Turns[g.Lv.ID]++
 	// No natural regeneration: life and mana come back from potions,
 	// shrines, Mirela, and regeneration affixes on gear.
 	hp := float64(p.S(StLifeRegen))*0.08 + drain(&p.HealPool)
@@ -580,6 +583,7 @@ func (g *Game) autoPickup() {
 		switch it.Kind {
 		case IKGold:
 			p.Gold += it.Amount
+			g.Stats.In[it.Src] += it.Amount
 			g.msg(colGold, "You pick up %d gold.", it.Amount)
 		case IKHealth, IKMana:
 			n, name, col := &p.HPot, "Healing", C(1, .4, .4)
@@ -699,6 +703,7 @@ func (g *Game) damageMonster(m *Monster, dmg int, crit bool, col RGB) {
 	m.HP -= dmg
 	m.Flash = g.time
 	m.Awake = true
+	g.Stats.DmgDealt += dmg
 	s := strconv.Itoa(dmg)
 	if crit {
 		s += "!"
@@ -714,6 +719,7 @@ func (g *Game) killMonster(m *Monster) {
 	l, p := g.Lv, g.P
 	m.Dead = true
 	p.Kills++
+	g.Stats.Kills[m.Rank]++
 	i := l.Idx(m.X, m.Y)
 	if l.At(m.X, m.Y) != TWater && l.At(m.X, m.Y) != TDeepWater {
 		l.Decal[i] = DecalCorpse
@@ -811,7 +817,7 @@ func (g *Game) dropLoot(m *Monster) {
 			amt *= 2
 		}
 		amt = amt * (100 + p.S(StGoldFind)) / 100
-		g.dropItem(m.X, m.Y, &Item{Kind: IKGold, Amount: amt})
+		g.dropItem(m.X, m.Y, &Item{Kind: IKGold, Amount: amt, Src: GoldDrop})
 	}
 	r := g.rng.Intn(100)
 	switch {
@@ -837,7 +843,7 @@ func (g *Game) openChest(x, y int) {
 		}
 		g.dropItem(x, y, GenItem(g.rng, lvl, r, SlotNone))
 	}
-	g.dropItem(x, y, &Item{Kind: IKGold, Amount: lvl*10 + g.rng.Intn(lvl*15+10)})
+	g.dropItem(x, y, &Item{Kind: IKGold, Amount: lvl*10 + g.rng.Intn(lvl*15+10), Src: GoldChest})
 	if g.rng.Intn(2) == 0 {
 		g.dropItem(x, y, NewPotion(IKHealth))
 	}
@@ -878,6 +884,7 @@ func (g *Game) hurtPlayer(dmg int, by, verb string) {
 	}
 	g.msg(C(.9, .45, .4), "%s %s you for %d.", titleWord(by), verb, dmg)
 	p.HP -= float64(dmg)
+	g.Stats.DmgTaken += dmg
 	p.Flash = g.time
 	g.auto = false
 	g.textFx(p.X, p.Y, strconv.Itoa(dmg), colRed)
@@ -900,6 +907,7 @@ func (g *Game) drinkHealth() {
 		return
 	}
 	p.HPot--
+	g.Stats.HPots++
 	amt := float64(p.MaxHP())*0.5 + 12
 	p.HealPool += amt
 	g.textFx(p.X, p.Y, "+"+strconv.Itoa(int(amt)), colGreen)
@@ -918,6 +926,7 @@ func (g *Game) drinkMana() {
 		return
 	}
 	p.MPot--
+	g.Stats.MPots++
 	p.ManaPool += float64(p.MaxMP())*0.4 + 5
 	g.msg(C(.45, .6, 1), "You drink a mana potion.")
 	g.endTurn()
@@ -1540,6 +1549,7 @@ func (g *Game) talkTo(m *Monster) {
 		}
 		if reward {
 			p.Gold += 250 * p.Lvl
+			g.Stats.In[GoldQuest] += 250 * p.Lvl
 			it := GenItem(g.rng, p.Lvl+2, RUnique, SlotNone)
 			g.dropItem(p.X, p.Y, it)
 			g.msg(colGold, "Voss gives you %d gold and %s.", 250*p.Lvl, it.Name)
@@ -1584,6 +1594,7 @@ func (g *Game) buy(it *Item) {
 		}
 	}
 	p.Gold -= price
+	g.Stats.Out[sinkOf(it)] += price
 	g.msg(colGold, "Bought %s for %dg.", it.DisplayName(), price)
 }
 
@@ -1614,6 +1625,7 @@ func (g *Game) mirelaHeal() {
 	}
 	cost := int(math.Ceil(pts * healCost))
 	p.Gold -= cost
+	g.Stats.Out[SinkHeal] += cost
 	hp := math.Min(pts, float64(p.MaxHP())-p.HP)
 	p.HP += hp
 	p.MP = math.Min(float64(p.MaxMP()), p.MP+pts-hp)
@@ -1653,6 +1665,7 @@ func (g *Game) sell(idx int) {
 	it := p.Inv[idx]
 	price := sellPrice(it)
 	p.Gold += price
+	g.Stats.In[GoldSale] += price
 	p.Inv = append(p.Inv[:idx], p.Inv[idx+1:]...)
 	if g.shop != nil && g.shop.Kind == 0 {
 		g.shop.Items = append(g.shop.Items, it)
@@ -1744,6 +1757,7 @@ func (g *Game) equip(idx int) {
 		p.Eq[EqWeapon] = nil
 	}
 	p.recalc()
+	g.Stats.Equips++
 	g.msg(it.Color(), "You equip %s.", it.Name)
 }
 

@@ -67,6 +67,8 @@ func checkGame(g *Game) error {
 		return fmt.Errorf("negative gold/potions/scrolls")
 	case p.Points < 0:
 		return fmt.Errorf("negative stat points")
+	case p.Gold != 60+g.Stats.GoldIn()-g.Stats.GoldOut():
+		return fmt.Errorf("gold %d, but 60 +%v -%v", p.Gold, g.Stats.In, g.Stats.Out)
 	}
 	if m := l.MonsterAt(p.X, p.Y); m != nil {
 		return fmt.Errorf("%s stands on the player", m.Name)

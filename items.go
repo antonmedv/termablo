@@ -240,6 +240,7 @@ type Item struct {
 	Armor  int
 	Aff    []Affix
 	Amount int
+	Src    GoldSrc // gold only: where it came from
 	Flavor string
 }
 

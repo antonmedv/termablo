@@ -30,9 +30,9 @@ type botResult struct {
 	lvl     int
 	kills   int
 	deepest string
-	earned  int
-	spent   int
-	potions int
+	in      [GoldSrcCount]int // gold by source
+	out     [SinkCount]int    // gold by sink
+	potions int               // healing potions drunk
 	trips   int
 }
 
@@ -61,7 +61,7 @@ func runBot(seed int64, pol *botPolicy, maxTurns int) botResult {
 	return botResult{policy: pol.name, seed: seed, turns: g.Turn, dead: g.Mode == ModeDead, by: p.KilledBy, where: g.Lv.ID,
 		stuck: b.State() == BotStuck || calls >= 2*maxTurns, king: g.Quests[0] > 0, oracle: g.Quests[1] > 0,
 		lvl: p.Lvl, kills: p.Kills, deepest: b.Stats.Deepest,
-		earned: b.Stats.Earned, spent: b.Stats.Spent, potions: b.Stats.Potions, trips: b.Stats.Trips}
+		in: g.Stats.In, out: g.Stats.Out, potions: g.Stats.HPots, trips: b.Stats.Trips}
 }
 
 // runBots plays every policy over seeds 1..n, runs in parallel.
@@ -101,10 +101,11 @@ func botReport(t *testing.T, name string, rs []botResult) {
 	alive, stuck, king, oracle := 0, 0, 0, 0
 	reached := map[string]int{}
 	killers, areas := map[string]int{}, map[string]int{}
+	t.Logf("%s: gold is +%s -%s", name, strings.Join(goldSrcNames[:], "/"), strings.Join(goldSinkNames[:SinkGear+1], "/"))
 	for _, r := range rs {
-		t.Logf("%-7s seed %2d  %-8s clvl %2d  kills %3d  gold +%5d -%5d  potions %2d  trips %2d  turns %5d  %s",
-			r.policy, r.seed, r.deepest, r.lvl, r.kills, r.earned, r.spent, r.potions, r.trips, r.turns, r.status())
-		lvls, kills, turns, gold = append(lvls, r.lvl), append(kills, r.kills), append(turns, r.turns), append(gold, r.earned)
+		t.Logf("%-7s seed %2d  %-8s clvl %2d  kills %3d  gold +%s -%s  potions %2d  trips %2d  turns %5d  %s",
+			r.policy, r.seed, r.deepest, r.lvl, r.kills, slashed(r.in[:]), slashed(r.out[:SinkGear+1]), r.potions, r.trips, r.turns, r.status())
+		lvls, kills, turns, gold = append(lvls, r.lvl), append(kills, r.kills), append(turns, r.turns), append(gold, sum(r.in[:]))
 		switch {
 		case r.dead:
 			killers[r.by]++
@@ -135,6 +136,15 @@ func botReport(t *testing.T, name string, rs []botResult) {
 	if len(killers) > 0 {
 		t.Logf("%s deaths: %s · in: %s", name, counts(killers), counts(areas))
 	}
+}
+
+// slashed joins counters as 12/0/340/0.
+func slashed(xs []int) string {
+	var s []string
+	for _, x := range xs {
+		s = append(s, strconv.Itoa(x))
+	}
+	return strings.Join(s, "/")
 }
 
 // counts formats a tally, most common first.

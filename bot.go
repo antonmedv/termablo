@@ -126,21 +126,18 @@ type Bot struct {
 	read    int    // turn of the last scroll read, so a fresh portal is used, not replaced
 	stall   int    // turns spent waiting for a townsperson's doorway
 	spent   int    // attribute points spent, for the policy's pattern
-	gold    int    // gold at the last tally
 
 	Stats BotStats
 }
 
-// BotStats is what a run reports.
+// BotStats is what a run reports beyond g.Stats.
 type BotStats struct {
-	Earned, Spent int // gold in and out
-	Potions       int // healing potions drunk
-	Trips         int // arrivals in town
-	Deepest       string
+	Trips   int // arrivals in town
+	Deepest string
 }
 
 func NewBot(g *Game, pol *botPolicy) *Bot {
-	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", gold: g.P.Gold, Stats: BotStats{Deepest: g.Lv.ID}}
+	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", Stats: BotStats{Deepest: g.Lv.ID}}
 }
 
 func (b *Bot) State() BotState { return b.state }
@@ -165,17 +162,6 @@ func (b *Bot) leave() {
 	}
 }
 
-// tally books gold that came or went since the last look.
-func (b *Bot) tally() {
-	d := b.g.P.Gold - b.gold
-	if d > 0 {
-		b.Stats.Earned += d
-	} else {
-		b.Stats.Spent -= d
-	}
-	b.gold = b.g.P.Gold
-}
-
 // turn plays one decision. It usually spends a game turn; trading and
 // equipping are free, as they are for anyone.
 func (b *Bot) turn() {
@@ -195,7 +181,6 @@ func (b *Bot) turn() {
 		b.act()
 	}
 	b.leave()
-	b.tally()
 	if botDepth(g.Lv.ID) > botDepth(b.Stats.Deepest) {
 		b.Stats.Deepest = g.Lv.ID
 	}
@@ -420,13 +405,8 @@ func (b *Bot) act() {
 }
 
 func (b *Bot) drink() {
-	p := b.g.P
-	n := p.HPot
-	b.say("potion at %d%% life, %d left", int(b.hp()*100), n-1)
+	b.say("potion at %d%% life, %d left", int(b.hp()*100), b.g.P.HPot-1)
 	b.g.drinkHealth()
-	if p.HPot < n {
-		b.Stats.Potions++
-	}
 }
 
 // escape leaves for town: through the open portal when it is close or
@@ -671,10 +651,8 @@ func (b *Bot) visit(id string, trade func()) (acted, found bool) {
 		if cheb(m.X, m.Y, p.X, p.Y) == 1 {
 			b.enter(BotErrand, "trading with "+m.Name)
 			g.move(m.X-p.X, m.Y-p.Y)
-			b.tally()
 			trade()
 			b.leave()
-			b.tally()
 			return true, true
 		}
 		b.enter(BotErrand, "to "+m.Name)
@@ -757,7 +735,6 @@ func (b *Bot) tradeRemedies() {
 	buy(hp, beltMax-p.HPot)
 	buy(sc, 2-p.Scrolls)
 	buy(mp, b.pol.mana-p.MPot)
-	b.tally()
 	b.say("restocked: %d healing, %d mana, %d scrolls, %dg left", p.HPot, p.MPot, p.Scrolls, p.Gold)
 	b.sellJunk()
 	b.buyGear(0)
@@ -775,7 +752,6 @@ func (b *Bot) sellJunk() {
 			_, cs, name := b.replaced(it)
 			b.say("sell %s for %dg [%d vs %s %d]", it.Name, sellPrice(it), s, name, cs)
 			g.sell(i)
-			b.tally()
 		}
 	}
 }
@@ -799,7 +775,6 @@ func (b *Bot) buyGear(reserve int) {
 		_, cs, name := b.replaced(best)
 		b.say("buy %s for %dg [%d: %s] over %s [%d]", best.Name, g.buyPrice(best), s, why, name, cs)
 		g.buy(best)
-		b.tally()
 		b.wear()
 	}
 }
