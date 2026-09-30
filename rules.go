@@ -38,6 +38,7 @@ type Rules struct {
 	// loot
 	AffixLvlScale float64 // multiplies the PerLvl term in rollAffix
 	RareBonus     float64 // Rares roll this much stronger
+	BudgetMul     float64 // item budget: this many mean Magic rolls, times the rarity factor
 	DropChance    float64 // dropLoot: percent chance of an item
 	GoldChance    float64 // dropLoot: percent chance of gold
 	GoldPerLvl    float64 // dropLoot: gold per monster level
@@ -83,6 +84,7 @@ func DefaultRules() *Rules {
 		MonArmorK:         120,
 		AffixLvlScale:     1,
 		RareBonus:         0.2,
+		BudgetMul:         7,
 		DropChance:        12,
 		GoldChance:        30,
 		GoldPerLvl:        3,
@@ -140,6 +142,7 @@ var knobs = []Knob{
 	{"XPExp", "combat", 1.5, 2.1, 0, func(r *Rules) *float64 { return &r.XPExp }},
 	{"AffixLvlScale", "loot", 0.4, 1.2, 0, func(r *Rules) *float64 { return &r.AffixLvlScale }},
 	{"RareBonus", "loot", 0, 0.3, 0, func(r *Rules) *float64 { return &r.RareBonus }},
+	{"BudgetMul", "loot", 0.7, 1.5, 0, func(r *Rules) *float64 { return &r.BudgetMul }},
 	{"DropChance", "loot", 8, 20, 1, func(r *Rules) *float64 { return &r.DropChance }},
 	{"GoldChance", "economy", 20, 50, 1, func(r *Rules) *float64 { return &r.GoldChance }},
 	{"GoldPerLvl", "economy", 2, 5, 0, func(r *Rules) *float64 { return &r.GoldPerLvl }},

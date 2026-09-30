@@ -19,7 +19,9 @@ func TestKnobRegistry(t *testing.T) {
 			t.Errorf("%s and %s point at the same field", k.Name, other)
 		}
 		seen[p] = k.Name
-		if v := *p; v < k.Lo || v > k.Hi {
+		// BudgetMul's default is today's no-clip value, above the range the
+		// tuner searches (BALANCE.md §4 B).
+		if v := *p; (v < k.Lo || v > k.Hi) && k.Name != "BudgetMul" {
 			t.Errorf("%s: default %v outside %v–%v", k.Name, v, k.Lo, k.Hi)
 		}
 		if k.Group != "combat" && k.Group != "economy" && k.Group != "loot" {

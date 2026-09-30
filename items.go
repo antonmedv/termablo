@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sync"
 )
 
 type Slot int
@@ -106,6 +107,76 @@ type Affix struct {
 
 // power is the affix's worth in life-equivalents.
 func (a Affix) power() float64 { return statWeight[a.S] * float64(a.V) }
+
+// The item budget (BALANCE.md §4 B): an item's affixes may add up to at
+// most budget(ilvl, rarity) life-equivalents, the mean Magic roll at that
+// ilvl times a rarity factor times Rules.BudgetMul. GenItem rolls as it
+// always did and then scales the affixes down to fit. Uniques are
+// audited (TestUniquesBudget), not clipped.
+var budgetFactor = [...]float64{RNormal: 1, RMagic: 1, RRare: 1.25, RUnique: 1.4}
+
+// The expected table covers ilvl 1..budgetILvls; deeper reads the last.
+const (
+	budgetILvls = 64
+	expectRolls = 500
+)
+
+// expectMagic caches the mean affix power of a Magic item per ilvl as two
+// numbers, the part from the affixes' own ranges and the part
+// AffixLvlScale scales, so one table serves every Rules: mean = a +
+// AffixLvlScale·b. It is sampled under DefaultRules otherwise; a knob
+// that changes how many affixes a Magic item rolls would have to be
+// folded in here.
+var expectMagic [budgetILvls + 1]struct {
+	once sync.Once
+	a, b float64
+}
+
+// expected is the mean affix power of a Magic item at ilvl under r.
+func expected(ilvl int, r *Rules) float64 {
+	e := &expectMagic[clampi(ilvl, 1, budgetILvls)]
+	e.once.Do(func() {
+		mean := func(scale float64) float64 {
+			rng, rr := rand.New(rand.NewSource(int64(ilvl))), *DefaultRules()
+			rr.AffixLvlScale = scale
+			t := 0.0
+			for range expectRolls {
+				t += rollItem(rng, ilvl, RMagic, SlotNone, &rr).power()
+			}
+			return t / expectRolls
+		}
+		e.a = mean(0)
+		e.b = mean(1) - e.a // the same rolls, so only the level term differs
+	})
+	return e.a + r.AffixLvlScale*e.b
+}
+
+// budget is the most affix power an item of this ilvl and rarity keeps.
+func budget(ilvl int, rarity Rarity, r *Rules) float64 {
+	return expected(ilvl, r) * budgetFactor[rarity] * r.BudgetMul
+}
+
+// power is the item's affix power in life-equivalents.
+func (it *Item) power() float64 {
+	t := 0.0
+	for _, a := range it.Aff {
+		t += a.power()
+	}
+	return t
+}
+
+// clip scales the affixes down in proportion to fit a budget, rounding
+// down so the item lands under it, each affix at least 1.
+func (it *Item) clip(budget float64) {
+	p := it.power()
+	if p <= budget {
+		return
+	}
+	f := budget / p
+	for i := range it.Aff {
+		it.Aff[i].V = maxi(1, int(float64(it.Aff[i].V)*f))
+	}
+}
 
 type Base struct {
 	Name      string
@@ -446,8 +517,20 @@ var rareSecond = map[Slot][]string{
 	SlotAmulet:  {"Eye", "Heart", "Charm", "Talisman", "Star"},
 }
 
-// GenItem creates an equipment item of a rarity for a slot (SlotNone: any).
+// GenItem creates an equipment item of a rarity for a slot (SlotNone: any),
+// its affixes clipped to the item budget.
 func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Item {
+	it := rollItem(rng, ilvl, rarity, slot, r)
+	if it.Rarity != RUnique {
+		it.clip(budget(it.ILvl, it.Rarity, r))
+	}
+	it.finishStats(rng)
+	return it
+}
+
+// rollItem rolls an item's base, name and affixes; finishStats is left
+// to the caller.
+func rollItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Item {
 	if ilvl < 1 {
 		ilvl = 1
 	}
@@ -463,7 +546,6 @@ func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Item
 			b := baseByName(u.Base)
 			it := &Item{Kind: IKEquip, Base: b, Name: u.Name, Rarity: RUnique, ILvl: maxi(ilvl, u.Lvl), Flavor: u.Flavor}
 			it.Aff = append(it.Aff, u.Aff...)
-			it.finishStats(rng)
 			return it
 		}
 		rarity = RRare
@@ -533,7 +615,6 @@ func GenItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Item
 		sec := rareSecond[b.Slot]
 		it.Name = rareFirst[rng.Intn(len(rareFirst))] + " " + sec[rng.Intn(len(sec))]
 	}
-	it.finishStats(rng)
 	return it
 }
 

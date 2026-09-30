@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 )
@@ -108,4 +109,61 @@ func TestItemValueOrdering(t *testing.T) {
 	if n >= m || m >= ra {
 		t.Errorf("average value normal %d, magic %d, rare %d", n, m, ra)
 	}
+}
+
+// The item budget: the smallest BudgetMul that clips none of today's
+// Magic and Rare rolls is printed, so DefaultRules can start there; a
+// low BudgetMul must hold every roll to its budget.
+func TestItemBudget(t *testing.T) {
+	rng, r := rand.New(rand.NewSource(5)), DefaultRules()
+	worst, at := 0.0, ""
+	for ilvl := 1; ilvl <= 30; ilvl++ {
+		for _, rar := range []Rarity{RMagic, RRare} {
+			for range 2000 {
+				it := rollItem(rng, ilvl, rar, SlotNone, r)
+				if q := it.power() / (expected(ilvl, r) * budgetFactor[rar]); q > worst {
+					worst, at = q, fmt.Sprintf("%s ilvl %d %s (%.0f power)", rarityName[rar], ilvl, it.Name, it.power())
+				}
+			}
+		}
+	}
+	t.Logf("expected Magic affix power at ilvl 1/5/10/20: %.1f/%.1f/%.1f/%.1f", expected(1, r), expected(5, r), expected(10, r), expected(20, r))
+	t.Logf("smallest BudgetMul that clips nothing: %.2f, at %s; DefaultRules has %v", worst, at, r.BudgetMul)
+	tight := *r
+	tight.BudgetMul = 1
+	for ilvl := 1; ilvl <= 30; ilvl += 3 {
+		for _, rar := range []Rarity{RMagic, RRare} {
+			for range 200 {
+				it := GenItem(rng, ilvl, rar, SlotNone, &tight)
+				slack := 0.0 // an affix clipped to 1 may still be worth more than its share
+				for _, a := range it.Aff {
+					if a.V == 1 {
+						slack += a.power()
+					}
+				}
+				if b := budget(ilvl, rar, &tight); it.power() > b+slack {
+					t.Errorf("%s ilvl %d %s: power %.1f over budget %.1f", rarityName[rar], ilvl, it.Name, it.power(), b)
+				}
+				checkItem(t, it, SlotNone)
+			}
+		}
+	}
+}
+
+// Every unique against the budget at its Lvl (BudgetMul 1, unique factor):
+// the over-budget ones are printed, not changed (BALANCE.md §4 B).
+func TestUniquesBudget(t *testing.T) {
+	r := DefaultRules()
+	r.BudgetMul = 1
+	over := 0
+	for _, u := range uniques {
+		it := &Item{Kind: IKEquip, Base: baseByName(u.Base), Aff: u.Aff}
+		b := budget(u.Lvl, RUnique, r)
+		mark := ""
+		if it.power() > b {
+			mark, over = "  over", over+1
+		}
+		t.Logf("%-20s lvl %2d  power %6.1f  budget %6.1f  ×%.2f%s", u.Name, u.Lvl, it.power(), b, it.power()/b, mark)
+	}
+	t.Logf("%d of %d uniques over budget", over, len(uniques))
 }
