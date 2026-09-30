@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"sort"
 	"strings"
@@ -107,15 +108,18 @@ type Bot struct {
 	n     int // turns taken
 
 	level    *Level
-	explored bool             // auto-explore found nothing left here
-	seen     int              // cells seen here at the last check
-	kills    int              // player kills at the last check
+	explored bool // auto-explore found nothing left here
+	seen     int  // cells seen here at the last check
+	kills    int  // player kills at the last check
+	gold     int  // gold and pack size at the last check
+	inv      int
 	progress int              // turn of the last new cell, kill or level change
 	ignore   map[*Monster]int // enemies with no path to them, until this turn
 	prey     *Monster         // the enemy being chased: kept in sight, whatever the range
 	used     map[cellKey]bool // altars tried, remembered across trips
 	skip     map[Pos]bool     // spots with no known way there, until more is seen
 	goal     Pos              // the loot being walked to
+	front    Pos              // the frontier cell being walked to, or -1
 	par      []int32          // search scratch
 
 	errand  bool   // a town trip is under way
@@ -155,7 +159,7 @@ type botSnap struct {
 }
 
 func NewBot(g *Game, pol *botPolicy) *Bot {
-	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", visited: map[string]bool{}, used: map[cellKey]bool{}, Stats: BotStats{Deepest: g.Lv.ID}}
+	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", visited: map[string]bool{}, used: map[cellKey]bool{}, front: Pos{-1, -1}, Stats: BotStats{Deepest: g.Lv.ID}}
 }
 
 func (b *Bot) State() BotState { return b.state }
@@ -222,10 +226,12 @@ func (b *Bot) track() {
 		b.ignore = map[*Monster]int{}
 		b.prey = nil
 		b.skip = map[Pos]bool{}
+		b.front = Pos{-1, -1}
 		if len(b.par) != l.W*l.H {
 			b.par = make([]int32, l.W*l.H)
 		}
 	}
+	l.Spent[l.Idx(g.P.X, g.P.Y)] = true // for frontier, as autoStep does for itself
 	seen := 0
 	for _, s := range l.Seen {
 		if s {
@@ -242,6 +248,9 @@ func (b *Bot) track() {
 	if g.P.Kills != b.kills { // a kill can open a way that was blocked
 		b.kills, b.progress = g.P.Kills, b.n
 		b.explored = false
+	}
+	if g.P.Gold != b.gold || len(g.P.Inv) != b.inv { // a sweep for loot is progress too
+		b.gold, b.inv, b.progress = g.P.Gold, len(g.P.Inv), b.n
 	}
 }
 
@@ -375,9 +384,14 @@ func (b *Bot) wants(it *Item) bool {
 
 // ------------------------------------------------------------ the turn
 
+// hp is the life to plan with: what is there plus what the next turn's
+// drain of drunk potions brings back. The rest of the pool is too slow
+// to count against a pack: with 17 life and 90 in the pool, one more
+// round of bites ends the run.
 func (b *Bot) hp() float64 {
 	p := b.g.P
-	return (p.HP + p.HealPool) / float64(p.MaxHP())
+	next := math.Min(p.HealPool, p.HealPool*0.35+1)
+	return (p.HP + next) / float64(p.MaxHP())
 }
 
 // threats are the visible enemies a player deals with now: the ones that
@@ -409,10 +423,15 @@ func (b *Bot) act() {
 	p, l := b.g.P, b.g.Lv
 	hp := b.hp()
 	ts := b.threats()
-	if l.Kind != KTown && p.HPot == 0 && hp < .35 && b.escape(fmt.Sprintf("%d%% life, belt empty", int(hp*100))) {
-		return
+	if l.Kind != KTown {
+		if why := b.losing(hp, ts); why != "" && b.escape(why) {
+			return
+		}
 	}
-	if hp < .5 && p.HPot > 0 {
+	// A potion when the next turn's life is low and the pool has room for
+	// one: the game refuses a drink past full life without spending a
+	// turn, and the bot must not ask again and again.
+	if hp < .5 && p.HPot > 0 && p.HP+p.HealPool < float64(p.MaxHP()) {
 		b.drink()
 		return
 	}
@@ -439,6 +458,25 @@ func (b *Bot) act() {
 		b.enter(BotExplore, "nothing to do here")
 	}
 	b.wander()
+}
+
+// losing says why a fight is not worth staying in: a portal takes two
+// turns (read, step) under the pack's blows, so the call comes while
+// there is life to spend on it, but only once the belt is nearly empty;
+// while potions last, a potion beats two turns of exposure.
+func (b *Bot) losing(hp float64, ts []*Monster) string {
+	p := b.g.P
+	if len(ts) == 0 {
+		return ""
+	}
+	pct := int(hp * 100)
+	switch {
+	case p.HPot == 0 && hp < .5:
+		return fmt.Sprintf("%d%% life, belt empty", pct)
+	case p.HPot == 1 && hp < .4:
+		return fmt.Sprintf("%d%% life, one potion left", pct)
+	}
+	return ""
 }
 
 func (b *Bot) drink() {
@@ -497,7 +535,7 @@ func (b *Bot) fight(ts []*Monster) {
 			g.castNova()
 			return
 		}
-		if b.open(p.X, p.Y) > 2 && b.retreat(len(adj)) {
+		if b.open(p.X, p.Y) > 3 && b.retreat(len(adj)) {
 			return
 		}
 	}
@@ -584,16 +622,28 @@ func (b *Bot) open(x, y int) int {
 
 // retreat backs into the nearest corridor cell within a few steps, so the
 // pack has to come one at a time.
+// retreat backs into the nearest tighter spot within a few steps: a
+// corridor cell, or in a cave a nook with three open sides, so fewer of
+// the pack can reach at once. A cell is worth it when it has fewer open
+// sides than here.
 func (b *Bot) retreat(n int) bool {
-	l := b.g.Lv
-	order := b.search(-1, -1, 4)
+	l, p := b.g.Lv, b.g.P
+	here := b.open(p.X, p.Y)
+	order := b.search(-1, -1, 5)
+	best, bo := -1, here
 	for _, i := range order[1:] {
-		if x, y := i%l.W, i/l.W; b.open(x, y) <= 2 {
-			b.enter(BotRetreat, fmt.Sprintf("%d adjacent, backing into a corridor", n))
-			return b.stepTo(i)
+		if o := b.open(i%l.W, i/l.W); o < bo || (o == bo && best < 0 && o <= 2) {
+			best, bo = i, o
+		}
+		if bo <= 2 {
+			break // a corridor: nothing tighter is worth the walk
 		}
 	}
-	return false
+	if best < 0 || bo > 3 {
+		return false
+	}
+	b.enter(BotRetreat, fmt.Sprintf("%d adjacent, backing into a spot with %d open sides", n, bo))
+	return b.stepTo(best)
 }
 
 // ------------------------------------------------------------ town
@@ -1032,14 +1082,30 @@ func (b *Bot) explore() bool {
 		return false
 	}
 	b.enter(BotExplore, "auto-explore")
-	if b.blocked() {
-		for _, i := range b.search(-1, -1, 1<<30)[1:] {
-			if b.frontier(i%l.W, i/l.W) {
-				b.enter(BotExplore, "to the frontier, past what auto-explore will not")
-				return b.stepTo(i)
+	// When an enemy it gave up on would stop auto-explore, the bot walks
+	// to the frontier itself, and keeps that goal until it gets there:
+	// auto-explore aims elsewhere, and handing the turn back and forth at
+	// the edge of the enemy's reach would step there and back for good.
+	if b.blocked() || b.front.X >= 0 {
+		if b.front.X < 0 || !b.frontier(b.front.X, b.front.Y) {
+			b.front = Pos{-1, -1}
+			for _, i := range b.search(-1, -1, 1<<30)[1:] {
+				if b.frontier(i%l.W, i/l.W) {
+					b.front = Pos{i % l.W, i / l.W}
+					break
+				}
 			}
 		}
-		b.explored = true
+		if b.front.X < 0 {
+			b.explored = true
+			return false
+		}
+		b.enter(BotExplore, "to the frontier, past what auto-explore will not")
+		if b.walkTo(b.front.X, b.front.Y, false) {
+			return true
+		}
+		l.Spent[l.Idx(b.front.X, b.front.Y)] = true // no way there
+		b.front = Pos{-1, -1}
 		return false
 	}
 	g.autoItems = 1 << 30 // never stop for loot: pickups are automatic
@@ -1084,7 +1150,11 @@ func (b *Bot) descend() bool {
 		return b.runErrand()
 	}
 	b.enter(BotDescend, "stairs to "+to)
-	return b.walkTo(x, y, true)
+	if b.walkTo(x, y, true) {
+		b.progress = b.n // a long walk across a cleared level is not a stall
+		return true
+	}
+	return false
 }
 
 // wander takes a random step, the bot's own dice, away from stairs and
@@ -1107,6 +1177,9 @@ func (b *Bot) wander() {
 // frontier says whether a cell borders the unknown.
 func (b *Bot) frontier(x, y int) bool {
 	l := b.g.Lv
+	if !l.In(x, y) || l.Spent[l.Idx(x, y)] {
+		return false // stood there already: what is unseen from it stays unseen
+	}
 	for _, d := range dirs8 {
 		if nx, ny := x+d.X, y+d.Y; l.In(nx, ny) && !l.Seen[l.Idx(nx, ny)] {
 			return true
