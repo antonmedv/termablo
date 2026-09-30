@@ -45,4 +45,4 @@ zones:
 	SHOTDIR=$(CURDIR)/demo go test -count=1 -run ShotZones .
 
 report:
-	go test -count=1 -v -run 'BotBalance|PowerCurve' . | grep -v "^=== RUN"
+	BOTSEEDS=24 go test -count=1 -v -run 'BotBalance|PowerCurve' . | grep -v "^=== RUN"

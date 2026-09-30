@@ -75,6 +75,7 @@ var (
 	colYellow  = C(1, 1, .45)
 	colCyan    = C(.45, .9, 1)
 	colPurple  = C(.75, .45, 1)
+	colBot     = C(.55, .95, .8) // the scripted player's own log lines
 	colBorder  = C(.45, .32, .2)
 	colPanelBG = C(.035, .03, .03)
 )

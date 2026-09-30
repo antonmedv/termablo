@@ -528,6 +528,16 @@ func (g *Game) move(dx, dy int) {
 	g.endTurn()
 }
 
+// portalAt says whether a cell is a portal mouth: the open portal on its
+// level, or its town end.
+func (g *Game) portalAt(x, y int) bool {
+	l := g.Lv
+	if g.Portal == nil {
+		return false
+	}
+	return (g.Portal.Level == l.ID && x == g.Portal.X && y == g.Portal.Y) || (l.Kind == KTown && x == l.PortalAt.X && y == l.PortalAt.Y)
+}
+
 // l2 returns the town level (generating it if needed).
 func l2(g *Game) *Level { return g.getLevel("town") }
 
@@ -551,7 +561,7 @@ func (g *Game) autoPickup() {
 			if it.Kind == IKMana {
 				n, name, col = &p.MPot, "Mana", C(.45, .6, 1)
 			}
-			if *n >= beltMax {
+			if !g.canTake(it) {
 				g.msg(colDim, "Your belt has no room for another %s Potion.", name)
 				keep = append(keep, fi)
 				continue
@@ -566,6 +576,19 @@ func (g *Game) autoPickup() {
 		}
 	}
 	l.Items = keep
+}
+
+// canTake says whether auto-pickup would take an item: a full belt leaves
+// potions on the ground.
+func (g *Game) canTake(it *Item) bool {
+	p := g.P
+	switch it.Kind {
+	case IKHealth:
+		return p.HPot < beltMax
+	case IKMana:
+		return p.MPot < beltMax
+	}
+	return it.Kind != IKEquip
 }
 
 func (g *Game) pickup() {
@@ -1358,7 +1381,7 @@ func (g *Game) autoStep() bool {
 		cx, cy := c%W, c/W
 		if c != start {
 			for _, fi := range l.Items {
-				if fi.X == cx && fi.Y == cy && fi.It.Kind != IKEquip {
+				if fi.X == cx && fi.Y == cy && g.canTake(fi.It) {
 					target = c
 				}
 			}
@@ -1385,7 +1408,7 @@ func (g *Game) autoStep() bool {
 			if l.At(nx, ny) == TChest {
 				continue
 			}
-			if g.Portal != nil && ((g.Portal.Level == l.ID && nx == g.Portal.X && ny == g.Portal.Y) || (l.Kind == KTown && nx == l.PortalAt.X && ny == l.PortalAt.Y)) {
+			if g.portalAt(nx, ny) {
 				continue
 			}
 			par[ni] = int32(c)
@@ -1610,6 +1633,29 @@ func (g *Game) sell(idx int) {
 		g.shop.Items = append(g.shop.Items, it)
 	}
 	g.msg(colGold, "Sold %s for %dg.", it.Name, price)
+}
+
+// spendPoint puts one attribute point into Str, Dex, Vit or Ene (0-3).
+func (g *Game) spendPoint(attr int) {
+	p := g.P
+	if p.Points <= 0 {
+		return
+	}
+	switch attr {
+	case 0:
+		p.Str++
+	case 1:
+		p.Dex++
+	case 2:
+		p.Vit++
+		p.HP += 2
+	case 3:
+		p.Ene++
+	default:
+		return
+	}
+	p.Points--
+	p.recalc()
 }
 
 // ------------------------------------------------------------ equipment

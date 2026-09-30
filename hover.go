@@ -137,8 +137,7 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 			add("Step on it and press g to pick up", colDim)
 		}
 	}
-	if g.Portal != nil && ((g.Portal.Level == l.ID && mx == g.Portal.X && my == g.Portal.Y) ||
-		(l.Kind == KTown && mx == l.PortalAt.X && my == l.PortalAt.Y)) {
+	if g.portalAt(mx, my) {
 		if len(out) > 0 {
 			add("", colDim)
 		}
@@ -229,11 +228,16 @@ func (g *Game) drawHover(s *Screen, mapW, mapH int) {
 		c.Ch, c.FG = '·', C(.5, .45, .6).C8()
 	}
 	// one-line summary along the bottom edge of the map
-	y := mapH - 1
+	drawStatus(s, mapH-1, mapW, hoverSummary(lines, mapW-2))
+}
+
+// drawStatus writes a status line across row y of the map: the first
+// entry bold, the rest separated by dots.
+func drawStatus(s *Screen, y, w int, lines []hoverLine) {
 	bg := C(.04, .035, .06).C8()
-	s.Fill(0, y, mapW, 1, bg)
+	s.Fill(0, y, w, 1, bg)
 	x := 1
-	for k, ln := range hoverSummary(lines, mapW-2) {
+	for k, ln := range lines {
 		if k > 0 {
 			x += s.Text(x, y, " · ", colDim.C8())
 		}

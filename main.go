@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"time"
 
@@ -21,14 +22,28 @@ type model struct {
 	idle     time.Duration // quit after this long without input, never when zero
 	lastSeen time.Time
 	idledOut bool
+
+	// -bot: a scripted player drives, at botTPS turns per second.
+	bot     *Bot
+	policy  *botPolicy // the bot comes back with this after death
+	botRun  bool       // driving, not paused
+	botTPS  int
+	botNext float64 // game time of the next bot turn
+}
+
+// botSpeeds are the turns per second + and - step through.
+var botSpeeds = []int{1, 2, 5, 10, 20, 60}
+
+// period is the tick interval.
+func (m *model) period() time.Duration {
+	if m.frame == 0 {
+		return time.Second / 20
+	}
+	return m.frame
 }
 
 func (m *model) tick() tea.Cmd {
-	d := m.frame
-	if d == 0 {
-		d = time.Second / 20
-	}
-	return tea.Tick(d, func(t time.Time) tea.Msg { return tickMsg(t) })
+	return tea.Tick(m.period(), func(t time.Time) tea.Msg { return tickMsg(t) })
 }
 
 func (m *model) Init() tea.Cmd { return m.tick() }
@@ -64,6 +79,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				g.auto = false
 			}
 		}
+		m.botTick()
 		return m, m.tick()
 	case tea.KeyMsg:
 		m.lastSeen = time.Now()
@@ -74,6 +90,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		if g.auto {
 			g.auto = false
+			return m, nil
+		}
+		if m.bot != nil && m.botKey(k) {
 			return m, nil
 		}
 		if quit := m.key(k); quit {
@@ -91,11 +110,7 @@ func (m *model) key(k string) bool {
 	case ModeDead:
 		switch k {
 		case "n":
-			m.seed = time.Now().UnixNano()
-			ng := NewGame(m.seed)
-			ng.Mode = ModePlay
-			ng.time = g.time
-			m.g = ng
+			m.restart()
 		case "Q", "esc":
 			return true
 		}
@@ -106,26 +121,10 @@ func (m *model) key(k string) bool {
 			g.Mode = ModePlay
 		}
 	case ModeChar:
-		p := g.P
-		if p.Points > 0 {
-			switch k {
-			case "1":
-				p.Str++
-				p.Points--
-			case "2":
-				p.Dex++
-				p.Points--
-			case "3":
-				p.Vit++
-				p.Points--
-				p.HP += 2
-			case "4":
-				p.Ene++
-				p.Points--
-			}
-			p.recalc()
-		}
-		if k == "esc" || k == "c" || k == "q" {
+		switch k {
+		case "1", "2", "3", "4":
+			g.spendPoint(int(k[0] - '1'))
+		case "esc", "c", "q":
 			g.Mode = ModePlay
 		}
 	case ModeInv:
@@ -136,6 +135,18 @@ func (m *model) key(k string) bool {
 		return m.playKey(k)
 	}
 	return false
+}
+
+// restart begins a new game on a fresh seed; the bot, if any, comes along.
+func (m *model) restart() {
+	m.seed = time.Now().UnixNano()
+	ng := NewGame(m.seed)
+	ng.Mode = ModePlay
+	ng.time = m.g.time
+	m.g = ng
+	if m.policy != nil {
+		m.drive(m.policy)
+	}
 }
 
 func (m *model) playKey(k string) bool {
@@ -248,8 +259,101 @@ func (m *model) shopKey(k string) {
 	g.cur = clampi(g.cur, 0, maxi(0, len(g.shopList())-1))
 }
 
+// ------------------------------------------------------------ bot mode
+
+// drive hands the game to a scripted player, running.
+func (m *model) drive(pol *botPolicy) {
+	m.policy = pol
+	m.bot = NewBot(m.g, pol)
+	m.g.Mode = ModePlay
+	m.botRun, m.botTPS, m.botNext = true, 5, m.g.time
+}
+
+// botTick plays the bot's turns that have come due.
+func (m *model) botTick() {
+	g := m.g
+	if m.bot == nil || !m.botRun || g.Mode != ModePlay {
+		return
+	}
+	if m.botNext < g.time-1 { // no catching up after a pause
+		m.botNext = g.time
+	}
+	perTick := int(math.Ceil(float64(m.botTPS) * m.period().Seconds()))
+	for n := 0; g.time >= m.botNext && n < perTick && g.Mode == ModePlay; n++ {
+		m.bot.turn()
+		m.botNext += 1 / float64(m.botTPS)
+	}
+}
+
+// botKey handles the bot's keys: space pauses or resumes, enter steps one
+// turn, + and - change speed. Any other key pauses the bot and then acts
+// as usual, so a fight can be played by hand until space gives it back.
+func (m *model) botKey(k string) bool {
+	if m.g.Mode != ModePlay {
+		return false
+	}
+	switch k {
+	case " ":
+		m.botRun = !m.botRun
+		m.botNext = m.g.time
+	case "enter":
+		m.botRun = false
+		m.bot.turn()
+	case "+", "=":
+		m.botTPS = botSpeed(m.botTPS, 1)
+	case "-", "_":
+		m.botTPS = botSpeed(m.botTPS, -1)
+	default:
+		m.botRun = false
+		return false
+	}
+	return true
+}
+
+// botSpeed steps through botSpeeds from tps.
+func botSpeed(tps, dir int) int {
+	for i, s := range botSpeeds {
+		if s == tps {
+			return botSpeeds[clampi(i+dir, 0, len(botSpeeds)-1)]
+		}
+	}
+	return botSpeeds[0]
+}
+
+// drawBot puts the bot's status on the top line of the map, in the style
+// of the hover line: policy, state, why, turn, speed.
+func (m *model) drawBot() {
+	s, g, b := m.scr, m.g, m.bot
+	if s.W < 80 || s.H < 24 || (g.Mode != ModePlay && g.Mode != ModeDead) {
+		return // the other modes draw boxes up to the top row
+	}
+	speed := fmt.Sprintf("%d tps", m.botTPS)
+	if !m.botRun {
+		speed = "paused"
+	}
+	lines := []hoverLine{{"bot " + b.Policy(), colBot}, {b.State().String(), colWhite}, {b.Why(), colGray},
+		{fmt.Sprintf("turn %d", g.Turn), colGray}, {speed, colGold}}
+	w := s.W - panelW - 2
+	used := 0
+	for _, ln := range lines {
+		used += len([]rune(ln.S)) + 3
+	}
+	if why := []rune(b.Why()); used > w && len(why) > 8 { // the reason gives way first
+		cut := maxi(8, len(why)-(used-w)-1)
+		lines[2].S = string(why[:cut]) + "…"
+		used -= len(why) - cut - 1
+	}
+	if hint := "space run/pause · enter step · +/- speed"; used+len(hint)+3 <= w {
+		lines = append(lines, hoverLine{hint, colDim})
+	}
+	drawStatus(s, 0, s.W-panelW, lines)
+}
+
 func (m *model) View() string {
 	m.g.Draw(m.scr)
+	if m.bot != nil {
+		m.drawBot()
+	}
 	return m.scr.String()
 }
 
@@ -268,6 +372,7 @@ func newModel(seed int64, level string) *model {
 func main() {
 	seed := flag.Int64("seed", 0, "world seed (0 = random)")
 	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
+	bot := flag.String("bot", "", "watch a scripted player: fighter or caster (ignored with -ssh)")
 	addr := flag.String("ssh", "", "serve the game over SSH on this address (e.g. :2222)")
 	hostKey := flag.String("hostkey", ".ssh/termablo_ed25519", "SSH host key, created if missing")
 	maxSessions := flag.Int("max-sessions", 50, "SSH: most games at once (0 = no limit)")
@@ -282,7 +387,16 @@ func main() {
 		}
 		return
 	}
-	p := tea.NewProgram(newModel(*seed, *level), tea.WithAltScreen(), tea.WithMouseAllMotion())
+	m := newModel(*seed, *level)
+	if *bot != "" {
+		pol := policyByName(*bot)
+		if pol == nil {
+			fmt.Fprintf(os.Stderr, "-bot %q: want fighter or caster\n", *bot)
+			os.Exit(2)
+		}
+		m.drive(pol)
+	}
+	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseAllMotion())
 	if _, err := p.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
