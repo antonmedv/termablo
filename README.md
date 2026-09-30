@@ -36,21 +36,6 @@ Add `-seed 42` and the world is the same every time. Share the seed, race a frie
 - **Town.** Hadrik's Forge for steel, Mirela's Remedies for potions and a patch-up, Captain Voss with a bounty on the Bone King. A portal home when it gets bad.
 - **Quick hands.** `o` auto-explores. Hover the mouse over anything to know what it is. Vim keys, arrows or numpad.
 
-## Keys
-
-| key | action |
-|---|---|
-| arrows / `hjkl` `yubn` / numpad | move, attack |
-| `.` `s` | wait |
-| `f` `r` | Firebolt, Frost Nova |
-| `tab` | cycle target |
-| `q` `w` | healing potion, mana potion |
-| `t` | town portal |
-| `g` | pick up |
-| `o` | auto-explore |
-| `i` `c` `m` `?` | inventory, character, map, help |
-| `Q` | quit |
-
 ## Host your own
 
 ```sh
@@ -63,6 +48,8 @@ or, without Docker:
 go run github.com/antonmedv/termablo@latest -ssh :2222
 ```
 
-Every connection gets its own game. `-seed` gives every player the same world. `-max-sessions` and `-idle` keep the box sane.
+Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Wish](https://github.com/charmbracelet/wish). 
 
-<p align="center">Built with <a href="https://github.com/charmbracelet/bubbletea">Bubble Tea</a> and <a href="https://github.com/charmbracelet/wish">Wish</a>. <a href="LICENSE">MIT</a>.</p>
+## License
+
+[MIT](LICENSE)
