@@ -225,11 +225,15 @@ func world(seed int64) *Game {
 
 // eachLevel runs f as a subtest for every level of every test seed.
 func eachLevel(t *testing.T, f func(t *testing.T, g *Game, l *Level)) {
-	n := int64(worldSeeds)
+	eachLevelSeeds(t, worldSeeds, f)
+}
+
+// eachLevelSeeds is eachLevel over seeds 1..n (3 under -short).
+func eachLevelSeeds(t *testing.T, n int, f func(t *testing.T, g *Game, l *Level)) {
 	if testing.Short() {
 		n = 3
 	}
-	for seed := int64(1); seed <= n; seed++ {
+	for seed := int64(1); seed <= int64(n); seed++ {
 		g := world(seed)
 		for _, id := range worldIDs {
 			l := g.Levels[id]

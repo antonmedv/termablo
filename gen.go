@@ -400,7 +400,11 @@ func genMarsh(seed int64) *Level {
 			l.Set(x, y, TMud)
 		}
 	}
-	l.carvePath(40, H-2, gx, gy+2, 2, path)
+	// The road ends just outside the opening, never inside the ring: the
+	// carver walks through cave wall without painting it, so a road aimed
+	// at the stairs could tunnel in through the wall and leave deep water
+	// in front of the opening.
+	l.carvePath(40, H-2, gx, gy+7, 2, path)
 	for x := 39; x <= 41; x++ {
 		l.Set(x, H-1, TExit)
 		l.Set(x, H-2, TMud)
@@ -408,10 +412,11 @@ func genMarsh(seed int64) *Level {
 	l.Links = append(l.Links, Link{39, H - 1, 41, H - 1, "fields", 40, H - 3})
 	l.Start = Pos{40, H - 3}
 
-	// Standing stones with crystals
+	// Standing stones with crystals, clear of the start and of the grotto
+	// mouth: a ring of boulders over its opening would seal the way down.
 	for range 6 {
 		sx, sy := 10+l.rng.Intn(W-20), 8+l.rng.Intn(H-16)
-		if cheb(sx, sy, 40, H-3) < 10 {
+		if cheb(sx, sy, 40, H-3) < 10 || cheb(sx, sy, gx, gy) < 12 {
 			continue
 		}
 		l.circle(sx, sy, 2.6, func(x, y int, d float64) {
