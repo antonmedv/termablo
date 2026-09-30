@@ -113,7 +113,7 @@ type Bot struct {
 	progress int              // turn of the last new cell, kill or level change
 	ignore   map[*Monster]int // enemies with no path to them, until this turn
 	prey     *Monster         // the enemy being chased: kept in sight, whatever the range
-	used     map[Pos]bool     // altars tried here
+	used     map[cellKey]bool // altars tried, remembered across trips
 	skip     map[Pos]bool     // spots with no known way there, until more is seen
 	goal     Pos              // the loot being walked to
 	par      []int32          // search scratch
@@ -133,6 +133,12 @@ type Bot struct {
 	Stats   BotStats
 }
 
+// A cellKey names a cell on a level.
+type cellKey struct {
+	level string
+	p     Pos
+}
+
 // BotStats is what a run reports beyond g.Stats.
 type BotStats struct {
 	Trips   int // arrivals in town
@@ -149,7 +155,7 @@ type botSnap struct {
 }
 
 func NewBot(g *Game, pol *botPolicy) *Bot {
-	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", visited: map[string]bool{}, Stats: BotStats{Deepest: g.Lv.ID}}
+	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", visited: map[string]bool{}, used: map[cellKey]bool{}, Stats: BotStats{Deepest: g.Lv.ID}}
 }
 
 func (b *Bot) State() BotState { return b.state }
@@ -215,7 +221,6 @@ func (b *Bot) track() {
 		}
 		b.ignore = map[*Monster]int{}
 		b.prey = nil
-		b.used = map[Pos]bool{}
 		b.skip = map[Pos]bool{}
 		if len(b.par) != l.W*l.H {
 			b.par = make([]int32, l.W*l.H)
@@ -234,8 +239,9 @@ func (b *Bot) track() {
 		}
 		b.seen, b.progress = seen, b.n
 	}
-	if g.P.Kills != b.kills {
+	if g.P.Kills != b.kills { // a kill can open a way that was blocked
 		b.kills, b.progress = g.P.Kills, b.n
+		b.explored = false
 	}
 }
 
@@ -960,7 +966,7 @@ func (b *Bot) stairs(to string) (int, int, bool) {
 // remembered, like the map.
 func (b *Bot) lootAt(x, y int) string {
 	l := b.g.Lv
-	if !l.In(x, y) || !l.Seen[l.Idx(x, y)] || b.used[Pos{x, y}] || b.skip[Pos{x, y}] {
+	if !l.In(x, y) || !l.Seen[l.Idx(x, y)] || b.used[cellKey{l.ID, Pos{x, y}}] || b.skip[Pos{x, y}] {
 		return ""
 	}
 	if t := l.At(x, y); t == TChest || t == TAltar {
@@ -1009,7 +1015,7 @@ func (b *Bot) loot() bool {
 	}
 	b.enter(BotLoot, "to "+what)
 	if l.At(b.goal.X, b.goal.Y) == TAltar && cheb(b.goal.X, b.goal.Y, p.X, p.Y) <= 1 {
-		b.used[b.goal] = true // one bump is all an altar gets
+		b.used[cellKey{l.ID, b.goal}] = true // one bump is all an altar gets
 	}
 	if b.walkTo(b.goal.X, b.goal.Y, false) {
 		return true
