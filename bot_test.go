@@ -25,6 +25,8 @@ type botResult struct {
 	by      string // the killer
 	where   string // level at the end
 	stuck   bool
+	king    bool // Bone King slain
+	oracle  bool // Drowned Oracle slain
 	lvl     int
 	kills   int
 	deepest string
@@ -51,12 +53,14 @@ func runBot(seed int64, pol *botPolicy, maxTurns int) botResult {
 	g.Mode = ModePlay
 	b := NewBot(g, pol)
 	// Trading spends no game turn; the second bound keeps a run finite anyway.
-	for calls := 0; g.Turn < maxTurns && calls < 2*maxTurns && g.Mode != ModeDead && b.State() != BotStuck; calls++ {
+	calls := 0
+	for ; g.Turn < maxTurns && calls < 2*maxTurns && g.Mode != ModeDead && b.State() != BotStuck; calls++ {
 		b.turn()
 	}
 	p := g.P
 	return botResult{policy: pol.name, seed: seed, turns: g.Turn, dead: g.Mode == ModeDead, by: p.KilledBy, where: g.Lv.ID,
-		stuck: b.State() == BotStuck, lvl: p.Lvl, kills: p.Kills, deepest: b.Stats.Deepest,
+		stuck: b.State() == BotStuck || calls >= 2*maxTurns, king: g.Quests[0] > 0, oracle: g.Quests[1] > 0,
+		lvl: p.Lvl, kills: p.Kills, deepest: b.Stats.Deepest,
 		earned: b.Stats.Earned, spent: b.Stats.Spent, potions: b.Stats.Potions, trips: b.Stats.Trips}
 }
 
@@ -94,7 +98,7 @@ var botCheckpoints = []string{"fields", "crypt1", "crypt4", "marsh", "grotto3", 
 // botReport logs one policy's runs and their summary.
 func botReport(t *testing.T, name string, rs []botResult) {
 	var lvls, kills, turns, gold []int
-	alive, stuck := 0, 0
+	alive, stuck, king, oracle := 0, 0, 0, 0
 	reached := map[string]int{}
 	killers, areas := map[string]int{}, map[string]int{}
 	for _, r := range rs {
@@ -110,6 +114,12 @@ func botReport(t *testing.T, name string, rs []botResult) {
 		default:
 			alive++
 		}
+		if r.king {
+			king++
+		}
+		if r.oracle {
+			oracle++
+		}
 		for _, cp := range botCheckpoints {
 			if botDepth(r.deepest) >= botDepth(cp) {
 				reached[cp]++
@@ -120,8 +130,8 @@ func botReport(t *testing.T, name string, rs []botResult) {
 	for _, cp := range botCheckpoints {
 		deep = append(deep, fmt.Sprintf("%s %d", cp, reached[cp]))
 	}
-	t.Logf("%s: %d runs · alive %d · stuck %d · median clvl %d, kills %d, turns %d, gold earned %d · reached: %s",
-		name, len(rs), alive, stuck, median(lvls), median(kills), median(turns), median(gold), strings.Join(deep, ", "))
+	t.Logf("%s: %d runs · alive %d · stuck %d · Bone King %d · Oracle %d · median clvl %d, kills %d, turns %d, gold earned %d · reached: %s",
+		name, len(rs), alive, stuck, king, oracle, median(lvls), median(kills), median(turns), median(gold), strings.Join(deep, ", "))
 	if len(killers) > 0 {
 		t.Logf("%s deaths: %s · in: %s", name, counts(killers), counts(areas))
 	}

@@ -360,7 +360,8 @@ func (b *Bot) hp() float64 {
 
 // threats are the visible enemies a player deals with now: the ones that
 // stop auto-explore, less those with no way to reach them, plus the one
-// being chased as long as it stays in sight.
+// being chased as long as it stays in sight. Awake is fair to read: the
+// hover line says "unaware of you".
 func (b *Bot) threats() []*Monster {
 	g, p := b.g, b.g.P
 	if b.prey != nil && (b.prey.Dead || !g.canSee(b.prey.X, b.prey.Y)) {

@@ -22,6 +22,8 @@ go run github.com/antonmedv/termablo@latest
 
 Add `-seed 42` and the world is the same every time. Share the seed, race a friend.
 
+Add `-bot fighter` or `-bot caster` to watch a scripted player descend. `-tps 20` sets its pace; `space` pauses, `enter` steps, any other key hands you the controls.
+
 ## The descent
 
 <p align="center"><img src="demo/zones.png" width="854" alt="Emberhold, the Ashen Fields, the Throne of the Bone King, Blackmarsh, the Sunken Grotto and the Burning Abyss"></p>
