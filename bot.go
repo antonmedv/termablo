@@ -637,7 +637,7 @@ func (b *Bot) runErrand() bool {
 		}
 		return false
 	}
-	if (p.HP < float64(p.MaxHP()) || p.MP < float64(p.MaxMP())) && b.fountain() {
+	if p.HP < float64(p.MaxHP()) && b.fountain() {
 		return true
 	}
 	if g.Quests[0] == 1 || g.Quests[1] == 1 {
@@ -705,7 +705,7 @@ func (b *Bot) linger() bool {
 	return true
 }
 
-// fountain walks into the nearest known fountain: a free heal.
+// fountain walks into the nearest known fountain: free life, no mana.
 func (b *Bot) fountain() bool {
 	l, p := b.g.Lv, b.g.P
 	bx, by, bd := 0, 0, 1<<30

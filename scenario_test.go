@@ -225,8 +225,8 @@ func TestChestAndFountain(t *testing.T) {
 	}
 	g.P.HP, g.P.MP = 1, 0
 	walkInto(g, 5, 1)
-	if g.P.HP != float64(g.P.MaxHP()) || g.P.MP != float64(g.P.MaxMP()) {
-		t.Errorf("fountain: life %v mana %v", g.P.HP, g.P.MP)
+	if g.P.HP != float64(g.P.MaxHP()) || g.P.MP != 0 {
+		t.Errorf("fountain: life %v mana %v, want full life and no mana", g.P.HP, g.P.MP)
 	}
 }
 

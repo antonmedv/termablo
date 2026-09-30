@@ -521,8 +521,9 @@ func (g *Game) move(dx, dy int) {
 		g.endTurn()
 		return
 	case TFountain:
-		p.HP, p.MP = float64(p.MaxHP()), float64(p.MaxMP())
-		g.msg(colCyan, "The cold water restores you.")
+		// Life only: mana comes from Mirela or potions (BALANCE.md §4 E, F9).
+		p.HP = float64(p.MaxHP())
+		g.msg(colCyan, "The cold water closes your wounds.")
 		g.endTurn()
 		return
 	case TAltar:

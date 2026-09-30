@@ -53,7 +53,7 @@ func (g *Game) levelName(id string) string {
 var tileNotes = map[Tile]string{
 	TDoor:       "Walk into it to open.",
 	TChest:      "Walk into it to open.",
-	TFountain:   "Walk into it to restore life and mana.",
+	TFountain:   "Walk into it to restore life.",
 	TAltar:      "Walk into it to make an offering.",
 	TBrazier:    "Casts warm firelight.",
 	TLamp:       "Casts warm lamplight.",
