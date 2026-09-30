@@ -345,7 +345,7 @@ func genFields(seed int64) *Level {
 
 func genMarsh(seed int64) *Level {
 	W, H := 130, 80
-	l := newLevel("marsh", "Blackmarsh", KSurface, W, H, 4, seed)
+	l := newLevel("marsh", "Blackmarsh", KSurface, W, H, 6, seed)
 	l.Ambient = C(.04, .07, .09)
 	l.Lore = "Blackmarsh. Cold lights drift over the water. Do not follow them."
 	nz := Noise{uint32(seed) + 3}

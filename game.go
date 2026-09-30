@@ -155,7 +155,7 @@ func (g *Game) getLevel(id string) *Level {
 		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "grotto"):
 		n := num("grotto")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Sunken Grotto %d", n), Depth: 5 + n, Style: 1, SpawnTable: "grotto"}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Sunken Grotto %d", n), Depth: 6 + n, Style: 1, SpawnTable: "grotto"}
 		s.Up = "marsh"
 		if n > 1 {
 			s.Up = fmt.Sprintf("grotto%d", n-1)
@@ -170,7 +170,7 @@ func (g *Game) getLevel(id string) *Level {
 		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "abyss"):
 		n := num("abyss")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("The Burning Abyss %d", n), Depth: 8 + n, Style: 2, SpawnTable: "abyss"}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("The Burning Abyss %d", n), Depth: 9 + n, Style: 2, SpawnTable: "abyss"}
 		s.Up = "grotto3"
 		if n > 1 {
 			s.Up = fmt.Sprintf("abyss%d", n-1)
@@ -219,10 +219,13 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 	if !l.visited {
 		l.visited = true
 		if l.Lore != "" {
-			g.msg(C(.75, .65, .5), "%s", l.Lore)
+			g.msg(colLore, "%s", l.Lore)
 		}
 	} else {
 		g.msg(colGray, "You enter %s.", l.Name)
+	}
+	if l.Kind != KTown && l.Depth > p.Lvl+2 {
+		g.msg(colLore, "Something here is far beyond you.")
 	}
 	if l.Kind == KTown {
 		g.restock()

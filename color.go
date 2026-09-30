@@ -66,6 +66,7 @@ var (
 	colBlack   = Col8{0, 0, 0}
 	colWhite   = C(.92, .9, .86)
 	colGray    = C(.55, .55, .58)
+	colLore    = C(.75, .65, .5) // area lore and the wrong-way warning
 	colDim     = C(.35, .35, .4)
 	colRed     = C(.9, .25, .2)
 	colGreen   = C(.45, .85, .4)

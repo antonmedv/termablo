@@ -246,7 +246,7 @@ var spawnTables = map[string][]spawnEntry{
 	"fields": {{"rat", 4, 0}, {"fallen", 5, 0}, {"shaman", 2, 0}, {"zombie", 3, 0}, {"wolf", 3, 1}, {"bat", 2, 0}},
 	"crypt":  {{"zombie", 4, 0}, {"skel", 5, 0}, {"archer", 3, 0}, {"fallen", 3, 0}, {"shaman", 1, 0}, {"bat", 2, 0}, {"ghoul", 3, 3}, {"cultist", 3, 3}, {"wraith", 2, 4}},
 	"marsh":  {{"wisp", 4, 0}, {"drowned", 5, 0}, {"horror", 2, 0}, {"bat", 2, 0}, {"cultist", 2, 0}, {"wolf", 2, 0}},
-	"grotto": {{"spider", 5, 0}, {"golem", 2, 0}, {"wisp", 3, 0}, {"drowned", 3, 0}, {"ghoul", 2, 0}, {"wraith", 2, 7}},
+	"grotto": {{"spider", 5, 0}, {"golem", 2, 0}, {"wisp", 3, 0}, {"drowned", 3, 0}, {"ghoul", 2, 0}, {"wraith", 2, 8}},
 	"abyss":  {{"imp", 5, 0}, {"hellspawn", 3, 0}, {"wraith", 3, 0}, {"skel", 2, 0}, {"cultist", 3, 0}, {"golem", 1, 0}, {"spider", 2, 0}},
 }
 
