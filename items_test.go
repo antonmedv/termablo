@@ -151,7 +151,7 @@ func TestItemBudget(t *testing.T) {
 }
 
 // Every unique against the budget at its Lvl (BudgetMul 1, unique factor):
-// the over-budget ones are printed, not changed (BALANCE.md §4 B).
+// the over-budget ones are printed, not changed.
 func TestUniquesBudget(t *testing.T) {
 	r := DefaultRules()
 	r.BudgetMul = 1

@@ -4,7 +4,7 @@ import "math"
 
 // Rules are the numbers inside the game's formulas: what a level is worth,
 // how monsters grow, what gold buys. DefaultRules holds today's values;
-// cmd/tune searches inside the ranges in knobs (BALANCE.md §2.6). A Game
+// cmd/tune searches inside the ranges in knobs. A Game
 // owns one; Player, Level and NewMonster reach it through a pointer set
 // at creation. No package-level copy: the tuner evaluates many at once.
 type Rules struct {

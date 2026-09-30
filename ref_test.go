@@ -10,14 +10,14 @@ import (
 	"testing"
 )
 
-// Reference heroes (BALANCE.md §2.1): fixtures, not bots. For each
+// Reference heroes: fixtures, not bots. For each
 // checkpoint, build and gear tier, a hero built in code fights the depth's
 // monsters through the sampler (duel_test.go). go test -v -run RefHeroes
-// prints the table; make report does too. No asserts until the §1 bands
+// prints the table; make report does too. No asserts until the bands
 // are calibrated: rows outside them are marked in the last column.
 
 // A refCheckpoint is a depth on the route with the bot's median arrival
-// clvl and gearScore there (§6), the monsters typical of it, and how
+// clvl and gearScore there, the monsters typical of it, and how
 // many rolls per slot par picks the best of.
 type refCheckpoint struct {
 	name       string
@@ -204,7 +204,7 @@ func kills(pol *botPolicy, d duel) float64 {
 	return d.Swings
 }
 
-// refFlags marks a row outside the §1 bands: "kill" for swings or bolts
+// refFlags marks a row outside the bands: "kill" for swings or bolts
 // to kill, "live" for turns survived. Par rows are held to the encounter
 // bands; wrong way to ~3× kills and ~⅓ turns of par; lucky to at most 3×
 // par either way; start to at most 2× par kills.
@@ -250,7 +250,7 @@ func refFlags(r refRow, ds, par []duel, boss bool) string {
 // TestRefHeroes prints the reference table, one checkpoint per goroutine.
 func TestRefHeroes(t *testing.T) {
 	n := refRolls()
-	t.Logf("reference heroes, at least %d rolls and %d kills or deaths per measure · gear: the policy's gearScore of everything worn, bot: the bot's P50 on arrival (§6) that par is calibrated to · per monster: swings to kill, bolts to kill, player turns survived from full life with no potions, damage per monster attack with misses · ranged monsters fight in melee here · dps/hp: mean hit (melee for fighter, bolt for caster) over the first normal's life · ! = outside a §1 band", n, minTrials)
+	t.Logf("reference heroes, at least %d rolls and %d kills or deaths per measure · gear: the policy's gearScore of everything worn, bot: the bot's P50 on arrival that par is calibrated to · per monster: swings to kill, bolts to kill, player turns survived from full life with no potions, damage per monster attack with misses · ranged monsters fight in melee here · dps/hp: mean hit (melee for fighter, bolt for caster) over the first normal's life · ! = outside a band", n, minTrials)
 	blocks := make([][]string, len(refCheckpoints))
 	var wg sync.WaitGroup
 	for i, cp := range refCheckpoints {

@@ -2,8 +2,8 @@ package main
 
 // Stats counts what happens in a run: gold by source and sink, potions,
 // damage, kills by rank, equips, turns per level. Counters only,
-// incremented where the events already happen; the bot report reads them
-// (BALANCE.md §2.2). The wallet reconciles: Gold == 60 + sum(In) - sum(Out).
+// incremented where the events already happen; the bot report reads them.
+// The wallet reconciles: Gold == 60 + sum(In) - sum(Out).
 
 type GoldSrc int
 

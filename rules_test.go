@@ -20,7 +20,7 @@ func TestKnobRegistry(t *testing.T) {
 		}
 		seen[p] = k.Name
 		// BudgetMul's default is today's no-clip value, above the range the
-		// tuner searches (BALANCE.md §4 B).
+		// tuner searches.
 		if v := *p; (v < k.Lo || v > k.Hi) && k.Name != "BudgetMul" {
 			t.Errorf("%s: default %v outside %v–%v", k.Name, v, k.Lo, k.Hi)
 		}

@@ -521,7 +521,7 @@ func (g *Game) move(dx, dy int) {
 		g.endTurn()
 		return
 	case TFountain:
-		// Life only: mana comes from Mirela or potions (BALANCE.md §4 E, F9).
+		// Life only: mana comes from Mirela or potions.
 		p.HP = float64(p.MaxHP())
 		g.msg(colCyan, "The cold water closes your wounds.")
 		g.endTurn()
@@ -1321,7 +1321,7 @@ func sign(v int) int {
 }
 
 // Armor is one thing: it reduces the damage that lands, dexterity makes
-// the blow miss, and nothing does both (BALANCE.md §4 C).
+// the blow miss, and nothing does both.
 func (g *Game) monsterHitChance(m *Monster) int {
 	p := g.P
 	return clampi(m.ToHit-p.DEX()/4+10, 20, 95)
@@ -1484,9 +1484,9 @@ func (g *Game) autoStep() bool {
 
 // ------------------------------------------------------------ town
 
-// restock rolls the shops' stock at the deepest depth the hero has seen
-// (BALANCE.md §4 E): the shop follows the descent, not the level count,
-// and only changes when the descent does, or when Hadrik is paid to.
+// restock rolls the shops' stock at the deepest depth the hero has seen:
+// the shop follows the descent, not the level count, and only changes
+// when the descent does, or when Hadrik is paid to.
 func (g *Game) restock() {
 	g.stocked = g.Deepest
 	smith := &Shop{Name: "Hadrik's Forge", Kind: 0}
@@ -1574,7 +1574,7 @@ func (g *Game) talkTo(m *Monster) {
 			}
 		}
 		for _, q := range rewards {
-			// The unique follows the quest's depth, not the hero's level (§4 E).
+			// The unique follows the quest's depth, not the hero's level.
 			gold := int(g.Rules.QuestGoldPerLvl * float64(p.Lvl))
 			p.Gold += gold
 			g.Stats.In[GoldQuest] += gold

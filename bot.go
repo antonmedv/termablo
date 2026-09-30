@@ -146,7 +146,7 @@ type BotStats struct {
 }
 
 // A botSnap is the hero on first arrival at a level, for the
-// power-versus-depth table (BALANCE.md §2.3).
+// power-versus-depth table.
 type botSnap struct {
 	Level                                                        string
 	Turn, Lvl, HP, Armor, MinD, MaxD, BoltLo, BoltHi, Crit, Gold int

@@ -108,7 +108,7 @@ type Affix struct {
 // power is the affix's worth in life-equivalents.
 func (a Affix) power() float64 { return statWeight[a.S] * float64(a.V) }
 
-// The item budget (BALANCE.md §4 B): an item's affixes may add up to at
+// The item budget: an item's affixes may add up to at
 // most budget(ilvl, rarity) life-equivalents, the mean Magic roll at that
 // ilvl times a rarity factor times Rules.BudgetMul. GenItem rolls as it
 // always did and then scales the affixes down to fit. Uniques are
@@ -317,7 +317,7 @@ const (
 	IKHealth
 	IKMana
 	IKScroll
-	IKGamble // Hadrik's unidentified item: bought, it rolls (BALANCE.md §4 E)
+	IKGamble // Hadrik's unidentified item: bought, it rolls
 	IKReroll // Hadrik's fresh stock
 )
 

@@ -17,7 +17,7 @@ import (
 )
 
 // The scripted player (bot.go) as a balance instrument: both policies over
-// many seeds, one report. See BALANCE.md §2.3.
+// many seeds, one report.
 
 type botResult struct {
 	policy  string

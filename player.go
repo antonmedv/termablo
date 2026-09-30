@@ -85,7 +85,7 @@ func (p *Player) ArmorVal() int {
 }
 
 // Damage adds up: Strength and Enhanced Damage each add to one bucket,
-// and only a critical hit multiplies (BALANCE.md §4 B).
+// and only a critical hit multiplies.
 func (p *Player) DmgRange() (int, int) {
 	lo, hi := 1, 3
 	if w := p.Eq[EqWeapon]; w != nil {
