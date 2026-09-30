@@ -33,8 +33,9 @@ func (s BotState) String() string {
 const botStuckAfter = 300
 
 // A botPolicy is a build: where level-up points go, how it fights, and what
-// it wants from gear. Gear weights are life-equivalents per point: a
-// fighter rates a point of Strength at about two life.
+// it wants from gear. An affix is worth statWeight × mul per point: the
+// neutral power of the stat times how much this build cares. A fighter
+// rates a point of Strength at 1.5× its neutral worth, a caster at 0.3×.
 type botPolicy struct {
 	name   string
 	caster bool
@@ -42,19 +43,19 @@ type botPolicy struct {
 	mana   int              // mana potions to carry
 	dmg    float64          // per point of average weapon damage
 	armor  float64          // per point of armor
-	w      [StCount]float64 // per point of each affix
+	mul    [StCount]float64 // on statWeight, per affix
 }
 
 var botPolicies = []*botPolicy{
-	{name: "fighter", points: [5]int{0, 2, 0, 2, 0}, mana: 1, dmg: 6, armor: 1, w: [StCount]float64{
-		StStr: 1.5, StDex: 1.5, StVit: 2, StEne: .3, StLife: 1, StMana: .15, StDmgPct: .6, StFlatDmg: 6,
-		StArmor: 1, StCrit: 3, StLifeSteal: 5, StLight: 3, StSpellPct: .2, StLifeRegen: 2, StManaRegen: .5,
-		StMF: .3, StThorns: 1, StToHit: .3, StAllAttr: 6, StGoldFind: .2,
+	{name: "fighter", points: [5]int{0, 2, 0, 2, 0}, mana: 1, dmg: 6, armor: 1, mul: [StCount]float64{
+		StStr: 1.5, StDex: 1.5, StVit: 1, StEne: .15, StLife: 1, StMana: .3, StDmgPct: 1.2, StFlatDmg: 1.5,
+		StArmor: 1, StCrit: 1.5, StLifeSteal: 1.25, StLight: 1, StSpellPct: .1, StLifeRegen: 1, StManaRegen: .25,
+		StMF: 1, StThorns: 1, StToHit: 1.2, StAllAttr: 1, StGoldFind: 1,
 	}},
-	{name: "caster", caster: true, points: [5]int{3, 2, 3, 2, 3}, mana: beltMax, dmg: .5, armor: 1, w: [StCount]float64{
-		StStr: .3, StDex: 1, StVit: 2, StEne: 4, StLife: 1, StMana: .8, StDmgPct: .1, StFlatDmg: .5,
-		StArmor: 1, StCrit: 1.5, StLifeSteal: 1, StLight: 3, StSpellPct: 3, StLifeRegen: 2, StManaRegen: 4,
-		StMF: .3, StThorns: 1, StToHit: .1, StAllAttr: 8, StGoldFind: .2,
+	{name: "caster", caster: true, points: [5]int{3, 2, 3, 2, 3}, mana: beltMax, dmg: .5, armor: 1, mul: [StCount]float64{
+		StStr: .3, StDex: 1, StVit: 1, StEne: 2, StLife: 1, StMana: 1.6, StDmgPct: .2, StFlatDmg: .125,
+		StArmor: 1, StCrit: .75, StLifeSteal: .25, StLight: 1, StSpellPct: 1.5, StLifeRegen: 1, StManaRegen: 2,
+		StMF: 1, StThorns: 1, StToHit: .4, StAllAttr: 8.0 / 6, StGoldFind: 1,
 	}},
 }
 
@@ -82,7 +83,7 @@ func (pol *botPolicy) gearScore(it *Item) (int, string) {
 		ts = append(ts, term{pol.armor * float64(it.Armor), fmt.Sprintf("%d armor", it.Armor)})
 	}
 	for _, a := range it.Aff {
-		ts = append(ts, term{pol.w[a.S] * float64(a.V), fmt.Sprintf(statFmt[a.S], a.V)})
+		ts = append(ts, term{pol.mul[a.S] * a.power(), fmt.Sprintf(statFmt[a.S], a.V)})
 	}
 	sort.SliceStable(ts, func(i, j int) bool { return ts[i].v > ts[j].v })
 	total := 0.0

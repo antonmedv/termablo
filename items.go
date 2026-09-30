@@ -83,10 +83,29 @@ var statFmt = [StCount]string{
 	StGoldFind: "+%d%% Extra Gold",
 }
 
+// statWeight is the power of one point of each stat in life-equivalents,
+// policy-neutral: what an item is worth to nobody in particular. Item
+// pricing (Value) and the item budget read it; the bot's gearScore
+// multiplies it by a build's own preferences (botPolicy.mul). Armor%
+// counts for little here because finishStats folds it into Armor. A new
+// affix is one row here and one in each policy.
+var statWeight = [StCount]float64{
+	StStr: 1, StDex: 1, StVit: 2, StEne: 2, StLife: 1, StMana: .5, StDmgPct: .5, StFlatDmg: 4,
+	StArmor: 1, StArmorPct: .25, StCrit: 2, StLifeSteal: 4, StLight: 3, StSpellPct: 2, StLifeRegen: 2,
+	StManaRegen: 2, StMF: .3, StThorns: 1, StToHit: .25, StAllAttr: 6, StGoldFind: .2,
+}
+
+// affixGold is what a shop charges per life-equivalent of affix power,
+// before the rarity multiplier.
+const affixGold = 10
+
 type Affix struct {
 	S Stat
 	V int
 }
+
+// power is the affix's worth in life-equivalents.
+func (a Affix) power() float64 { return statWeight[a.S] * float64(a.V) }
 
 type Base struct {
 	Name      string
@@ -321,14 +340,7 @@ func (it *Item) Value() int {
 	}
 	v := 20 + it.ILvl*12 + (it.MaxD+it.MinD)*6 + it.Armor*5
 	for _, a := range it.Aff {
-		w := a.V * 6
-		switch a.S {
-		case StCrit, StLifeSteal, StLight, StAllAttr, StManaRegen, StLifeRegen:
-			w = a.V * 60
-		case StLife, StMana, StToHit, StArmor:
-			w = a.V * 8
-		}
-		v += w
+		v += int(a.power() * affixGold)
 	}
 	switch it.Rarity {
 	case RMagic:
