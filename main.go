@@ -67,6 +67,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.MouseMsg:
 		m.lastSeen = time.Now()
 		g.SetHover(msg.X, msg.Y)
+		if msg.Action == tea.MouseActionPress && msg.Button == tea.MouseButtonLeft && !g.auto && m.bot == nil {
+			g.Click(msg.X, msg.Y, m.scr.W, m.scr.H)
+		}
 	case tickMsg:
 		if m.idle > 0 && time.Since(m.lastSeen) > m.idle {
 			m.idledOut = true
@@ -171,7 +174,9 @@ func (m *model) playKey(k string) bool {
 	case "t":
 		g.readPortal()
 	case "tab":
-		g.cycleTarget()
+		g.cycleTarget(1)
+	case "shift+tab":
+		g.cycleTarget(-1)
 	case "o":
 		g.auto = true
 		g.autoItems = 1 << 30

@@ -355,8 +355,9 @@ func (g *Game) validTarget() *Monster {
 	return g.Target
 }
 
-// cycleTarget steps through visible enemies from nearest to farthest.
-func (g *Game) cycleTarget() {
+// cycleTarget steps through visible enemies from nearest to farthest
+// (dir > 0, tab) or farthest to nearest (dir < 0, shift+tab).
+func (g *Game) cycleTarget(dir int) {
 	hs := g.visibleHostiles()
 	if len(hs) == 0 {
 		g.Target = nil
@@ -372,7 +373,28 @@ func (g *Game) cycleTarget() {
 			idx = i
 		}
 	}
+	if dir < 0 {
+		if idx < 0 {
+			idx = 0
+		}
+		g.Target = hs[(idx-1+len(hs))%len(hs)]
+		return
+	}
 	g.Target = hs[(idx+1)%len(hs)]
+}
+
+// targetAt makes the visible enemy on map cell (mx,my) the target, as a
+// mouse click does. It reports whether one was there.
+func (g *Game) targetAt(mx, my int) bool {
+	if !g.Lv.In(mx, my) || !g.canSee(mx, my) {
+		return false
+	}
+	m := g.Lv.MonsterAt(mx, my)
+	if m == nil || m.Dead || m.Friendly {
+		return false
+	}
+	g.Target = m
+	return true
 }
 
 // ------------------------------------------------------------ turns

@@ -746,7 +746,7 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		{"g or ,", "pick up equipment (gold & potions are automatic)"},
 		{"f", "Firebolt at target (lights up the dark!)"},
 		{"r", "Frost Nova: damage + brief freeze around you"},
-		{"tab", "cycle target"},
+		{"tab / shift+tab", "next / previous target (or click one)"},
 		{"q / w", "drink healing / mana potion (works over a few turns)"},
 		{"t", "read Scroll of Town Portal"},
 		{"o", "auto-explore (stops when enemies appear)"},

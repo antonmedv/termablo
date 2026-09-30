@@ -18,6 +18,17 @@ func (g *Game) SetHover(x, y int) {
 	g.hoverX, g.hoverY, g.hoverOn = x, y, true
 }
 
+// Click handles a left click at screen cell (x,y) on a w×h screen: an
+// enemy under the cursor becomes the target.
+func (g *Game) Click(x, y, w, h int) {
+	mapW, mapH := w-panelW, h-logH
+	if g.Mode != ModePlay || x < 0 || y < 0 || x >= mapW || y >= mapH {
+		return
+	}
+	camX, camY := g.camera(mapW, mapH)
+	g.targetAt(camX+x, camY+y)
+}
+
 func (g *Game) levelName(id string) string {
 	if l, ok := g.Levels[id]; ok {
 		return l.Name

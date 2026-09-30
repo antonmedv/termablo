@@ -8,7 +8,7 @@ import (
 // Every key the game reacts to, plus a few it should ignore.
 var fuzzKeys = []string{
 	"up", "down", "left", "right", "y", "u", "b", "n", ".", "g",
-	"f", "r", "q", "w", "t", "tab", "o", "i", "c", "m", "?",
+	"f", "r", "q", "w", "t", "tab", "shift+tab", "o", "i", "c", "m", "?",
 	"esc", "enter", " ", "e", "d", "s", "1", "2", "3", "4", "h", "l", "j", "k", "x",
 }
 

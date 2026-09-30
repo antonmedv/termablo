@@ -461,7 +461,7 @@ func (b *Bot) target(m *Monster) {
 		if g.Target == m {
 			return
 		}
-		g.cycleTarget()
+		g.cycleTarget(1)
 	}
 }
 
