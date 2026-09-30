@@ -448,7 +448,7 @@ func (it *Item) Value() int {
 }
 
 // Lines describes the item for tooltips.
-func (it *Item) Lines() []struct {
+func (it *Item) Lines(r *Rules) []struct {
 	S string
 	C RGB
 } {
@@ -496,7 +496,7 @@ func (it *Item) Lines() []struct {
 	if it.Flavor != "" {
 		out = append(out, ln{it.Flavor, C(.75, .6, .35)})
 	}
-	out = append(out, ln{fmt.Sprintf("Item level %d  ·  worth %dg", it.ILvl, sellPrice(it)), colDim})
+	out = append(out, ln{fmt.Sprintf("Item level %d  ·  worth %dg", it.ILvl, sellPrice(it, r)), colDim})
 	return out
 }
 

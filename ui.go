@@ -475,7 +475,7 @@ func centerBox(s *Screen, mapW, mapH, w, h int, title string) (int, int) {
 
 func (g *Game) itemLines(s *Screen, x, y, w, maxRows int, it *Item) {
 	row := 0
-	for _, ln := range it.Lines() {
+	for _, ln := range it.Lines(g.Rules) {
 		if row >= maxRows {
 			break
 		}
@@ -707,7 +707,7 @@ func (g *Game) drawShop(s *Screen, mapW, mapH int) {
 		s.Text(cx+2, yy, name, it.Color().C8())
 		price := g.buyPrice(it)
 		if g.tab == 1 {
-			price = sellPrice(it)
+			price = sellPrice(it, g.Rules)
 		}
 		pc := colGold
 		if g.tab == 0 && price > p.Gold {

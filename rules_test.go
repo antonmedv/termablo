@@ -1,7 +1,10 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -27,6 +30,12 @@ func TestKnobRegistry(t *testing.T) {
 		if k.Group != "combat" && k.Group != "economy" && k.Group != "loot" {
 			t.Errorf("%s: group %q", k.Name, k.Group)
 		}
+		if k.Desc == "" || k.Step <= 0 || k.Step > (k.Hi-k.Lo)/2 {
+			t.Errorf("%s: wants a description and a step inside the range, got %q, %v", k.Name, k.Desc, k.Step)
+		}
+		if k.Int != (k.Name == "DropChance" || k.Name == "GoldChance") {
+			t.Errorf("%s: Int %v; dropLoot reads DropChance and GoldChance as whole numbers", k.Name, k.Int)
+		}
 	}
 	rt := reflect.TypeOf(*r)
 	for i := range rt.NumField() {
@@ -39,5 +48,37 @@ func TestKnobRegistry(t *testing.T) {
 		} else if k.Ptr(r) != reflect.ValueOf(r).Elem().Field(i).Addr().Interface().(*float64) {
 			t.Errorf("%s points at another field", f.Name)
 		}
+	}
+}
+
+// A rules file lays knobs over the defaults; unknown names and fractional
+// whole-number knobs are errors, values outside the range are warnings.
+func TestRulesFromFile(t *testing.T) {
+	dir := t.TempDir()
+	write := func(name, body string) string {
+		p := filepath.Join(dir, name)
+		if err := os.WriteFile(p, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
+	r, warnings, err := rulesFromFile(write("a.json", `{"HpLin": 0.3, "DropChance": 25}`))
+	if err != nil || r.HpLin != 0.3 || r.DropChance != 25 || r.HpQuad != DefaultRules().HpQuad {
+		t.Fatalf("overlay: %v, HpLin %v, DropChance %v", err, r.HpLin, r.DropChance)
+	}
+	if len(warnings) != 1 || !strings.Contains(warnings[0], "DropChance") {
+		t.Errorf("warnings %q, want one about DropChance outside 8–20", warnings)
+	}
+	if diff := knobDiff(DefaultRules(), r); len(diff) != 2 || diff[0] != "HpLin: 0.32 → 0.3" {
+		t.Errorf("diff %q", diff)
+	}
+	if _, _, err := rulesFromFile(write("b.json", `{"Nope": 1}`)); err == nil {
+		t.Error("unknown knob accepted")
+	}
+	if _, _, err := rulesFromFile(write("c.json", `{"GoldChance": 30.5}`)); err == nil {
+		t.Error("fractional GoldChance accepted")
+	}
+	if r, _, err := rulesFromFile(""); err != nil || *r != *DefaultRules() {
+		t.Errorf("empty path: %v, %+v", err, r)
 	}
 }

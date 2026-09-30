@@ -35,12 +35,26 @@ type Stats struct {
 	Out      [SinkCount]int
 	HPots    int // healing potions drunk
 	MPots    int // mana potions drunk
+	Bolts    int // firebolts cast
+	Novas    int
 	DmgDealt int
 	DmgTaken int
 	Kills    [RankBoss + 1]int // by rank
 	Equips   int
 	Turns    map[string]int // by level ID
+
+	// The death, for the report: who struck the blow and how the hero
+	// stood. Pack deaths (many adjacent, potions left) and burst deaths
+	// (one big hitter) call for different fixes.
+	Death struct {
+		Rank    int // of the killer; -1 for no monster (death flames)
+		Adj     int // hostiles adjacent
+		Awake   int // hostiles awake in view
+		Potions int // healing potions left in the belt
+	}
 }
+
+var rankNames = [...]string{"normal", "champion", "unique", "boss"}
 
 func newStats() Stats { return Stats{Turns: map[string]int{}} }
 

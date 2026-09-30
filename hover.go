@@ -133,7 +133,7 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 		if len(out) > 0 {
 			add("", colDim)
 		}
-		lines := fi.It.Lines()
+		lines := fi.It.Lines(g.Rules)
 		for k, ln := range lines {
 			if k >= 8 {
 				add("…", colDim)

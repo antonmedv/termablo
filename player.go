@@ -71,7 +71,7 @@ func (p *Player) MaxHP() int {
 	return 30 + p.VIT()*2 + int(float64(p.Lvl-1)*p.r.HPPerLvl) + p.st[StLife]
 }
 func (p *Player) MaxMP() int {
-	return 14 + int(float64(p.ENE())*1.2) + (p.Lvl-1)*2 + p.st[StMana]
+	return 14 + int(float64(p.ENE())*p.r.ManaPerEne) + int(float64(p.Lvl-1)*p.r.ManaPerLvl) + p.st[StMana]
 }
 
 func (p *Player) ArmorVal() int {
@@ -118,7 +118,7 @@ func (p *Player) NovaDmg() (int, int) {
 
 // Spells cost more as the caster grows, so a deeper mana pool does not
 // simply mean more casts.
-func (p *Player) FireboltCost() int { return costFirebolt + (p.Lvl-1)*2/3 }
+func (p *Player) FireboltCost() int { return costFirebolt + int(float64(p.Lvl-1)*p.r.BoltCostLvl) }
 func (p *Player) NovaCost() int     { return costNova + p.Lvl - 1 }
 
 const (

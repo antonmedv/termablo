@@ -52,6 +52,7 @@ type Game struct {
 	Lv     *Level
 	P      *Player
 	Log    []LogMsg
+	logN   int // messages ever appended, for the bot trace
 	Turn   int
 	Mode   Mode
 	time   float64
@@ -70,6 +71,7 @@ type Game struct {
 	portalLight *Light
 	townPortalL *Light
 	Target      *Monster
+	hitter      *Monster // the last monster to strike the hero, for Stats.Death
 
 	Quests  [2]int // 0 hunting, 1 slain, 2 rewarded
 	Deepest int    // deepest Depth entered: what the shops and Voss's rewards roll at
@@ -125,6 +127,7 @@ func (g *Game) msg(col RGB, f string, a ...any) {
 		return
 	}
 	g.Log = append(g.Log, LogMsg{s, col, g.Turn, 1})
+	g.logN++
 	if len(g.Log) > 200 {
 		g.Log = g.Log[len(g.Log)-200:]
 	}
@@ -754,6 +757,7 @@ func (g *Game) killMonster(m *Monster) {
 	if m.HasMod(ModFire) {
 		g.novaFx(m.X, m.Y, colOrange, 2)
 		if cheb(m.X, m.Y, p.X, p.Y) <= 1 {
+			g.hitter = nil
 			g.hurtPlayer(m.Level*2+3, m.Name+"'s death flames", "burn")
 		}
 	}
@@ -905,6 +909,24 @@ func (g *Game) hurtPlayer(dmg int, by, verb string) {
 		p.KilledBy = by
 		g.Mode = ModeDead
 		g.msg(colRed, "You have been slain by %s.", by)
+		g.recordDeath()
+	}
+}
+
+// recordDeath notes how the hero stood when the blow landed.
+func (g *Game) recordDeath() {
+	d := &g.Stats.Death
+	d.Rank, d.Potions = -1, g.P.HPot
+	if m := g.hitter; m != nil {
+		d.Rank = m.Rank
+	}
+	for _, m := range g.visibleHostiles() {
+		if cheb(m.X, m.Y, g.P.X, g.P.Y) == 1 {
+			d.Adj++
+		}
+		if m.Awake {
+			d.Awake++
+		}
 	}
 }
 
@@ -939,7 +961,7 @@ func (g *Game) drinkMana() {
 	}
 	p.MPot--
 	g.Stats.MPots++
-	p.ManaPool += float64(p.MaxMP())*0.4 + 5
+	p.ManaPool += float64(p.MaxMP())*g.Rules.ManaPotion + 5
 	g.msg(C(.45, .6, 1), "You drink a mana potion.")
 	g.endTurn()
 }
@@ -1046,6 +1068,7 @@ func (g *Game) castFirebolt() {
 		return
 	}
 	p.MP -= float64(p.FireboltCost())
+	g.Stats.Bolts++
 	path, hit, _ := g.traceBolt(p.X, p.Y, t.X, t.Y, fireboltRange, true)
 	g.boltFx(path, C(1, .5, .15), '*', true)
 	if hit != nil && g.rng.Intn(100) < hit.T.Dodge {
@@ -1072,6 +1095,7 @@ func (g *Game) castNova() {
 		return
 	}
 	p.MP -= float64(p.NovaCost())
+	g.Stats.Novas++
 	g.novaFx(p.X, p.Y, C(.5, .85, 1), 3.4)
 	lo, hi := p.NovaDmg()
 	for _, m := range l.Monsters {
@@ -1353,6 +1377,7 @@ func (g *Game) monsterMelee(m *Monster) {
 	if m.Rank >= RankUnique {
 		name = m.Name
 	}
+	g.hitter = m
 	g.hurtPlayer(dmg, name, m.T.Verb)
 	if th := p.S(StThorns); th > 0 && !m.Dead {
 		g.damageMonster(m, th, false, C(.8, .6, .4))
@@ -1373,6 +1398,7 @@ func (g *Game) monsterShoot(m *Monster) {
 	if m.Rank >= RankUnique {
 		name = m.Name
 	}
+	g.hitter = m
 	g.hurtPlayer(g.monsterDamage(m)*4/5+1, name, m.T.Verb)
 }
 
@@ -1422,6 +1448,10 @@ func (g *Game) autoStep() bool {
 		par[i] = -1
 	}
 	start := l.Idx(p.X, p.Y)
+	// Standing on a cell beside unseen ones is the best look at them; if
+	// they stay unseen from here they never will be, and walking back to
+	// this cell for them would go on forever.
+	l.Spent[start] = true
 	par[start] = int32(start)
 	q := []int{start}
 	target := -1
@@ -1437,7 +1467,7 @@ func (g *Game) autoStep() bool {
 			}
 			for _, d := range dirs8 {
 				nx, ny := cx+d.X, cy+d.Y
-				if l.In(nx, ny) && !l.Seen[l.Idx(nx, ny)] {
+				if l.In(nx, ny) && !l.Seen[l.Idx(nx, ny)] && !l.Spent[c] {
 					target = c
 					break
 				}
@@ -1699,11 +1729,11 @@ func (g *Game) buyPrice(it *Item) int {
 }
 
 // sellPrice: merchants pay little for gear, next to nothing for plain gear.
-func sellPrice(it *Item) int {
+func sellPrice(it *Item, r *Rules) int {
 	if it.Rarity == RNormal {
-		return maxi(1, it.Value()/20)
+		return maxi(1, int(float64(it.Value())/(r.SellDiv*5/3)))
 	}
-	return it.Value() / 12
+	return int(float64(it.Value()) / r.SellDiv)
 }
 
 func (g *Game) sell(idx int) {
@@ -1712,7 +1742,7 @@ func (g *Game) sell(idx int) {
 		return
 	}
 	it := p.Inv[idx]
-	price := sellPrice(it)
+	price := sellPrice(it, g.Rules)
 	p.Gold += price
 	g.Stats.In[GoldSale] += price
 	p.Inv = append(p.Inv[:idx], p.Inv[idx+1:]...)

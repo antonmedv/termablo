@@ -47,8 +47,8 @@ func TestBuyAndSellGear(t *testing.T) {
 		t.Fatalf("buy: gold %d, pack %d, stock %d->%d", g.P.Gold, len(g.P.Inv), stock, len(g.shop.Items))
 	}
 	press(m, "tab", "enter")
-	if len(g.P.Inv) != 0 || g.P.Gold != sellPrice(it) || len(g.shop.Items) != stock {
-		t.Fatalf("sell: gold %d want %d, pack %d, stock %d", g.P.Gold, sellPrice(it), len(g.P.Inv), len(g.shop.Items))
+	if len(g.P.Inv) != 0 || g.P.Gold != sellPrice(it, g.Rules) || len(g.shop.Items) != stock {
+		t.Fatalf("sell: gold %d want %d, pack %d, stock %d", g.P.Gold, sellPrice(it, g.Rules), len(g.P.Inv), len(g.shop.Items))
 	}
 }
 
@@ -251,7 +251,7 @@ func TestBossQuestReward(t *testing.T) {
 	gold := g.P.Gold
 	voss := npc(t, g, "captain")
 	walkInto(g, voss.X, voss.Y)
-	if g.Quests[0] != 2 || g.P.Gold != gold+250*g.P.Lvl || g.Mode != ModeTalk {
+	if g.Quests[0] != 2 || g.P.Gold != gold+int(g.Rules.QuestGoldPerLvl*float64(g.P.Lvl)) || g.Mode != ModeTalk {
 		t.Fatalf("quest %d, gold %d->%d, mode %v", g.Quests[0], gold, g.P.Gold, g.Mode)
 	}
 	press(newTestModel(g), "x")

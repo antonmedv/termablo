@@ -842,7 +842,7 @@ func (b *Bot) sellJunk() {
 		if d := b.delta(it); d <= 0 {
 			s, _ := b.pol.gearScore(it)
 			_, cs, name := b.replaced(it)
-			b.say("sell %s for %dg [%d vs %s %d]", it.Name, sellPrice(it), s, name, cs)
+			b.say("sell %s for %dg [%d vs %s %d]", it.Name, sellPrice(it, g.Rules), s, name, cs)
 			g.sell(i)
 		}
 	}
