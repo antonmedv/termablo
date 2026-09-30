@@ -22,20 +22,26 @@ go run github.com/antonmedv/termablo@latest
 
 Add `-seed 42` and the world is the same every time. Share the seed, race a friend.
 
-Add `-bot fighter` or `-bot caster` to watch a scripted player descend. `-tps 20` sets its pace; `space` pauses, `enter` steps, any other key hands you the controls.
+Add `-bot fighter` or `-bot caster` to watch a scripted player descend.
 
 ## The descent
 
 <p align="center"><img src="demo/zones.png" width="854" alt="Emberhold, the Ashen Fields, the Throne of the Bone King, Blackmarsh, the Sunken Grotto and the Burning Abyss"></p>
 
-**Emberhold**, the last lit town before the dark. **The Ashen Fields**. **The Crypt of the Fallen**, four floors down to the Bone King, who raises the dead. **Blackmarsh**, with cold lights over the water. Do not follow them. **The Sunken Grotto**, and the Drowned Oracle at the bottom of it. Then **the Burning Abyss**, which keeps going down.
+**Emberhold**, the last lit town before the dark. **The Ashen Fields**. **The Crypt of the Fallen**, four floors down to
+the Bone King, who raises the dead. **Blackmarsh**, with cold lights over the water. Do not follow them. **The Sunken
+Grotto**, and the Drowned Oracle at the bottom of it. Then **the Burning Abyss**, which keeps going down.
 
 ## In the dark
 
-- **Light is the game.** Ray-cast, colored, stopped by walls. Firebolts light the corridor as they fly. Wraiths, wisps and fire imps carry their own glow, so you see them coming. So do they.
-- **Loot the Diablo way.** Magic, Rare and Unique gear with prefixes and suffixes. A Jagged Long Sword of the Whale. Emberbrand, whose edge never cools. Anything with Light Radius makes the dark smaller.
-- **Champions and uniques.** Bloodmaw the Hungry. Frostmarrow the Unburied. Extra Strong, Swift, Stone Skin, Fire Enchanted, Vampiric. The big ones shrug off Frost Nova.
-- **Town.** Hadrik's Forge for steel, Mirela's Remedies for potions and a patch-up, Captain Voss with a bounty on the Bone King. A portal home when it gets bad.
+- **Light is the game.** Ray-cast, colored, stopped by walls. Firebolts light the corridor as they fly. Wraiths, wisps
+  and fire imps carry their own glow, so you see them coming. So do they.
+- **Loot the Diablo way.** Magic, Rare and Unique gear with prefixes and suffixes. A Jagged Long Sword of the Whale.
+  Emberbrand, whose edge never cools. Anything with Light Radius makes the dark smaller.
+- **Champions and uniques.** Bloodmaw the Hungry. Frostmarrow the Unburied. Extra Strong, Swift, Stone Skin, Fire
+  Enchanted, Vampiric. The big ones shrug off Frost Nova.
+- **Town.** Hadrik's Forge for steel, Mirela's Remedies for potions and a patch-up, Captain Voss with a bounty on the
+  Bone King. A portal home when it gets bad.
 - **Quick hands.** `o` auto-explores. Hover the mouse over anything to know what it is. Vim keys, arrows or numpad.
 
 ## Host your own
@@ -50,7 +56,7 @@ or, without Docker:
 go run github.com/antonmedv/termablo@latest -ssh :2222
 ```
 
-Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Wish](https://github.com/charmbracelet/wish). 
+Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) and [Wish](https://github.com/charmbracelet/wish).
 
 ## License
 
