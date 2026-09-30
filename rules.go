@@ -73,18 +73,19 @@ type Rules struct {
 	XPExp  float64
 }
 
-// DefaultRules is today's game. A balance pass that keeps a change edits
-// this literal.
+// DefaultRules is today's game: the pick of the 2026-09-30 balance pass
+// (StrDiv, PotionHeal, ManaPerEne, GoldPerLvl, QuestGoldPerLvl moved).
+// A balance pass that keeps a change edits this literal.
 func DefaultRules() *Rules {
 	return &Rules{
 		HPPerLvl:          4,
-		StrDiv:            60,
+		StrDiv:            45,
 		ToHitPerLvl:       0,
 		BoltMul:           1,
 		NovaMul:           1,
 		BoltEnePow:        1,
-		PotionHeal:        0.5,
-		ManaPerEne:        1.2,
+		PotionHeal:        0.65,
+		ManaPerEne:        1.7,
 		ManaPerLvl:        2,
 		BoltCostLvl:       0.667,
 		ManaPotion:        0.4,
@@ -109,14 +110,14 @@ func DefaultRules() *Rules {
 		BudgetMul:         7,
 		DropChance:        12,
 		GoldChance:        30,
-		GoldPerLvl:        3,
+		GoldPerLvl:        2,
 		PotionPrice:       20,
 		PotionPricePerLvl: 4,
 		ScrollPrice:       40,
 		ScrollPricePerLvl: 6,
 		HealCost:          0.5,
 		SellDiv:           12,
-		QuestGoldPerLvl:   250,
+		QuestGoldPerLvl:   100,
 		RerollPrice:       50,
 		RerollPerDepth:    10,
 		GamblePrice:       120,
