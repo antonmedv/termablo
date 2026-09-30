@@ -70,9 +70,10 @@ type Game struct {
 	townPortalL *Light
 	Target      *Monster
 
-	Quests [2]int // 0 hunting, 1 slain, 2 rewarded
-	shops  [2]*Shop
-	shop   *Shop
+	Quests  [2]int // 0 hunting, 1 slain, 2 rewarded
+	Deepest int    // deepest Depth entered: what the shops and Voss's rewards roll at
+	shops   [2]*Shop
+	shop    *Shop
 
 	cur, pane, tab int
 	talkName       string
@@ -97,7 +98,7 @@ func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
 // NewGameWith starts a game under a set of rules, which it shares with
 // its player, levels and monsters.
 func NewGameWith(seed int64, r *Rules) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats(), Rules: r}
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1}
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
@@ -233,6 +234,9 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 	}
 	if l.Kind != KTown && l.Depth > p.Lvl+2 {
 		g.msg(colLore, "Something here is far beyond you.")
+	}
+	if l.Kind != KTown && l.Depth > g.Deepest {
+		g.Deepest = l.Depth
 	}
 	if l.Kind == KTown {
 		g.restock()
@@ -1477,8 +1481,9 @@ func (g *Game) autoStep() bool {
 
 // ------------------------------------------------------------ town
 
+// restock rolls the shops' stock at the deepest depth the hero has seen
+// (BALANCE.md §4 E): the shop follows the descent, not the level count.
 func (g *Game) restock() {
-	p := g.P
 	smith := &Shop{Name: "Hadrik's Forge", Kind: 0}
 	for range 11 {
 		var r Rarity
@@ -1491,7 +1496,7 @@ func (g *Game) restock() {
 			r = RRare
 		}
 		slots := []Slot{SlotWeapon, SlotWeapon, SlotOffhand, SlotArmor, SlotHelm, SlotGloves, SlotBoots}
-		smith.Items = append(smith.Items, GenItem(g.rng, p.Lvl+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))], g.Rules))
+		smith.Items = append(smith.Items, GenItem(g.rng, g.Deepest+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))], g.Rules))
 	}
 	alch := &Shop{Name: "Mirela's Remedies", Kind: 1}
 	alch.Items = append(alch.Items, NewPotion(IKHealth), NewPotion(IKMana), NewPotion(IKScroll))
@@ -1501,10 +1506,13 @@ func (g *Game) restock() {
 		if g.rng.Intn(6) == 0 {
 			r = RRare
 		}
-		alch.Items = append(alch.Items, GenItem(g.rng, p.Lvl+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))], g.Rules))
+		alch.Items = append(alch.Items, GenItem(g.rng, g.Deepest+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))], g.Rules))
 	}
 	g.shops = [2]*Shop{smith, alch}
 }
+
+// questDepth is where each quest's boss sits: crypt4 and grotto3.
+var questDepth = [2]int{5, 9}
 
 var villagerLines = []string{
 	"They say the braziers in the crypt light themselves at dusk. Nobody tends them.",
@@ -1529,18 +1537,18 @@ func (g *Game) talkTo(m *Monster) {
 		g.Mode, g.cur, g.tab = ModeShop, 0, 0
 	case "captain":
 		lines := []string{}
-		reward := false
+		var rewards []int
 		if g.Quests[0] == 1 {
 			g.Quests[0] = 2
-			reward = true
+			rewards = append(rewards, 0)
 			lines = append(lines, "The Bone King is dust? Then the crypt bells may ring again.", "Take this — it was my father's. And the gold, of course.")
 		}
 		if g.Quests[1] == 1 {
 			g.Quests[1] = 2
-			reward = true
+			rewards = append(rewards, 1)
 			lines = append(lines, "The Oracle, silenced... I never thought I'd sleep without hearing her.", "Beneath her pool, the rock burns. The Abyss has no floor, they say. Be careful.")
 		}
-		if !reward {
+		if len(rewards) == 0 {
 			switch {
 			case g.Quests[0] == 0:
 				lines = []string{
@@ -1556,11 +1564,12 @@ func (g *Game) talkTo(m *Monster) {
 				lines = []string{"You've done more than any of us dared.", "If you must go deeper... the Abyss waits below the Oracle's pool."}
 			}
 		}
-		if reward {
+		for _, q := range rewards {
+			// The unique follows the quest's depth, not the hero's level (§4 E).
 			gold := int(g.Rules.QuestGoldPerLvl * float64(p.Lvl))
 			p.Gold += gold
 			g.Stats.In[GoldQuest] += gold
-			it := GenItem(g.rng, p.Lvl+2, RUnique, SlotNone, g.Rules)
+			it := GenItem(g.rng, questDepth[q]+2, RUnique, SlotNone, g.Rules)
 			g.dropItem(p.X, p.Y, it)
 			g.msg(colGold, "Voss gives you %d gold and %s.", gold, it.Name)
 		}
