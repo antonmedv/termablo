@@ -31,10 +31,15 @@ func newArena(t testing.TB) *arena {
 		#######`))}
 }
 
-// sample pits a copy of hero against a copy of mon: n kills by sword, n
-// by firebolt, n deaths, and returns the means. The hero never levels,
-// the monster never acts while bolted (frozen) and cannot die of Thorns
-// while it is the one attacking.
+// minTrials is the fewest kills or deaths a measure averages, however
+// many rolls each one takes.
+const minTrials = 30
+
+// sample pits a copy of hero against a copy of mon and returns the means
+// of three measures: kills by sword, kills by firebolt, deaths. Each runs
+// until it has made n attack rolls and minTrials trials. The hero never
+// levels, the monster never acts while bolted (frozen) and cannot die of
+// Thorns while it is the one attacking.
 func (a *arena) sample(hero *Player, mon *Monster, n int) duel {
 	g, l := a.g, a.g.Lv
 	p := *hero
@@ -55,38 +60,36 @@ func (a *arena) sample(hero *Player, mon *Monster, n int) duel {
 		g.Effects = nil
 		g.Mode = ModePlay
 	}
+	// measure runs trials of one action until the budget is spent and
+	// returns the mean rolls per trial and the number of trials.
+	measure := func(done func() bool, roll func()) (float64, int) {
+		rolls, trials := 0, 0
+		for ; trials < minTrials || rolls < n; trials++ {
+			reset()
+			for !done() {
+				roll()
+				rolls++
+			}
+		}
+		return float64(rolls) / float64(trials), trials
+	}
 	var d duel
-	for range n {
-		reset()
-		for !m.Dead {
-			g.meleeAttack(&m)
-			d.Swings++
-		}
-	}
-	for range n {
-		reset()
+	d.Swings, _ = measure(func() bool { return m.Dead }, func() { g.meleeAttack(&m) })
+	d.Bolts, _ = measure(func() bool { return m.Dead }, func() {
 		m.Frozen = 1 << 30
-		for !m.Dead {
-			p.MP = float64(p.MaxMP())
-			g.Target = &m
-			g.castFirebolt()
-			d.Bolts++
-		}
-	}
-	taken, attacks, maxHP := g.Stats.DmgTaken, 0, m.MaxHP
-	for range n {
-		reset()
-		m.HP, m.MaxHP = 1<<30, 1<<30
-		for p.HP > 0 {
-			g.monsterMelee(&m)
-			attacks++
-		}
-	}
+		p.MP = float64(p.MaxMP())
+		g.Target = &m
+		g.castFirebolt()
+	})
+	taken, maxHP := g.Stats.DmgTaken, m.MaxHP
+	m.MaxHP = 1 << 30
+	attacks, deaths := measure(func() bool { return p.HP <= 0 }, func() {
+		m.HP = 1 << 30
+		g.monsterMelee(&m)
+	})
 	m.MaxHP = maxHP
 	reset()
-	fn := float64(n)
-	d.Swings, d.Bolts = d.Swings/fn, d.Bolts/fn
-	d.Turns = float64(attacks) / fn * 100 / float64(m.Speed)
-	d.DPT = float64(g.Stats.DmgTaken-taken) / float64(attacks)
+	d.Turns = attacks * 100 / float64(m.Speed)
+	d.DPT = float64(g.Stats.DmgTaken-taken) / (attacks * float64(deaths))
 	return d
 }
