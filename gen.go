@@ -6,15 +6,18 @@ import (
 )
 
 // carvePath walks a wobbly path from a to b calling paint on a brush around
-// each step. Returns the visited center points.
+// each step. Returns the visited center points. A brush of width 1 paints
+// the step itself; wider brushes keep the footprint the roads were tuned
+// on (2 paints three across, 3 paints two).
 func (l *Level) carvePath(x0, y0, x1, y1, width int, paint func(x, y int)) []Pos {
 	x, y := x0, y0
 	var pts []Pos
 	r := width / 2
+	hi := maxi(r+(width+1)%2-1, 0)
 	for range 8000 {
 		pts = append(pts, Pos{x, y})
-		for dy := -r; dy <= r+(width+1)%2-1; dy++ {
-			for dx := -r; dx <= r+(width+1)%2-1; dx++ {
+		for dy := -r; dy <= hi; dy++ {
+			for dx := -r; dx <= hi; dx++ {
 				if l.In(x+dx, y+dy) {
 					paint(x+dx, y+dy)
 				}
@@ -284,10 +287,11 @@ func genFields(seed int64) *Level {
 		}
 		l.carvePath(x, y, best.X, best.Y, 1, trail)
 	}
-	// Exits
+	// Exits; the gate road is painted, not carved, so the start is never
+	// a tree the road wandered past
 	for y := cy - 1; y <= cy+1; y++ {
 		l.Set(0, y, TExit)
-		l.Set(1, y, TDirt)
+		l.Fill(1, y, 3, y, TDirt)
 	}
 	l.Links = append(l.Links, Link{0, cy - 1, 0, cy + 1, "town", 2, cy})
 	for x := 99; x <= 101; x++ {
@@ -314,11 +318,19 @@ func genFields(seed int64) *Level {
 			l.Set(rx+w/2, ry+h/2, TBrazier)
 		}
 	}
-	// Campfires of the Fallen
-	camps := 0
-	for tries := 0; tries < 60 && camps < 5; tries++ {
+	// Campfires of the Fallen, kept apart: a fire set inside an earlier
+	// camp lands on one of its Fallen.
+	var fires []Pos
+	for tries := 0; tries < 60 && len(fires) < 5; tries++ {
 		fx, fy := 20+l.rng.Intn(W-40), 10+l.rng.Intn(H-20)
 		if cheb(fx, fy, 2, cy) < 20 || cheb(fx, fy, ex, ey) < 12 {
+			continue
+		}
+		apart := true
+		for _, f := range fires {
+			apart = apart && cheb(fx, fy, f.X, f.Y) >= 8
+		}
+		if !apart {
 			continue
 		}
 		l.circle(fx, fy, 3.2, func(x, y int, d float64) {
@@ -328,7 +340,7 @@ func genFields(seed int64) *Level {
 		})
 		connect(fx, fy+3)
 		l.Set(fx, fy, TCampfire)
-		camps++
+		fires = append(fires, Pos{fx, fy})
 		lvl := 1 + l.rng.Intn(2)
 		for range 3 + l.rng.Intn(3) {
 			placeMonster(l, "fallen", fx+l.rng.Intn(5)-2, fy+l.rng.Intn(3)-1, lvl, RankNormal)
@@ -589,6 +601,9 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 	l.Set(up.X, up.Y, TStairsUp)
 	l.Links = append(l.Links, Link{up.X, up.Y, up.X, up.Y, s.Up, -1, -1})
 	l.Start = Pos{up.X + 1, up.Y}
+	if !l.Walkable(l.Start.X, l.Start.Y) { // a pillar can stand there
+		l.Start.X, l.Start.Y = l.FreeNear(up.X, up.Y, -1, -1)
+	}
 	if s.Down != "" {
 		d := last.Center()
 		l.Set(d.X, d.Y, TStairsDown)

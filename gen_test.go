@@ -18,11 +18,11 @@ func TestLevelStart(t *testing.T) {
 	})
 }
 
-// Every link (exit, stairs) must be reachable from the level's start. More
-// seeds than the other invariants: seed 17's marsh once had its grotto
-// mouth sealed behind a ring of standing stones.
+// Every link (exit, stairs) must be reachable from the level's start.
+// Seed 17's marsh once had its grotto mouth sealed behind a ring of
+// standing stones.
 func TestLinksReachable(t *testing.T) {
-	eachLevelSeeds(t, 40, func(t *testing.T, g *Game, l *Level) {
+	eachLevel(t, func(t *testing.T, g *Game, l *Level) {
 		reach := l.reachable(l.Start.X, l.Start.Y)
 		for _, lk := range l.Links {
 			ok := false
