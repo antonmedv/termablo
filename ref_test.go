@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -16,32 +17,41 @@ import (
 // are calibrated: rows outside them are marked in the last column.
 
 // A refCheckpoint is a depth on the route with the bot's median arrival
-// clvl there (§6) and the monsters typical of it.
+// clvl and gearScore there (§6), the monsters typical of it, and how
+// many rolls per slot par picks the best of.
 type refCheckpoint struct {
 	name       string
 	depth, lvl int
+	par        int    // rolls per slot for the par tier; 0 is the start kit
+	gear       [2]int // the bot's P50 gearScore on arrival, fighter and caster
 	normals    [2]string
 	champion   string
 	boss       string
 }
 
+// par doubles every two depths: 3 at crypt2, 6 at crypt4, 12 at grotto1,
+// 24 at grotto3, 48 at abyss2 put par's gearScore within ±15% of the
+// bot's P50 at every checkpoint (calibrated 2026-09-30 against the
+// `7e30c19` baseline; abyss2 caster rests on the one run at `1dfefa6`).
 var refCheckpoints = []refCheckpoint{
-	{"fields", 1, 1, [2]string{"fallen", "zombie"}, "zombie", ""},
-	{"crypt2", 3, 6, [2]string{"zombie", "skel"}, "skel", ""},
-	{"crypt4", 5, 9, [2]string{"zombie", "ghoul"}, "ghoul", "boneking"},
-	{"grotto1", 7, 13, [2]string{"spider", "drowned"}, "golem", ""},
-	{"grotto3", 9, 16, [2]string{"spider", "golem"}, "spider", "oracle"},
-	{"abyss2", 11, 20, [2]string{"imp", "hellspawn"}, "hellspawn", ""},
+	{"fields", 1, 1, 0, [2]int{31, 9}, [2]string{"fallen", "zombie"}, "zombie", ""},
+	{"crypt2", 3, 6, 3, [2]int{227, 200}, [2]string{"skel", "zombie"}, "skel", ""},
+	{"crypt4", 5, 9, 6, [2]int{373, 368}, [2]string{"skel", "ghoul"}, "ghoul", "boneking"},
+	{"grotto1", 7, 13, 12, [2]int{525, 581}, [2]string{"spider", "drowned"}, "golem", ""},
+	{"grotto3", 9, 16, 24, [2]int{707, 687}, [2]string{"spider", "golem"}, "spider", "oracle"},
+	{"abyss2", 11, 20, 48, [2]int{871, 960}, [2]string{"imp", "hellspawn"}, "hellspawn", ""},
 }
 
 // wrongWay is how far past its depth the par hero is sent.
 const wrongWay = 3
 
-// Gear tiers: par is the median of parRolls Magic items per slot by the
-// policy's gearScore, lucky the best of luckyRolls Rares, each Unique one
-// time in uniqueOdds.
+// Gear tiers: par is the best of the checkpoint's par rolls per slot at
+// drop rarities (RollRarity with bonus 1) by the policy's gearScore, the
+// median kit of parKits such kits so one lucky weapon does not move the
+// fixture; lucky is the best of luckyRolls Rares, each Unique one time in
+// uniqueOdds.
 const (
-	parRolls   = 200
+	parKits    = 15
 	luckyRolls = 30
 	uniqueOdds = 6
 )
@@ -82,9 +92,9 @@ func startKit(rng *rand.Rand) [EqCount]*Item {
 }
 
 // gearTier rolls n items of ilvl per slot, weapon first, and keeps the
-// median (or the best) by the policy's gearScore. A two-handed weapon
-// leaves the off-hand empty.
-func gearTier(rng *rand.Rand, pol *botPolicy, ilvl, n int, rarity func() Rarity, best bool) [EqCount]*Item {
+// best by the policy's gearScore. A two-handed weapon leaves the off-hand
+// empty.
+func gearTier(rng *rand.Rand, pol *botPolicy, ilvl, n int, rarity func() Rarity) [EqCount]*Item {
 	var eq [EqCount]*Item
 	for slot := range EqCount {
 		if slot == EqOffhand && eq[EqWeapon] != nil && eq[EqWeapon].Base.TwoHanded {
@@ -99,13 +109,37 @@ func gearTier(rng *rand.Rand, pol *botPolicy, ilvl, n int, rarity func() Rarity,
 			b, _ := pol.gearScore(its[j])
 			return a < b
 		})
-		if best {
-			eq[slot] = its[n-1]
-		} else {
-			eq[slot] = its[n/2]
-		}
+		eq[slot] = its[n-1]
 	}
 	return eq
+}
+
+// parKit is the par tier: the start kit where the checkpoint says so,
+// otherwise the median by gearTotal of parKits kits, each the best of the
+// checkpoint's par rolls per slot at drop rarities.
+func parKit(rng *rand.Rand, pol *botPolicy, cp refCheckpoint) [EqCount]*Item {
+	if cp.par == 0 {
+		return startKit(rng)
+	}
+	kits := make([][EqCount]*Item, parKits)
+	for i := range kits {
+		kits[i] = gearTier(rng, pol, cp.depth, cp.par, func() Rarity { return RollRarity(rng, 1.0) })
+	}
+	sort.SliceStable(kits, func(i, j int) bool { return gearTotal(pol, kits[i]) < gearTotal(pol, kits[j]) })
+	return kits[parKits/2]
+}
+
+// gearTotal is the policy's gearScore of everything worn, the bot's
+// snapshot measure.
+func gearTotal(pol *botPolicy, eq [EqCount]*Item) int {
+	total := 0
+	for _, it := range eq {
+		if it != nil {
+			v, _ := pol.gearScore(it)
+			total += v
+		}
+	}
+	return total
 }
 
 func wear(p *Player, eq [EqCount]*Item) {
@@ -122,18 +156,28 @@ type refRow struct {
 	depth int
 }
 
-// refMonsters builds a checkpoint's monsters at depth: two normals, a
-// champion, and the boss where there is one.
+// refMonsters builds a checkpoint's monsters at depth: two normals, an
+// Extra Strong champion, and the boss where there is one.
 func refMonsters(rng *rand.Rand, cp refCheckpoint, depth int) []*Monster {
 	ms := []*Monster{
 		NewMonster(rng, mtemps[cp.normals[0]], depth, RankNormal),
 		NewMonster(rng, mtemps[cp.normals[1]], depth, RankNormal),
-		NewMonster(rng, mtemps[cp.champion], depth, RankChampion),
+		strongChampion(rng, mtemps[cp.champion], depth),
 	}
 	if cp.boss != "" {
 		ms = append(ms, NewMonster(rng, mtemps[cp.boss], depth, RankBoss))
 	}
 	return ms
+}
+
+// strongChampion rolls a champion until its one mod is Extra Strong, so
+// the champion column compares across checkpoints.
+func strongChampion(rng *rand.Rand, t *MTemplate, depth int) *Monster {
+	for {
+		if m := NewMonster(rng, t, depth, RankChampion); m.HasMod(ModStrong) {
+			return m
+		}
+	}
 }
 
 // monsterLabel names a monster for the checkpoint line; short is the
@@ -206,7 +250,7 @@ func refFlags(r refRow, ds, par []duel, boss bool) string {
 // TestRefHeroes prints the reference table, one checkpoint per goroutine.
 func TestRefHeroes(t *testing.T) {
 	n := refRolls()
-	t.Logf("reference heroes, at least %d rolls and %d kills or deaths per measure · per monster: swings to kill, bolts to kill, player turns survived from full life with no potions, damage per monster attack with misses · ranged monsters fight in melee here · dps/hp: mean hit (melee for fighter, bolt for caster) over the first normal's life · ! = outside a §1 band", n, minTrials)
+	t.Logf("reference heroes, at least %d rolls and %d kills or deaths per measure · gear: the policy's gearScore of everything worn, bot: the bot's P50 on arrival (§6) that par is calibrated to · per monster: swings to kill, bolts to kill, player turns survived from full life with no potions, damage per monster attack with misses · ranged monsters fight in melee here · dps/hp: mean hit (melee for fighter, bolt for caster) over the first normal's life · ! = outside a §1 band", n, minTrials)
 	blocks := make([][]string, len(refCheckpoints))
 	var wg sync.WaitGroup
 	for i, cp := range refCheckpoints {
@@ -235,13 +279,13 @@ func refBlock(ar *arena, cp refCheckpoint, rng *rand.Rand, n int) []string {
 		for _, pol := range botPolicies {
 			start, par, lucky := refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl)
 			wear(start, startKit(rng))
-			wear(par, gearTier(rng, pol, cp.depth, parRolls, func() Rarity { return RMagic }, false))
+			wear(par, parKit(rng, pol, cp))
 			wear(lucky, gearTier(rng, pol, cp.depth, luckyRolls, func() Rarity {
 				if rng.Intn(uniqueOdds) == 0 {
 					return RUnique
 				}
 				return RRare
-			}, true))
+			}))
 			rows = append(rows, refRow{"start", pol, start, cp.depth}, refRow{"par", pol, par, cp.depth}, refRow{"lucky", pol, lucky, cp.depth})
 		}
 		for _, r := range rows {
@@ -252,7 +296,7 @@ func refBlock(ar *arena, cp refCheckpoint, rng *rand.Rand, n int) []string {
 		ms := refMonsters(rng, cp, cp.depth)
 		far := refMonsters(rng, cp, cp.depth+wrongWay)
 		var labels []string
-		hdr := fmt.Sprintf("%-14s %4s %5s %-8s %4s %-6s", "hero", "HP", "armor", "melee", "crit", "bolt")
+		hdr := fmt.Sprintf("%-14s %4s %5s %-8s %4s %-6s %4s %4s", "hero", "HP", "armor", "melee", "crit", "bolt", "gear", "bot")
 		for _, m := range ms {
 			label, short := monsterLabel(m)
 			labels = append(labels, label)
@@ -278,7 +322,15 @@ func refBlock(ar *arena, cp refCheckpoint, rng *rand.Rand, n int) []string {
 			ds, p := duels[i], r.p
 			lo, hi := p.DmgRange()
 			blo, bhi := p.FireboltDmg()
-			line := fmt.Sprintf("%-14s %4d %5d %-8s %3d%% %-6s", r.pol.name+" "+r.tier, p.MaxHP(), p.ArmorVal(), fmt.Sprintf("%d-%d", lo, hi), p.Crit(), fmt.Sprintf("%d-%d", blo, bhi))
+			bot := ""
+			if r.tier == "par" {
+				want := cp.gear[0]
+				if r.pol.caster {
+					want = cp.gear[1]
+				}
+				bot = strconv.Itoa(want)
+			}
+			line := fmt.Sprintf("%-14s %4d %5d %-8s %3d%% %-6s %4d %4s", r.pol.name+" "+r.tier, p.MaxHP(), p.ArmorVal(), fmt.Sprintf("%d-%d", lo, hi), p.Crit(), fmt.Sprintf("%d-%d", blo, bhi), gearTotal(r.pol, p.Eq), bot)
 			for _, d := range ds {
 				line += fmt.Sprintf(" | %5.1f %5.1f %5.1f %4.1f", d.Swings, d.Bolts, d.Turns, d.DPT)
 			}

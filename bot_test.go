@@ -115,7 +115,7 @@ var botCheckpoints = []string{"fields", "crypt1", "crypt2", "crypt4", "marsh", "
 
 // botTypical is the normal monster a checkpoint's arrivals are measured
 // against, by area.
-var botTypical = map[string]string{"fields": "fallen", "crypt": "zombie", "marsh": "drowned", "grotto": "spider", "abyss": "hellspawn"}
+var botTypical = map[string]string{"fields": "fallen", "crypt": "skel", "marsh": "drowned", "grotto": "spider", "abyss": "hellspawn"}
 
 // botRolls is how many kills and deaths the sampler averages per snapshot.
 const botRolls = 100
