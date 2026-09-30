@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
 	"os"
 	"runtime"
 	"sort"
@@ -34,6 +36,14 @@ type botResult struct {
 	out     [SinkCount]int    // gold by sink
 	potions int               // healing potions drunk
 	trips   int
+	equips  int
+	levels  int // levels left behind, as "cleared"
+}
+
+// A botRun is a result with the hero's level-arrival snapshots.
+type botRun struct {
+	botResult
+	snaps []botSnap
 }
 
 func (r botResult) status() string {
@@ -48,7 +58,7 @@ func (r botResult) status() string {
 
 // runBot plays one policy on one seed until death, a stuck run or the turn
 // limit.
-func runBot(seed int64, pol *botPolicy, maxTurns int) botResult {
+func runBot(seed int64, pol *botPolicy, maxTurns int) botRun {
 	g := NewGame(seed)
 	g.Mode = ModePlay
 	b := NewBot(g, pol)
@@ -58,18 +68,19 @@ func runBot(seed int64, pol *botPolicy, maxTurns int) botResult {
 		b.turn()
 	}
 	p := g.P
-	return botResult{policy: pol.name, seed: seed, turns: g.Turn, dead: g.Mode == ModeDead, by: p.KilledBy, where: g.Lv.ID,
+	return botRun{botResult{policy: pol.name, seed: seed, turns: g.Turn, dead: g.Mode == ModeDead, by: p.KilledBy, where: g.Lv.ID,
 		stuck: b.State() == BotStuck || calls >= 2*maxTurns, king: g.Quests[0] > 0, oracle: g.Quests[1] > 0,
 		lvl: p.Lvl, kills: p.Kills, deepest: b.Stats.Deepest,
-		in: g.Stats.In, out: g.Stats.Out, potions: g.Stats.HPots, trips: b.Stats.Trips}
+		in: g.Stats.In, out: g.Stats.Out, potions: g.Stats.HPots, trips: b.Stats.Trips,
+		equips: g.Stats.Equips, levels: maxi(1, len(b.Snaps)-1)}, b.Snaps}
 }
 
 // runBots plays every policy over seeds 1..n, runs in parallel.
-func runBots(n, maxTurns int) []botResult {
-	var rs []botResult
+func runBots(n, maxTurns int) []botRun {
+	var rs []botRun
 	for _, pol := range botPolicies {
 		for s := 1; s <= n; s++ {
-			rs = append(rs, botResult{policy: pol.name, seed: int64(s)})
+			rs = append(rs, botRun{botResult: botResult{policy: pol.name, seed: int64(s)}})
 		}
 	}
 	var wg sync.WaitGroup
@@ -92,19 +103,34 @@ func median(xs []int) int {
 	return xs[len(xs)/2]
 }
 
-// botCheckpoints are the levels the report counts arrivals at.
-var botCheckpoints = []string{"fields", "crypt1", "crypt4", "marsh", "grotto3", "abyss1"}
+// pct is the q-th percentile of xs by nearest rank.
+func pct(xs []float64, q float64) float64 {
+	sort.Float64s(xs)
+	return xs[int(math.Round(q*float64(len(xs)-1)))]
+}
+
+// botCheckpoints are the levels the report counts arrivals at and
+// tabulates the hero on. crypt2 is there for the reference table's sake.
+var botCheckpoints = []string{"fields", "crypt1", "crypt2", "crypt4", "marsh", "grotto1", "grotto3", "abyss1", "abyss2"}
+
+// botTypical is the normal monster a checkpoint's arrivals are measured
+// against, by area.
+var botTypical = map[string]string{"fields": "fallen", "crypt": "zombie", "marsh": "drowned", "grotto": "spider", "abyss": "hellspawn"}
+
+// botRolls is how many kills and deaths the sampler averages per snapshot.
+const botRolls = 100
 
 // botReport logs one policy's runs and their summary.
-func botReport(t *testing.T, name string, rs []botResult) {
+func botReport(t *testing.T, name string, rs []botRun) {
 	var lvls, kills, turns, gold []int
 	alive, stuck, king, oracle := 0, 0, 0, 0
 	reached := map[string]int{}
 	killers, areas := map[string]int{}, map[string]int{}
 	t.Logf("%s: gold is +%s -%s", name, strings.Join(goldSrcNames[:], "/"), strings.Join(goldSinkNames[:SinkGear+1], "/"))
 	for _, r := range rs {
-		t.Logf("%-7s seed %2d  %-8s clvl %2d  kills %3d  gold +%s -%s  potions %2d  trips %2d  turns %5d  %s",
-			r.policy, r.seed, r.deepest, r.lvl, r.kills, slashed(r.in[:]), slashed(r.out[:SinkGear+1]), r.potions, r.trips, r.turns, r.status())
+		t.Logf("%-7s seed %2d  %-8s clvl %2d  kills %3d  gold +%s -%s  potions %2d  trips %2d  equips %2d (%.1f/lvl)  turns %5d  %s",
+			r.policy, r.seed, r.deepest, r.lvl, r.kills, slashed(r.in[:]), slashed(r.out[:SinkGear+1]), r.potions, r.trips,
+			r.equips, float64(r.equips)/float64(r.levels), r.turns, r.status())
 		lvls, kills, turns, gold = append(lvls, r.lvl), append(kills, r.kills), append(turns, r.turns), append(gold, sum(r.in[:]))
 		switch {
 		case r.dead:
@@ -136,6 +162,47 @@ func botReport(t *testing.T, name string, rs []botResult) {
 	if len(killers) > 0 {
 		t.Logf("%s deaths: %s · in: %s", name, counts(killers), counts(areas))
 	}
+	botTable(t, name, rs)
+}
+
+// botTable prints the hero at each checkpoint: medians over the runs that
+// arrived, and P10/P50/P90 across them of the sampler against the area's
+// typical normal at that depth.
+func botTable(t *testing.T, name string, rs []botRun) {
+	ar := newArena(t)
+	rng := rand.New(rand.NewSource(1))
+	t.Logf("%-7s %-8s %4s %4s %4s %5s %7s %7s %4s %5s %5s   vs normal      swings P10/P50/P90  bolts P10/P50/P90  turns to die P10/P50/P90",
+		name, "arrival", "runs", "clvl", "HP", "armor", "melee", "bolt", "crit", "gear", "gold")
+	for _, cp := range botCheckpoints {
+		var lvl, hp, armor, lo, hi, blo, bhi, crit, gear, gold []int
+		var swings, bolts, turns []float64
+		area, _ := splitID(cp)
+		m := NewMonster(rng, mtemps[botTypical[area]], botDepth(cp), RankNormal)
+		for _, r := range rs {
+			for i := range r.snaps {
+				s := &r.snaps[i]
+				if s.Level != cp {
+					continue
+				}
+				lvl, hp, armor, crit, gear, gold = append(lvl, s.Lvl), append(hp, s.HP), append(armor, s.Armor), append(crit, s.Crit), append(gear, s.Gear), append(gold, s.Gold)
+				lo, hi, blo, bhi = append(lo, s.MinD), append(hi, s.MaxD), append(blo, s.BoltLo), append(bhi, s.BoltHi)
+				d := ar.sample(&s.P, m, botRolls)
+				swings, bolts, turns = append(swings, d.Swings), append(bolts, d.Bolts), append(turns, d.Turns)
+			}
+		}
+		if len(lvl) == 0 {
+			t.Logf("%-7s %-8s %4d", name, cp, 0)
+			continue
+		}
+		t.Logf("%-7s %-8s %4d %4d %4d %5d %3d-%-3d %3d-%-3d %3d%% %5d %5d   %-13s %s  %s  %s", name, cp, len(lvl),
+			median(lvl), median(hp), median(armor), median(lo), median(hi), median(blo), median(bhi), median(crit), median(gear), median(gold),
+			m.Name, spread(swings), spread(bolts), spread(turns))
+	}
+}
+
+// spread formats P10/P50/P90.
+func spread(xs []float64) string {
+	return fmt.Sprintf("%.1f/%.1f/%.1f", pct(xs, .1), pct(xs, .5), pct(xs, .9))
 }
 
 // slashed joins counters as 12/0/340/0.
@@ -178,7 +245,7 @@ func TestBotBalance(t *testing.T) {
 	}
 	rs := runBots(seeds, 20000)
 	for _, pol := range botPolicies {
-		var prs []botResult
+		var prs []botRun
 		for _, r := range rs {
 			if r.policy == pol.name {
 				prs = append(prs, r)
@@ -212,10 +279,20 @@ func TestBotBalance(t *testing.T) {
 func TestBotDeterministic(t *testing.T) {
 	for _, pol := range botPolicies {
 		a, b := runBot(3, pol, 3000), runBot(3, pol, 3000)
-		if a != b {
-			t.Errorf("%s: two runs of seed 3 differ:\n%+v\n%+v", pol.name, a, b)
+		as, bs := arrivals(a.snaps), arrivals(b.snaps)
+		if a.botResult != b.botResult || as != bs {
+			t.Errorf("%s: two runs of seed 3 differ:\n%+v %s\n%+v %s", pol.name, a.botResult, as, b.botResult, bs)
 		}
 	}
+}
+
+// arrivals lists snapshots as level@turn.
+func arrivals(snaps []botSnap) string {
+	var s []string
+	for _, sn := range snaps {
+		s = append(s, fmt.Sprintf("%s@%d", sn.Level, sn.Turn))
+	}
+	return strings.Join(s, " ")
 }
 
 // TestBotSmoke plays the bot headless through the model, drawing as it

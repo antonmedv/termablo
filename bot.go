@@ -127,7 +127,9 @@ type Bot struct {
 	stall   int    // turns spent waiting for a townsperson's doorway
 	spent   int    // attribute points spent, for the policy's pattern
 
-	Stats BotStats
+	visited map[string]bool // levels snapshotted
+	Snaps   []botSnap
+	Stats   BotStats
 }
 
 // BotStats is what a run reports beyond g.Stats.
@@ -136,8 +138,17 @@ type BotStats struct {
 	Deepest string
 }
 
+// A botSnap is the hero on first arrival at a level, for the
+// power-versus-depth table (BALANCE.md §2.3).
+type botSnap struct {
+	Level                                                        string
+	Turn, Lvl, HP, Armor, MinD, MaxD, BoltLo, BoltHi, Crit, Gold int
+	Gear                                                         int    // gearScore of everything worn
+	P                                                            Player // value copy: Eq copies item pointers, and items never change
+}
+
 func NewBot(g *Game, pol *botPolicy) *Bot {
-	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", Stats: BotStats{Deepest: g.Lv.ID}}
+	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", visited: map[string]bool{}, Stats: BotStats{Deepest: g.Lv.ID}}
 }
 
 func (b *Bot) State() BotState { return b.state }
@@ -197,6 +208,10 @@ func (b *Bot) track() {
 			b.errand, b.shopped, b.forge, b.remedy = false, false, false, false
 		}
 		b.level, b.explored, b.seen, b.progress = l, false, -1, b.n
+		if l.Kind != KTown && !b.visited[l.ID] {
+			b.visited[l.ID] = true
+			b.snapshot()
+		}
 		b.ignore = map[*Monster]int{}
 		b.prey = nil
 		b.used = map[Pos]bool{}
@@ -221,6 +236,21 @@ func (b *Bot) track() {
 	if g.P.Kills != b.kills {
 		b.kills, b.progress = g.P.Kills, b.n
 	}
+}
+
+// snapshot records the hero as it arrives on a level.
+func (b *Bot) snapshot() {
+	g, p := b.g, b.g.P
+	s := botSnap{Level: g.Lv.ID, Turn: g.Turn, Lvl: p.Lvl, HP: p.MaxHP(), Armor: p.ArmorVal(), Crit: p.Crit(), Gold: p.Gold, P: *p}
+	s.MinD, s.MaxD = p.DmgRange()
+	s.BoltLo, s.BoltHi = p.FireboltDmg()
+	for _, it := range p.Eq {
+		if it != nil {
+			v, _ := b.pol.gearScore(it)
+			s.Gear += v
+		}
+	}
+	b.Snaps = append(b.Snaps, s)
 }
 
 // spend puts level-up points where the build wants them.
