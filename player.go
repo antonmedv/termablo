@@ -84,6 +84,8 @@ func (p *Player) ArmorVal() int {
 	return a
 }
 
+// Damage adds up: Strength and Enhanced Damage each add to one bucket,
+// and only a critical hit multiplies (BALANCE.md §4 B).
 func (p *Player) DmgRange() (int, int) {
 	lo, hi := 1, 3
 	if w := p.Eq[EqWeapon]; w != nil {
@@ -91,7 +93,7 @@ func (p *Player) DmgRange() (int, int) {
 	}
 	lo += p.st[StFlatDmg]
 	hi += p.st[StFlatDmg]
-	mul := (1 + float64(p.STR())/p.r.StrDiv) * (1 + float64(p.st[StDmgPct])/100)
+	mul := 1 + float64(p.STR())/p.r.StrDiv + float64(p.st[StDmgPct])/100
 	return maxi(1, int(float64(lo)*mul)), maxi(1, int(math.Ceil(float64(hi)*mul)))
 }
 
@@ -100,19 +102,18 @@ func (p *Player) ToHit() int {
 	return 70 + p.DEX()/4 + p.st[StToHit]/5 + int(float64(p.Lvl-1)*p.r.ToHitPerLvl)
 }
 
-func (p *Player) SpellMul() float64 { return 1 + float64(p.st[StSpellPct])/100 }
-
-// Spells scale with Energy alone: a fighter who never invests in it keeps
-// the starting Firebolt while monsters grow.
+// Spells add up the same way: Energy and Spell Damage each add to the
+// base bolt, neither multiplies the other. A fighter who never invests
+// in Energy keeps the starting Firebolt while monsters grow.
 func (p *Player) FireboltDmg() (int, int) {
 	r := p.r
-	e, m := math.Pow(float64(p.ENE()), r.BoltEnePow), p.SpellMul()
-	return int((5 + e*0.2) * m * r.BoltMul), int((9 + e*0.28) * m * r.BoltMul)
+	e, s := math.Pow(float64(p.ENE()), r.BoltEnePow), float64(p.st[StSpellPct])/100
+	return int((5 + 0.2*e + 5*s) * r.BoltMul), int((9 + 0.28*e + 9*s) * r.BoltMul)
 }
 
 func (p *Player) NovaDmg() (int, int) {
-	e, m := float64(p.ENE()), p.SpellMul()
-	return int((3 + e*0.12) * m * p.r.NovaMul), int((6 + e*0.15) * m * p.r.NovaMul)
+	e, s := float64(p.ENE()), float64(p.st[StSpellPct])/100
+	return int((3 + 0.12*e + 3*s) * p.r.NovaMul), int((6 + 0.15*e + 6*s) * p.r.NovaMul)
 }
 
 // Spells cost more as the caster grows, so a deeper mana pool does not
