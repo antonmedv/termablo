@@ -1308,16 +1308,20 @@ func sign(v int) int {
 	return 0
 }
 
+// Armor is one thing: it reduces the damage that lands, dexterity makes
+// the blow miss, and nothing does both (BALANCE.md §4 C).
 func (g *Game) monsterHitChance(m *Monster) int {
 	p := g.P
-	return clampi(m.ToHit-(p.ArmorVal()/4+p.DEX()/4)+10, 20, 95)
+	return clampi(m.ToHit-p.DEX()/4+10, 20, 95)
 }
 
+// monsterDamage rolls the monster's blow and takes off the armor's share,
+// at most half.
 func (g *Game) monsterDamage(m *Monster) int {
 	p := g.P
 	dmg := m.MinD + g.rng.Intn(m.MaxD-m.MinD+1)
 	a := float64(p.ArmorVal())
-	red := a / (a + 50 + 10*float64(m.Level))
+	red := math.Min(0.5, a/(a+50+10*float64(m.Level)))
 	return maxi(1, int(float64(dmg)*(1-red)+0.5))
 }
 
