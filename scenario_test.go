@@ -270,3 +270,62 @@ func clearAround(l *Level, x, y int) {
 		}
 	}
 }
+
+// Hadrik's services: a gamble rolls an item for the slot into the pack
+// and a reroll replaces the stock, each booked under its sink; the
+// shops only restock on their own when the hero has been deeper.
+func TestGambleAndReroll(t *testing.T) {
+	g := NewGame(4)
+	g.Mode = ModePlay
+	p := g.P
+	p.Gold += 100000
+	g.Stats.In[GoldChest] += 100000 // keep the wallet reconciled
+	smith := npc(t, g, "smith")
+	walkInto(g, smith.X, smith.Y)
+	if g.Mode != ModeShop || len(g.shop.Services) != len(gambleBases)+1 {
+		t.Fatalf("mode %v, %d services", g.Mode, len(g.shop.Services))
+	}
+	var gamble, reroll *Item
+	for _, it := range g.shop.Services {
+		switch {
+		case it.Kind == IKGamble && it.Slot() == SlotBoots:
+			gamble = it
+		case it.Kind == IKReroll:
+			reroll = it
+		}
+	}
+	gold, packs := p.Gold, len(p.Inv)
+	g.buy(gamble)
+	if len(p.Inv) != packs+1 || p.Inv[packs].Slot() != SlotBoots || p.Inv[packs].Kind != IKEquip {
+		t.Fatalf("gamble gave %v", p.Inv)
+	}
+	if price := g.buyPrice(gamble); p.Gold != gold-price || g.Stats.Out[SinkGamble] != price || price != 120+30*g.Deepest {
+		t.Errorf("gamble: gold %d -> %d, price %d, sink %d", gold, p.Gold, price, g.Stats.Out[SinkGamble])
+	}
+	if len(g.shop.Services) != len(gambleBases)+1 {
+		t.Errorf("the gamble sold out")
+	}
+	first, gold := g.shop.Items[0], p.Gold
+	g.buy(reroll)
+	if g.shop != g.shops[0] || g.shop.Items[0] == first {
+		t.Errorf("reroll left the stock as it was")
+	}
+	if price := g.buyPrice(reroll); p.Gold != gold-price || g.Stats.Out[SinkReroll] != price || price != 50+10*g.Deepest {
+		t.Errorf("reroll: gold %d -> %d, price %d, sink %d", gold, p.Gold, price, g.Stats.Out[SinkReroll])
+	}
+	g.Mode = ModePlay
+	shop := g.shops[0]
+	g.changeLevel("fields", "", nil)
+	g.changeLevel("town", "", nil)
+	if g.shops[0] != shop {
+		t.Errorf("restocked without going deeper")
+	}
+	g.changeLevel("crypt1", "", nil)
+	g.changeLevel("town", "", nil)
+	if g.shops[0] == shop || g.Deepest != 2 {
+		t.Errorf("no restock after reaching depth %d", g.Deepest)
+	}
+	if err := checkGame(g); err != nil {
+		t.Error(err)
+	}
+}

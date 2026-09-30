@@ -22,8 +22,8 @@ const (
 	SinkScroll
 	SinkHeal
 	SinkGear
-	SinkReroll // §4 E, nothing charges it yet
-	SinkGamble
+	SinkReroll // Hadrik's fresh stock
+	SinkGamble // an unidentified item
 	SinkCount
 )
 
@@ -56,6 +56,10 @@ func sinkOf(it *Item) GoldSink {
 		return SinkPotion
 	case IKScroll:
 		return SinkScroll
+	case IKReroll:
+		return SinkReroll
+	case IKGamble:
+		return SinkGamble
 	}
 	return SinkGear
 }

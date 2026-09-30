@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"slices"
 	"strings"
 	"unicode/utf8"
 )
@@ -660,7 +661,7 @@ func (g *Game) drawChar(s *Screen, mapW, mapH int) {
 
 func (g *Game) shopList() []*Item {
 	if g.tab == 0 {
-		return g.shop.Items
+		return slices.Concat(g.shop.Items, g.shop.Services)
 	}
 	return g.P.Inv
 }

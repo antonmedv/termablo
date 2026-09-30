@@ -126,10 +126,10 @@ func botReport(t *testing.T, name string, rs []botRun) {
 	alive, stuck, king, oracle := 0, 0, 0, 0
 	reached := map[string]int{}
 	killers, areas := map[string]int{}, map[string]int{}
-	t.Logf("%s: gold is +%s -%s", name, strings.Join(goldSrcNames[:], "/"), strings.Join(goldSinkNames[:SinkGear+1], "/"))
+	t.Logf("%s: gold is +%s -%s", name, strings.Join(goldSrcNames[:], "/"), strings.Join(goldSinkNames[:], "/"))
 	for _, r := range rs {
 		t.Logf("%-7s seed %2d  %-8s clvl %2d  kills %3d  gold +%s -%s  potions %2d  trips %2d  equips %2d (%.1f/lvl)  turns %5d  %s",
-			r.policy, r.seed, r.deepest, r.lvl, r.kills, slashed(r.in[:]), slashed(r.out[:SinkGear+1]), r.potions, r.trips,
+			r.policy, r.seed, r.deepest, r.lvl, r.kills, slashed(r.in[:]), slashed(r.out[:]), r.potions, r.trips,
 			r.equips, float64(r.equips)/float64(r.levels), r.turns, r.status())
 		lvls, kills, turns, gold = append(lvls, r.lvl), append(kills, r.kills), append(turns, r.turns), append(gold, sum(r.in[:]))
 		switch {

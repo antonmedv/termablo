@@ -39,9 +39,10 @@ type Portal struct {
 }
 
 type Shop struct {
-	Name  string
-	Kind  int // 0 smith, 1 alchemist
-	Items []*Item
+	Name     string
+	Kind     int // 0 smith, 1 alchemist
+	Items    []*Item
+	Services []*Item // gambles and the reroll: bought, never sold out
 }
 
 type Game struct {
@@ -72,6 +73,7 @@ type Game struct {
 
 	Quests  [2]int // 0 hunting, 1 slain, 2 rewarded
 	Deepest int    // deepest Depth entered: what the shops and Voss's rewards roll at
+	stocked int    // Deepest at the last restock
 	shops   [2]*Shop
 	shop    *Shop
 
@@ -238,7 +240,7 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 	if l.Kind != KTown && l.Depth > g.Deepest {
 		g.Deepest = l.Depth
 	}
-	if l.Kind == KTown {
+	if l.Kind == KTown && g.Deepest != g.stocked {
 		g.restock()
 	}
 	g.computeVisibility()
@@ -1482,8 +1484,10 @@ func (g *Game) autoStep() bool {
 // ------------------------------------------------------------ town
 
 // restock rolls the shops' stock at the deepest depth the hero has seen
-// (BALANCE.md §4 E): the shop follows the descent, not the level count.
+// (BALANCE.md §4 E): the shop follows the descent, not the level count,
+// and only changes when the descent does, or when Hadrik is paid to.
 func (g *Game) restock() {
+	g.stocked = g.Deepest
 	smith := &Shop{Name: "Hadrik's Forge", Kind: 0}
 	for range 11 {
 		var r Rarity
@@ -1498,6 +1502,10 @@ func (g *Game) restock() {
 		slots := []Slot{SlotWeapon, SlotWeapon, SlotOffhand, SlotArmor, SlotHelm, SlotGloves, SlotBoots}
 		smith.Items = append(smith.Items, GenItem(g.rng, g.Deepest+g.rng.Intn(3), r, slots[g.rng.Intn(len(slots))], g.Rules))
 	}
+	for _, b := range gambleBases {
+		smith.Services = append(smith.Services, &Item{Kind: IKGamble, Base: b, Name: "Unidentified " + b.Name})
+	}
+	smith.Services = append(smith.Services, &Item{Kind: IKReroll, Name: "Fresh stock"})
 	alch := &Shop{Name: "Mirela's Remedies", Kind: 1}
 	alch.Items = append(alch.Items, NewPotion(IKHealth), NewPotion(IKMana), NewPotion(IKScroll))
 	for range 6 {
@@ -1602,6 +1610,25 @@ func (g *Game) buy(it *Item) {
 		*n++
 	case IKScroll:
 		p.Scrolls++
+	case IKGamble:
+		if len(p.Inv) >= invMax {
+			g.msg(colRed, "Your pack is full.")
+			return
+		}
+		r := g.Rules
+		got := GenItem(g.rng, g.Deepest+g.rng.Intn(3), RollRarity(g.rng, r.GambleBonus), it.Slot(), r)
+		p.Inv = append(p.Inv, got)
+		p.Gold -= price
+		g.Stats.Out[SinkGamble] += price
+		g.msg(got.Color(), "Hadrik unwraps %s. %dg, no refunds.", got.Name, price)
+		return
+	case IKReroll:
+		p.Gold -= price
+		g.Stats.Out[SinkReroll] += price
+		g.restock()
+		g.shop = g.shops[0]
+		g.msg(colGold, "Hadrik hauls out fresh stock for %dg.", price)
+		return
 	default:
 		if len(p.Inv) >= invMax {
 			g.msg(colRed, "Your pack is full.")
@@ -1653,14 +1680,19 @@ func (g *Game) mirelaHeal() {
 }
 
 // buyPrice: remedies cost more as the hero grows, so a stack of potions
-// stays a real expense.
+// stays a real expense; Hadrik's services cost more the deeper the hero
+// has been.
 func (g *Game) buyPrice(it *Item) int {
-	lvl, r := float64(g.P.Lvl-1), g.Rules
+	lvl, deep, r := float64(g.P.Lvl-1), float64(g.Deepest), g.Rules
 	switch it.Kind {
 	case IKHealth, IKMana:
 		return int(r.PotionPrice + r.PotionPricePerLvl*lvl)
 	case IKScroll:
 		return int(r.ScrollPrice + r.ScrollPricePerLvl*lvl)
+	case IKGamble:
+		return int(r.GamblePrice + r.GamblePerDepth*deep)
+	case IKReroll:
+		return int(r.RerollPrice + r.RerollPerDepth*deep)
 	}
 	return it.Value()
 }

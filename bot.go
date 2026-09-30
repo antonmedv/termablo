@@ -735,11 +735,66 @@ func (b *Bot) reserve() int {
 	return r + g.buyPrice(NewPotion(IKMana))*maxi(0, b.pol.mana-p.MPot)
 }
 
+// tradeForge sells, buys upgrades, and spends what is left on Hadrik's
+// services: fresh stock when nothing there beats what is worn, and one
+// gamble on the weakest slot when there is gold to burn.
 func (b *Bot) tradeForge() {
+	g, p := b.g, b.g.P
 	b.sellJunk()
-	b.buyGear(b.reserve())
+	reserve := b.reserve()
+	b.buyGear(reserve)
+	if it := b.service(IKReroll, SlotNone); it != nil && !b.upgradeInStock() {
+		if price := g.buyPrice(it); p.Gold-reserve >= price {
+			b.say("reroll for %dg: nothing in stock beats what I wear, %dg after the reserve", price, p.Gold-reserve)
+			g.buy(it)
+			b.buyGear(reserve)
+		}
+	}
+	if it := b.weakestGamble(); it != nil {
+		if price := g.buyPrice(it); p.Gold-reserve > 2*price {
+			_, cs, name := b.replaced(it)
+			b.say("gamble on %s for %dg: wearing %s [%d], %dg after the reserve", it.Name, price, name, cs, p.Gold-reserve)
+			g.buy(it)
+			b.wear()
+		}
+	}
 	b.sellJunk()
 	b.forge = true
+}
+
+// service finds a shop service by kind, and slot for a gamble.
+func (b *Bot) service(kind ItemKind, slot Slot) *Item {
+	for _, it := range b.g.shop.Services {
+		if it.Kind == kind && (slot == SlotNone || it.Slot() == slot) {
+			return it
+		}
+	}
+	return nil
+}
+
+// upgradeInStock says whether anything for sale beats what is worn.
+func (b *Bot) upgradeInStock() bool {
+	for _, it := range b.g.shop.Items {
+		if b.delta(it) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// weakestGamble is the gamble on the slot whose worn item scores least.
+func (b *Bot) weakestGamble() *Item {
+	var best *Item
+	bs := 1 << 30
+	for _, it := range b.g.shop.Services {
+		if it.Kind != IKGamble {
+			continue
+		}
+		if _, cs, _ := b.replaced(it); cs < bs {
+			best, bs = it, cs
+		}
+	}
+	return best
 }
 
 func (b *Bot) tradeRemedies() {

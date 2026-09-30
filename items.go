@@ -317,7 +317,22 @@ const (
 	IKHealth
 	IKMana
 	IKScroll
+	IKGamble // Hadrik's unidentified item: bought, it rolls (BALANCE.md §4 E)
+	IKReroll // Hadrik's fresh stock
 )
+
+// gambleBases stand in for the item a gamble will become: a slot and a
+// name for the shop entry.
+var gambleBases = []*Base{
+	{Name: "Weapon", Slot: SlotWeapon, Glyph: ')'},
+	{Name: "Shield", Slot: SlotOffhand, Glyph: ']'},
+	{Name: "Helm", Slot: SlotHelm, Glyph: '^'},
+	{Name: "Armor", Slot: SlotArmor, Glyph: '['},
+	{Name: "Gloves", Slot: SlotGloves, Glyph: '('},
+	{Name: "Boots", Slot: SlotBoots, Glyph: '['},
+	{Name: "Ring", Slot: SlotRing, Glyph: '='},
+	{Name: "Amulet", Slot: SlotAmulet, Glyph: '"'},
+}
 
 type Item struct {
 	Kind   ItemKind
@@ -355,6 +370,8 @@ func (it *Item) Glyph() rune {
 		return '!'
 	case IKScroll:
 		return '?'
+	case IKReroll:
+		return '*'
 	}
 	return it.Base.Glyph
 }
@@ -369,6 +386,10 @@ func (it *Item) Color() RGB {
 		return C(.35, .5, 1)
 	case IKScroll:
 		return C(.85, .8, .65)
+	case IKGamble:
+		return C(.7, .6, .85)
+	case IKReroll:
+		return C(1, .6, .3)
 	}
 	return rarityColor[it.Rarity]
 }
@@ -408,6 +429,8 @@ func (it *Item) Value() int {
 		return 30
 	case IKScroll:
 		return 60
+	case IKGamble, IKReroll:
+		return 0 // priced by buyPrice from the depth reached
 	}
 	v := 20 + it.ILvl*12 + (it.MaxD+it.MinD)*6 + it.Armor*5
 	for _, a := range it.Aff {
@@ -443,6 +466,10 @@ func (it *Item) Lines() []struct {
 			out = append(out, ln{"Restores a large portion of mana", colGray})
 		case IKScroll:
 			out = append(out, ln{"Opens a portal back to Emberhold", colGray})
+		case IKGamble:
+			out = append(out, ln{"Hadrik's pick from the depth you have reached.", colGray}, ln{"Could be anything. No refunds.", colGray})
+		case IKReroll:
+			out = append(out, ln{"Hadrik hauls out new stock, and Mirela does too.", colGray})
 		}
 		return out
 	}

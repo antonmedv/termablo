@@ -50,6 +50,11 @@ type Rules struct {
 	ScrollPricePerLvl float64
 	HealCost          float64 // Mirela, per point of life or mana
 	QuestGoldPerLvl   float64 // Voss, per character level
+	RerollPrice       float64 // Hadrik's fresh stock: RerollPrice + RerollPerDepth·Deepest
+	RerollPerDepth    float64
+	GamblePrice       float64 // an unidentified item: GamblePrice + GamblePerDepth·Deepest
+	GamblePerDepth    float64
+	GambleBonus       float64 // RollRarity bonus on a gamble
 
 	// growth
 	XPBase float64 // xpNext = XPBase · lvl^XPExp
@@ -94,6 +99,11 @@ func DefaultRules() *Rules {
 		ScrollPricePerLvl: 6,
 		HealCost:          0.5,
 		QuestGoldPerLvl:   250,
+		RerollPrice:       50,
+		RerollPerDepth:    10,
+		GamblePrice:       120,
+		GamblePerDepth:    30,
+		GambleBonus:       1,
 		XPBase:            35,
 		XPExp:             1.8,
 	}
@@ -152,6 +162,11 @@ var knobs = []Knob{
 	{"ScrollPricePerLvl", "economy", 3, 12, 0, func(r *Rules) *float64 { return &r.ScrollPricePerLvl }},
 	{"HealCost", "economy", 0.2, 1, 0, func(r *Rules) *float64 { return &r.HealCost }},
 	{"QuestGoldPerLvl", "economy", 100, 400, 0, func(r *Rules) *float64 { return &r.QuestGoldPerLvl }},
+	{"RerollPrice", "economy", 20, 150, 0, func(r *Rules) *float64 { return &r.RerollPrice }},
+	{"RerollPerDepth", "economy", 5, 30, 0, func(r *Rules) *float64 { return &r.RerollPerDepth }},
+	{"GamblePrice", "economy", 60, 300, 0, func(r *Rules) *float64 { return &r.GamblePrice }},
+	{"GamblePerDepth", "economy", 10, 60, 0, func(r *Rules) *float64 { return &r.GamblePerDepth }},
+	{"GambleBonus", "economy", 0, 2, 0, func(r *Rules) *float64 { return &r.GambleBonus }},
 }
 
 // knobByName finds a registry entry.
