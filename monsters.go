@@ -54,7 +54,7 @@ var mtList = []*MTemplate{
 	{ID: "wisp", Name: "Will-o'-Wisp", Glyph: 'w', Color: C(.6, .95, 1), HP: 10, MinD: 2, MaxD: 6, Dodge: 30, Speed: 130, XP: 14, Erratic: 40, Light: &LightSpec{C(.3, .75, 1), 4, .9, .1, .25}, Pack: [2]int{1, 3}, Verb: "shocks"},
 	{ID: "drowned", Name: "Drowned Dead", Glyph: 'z', Color: C(.4, .65, .7), HP: 28, MinD: 3, MaxD: 8, Speed: 80, XP: 18, Pack: [2]int{2, 3}, Undead: true, Verb: "grasps"},
 	{ID: "horror", Name: "Marsh Horror", Glyph: 'M', Color: C(.45, .6, .32), HP: 45, MinD: 5, MaxD: 12, Speed: 90, XP: 35, Pack: [2]int{1, 1}, Verb: "crushes"},
-	{ID: "spider", Name: "Grotto Spider", Glyph: 'x', Color: C(.75, .62, .42), HP: 16, MinD: 3, MaxD: 7, Dodge: 15, Speed: 130, XP: 16, Pack: [2]int{3, 5}, Verb: "bites"},
+	{ID: "spider", Name: "Grotto Spider", Glyph: 'x', Color: C(.75, .62, .42), HP: 16, MinD: 3, MaxD: 7, Dodge: 15, Speed: 120, XP: 16, Pack: [2]int{2, 4}, Verb: "bites"},
 	{ID: "golem", Name: "Crystal Golem", Glyph: 'g', Color: C(.6, .85, 1), HP: 55, MinD: 6, MaxD: 12, Armor: 20, Speed: 80, XP: 45, Light: &LightSpec{C(.3, .55, 1), 3.5, .8, .02, .15}, Pack: [2]int{1, 1}, Verb: "pummels"},
 	{ID: "imp", Name: "Fire Imp", Glyph: 'i', Color: C(1, .6, .22), HP: 20, MinD: 3, MaxD: 7, Dodge: 20, Speed: 110, XP: 25, AI: AIRanged, Range: 6, ProjColor: C(1, .45, .1), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(1, .45, .12), 3, .8, .3, 0}, Pack: [2]int{2, 4}, Verb: "spits fire at"},
 	{ID: "hellspawn", Name: "Hellspawn", Glyph: 'H', Color: C(.95, .28, .22), HP: 70, MinD: 7, MaxD: 16, Armor: 15, Speed: 100, XP: 60, Light: &LightSpec{C(1, .2, .08), 2.5, .6, .2, 0}, Pack: [2]int{1, 2}, Verb: "cleaves"},
