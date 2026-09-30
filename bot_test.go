@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"os"
 	"runtime"
 	"sort"
 	"strconv"
@@ -17,7 +16,8 @@ import (
 )
 
 // The scripted player (bot.go) as a balance instrument: both policies over
-// many seeds, one report.
+// many seeds, one report (make report) and, with BOTOUT, the rows of a
+// balance evaluation (eval_test.go).
 
 type botResult struct {
 	policy  string
@@ -32,34 +32,63 @@ type botResult struct {
 	lvl     int
 	kills   int
 	deepest string
+	gold    int               // in hand at the end
 	in      [GoldSrcCount]int // gold by source
 	out     [SinkCount]int    // gold by sink
 	potions int               // healing potions drunk
+	mpots   int               // mana potions drunk
+	bolts   int
+	novas   int
 	trips   int
 	equips  int
-	levels  int // levels left behind, as "cleared"
+	levels  int    // levels left behind, as "cleared"
+	fail    string // a panic, recovered
+	death   struct {
+		Rank    int
+		Adj     int
+		Awake   int
+		Potions int
+	}
 }
 
-// A botRun is a result with the hero's level-arrival snapshots.
+// A botRun is a result with the hero's level-arrival snapshots and, once
+// sampleRuns has been over it, the sampler's measure at each checkpoint.
 type botRun struct {
 	botResult
 	snaps []botSnap
+	duels map[string]duel // by checkpoint level
 }
 
 func (r botResult) status() string {
 	switch {
+	case r.fail != "":
+		return "panic: " + r.fail
 	case r.dead:
-		return "killed by " + r.by + " in " + r.where
+		rank := "no monster"
+		if r.death.Rank >= 0 {
+			rank = rankNames[r.death.Rank]
+		}
+		return fmt.Sprintf("killed by %s (%s) in %s · %d adjacent, %d awake, %d potions left", r.by, rank, r.where, r.death.Adj, r.death.Awake, r.death.Potions)
 	case r.stuck:
 		return "stuck in " + r.where
 	}
 	return "alive in " + r.where
 }
 
-// runBot plays one policy on one seed until death, a stuck run or the turn
-// limit.
+// runBot plays one policy on one seed under the default rules.
 func runBot(seed int64, pol *botPolicy, maxTurns int) botRun {
-	g := NewGame(seed)
+	return runBotWith(DefaultRules(), seed, pol, maxTurns)
+}
+
+// runBotWith plays one policy on one seed until death, a stuck run or the
+// turn limit. A panic ends the run and is reported in fail.
+func runBotWith(r *Rules, seed int64, pol *botPolicy, maxTurns int) (run botRun) {
+	defer func() {
+		if e := recover(); e != nil {
+			run = botRun{botResult: botResult{policy: pol.name, seed: seed, fail: fmt.Sprint(e)}}
+		}
+	}()
+	g := NewGameWith(seed, r)
 	g.Mode = ModePlay
 	b := NewBot(g, pol)
 	// Trading spends no game turn; the second bound keeps a run finite anyway.
@@ -68,18 +97,20 @@ func runBot(seed int64, pol *botPolicy, maxTurns int) botRun {
 		b.turn()
 	}
 	p := g.P
-	return botRun{botResult{policy: pol.name, seed: seed, turns: g.Turn, dead: g.Mode == ModeDead, by: p.KilledBy, where: g.Lv.ID,
+	res := botResult{policy: pol.name, seed: seed, turns: g.Turn, dead: g.Mode == ModeDead, by: p.KilledBy, where: g.Lv.ID,
 		stuck: b.State() == BotStuck || calls >= 2*maxTurns, king: g.Quests[0] > 0, oracle: g.Quests[1] > 0,
-		lvl: p.Lvl, kills: p.Kills, deepest: b.Stats.Deepest,
-		in: g.Stats.In, out: g.Stats.Out, potions: g.Stats.HPots, trips: b.Stats.Trips,
-		equips: g.Stats.Equips, levels: maxi(1, len(b.Snaps)-1)}, b.Snaps}
+		lvl: p.Lvl, kills: p.Kills, deepest: b.Stats.Deepest, gold: p.Gold,
+		in: g.Stats.In, out: g.Stats.Out, potions: g.Stats.HPots, mpots: g.Stats.MPots, bolts: g.Stats.Bolts, novas: g.Stats.Novas, trips: b.Stats.Trips,
+		equips: g.Stats.Equips, levels: maxi(1, len(b.Snaps)-1)}
+	res.death = g.Stats.Death
+	return botRun{botResult: res, snaps: b.Snaps}
 }
 
-// runBots plays every policy over seeds 1..n, runs in parallel.
-func runBots(n, maxTurns int) []botRun {
+// runBotsWith plays every policy over n seeds from first, in parallel.
+func runBotsWith(r *Rules, first, n, maxTurns int) []botRun {
 	var rs []botRun
 	for _, pol := range botPolicies {
-		for s := 1; s <= n; s++ {
+		for s := first; s < first+n; s++ {
 			rs = append(rs, botRun{botResult: botResult{policy: pol.name, seed: int64(s)}})
 		}
 	}
@@ -90,7 +121,7 @@ func runBots(n, maxTurns int) []botRun {
 		sem <- struct{}{}
 		go func() {
 			defer wg.Done()
-			rs[i] = runBot(rs[i].seed, policyByName(rs[i].policy), maxTurns)
+			rs[i] = runBotWith(r, rs[i].seed, policyByName(rs[i].policy), maxTurns)
 			<-sem
 		}()
 	}
@@ -120,16 +151,47 @@ var botTypical = map[string]string{"fields": "fallen", "crypt": "skel", "marsh":
 // botRolls is how many kills and deaths the sampler averages per snapshot.
 const botRolls = 100
 
+// sampleRuns pits every checkpoint arrival against the area's typical
+// normal at that depth and stores the duel on the run.
+func sampleRuns(t testing.TB, r *Rules, rs []botRun) {
+	ar := newArena(t, r)
+	rng := rand.New(rand.NewSource(1))
+	typical := map[string]*Monster{}
+	for _, cp := range botCheckpoints {
+		area, _ := splitID(cp)
+		typical[cp] = NewMonster(rng, mtemps[botTypical[area]], botDepth(cp), RankNormal, r)
+	}
+	for i := range rs {
+		rs[i].duels = map[string]duel{}
+		for j := range rs[i].snaps {
+			s := &rs[i].snaps[j]
+			if m, ok := typical[s.Level]; ok {
+				rs[i].duels[s.Level] = ar.sample(&s.P, m, botRolls)
+			}
+		}
+	}
+}
+
+// packOf is the mean pack size of a template under r, as populate rolls
+// it, and its speed as attacks per turn.
+func packOf(t *MTemplate, r *Rules) (pack, speed float64) {
+	n := 0.0
+	for k := t.Pack[0]; k <= t.Pack[1]; k++ {
+		n += math.Max(1, math.Floor(float64(k)*r.PackMul))
+	}
+	return n / float64(t.Pack[1]-t.Pack[0]+1), float64(t.Speed) / 100
+}
+
 // botReport logs one policy's runs and their summary.
-func botReport(t *testing.T, name string, rs []botRun) {
+func botReport(t *testing.T, name string, rs []botRun, r *Rules) {
 	var lvls, kills, turns, gold []int
 	alive, stuck, king, oracle := 0, 0, 0, 0
 	reached := map[string]int{}
 	killers, areas := map[string]int{}, map[string]int{}
 	t.Logf("%s: gold is +%s -%s", name, strings.Join(goldSrcNames[:], "/"), strings.Join(goldSinkNames[:], "/"))
 	for _, r := range rs {
-		t.Logf("%-7s seed %2d  %-8s clvl %2d  kills %3d  gold +%s -%s  potions %2d  trips %2d  equips %2d (%.1f/lvl)  turns %5d  %s",
-			r.policy, r.seed, r.deepest, r.lvl, r.kills, slashed(r.in[:]), slashed(r.out[:]), r.potions, r.trips,
+		t.Logf("%-7s seed %2d  %-8s clvl %2d  kills %3d  gold +%s -%s  potions %2d/%2d  bolts %3d novas %2d  trips %2d  equips %2d (%.1f/lvl)  turns %5d  %s",
+			r.policy, r.seed, r.deepest, r.lvl, r.kills, slashed(r.in[:]), slashed(r.out[:]), r.potions, r.mpots, r.bolts, r.novas, r.trips,
 			r.equips, float64(r.equips)/float64(r.levels), r.turns, r.status())
 		lvls, kills, turns, gold = append(lvls, r.lvl), append(kills, r.kills), append(turns, r.turns), append(gold, sum(r.in[:]))
 		switch {
@@ -162,14 +224,13 @@ func botReport(t *testing.T, name string, rs []botRun) {
 	if len(killers) > 0 {
 		t.Logf("%s deaths: %s · in: %s", name, counts(killers), counts(areas))
 	}
-	botTable(t, name, rs)
+	botTable(t, name, rs, r)
 }
 
 // botTable prints the hero at each checkpoint: medians over the runs that
 // arrived, and P10/P50/P90 across them of the sampler against the area's
 // typical normal at that depth.
-func botTable(t *testing.T, name string, rs []botRun) {
-	ar := newArena(t)
+func botTable(t *testing.T, name string, rs []botRun, r *Rules) {
 	rng := rand.New(rand.NewSource(1))
 	t.Logf("%-7s %-8s %4s %4s %4s %5s %7s %7s %4s %5s %5s   vs normal      swings P10/P50/P90  bolts P10/P50/P90  turns to die P10/P50/P90",
 		name, "arrival", "runs", "clvl", "HP", "armor", "melee", "bolt", "crit", "gear", "gold")
@@ -177,16 +238,16 @@ func botTable(t *testing.T, name string, rs []botRun) {
 		var lvl, hp, armor, lo, hi, blo, bhi, crit, gear, gold []int
 		var swings, bolts, turns []float64
 		area, _ := splitID(cp)
-		m := NewMonster(rng, mtemps[botTypical[area]], botDepth(cp), RankNormal, ar.g.Rules)
-		for _, r := range rs {
-			for i := range r.snaps {
-				s := &r.snaps[i]
+		m := NewMonster(rng, mtemps[botTypical[area]], botDepth(cp), RankNormal, r)
+		for _, run := range rs {
+			for i := range run.snaps {
+				s := &run.snaps[i]
 				if s.Level != cp {
 					continue
 				}
 				lvl, hp, armor, crit, gear, gold = append(lvl, s.Lvl), append(hp, s.HP), append(armor, s.Armor), append(crit, s.Crit), append(gear, s.Gear), append(gold, s.Gold)
 				lo, hi, blo, bhi = append(lo, s.MinD), append(hi, s.MaxD), append(blo, s.BoltLo), append(bhi, s.BoltHi)
-				d := ar.sample(&s.P, m, botRolls)
+				d := run.duels[cp]
 				swings, bolts, turns = append(swings, d.Swings), append(bolts, d.Bolts), append(turns, d.Turns)
 			}
 		}
@@ -226,52 +287,6 @@ func counts(m map[string]int) string {
 		s = append(s, fmt.Sprintf("%s ×%d", k, m[k]))
 	}
 	return strings.Join(s, ", ")
-}
-
-// TestBotBalance plays both policies over many seeds and reports how they
-// fared. It fails only on a gross balance break; the report (make report)
-// is the point. BOTSEEDS=n runs more seeds.
-func TestBotBalance(t *testing.T) {
-	seeds := 12
-	if testing.Short() {
-		seeds = 3
-	}
-	if v := os.Getenv("BOTSEEDS"); v != "" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n < 1 {
-			t.Fatalf("BOTSEEDS=%q: want a positive number", v)
-		}
-		seeds = n
-	}
-	rs := runBots(seeds, 20000)
-	for _, pol := range botPolicies {
-		var prs []botRun
-		for _, r := range rs {
-			if r.policy == pol.name {
-				prs = append(prs, r)
-			}
-		}
-		botReport(t, pol.name, prs)
-	}
-
-	// Loose guards against gross balance breaks; the bot is no expert.
-	var lvls, turns []int
-	deeper := 0
-	for _, r := range rs {
-		lvls, turns = append(lvls, r.lvl), append(turns, r.turns)
-		if botDepth(r.deepest) >= botDepth("crypt1") {
-			deeper++
-		}
-	}
-	if med := median(lvls); med < 3 {
-		t.Errorf("median character level %d, want at least 3", med)
-	}
-	if deeper*2 < len(rs) {
-		t.Errorf("only %d/%d runs reached the crypt", deeper, len(rs))
-	}
-	if med := median(turns); med < 1500 {
-		t.Errorf("median run lasted %d turns, want at least 1500", med)
-	}
 }
 
 // A run is a function of the seed and the policy: the bot rolls its own

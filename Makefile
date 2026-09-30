@@ -1,4 +1,4 @@
-.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones report
+.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones report eval knobs
 
 GOBIN := $(shell go env GOPATH)/bin
 
@@ -18,7 +18,7 @@ lint:
 	golangci-lint run ./...
 
 deadcode:
-	@out=$$($(GOBIN)/deadcode -test .); if [ -n "$$out" ]; then echo "$$out"; exit 1; fi
+	@out=$$($(GOBIN)/deadcode -test ./...); if [ -n "$$out" ]; then echo "$$out"; exit 1; fi
 
 test:
 	go test ./...
@@ -44,5 +44,19 @@ og:
 zones:
 	SHOTDIR=$(CURDIR)/demo go test -count=1 -run ShotZones .
 
+# the bot report: both builds over SEEDS seeds, the reference heroes
+# table. RULES=file.json lays knobs over the defaults (rules.go).
+SEEDS ?= 24
+FIRST ?= 1
 report:
-	BOTSEEDS=24 go test -count=1 -v -run 'BotBalance|RefHeroes' . | grep -v "^=== RUN"
+	BOTSEEDS=$(SEEDS) BOTFIRST=$(FIRST) BOTRULES=$(RULES) go test -count=1 -v -run 'BotBalance|RefHeroes' . | grep -v "^=== RUN"
+
+# one balance evaluation: the report plus its rows, metrics and score as
+# JSON for cmd/balance. make eval OUT=balance/runs/x.json RULES=x.json
+eval:
+	@test -n "$(OUT)" || { echo "make eval OUT=balance/runs/NAME.json [RULES=x.json SEEDS=48 FIRST=1]"; exit 2; }
+	BOTSEEDS=$(SEEDS) BOTFIRST=$(FIRST) BOTRULES=$(RULES) BOTOUT=$(OUT) BOTNAME=$(notdir $(basename $(OUT))) go test -count=1 -v -run 'BotBalance$$' . | grep -v "^=== RUN"
+
+# the knob registry: every tunable with its range, step and meaning
+knobs:
+	@go test -count=1 -v -run 'Knobs$$' . | grep "eval_test" | sed 's/^ *eval_test.go:[0-9]*: //'

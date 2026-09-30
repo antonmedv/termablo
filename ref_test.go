@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -247,18 +248,36 @@ func refFlags(r refRow, ds, par []duel, boss bool) string {
 	return strings.Join(out, " ")
 }
 
-// TestRefHeroes prints the reference table, one checkpoint per goroutine.
+// refCheckpointByName finds a checkpoint.
+func refCheckpointByName(name string) refCheckpoint {
+	for _, cp := range refCheckpoints {
+		if cp.name == name {
+			return cp
+		}
+	}
+	panic("no reference checkpoint " + name)
+}
+
+// TestRefHeroes prints the reference table, one checkpoint per goroutine,
+// under the defaults or BOTRULES.
 func TestRefHeroes(t *testing.T) {
 	n := refRolls()
+	r, warnings, err := rulesFromFile(os.Getenv("BOTRULES"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, w := range warnings {
+		t.Logf("BOTRULES: %s", w)
+	}
 	t.Logf("reference heroes, at least %d rolls and %d kills or deaths per measure · gear: the policy's gearScore of everything worn, bot: the bot's P50 on arrival that par is calibrated to · per monster: swings to kill, bolts to kill, player turns survived from full life with no potions, damage per monster attack with misses · ranged monsters fight in melee here · dps/hp: mean hit (melee for fighter, bolt for caster) over the first normal's life · ! = outside a band", n, minTrials)
 	blocks := make([][]string, len(refCheckpoints))
 	var wg sync.WaitGroup
 	for i, cp := range refCheckpoints {
-		ar := newArena(t)
+		ar := newArena(t, r)
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			blocks[i] = refBlock(ar, cp, rand.New(rand.NewSource(int64(i)+1)), n)
+			blocks[i] = refLines(refRun(ar, cp, rand.New(rand.NewSource(int64(i)+1)), n, true))
 		}()
 	}
 	wg.Wait()
@@ -269,78 +288,112 @@ func TestRefHeroes(t *testing.T) {
 	}
 }
 
-// refBlock builds a checkpoint's heroes and monsters, samples every row
-// and returns the lines to print.
-func refBlock(ar *arena, cp refCheckpoint, rng *rand.Rand, n int) []string {
+// A refResult is one checkpoint sampled: its rows in order (per policy
+// start, par, lucky; then the par heroes sent the wrong way), the
+// monsters at the checkpoint's depth and the wrong way's, and each row's
+// duels in monster order.
+type refResult struct {
+	cp    refCheckpoint
+	rows  []refRow
+	ms    []*Monster
+	far   []*Monster
+	duels [][]duel
+}
+
+// refRun builds a checkpoint's heroes and monsters and samples every row
+// with n rolls. With start false the start rows are built (so the
+// fixtures roll the same) but not sampled.
+func refRun(ar *arena, cp refCheckpoint, rng *rand.Rand, n int, start bool) refResult {
+	r := ar.g.Rules
+	var rows []refRow
+	for _, pol := range botPolicies {
+		st, par, lucky := refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl)
+		wear(st, startKit(rng))
+		wear(par, parKit(rng, r, pol, cp))
+		wear(lucky, gearTier(rng, r, pol, cp.depth, luckyRolls, func() Rarity {
+			if rng.Intn(uniqueOdds) == 0 {
+				return RUnique
+			}
+			return RRare
+		}))
+		rows = append(rows, refRow{"start", pol, st, cp.depth}, refRow{"par", pol, par, cp.depth}, refRow{"lucky", pol, lucky, cp.depth})
+	}
+	for _, row := range rows {
+		if row.tier == "par" {
+			rows = append(rows, refRow{"wrong", row.pol, row.p, cp.depth + wrongWay})
+		}
+	}
+	res := refResult{cp: cp, rows: rows, ms: refMonsters(rng, r, cp, cp.depth), far: refMonsters(rng, r, cp, cp.depth+wrongWay)}
+	res.duels = make([][]duel, len(rows))
+	for i, row := range rows {
+		if row.tier == "start" && !start {
+			continue
+		}
+		targets := res.ms
+		if row.tier == "wrong" {
+			targets = res.far
+		}
+		for _, m := range targets {
+			res.duels[i] = append(res.duels[i], ar.sample(row.p, m, n))
+		}
+	}
+	return res
+}
+
+// row finds a sampled row's duels by tier and policy.
+func (res *refResult) row(tier string, pol *botPolicy) []duel {
+	for i, row := range res.rows {
+		if row.tier == tier && row.pol == pol {
+			return res.duels[i]
+		}
+	}
+	return nil
+}
+
+// refLines formats a sampled checkpoint as the lines the report prints.
+func refLines(res refResult) []string {
+	cp := res.cp
 	var out []string
 	logf := func(f string, a ...any) { out = append(out, fmt.Sprintf(f, a...)) }
-	{
-		r := ar.g.Rules
-		var rows []refRow
-		for _, pol := range botPolicies {
-			start, par, lucky := refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl), refHero(ar.g, pol, cp.lvl)
-			wear(start, startKit(rng))
-			wear(par, parKit(rng, r, pol, cp))
-			wear(lucky, gearTier(rng, r, pol, cp.depth, luckyRolls, func() Rarity {
-				if rng.Intn(uniqueOdds) == 0 {
-					return RUnique
-				}
-				return RRare
-			}))
-			rows = append(rows, refRow{"start", pol, start, cp.depth}, refRow{"par", pol, par, cp.depth}, refRow{"lucky", pol, lucky, cp.depth})
+	var labels []string
+	hdr := fmt.Sprintf("%-14s %4s %5s %-8s %4s %-6s %4s %4s", "hero", "HP", "armor", "melee", "crit", "bolt", "gear", "bot")
+	for _, m := range res.ms {
+		label, short := monsterLabel(m)
+		labels = append(labels, label)
+		hdr += fmt.Sprintf(" | %-22s", short)
+	}
+	logf("%s  depth %d  clvl %d  ·  %s  ·  wrong way: depth %d, same monsters", cp.name, cp.depth, cp.lvl, strings.Join(labels, "  ·  "), cp.depth+wrongWay)
+	logf("%s | dps/hp | !", hdr)
+	par := map[bool][]duel{}
+	for i, r := range res.rows {
+		if r.tier == "par" {
+			par[r.pol.caster] = res.duels[i]
 		}
-		for _, r := range rows {
-			if r.tier == "par" {
-				rows = append(rows, refRow{"wrong", r.pol, r.p, cp.depth + wrongWay})
-			}
+	}
+	for i, r := range res.rows {
+		ds, p := res.duels[i], r.p
+		if ds == nil {
+			continue
 		}
-		ms := refMonsters(rng, r, cp, cp.depth)
-		far := refMonsters(rng, r, cp, cp.depth+wrongWay)
-		var labels []string
-		hdr := fmt.Sprintf("%-14s %4s %5s %-8s %4s %-6s %4s %4s", "hero", "HP", "armor", "melee", "crit", "bolt", "gear", "bot")
-		for _, m := range ms {
-			label, short := monsterLabel(m)
-			labels = append(labels, label)
-			hdr += fmt.Sprintf(" | %-22s", short)
-		}
-		logf("%s  depth %d  clvl %d  ·  %s  ·  wrong way: depth %d, same monsters", cp.name, cp.depth, cp.lvl, strings.Join(labels, "  ·  "), cp.depth+wrongWay)
-		logf("%s | dps/hp | !", hdr)
-		duels := make([][]duel, len(rows))
-		par := map[bool][]duel{}
-		for i, r := range rows {
-			targets := ms
-			if r.tier == "wrong" {
-				targets = far
-			}
-			for _, m := range targets {
-				duels[i] = append(duels[i], ar.sample(r.p, m, n))
-			}
-			if r.tier == "par" {
-				par[r.pol.caster] = duels[i]
-			}
-		}
-		for i, r := range rows {
-			ds, p := duels[i], r.p
-			lo, hi := p.DmgRange()
-			blo, bhi := p.FireboltDmg()
-			bot := ""
-			if r.tier == "par" {
-				want := cp.gear[0]
-				if r.pol.caster {
-					want = cp.gear[1]
-				}
-				bot = strconv.Itoa(want)
-			}
-			line := fmt.Sprintf("%-14s %4d %5d %-8s %3d%% %-6s %4d %4s", r.pol.name+" "+r.tier, p.MaxHP(), p.ArmorVal(), fmt.Sprintf("%d-%d", lo, hi), p.Crit(), fmt.Sprintf("%d-%d", blo, bhi), gearTotal(r.pol, p.Eq), bot)
-			for _, d := range ds {
-				line += fmt.Sprintf(" | %5.1f %5.1f %5.1f %4.1f", d.Swings, d.Bolts, d.Turns, d.DPT)
-			}
-			hit := float64(lo+hi) / 2 * (1 + float64(p.Crit())/100)
+		lo, hi := p.DmgRange()
+		blo, bhi := p.FireboltDmg()
+		bot := ""
+		if r.tier == "par" {
+			want := cp.gear[0]
 			if r.pol.caster {
-				hit = float64(blo+bhi) / 2 * (1 + float64(p.Crit())/400)
+				want = cp.gear[1]
 			}
-			logf("%s | %6.2f | %s", line, hit/float64(ms[0].MaxHP), refFlags(r, ds, par[r.pol.caster], cp.boss != ""))
+			bot = strconv.Itoa(want)
 		}
+		line := fmt.Sprintf("%-14s %4d %5d %-8s %3d%% %-6s %4d %4s", r.pol.name+" "+r.tier, p.MaxHP(), p.ArmorVal(), fmt.Sprintf("%d-%d", lo, hi), p.Crit(), fmt.Sprintf("%d-%d", blo, bhi), gearTotal(r.pol, p.Eq), bot)
+		for _, d := range ds {
+			line += fmt.Sprintf(" | %5.1f %5.1f %5.1f %4.1f", d.Swings, d.Bolts, d.Turns, d.DPT)
+		}
+		hit := float64(lo+hi) / 2 * (1 + float64(p.Crit())/100)
+		if r.pol.caster {
+			hit = float64(blo+bhi) / 2 * (1 + float64(p.Crit())/400)
+		}
+		logf("%s | %6.2f | %s", line, hit/float64(res.ms[0].MaxHP), refFlags(r, ds, par[r.pol.caster], cp.boss != ""))
 	}
 	return out
 }

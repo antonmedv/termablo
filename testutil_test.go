@@ -54,6 +54,7 @@ type testOpts struct {
 	layout  string
 	ambient RGB
 	awake   bool
+	rules   *Rules
 }
 
 type testOpt func(*testOpts)
@@ -61,6 +62,7 @@ type testOpt func(*testOpts)
 func withMap(m string) testOpt   { return func(o *testOpts) { o.layout = m } }
 func withAmbient(c RGB) testOpt  { return func(o *testOpts) { o.ambient = c } }
 func withAwakeMonsters() testOpt { return func(o *testOpts) { o.awake = true } }
+func withRules(r *Rules) testOpt { return func(o *testOpts) { o.rules = r } }
 
 func newTestGame(t testing.TB, opts ...testOpt) *Game {
 	t.Helper()
@@ -68,7 +70,10 @@ func newTestGame(t testing.TB, opts ...testOpt) *Game {
 	for _, f := range opts {
 		f(&o)
 	}
-	g := NewGame(o.seed)
+	if o.rules == nil {
+		o.rules = DefaultRules()
+	}
+	g := NewGameWith(o.seed, o.rules)
 	g.Mode = ModePlay
 	var l *Level
 	if o.layout == "" {

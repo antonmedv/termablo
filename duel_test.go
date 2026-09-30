@@ -22,8 +22,8 @@ type arena struct {
 	g *Game
 }
 
-func newArena(t testing.TB) *arena {
-	return &arena{newTestGame(t, withMap(`
+func newArena(t testing.TB, r *Rules) *arena {
+	return &arena{newTestGame(t, withRules(r), withMap(`
 		#######
 		#.....#
 		#..@..#
