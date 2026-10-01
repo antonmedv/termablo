@@ -120,8 +120,17 @@ func (m *model) key(k string) bool {
 	case ModeTalk:
 		g.Mode = ModePlay
 	case ModeHelp, ModeMap:
-		if k == "esc" || k == "?" || k == "m" || k == "q" || k == "enter" || k == " " {
+		switch k {
+		case "esc", "?", "m", "q", "enter", " ":
 			g.Mode = ModePlay
+		case "up", "k":
+			g.helpOff--
+		case "down", "j":
+			g.helpOff++
+		case "pgup":
+			g.helpOff -= 10
+		case "pgdown":
+			g.helpOff += 10
 		}
 	case ModeChar:
 		switch k {
@@ -191,7 +200,7 @@ func (m *model) playKey(k string) bool {
 	case "m":
 		g.Mode = ModeMap
 	case "?":
-		g.Mode = ModeHelp
+		g.Mode, g.helpOff = ModeHelp, 0
 	case "Q":
 		return true
 	}

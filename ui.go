@@ -44,7 +44,7 @@ func (g *Game) Draw(s *Screen) {
 	case ModeHelp:
 		g.drawHelp(s, mapW, mapH)
 	case ModeMap:
-		g.drawOverview(s, mapW)
+		g.drawOverview(s, mapW, mapH)
 	case ModeTalk:
 		g.drawTalk(s, mapW, mapH)
 	case ModeDead:
@@ -504,6 +504,47 @@ func centerBox(s *Screen, mapW, mapH, w, h int, title string) (int, int) {
 	return x, y
 }
 
+// clipStr cuts s to at most n runes.
+func clipStr(s string, n int) string {
+	if n <= 0 {
+		return ""
+	}
+	if r := []rune(s); len(r) > n {
+		return string(r[:n])
+	}
+	return s
+}
+
+// wrapText breaks s into lines of at most w runes, at spaces when it can.
+func wrapText(s string, w int) []string {
+	w = maxi(1, w)
+	var out []string
+	for utf8.RuneCountInString(s) > w {
+		r := []rune(s)
+		cut := strings.LastIndex(string(r[:w+1]), " ")
+		if cut <= 0 {
+			cut = len(string(r[:w]))
+		}
+		out = append(out, strings.TrimRight(s[:cut], " "))
+		s = strings.TrimLeft(s[cut:], " ")
+	}
+	return append(out, s)
+}
+
+// scrollHints marks a list that runs past its rows: how many are above,
+// right-aligned on the row over the list, and how many below, set into
+// the row under it. Both end at x+w.
+func scrollHints(s *Screen, x, w, top, bottom, above, below int) {
+	if above > 0 {
+		t := fmt.Sprintf("↑ %d more", above)
+		s.Text(x+w-utf8.RuneCountInString(t), top, t, colDim.C8())
+	}
+	if below > 0 {
+		t := fmt.Sprintf(" ↓ %d more ", below)
+		s.Text(x+w-utf8.RuneCountInString(t), bottom, t, colDim.C8())
+	}
+}
+
 func (g *Game) itemLines(s *Screen, x, y, w, maxRows int, it *Item) {
 	row := 0
 	for _, ln := range it.Lines(g.Rules) {
@@ -532,8 +573,12 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 	bw, bh := 84, mini(s.H-2, 34)
 	x, y := centerBox(s, mapW, mapH, bw, bh, "Inventory")
 	bw = mini(bw, mapW-2)
+	// two columns, equipped and pack; the names split what the width
+	// leaves, the longest base name whole when there is room
+	eqW := mini(17, (bw-21)/2+1)
+	packW := bw - 21 - eqW
 	colL := x + 2
-	colR := x + 30
+	colR := colL + 9 + eqW + 2
 	hdr := func(xx int, t string, active bool) {
 		c := colDim
 		if active {
@@ -553,20 +598,18 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 	for i := range EqCount {
 		yy := y + 3 + i
 		if g.pane == 0 && g.cur == i {
-			sel(colL-1, yy, 27)
+			sel(colL-1, yy, 9+eqW+1)
 		}
 		s.Text(colL, yy, fmt.Sprintf("%-8s", eqNames[i]), colDim.C8())
 		if it := p.Eq[i]; it != nil {
-			n := it.Name
-			if len(n) > 17 {
-				n = n[:17]
-			}
-			s.Text(colL+9, yy, n, it.Color().C8())
+			s.Text(colL+9, yy, clipStr(it.Name, eqW), it.Color().C8())
 		} else {
 			s.Text(colL+9, yy, "—", colDim.C8())
 		}
 	}
-	maxRows := maxi(3, bh-16)
+	// the pack runs down to the divider over the details
+	dy := maxi(y+14, y+bh-12)
+	maxRows := dy - 1 - (y + 3)
 	off := 0
 	if g.pane == 1 && g.cur >= maxRows {
 		off = g.cur - maxRows + 1
@@ -575,14 +618,10 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 		it := p.Inv[i]
 		yy := y + 3 + i - off
 		if g.pane == 1 && g.cur == i {
-			sel(colR-1, yy, bw-30)
+			sel(colR-1, yy, x+bw-colR)
 		}
 		s.Put(colR, yy, it.Glyph(), it.Color().C8())
-		n := it.Name
-		if len(n) > bw-40 {
-			n = n[:bw-40]
-		}
-		s.Text(colR+2, yy, n, it.Color().C8())
+		s.Text(colR+2, yy, clipStr(it.Name, packW), it.Color().C8())
 		if up := g.upgradeHint(it); up != "" {
 			s.Text(x+bw-4, yy, up, colGreen.C8())
 		}
@@ -591,11 +630,11 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 		s.Text(colR, y+3, "Your pack is empty.", colDim.C8())
 	}
 	// details
-	dy := maxi(y+14, y+bh-12)
 	detRows := y + bh - 1 - dy
 	for xx := x + 1; xx < x+bw-1; xx++ {
 		s.Put(xx, dy-1, '─', colBorder.Scale(.6).C8())
 	}
+	scrollHints(s, colR, x+bw-2-colR, y+2, dy-1, off, len(p.Inv)-off-maxRows)
 	var it *Item
 	if g.pane == 0 {
 		it = p.Eq[clampi(g.cur, 0, EqCount-1)]
@@ -731,11 +770,7 @@ func (g *Game) drawShop(s *Screen, mapW, mapH int) {
 			}
 		}
 		s.Put(cx, yy, it.Glyph(), it.Color().C8())
-		name := it.DisplayName()
-		if len(name) > bw-24 {
-			name = name[:bw-24]
-		}
-		s.Text(cx+2, yy, name, it.Color().C8())
+		s.Text(cx+2, yy, clipStr(it.DisplayName(), bw-24), it.Color().C8())
 		price := g.buyPrice(it)
 		if g.tab == 1 {
 			price = sellPrice(it, g.Rules)
@@ -756,6 +791,7 @@ func (g *Game) drawShop(s *Screen, mapW, mapH int) {
 	for xx := x + 1; xx < x+bw-1; xx++ {
 		s.Put(xx, dy-1, '─', colBorder.Scale(.6).C8())
 	}
+	scrollHints(s, cx, bw-4, y+2, dy-1, off, len(items)-off-maxRows)
 	if g.cur < len(items) {
 		it := items[g.cur]
 		half := (bw - 6) / 2
@@ -769,8 +805,7 @@ func (g *Game) drawShop(s *Screen, mapW, mapH int) {
 }
 
 func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
-	x, y := centerBox(s, mapW, mapH, 62, 27, "Help")
-	lines := []struct {
+	keys := []struct {
 		k, d string
 	}{
 		{"arrows hjkl yubn", "move / attack (numpad works too)"},
@@ -787,10 +822,6 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		{"m", "map of explored area"},
 		{"Q / ctrl+c", "quit"},
 	}
-	for i, l := range lines {
-		s.TextBold(x+3, y+2+i, l.k, colOrange.C8())
-		s.Text(x+22, y+2+i, l.d, colGray.C8())
-	}
 	tips := []string{
 		"Walk into doors, chests, altars and fountains to use them.",
 		"Talk to townsfolk by walking into them.",
@@ -801,10 +832,47 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		"Hover the mouse over the map to see what things are.",
 		"Click a belt row to drink a potion or read the scroll.",
 	}
-	for i, t := range tips {
-		s.Text(x+3, y+17+i, "· "+t, C(.75, .65, .5).C8())
+	// lay the text out for the width at hand, then show the rows that fit
+	type hline struct {
+		k, d string
+		dx   int
+		c    RGB
 	}
-	s.Text(x+3, y+25, "esc to close", colDim.C8())
+	bw := mini(78, mapW-2)
+	var rows []hline
+	for _, l := range keys {
+		for i, d := range wrapText(l.d, bw-23) {
+			k := ""
+			if i == 0 {
+				k = l.k
+			}
+			rows = append(rows, hline{k, d, 21, colGray})
+		}
+	}
+	rows = append(rows, hline{})
+	for _, t := range tips {
+		for i, d := range wrapText(t, bw-7) {
+			pre := "· "
+			if i > 0 {
+				pre = "  "
+			}
+			rows = append(rows, hline{"", pre + d, 3, colLore})
+		}
+	}
+	bh := mini(len(rows)+5, s.H-2)
+	x, y := centerBox(s, mapW, mapH, bw, bh, "Help")
+	show := bh - 4
+	g.helpOff = clampi(g.helpOff, 0, maxi(0, len(rows)-show))
+	for i, l := range rows[g.helpOff:mini(len(rows), g.helpOff+show)] {
+		s.TextBold(x+3, y+2+i, l.k, colOrange.C8())
+		s.Text(x+l.dx, y+2+i, l.d, l.c.C8())
+	}
+	foot := "esc to close"
+	if len(rows) > show {
+		foot += " · ↑↓ scroll"
+	}
+	s.Text(x+3, y+bh-2, foot, colDim.C8())
+	scrollHints(s, x, bw-2, y+1, y+bh-2, g.helpOff, len(rows)-show-g.helpOff)
 }
 
 func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
@@ -859,9 +927,9 @@ func (g *Game) drawDead(s *Screen, mapW, mapH int) {
 	s.Text(x+(50-len(h))/2, y+8, h, colOrange.C8())
 }
 
-func (g *Game) drawOverview(s *Screen, mapW int) {
+func (g *Game) drawOverview(s *Screen, mapW, mapH int) {
 	l := g.Lv
-	aw, ah := mapW-4, s.H-4
+	aw, ah := mapW-4, mapH-4
 	sx := int(math.Ceil(float64(l.W) / float64(aw)))
 	sy := int(math.Ceil(float64(l.H) / float64(ah)))
 	sc := maxi(sx, sy)
@@ -869,7 +937,7 @@ func (g *Game) drawOverview(s *Screen, mapW int) {
 		sc = 1
 	}
 	w, h := (l.W+sc-1)/sc+4, (l.H+sc-1)/sc+3
-	x, y := centerBox(s, mapW, s.H, w, h, l.Name)
+	x, y := centerBox(s, mapW, mapH, w, h, l.Name)
 	for my := 0; my < l.H; my += sc {
 		for mx := 0; mx < l.W; mx += sc {
 			var best Tile

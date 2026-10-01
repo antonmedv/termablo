@@ -80,6 +80,7 @@ type Game struct {
 	shop    *Shop
 
 	cur, pane, tab int
+	helpOff        int // help screen scroll
 	talkName       string
 	talkLines      []string
 	talkCol        RGB
