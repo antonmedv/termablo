@@ -112,14 +112,17 @@ type Bot struct {
 	kills    int  // player kills at the last check
 	gold     int  // gold and pack size at the last check
 	inv      int
-	progress int              // turn of the last new cell, kill or level change
-	ignore   map[*Monster]int // enemies with no path to them, until this turn
-	prey     *Monster         // the enemy being chased: kept in sight, whatever the range
-	used     map[cellKey]bool // altars tried, remembered across trips
-	skip     map[Pos]bool     // spots with no known way there, until more is seen
-	goal     Pos              // the loot being walked to
-	front    Pos              // the frontier cell being walked to, or -1
-	par      []int32          // search scratch
+	progress int                   // turn of the last new cell, kill or level change
+	ignore   map[*Monster]int      // enemies with no path to them, until this turn
+	known    map[*Monster]sighting // enemies seen, where: remembered like the map
+	trail    []Pos                 // the last few cells stood on, for the wobble check
+	held     map[Pos]bool          // ...by cell, for pathing
+	prey     *Monster              // the enemy being chased: kept in sight, whatever the range
+	used     map[cellKey]bool      // altars tried, remembered across trips
+	skip     map[Pos]bool          // spots with no known way there, until more is seen
+	goal     Pos                   // the loot being walked to
+	front    Pos                   // the frontier cell being walked to, or -1
+	par      []int32               // search scratch
 
 	errand  bool   // a town trip is under way
 	urgent  bool   // ...because of need, not convenience
@@ -135,6 +138,17 @@ type Bot struct {
 	Snaps   []botSnap
 	Stats   BotStats
 }
+
+// A sighting is where an enemy was last seen, and when.
+type sighting struct {
+	at    Pos
+	turn  int
+	awake bool
+}
+
+// knownFor is how many turns a sighting of an awake enemy is kept; a
+// sleeper is kept until it is seen awake, dead, or gone from its cell.
+const knownFor = 3
 
 // A cellKey names a cell on a level.
 type cellKey struct {
@@ -158,7 +172,7 @@ type botSnap struct {
 }
 
 func NewBot(g *Game, pol *botPolicy) *Bot {
-	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", visited: map[string]bool{}, used: map[cellKey]bool{}, front: Pos{-1, -1}, Stats: BotStats{Deepest: g.Lv.ID}}
+	return &Bot{g: g, pol: pol, rng: rand.New(rand.NewSource(g.Seed)), why: "ready", visited: map[string]bool{}, used: map[cellKey]bool{}, known: map[*Monster]sighting{}, front: Pos{-1, -1}, Stats: BotStats{Deepest: g.Lv.ID}}
 }
 
 func (b *Bot) State() BotState { return b.state }
@@ -223,6 +237,8 @@ func (b *Bot) track() {
 			b.snapshot()
 		}
 		b.ignore = map[*Monster]int{}
+		b.known = map[*Monster]sighting{}
+		b.trail = nil
 		b.prey = nil
 		b.skip = map[Pos]bool{}
 		b.front = Pos{-1, -1}
@@ -230,6 +246,8 @@ func (b *Bot) track() {
 			b.par = make([]int32, l.W*l.H)
 		}
 	}
+	b.remember()
+	b.wobble()
 	seen := 0
 	for _, s := range l.Seen {
 		if s {
@@ -250,6 +268,62 @@ func (b *Bot) track() {
 	if g.P.Gold != b.gold || len(g.P.Inv) != b.inv { // a sweep for loot is progress too
 		b.gold, b.inv, b.progress = g.P.Gold, len(g.P.Inv), b.n
 	}
+}
+
+// remember keeps the enemies in view where they stand: a sleeper until it
+// is seen awake, dead, or gone from its cell, one awake for a few turns
+// after it was last seen. Paths go around a remembered enemy from any
+// cell, as a player's would: when a path went around one only from the
+// cells it showed from, the route around and the route through
+// alternated step for step, and that was most of the stuck runs.
+func (b *Bot) remember() {
+	g, l := b.g, b.g.Lv
+	for m, s := range b.known {
+		stale := s.awake && b.n-s.turn > knownFor
+		moved := g.canSee(s.at.X, s.at.Y) && l.MonsterAt(s.at.X, s.at.Y) != m
+		if m.Dead || stale || moved || (!s.awake && m.Awake) {
+			delete(b.known, m)
+		}
+	}
+	for _, m := range g.visibleHostiles() {
+		b.known[m] = sighting{Pos{m.X, m.Y}, b.n, m.Awake}
+	}
+	b.held = make(map[Pos]bool, len(b.known))
+	for _, s := range b.known {
+		b.held[s.at] = true
+	}
+}
+
+// wobbleLen is how many cells of A, B, A, B make a wobble.
+const wobbleLen = 6
+
+// wobble notices the bot stepping between the same two cells: two goals
+// pulling opposite ways, each a step from the other's reach, such as an
+// enemy that shows from one cell only and loot that lies the other way.
+// A player sees it at once; the bot then leaves the enemies in view be
+// for a while and gets on with the rest.
+func (b *Bot) wobble() {
+	g, p := b.g, b.g.P
+	b.trail = append(b.trail, Pos{p.X, p.Y})
+	if len(b.trail) > wobbleLen {
+		b.trail = b.trail[1:]
+	}
+	if len(b.trail) < wobbleLen || b.trail[0] == b.trail[1] {
+		return
+	}
+	for i := 2; i < wobbleLen; i++ {
+		if b.trail[i] != b.trail[i-2] {
+			return
+		}
+	}
+	b.trail = nil
+	b.prey = nil
+	n := 0
+	for _, m := range g.visibleHostiles() {
+		b.ignore[m] = b.n + 40
+		n++
+	}
+	b.say("back and forth between two cells: leaving %d in view be for a while", n)
 }
 
 // snapshot records the hero as it arrives on a level.
@@ -392,9 +466,10 @@ func (b *Bot) hp() float64 {
 }
 
 // threats are the visible enemies a player deals with now: the ones that
-// stop auto-explore, less those with no way to reach them, plus the one
-// being chased as long as it stays in sight. Awake is fair to read: the
-// hover line says "unaware of you".
+// stop auto-explore, less those left alone (no way to reach them, or a
+// chase that went back and forth), plus the one being chased as long as
+// it stays in sight. One left alone that gets adjacent is a threat all
+// the same. Awake is fair to read: the hover line says "unaware of you".
 func (b *Bot) threats() []*Monster {
 	g, p := b.g, b.g.P
 	if b.prey != nil && (b.prey.Dead || !g.canSee(b.prey.X, b.prey.Y)) {
@@ -402,10 +477,10 @@ func (b *Bot) threats() []*Monster {
 	}
 	var r []*Monster
 	for _, m := range g.visibleHostiles() {
-		if until, ok := b.ignore[m]; ok && b.n < until {
+		d := cheb(m.X, m.Y, p.X, p.Y)
+		if until, ok := b.ignore[m]; ok && b.n < until && d > 1 {
 			continue
 		}
-		d := cheb(m.X, m.Y, p.X, p.Y)
 		if d <= autoStopNear || (m.Awake && d <= autoStopAware) || m == b.prey {
 			r = append(r, m)
 		}
@@ -481,19 +556,23 @@ func (b *Bot) drink() {
 	b.g.drinkHealth()
 }
 
-// escape leaves for town: through the open portal when it is close or
-// just opened, else through a fresh one. It reports whether it acted.
+// escape leaves for town: through the open portal when it is a step or
+// two away or just opened, else through a fresh one. A portal eight
+// cells off is a dozen steps through a cave under the pack's blows; a
+// scroll is cheaper than that. It reports whether it acted.
 func (b *Bot) escape(why string) bool {
 	g, p, l := b.g, b.g.P, b.g.Lv
 	if l.Kind == KTown {
 		return false
 	}
 	if g.Portal != nil && g.Portal.Level == l.ID {
-		fresh := b.n-b.read < 20
-		if fresh || p.Scrolls == 0 || cheb(g.Portal.X, g.Portal.Y, p.X, p.Y) <= 8 {
+		fresh := b.n-b.read < 3
+		if fresh || p.Scrolls == 0 || b.within(g.Portal.X, g.Portal.Y, 2) {
 			b.enter(BotRetreat, why+", to the portal")
 			b.errand, b.urgent, b.reason = true, true, why
-			return b.walkTo(g.Portal.X, g.Portal.Y, true)
+			if b.walkTo(g.Portal.X, g.Portal.Y, true) {
+				return true
+			}
 		}
 	}
 	if p.Scrolls == 0 {
@@ -504,6 +583,13 @@ func (b *Bot) escape(why string) bool {
 	b.read = b.n
 	g.readPortal()
 	return true
+}
+
+// within says whether a cell is at most steps away along known ground.
+func (b *Bot) within(x, y, steps int) bool {
+	l := b.g.Lv
+	b.search(x, y, steps)
+	return b.par[l.Idx(x, y)] >= 0
 }
 
 // target picks m the way tab does.
@@ -532,7 +618,7 @@ func (b *Bot) fight(ts []*Monster) {
 			g.castNova()
 			return
 		}
-		if b.open(p.X, p.Y) > 3 && b.retreat(len(adj)) {
+		if b.retreat(len(adj)) {
 			return
 		}
 	}
@@ -618,29 +704,24 @@ func (b *Bot) open(x, y int) int {
 }
 
 // retreat backs into the nearest corridor cell within a few steps, so the
-// pack has to come one at a time.
-// retreat backs into the nearest tighter spot within a few steps: a
-// corridor cell, or in a cave a nook with three open sides, so fewer of
-// the pack can reach at once. A cell is worth it when it has fewer open
-// sides than here.
+// pack has to come one at a time. Only a true corridor (two open sides)
+// is worth it: a cave nook with three open sides kept the pack to three
+// attackers, but those three then stood between the hero and any portal
+// it read, and three adjacent with an empty belt and a portal two cells
+// away was the commonest death of both builds. In a corridor the pack
+// queues on one side and a portal opens on the other.
 func (b *Bot) retreat(n int) bool {
 	l, p := b.g.Lv, b.g.P
-	here := b.open(p.X, p.Y)
-	order := b.search(-1, -1, 5)
-	best, bo := -1, here
-	for _, i := range order[1:] {
-		if o := b.open(i%l.W, i/l.W); o < bo {
-			best, bo = i, o
-		}
-		if bo <= 2 {
-			break // a corridor: nothing tighter is worth the walk
-		}
-	}
-	if best < 0 || bo > 3 {
+	if b.open(p.X, p.Y) <= 2 {
 		return false
 	}
-	b.enter(BotRetreat, fmt.Sprintf("%d adjacent, backing into a spot with %d open sides", n, bo))
-	return b.stepTo(best)
+	for _, i := range b.search(-1, -1, 5)[1:] {
+		if b.open(i%l.W, i/l.W) <= 2 {
+			b.enter(BotRetreat, fmt.Sprintf("%d adjacent, backing into a corridor", n))
+			return b.stepTo(i)
+		}
+	}
+	return false
 }
 
 // ------------------------------------------------------------ town
@@ -781,11 +862,15 @@ func (b *Bot) fountain() bool {
 	return false
 }
 
-// reserve is the gold to keep for potions and scrolls before buying gear.
+// reserve is the gold to keep for potions and scrolls before buying gear:
+// this trip's refill and the next one's, so a bad level does not end
+// with an empty belt and nothing to fill it. Deaths in the grotto came
+// broke, every surplus gone to Hadrik on the trip before.
 func (b *Bot) reserve() int {
 	g, p := b.g, b.g.P
-	r := g.buyPrice(NewPotion(IKHealth))*(beltMax-p.HPot) + g.buyPrice(NewPotion(IKScroll))*maxi(0, 2-p.Scrolls)
-	return r + g.buyPrice(NewPotion(IKMana))*maxi(0, b.pol.mana-p.MPot)
+	hp, sc, mp := g.buyPrice(NewPotion(IKHealth)), g.buyPrice(NewPotion(IKScroll)), g.buyPrice(NewPotion(IKMana))
+	r := hp*(beltMax-p.HPot) + sc*maxi(0, 2-p.Scrolls) + mp*maxi(0, b.pol.mana-p.MPot)
+	return r + hp*beltMax + sc*2 + mp*b.pol.mana
 }
 
 // tradeForge sells, buys upgrades, and spends what is left on Hadrik's
@@ -1188,10 +1273,10 @@ func (b *Bot) frontier(x, y int) bool {
 }
 
 // pass says whether a step may cross a cell: known, walkable, not a
-// link or portal, nobody visible on it.
+// link or portal, no enemy seen or remembered on it.
 func (b *Bot) pass(x, y int) bool {
 	g, l := b.g, b.g.Lv
-	if !l.In(x, y) || !l.Seen[l.Idx(x, y)] || !l.Walkable(x, y) || l.LinkAt(x, y) != nil || g.portalAt(x, y) {
+	if !l.In(x, y) || !l.Seen[l.Idx(x, y)] || !l.Walkable(x, y) || l.LinkAt(x, y) != nil || g.portalAt(x, y) || b.held[Pos{x, y}] {
 		return false
 	}
 	return l.MonsterAt(x, y) == nil || !g.canSee(x, y)
