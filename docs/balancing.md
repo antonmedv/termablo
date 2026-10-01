@@ -88,6 +88,36 @@ distance outside them, lower is better, 0 is all in band.
 - Champions are what the fighter farms for XP and drops: fewer or weaker
   champions help the caster, not the fighter, and widen the gap.
 
+## Lessons from the 2026-10-01 pass
+
+- Trace before tuning. Every grotto death read the same way: the bot
+  had backed into a 3-sided nook, three attackers filled it, and the
+  portal it read with an empty belt opened behind them. All of the
+  previous pass's grotto numbers were measured on that trap; once the
+  escape worked (score 18.0 → 13.2 on seeds 1–96, 16.1 → 13.6 on fresh
+  seeds, both sure) the same knobs measured differently. ChampHp 1.8 now
+  reached the fighter too.
+- A bot fix that reads well can still be wrong: a pre-emptive portal at
+  belt ≤ 3 fired from the first fight (start kit: 3 potions, 1 scroll)
+  and drained the early game; a leave line that rose with attackers cut
+  trips short. Measure each half on its own.
+- The residual stuck class is two goals a step apart: an enemy that
+  shows from one cell only and loot the other way, or a path that goes
+  around a monster only from the cells it is visible from. Fix the
+  memory (monsters seen are remembered like the map), keep a generic
+  wobble guard, and never chase what is out of view: that was surely
+  worse for both builds.
+- With the escape working, grotto deaths come broke: 0 scrolls, ~30 g,
+  after 3–5 kills a belt and a gamble every trip. Income levers
+  (GoldPerLvl) move the fighter but the gold band takes it back; the
+  gold band is now at odds with progress twice over.
+- What moves the grotto wall is how many packs join a fight (WakeRange
+  16 → 10, both builds, both seed sets), not how strong a champion is:
+  one champion leading normals left deepest unchanged and only cut
+  income. The king band's ceiling (0.85) and the gold band then absorb
+  the gain, so the score stays flat while deaths move a level deeper.
+  The next lever is the crypt, which the pack bands also want harder.
+
 ## Report
 
 Write `balance/REPORT.md`: problems found, bot changes, every kept change

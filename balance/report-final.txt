@@ -1,70 +1,162 @@
-BOTSEEDS=24 BOTFIRST=1 BOTRULES= go test -count=1 -v -run 'BotBalance|RefHeroes' . | grep -v "^=== RUN"
-    bot_test.go:191: fighter: gold is +drop/chest/sell/quest -potion/scroll/heal/gear/reroll/gamble
-    bot_test.go:222: fighter: 24 runs · alive 0 · stuck 0 · Bone King 22 · Oracle 0 · median clvl 13, kills 345, turns 8729, gold earned 11185 · reached: fields 24, crypt1 24, crypt2 24, crypt4 23, marsh 21, grotto1 14, grotto3 0, abyss1 0, abyss2 0
-    bot_test.go:225: fighter deaths: the Crystal Golem ×5, the Drowned Dead ×5, the Ghoul ×3, the Grotto Spider ×3, the Wraith ×2, Frostmarrow the Hungry ×1, Gravelurk the Cruel ×1, the Ember Cultist ×1, the Marsh Horror ×1, the Skeleton Archer ×1, the Will-o'-Wisp ×1 · in: grotto1 ×12, marsh ×7, crypt4 ×2, grotto2 ×2, crypt3 ×1
-    bot_test.go:235: fighter arrival  runs clvl   HP armor   melee    bolt crit  gear  gold   vs normal      swings P10/P50/P90  bolts P10/P50/P90  turns to die P10/P50/P90
-    bot_test.go:258: fighter fields     24    1   60    10   2-8     8-13    6%    31    20   Fallen One    2.7/3.0/3.3  1.0/1.0/1.0  45.6/46.7/48.2
-    bot_test.go:258: fighter crypt1     24    4  108    30   5-14    8-13    7%   128   328   Skeleton      2.5/3.2/4.1  2.0/2.1/2.2  39.7/54.0/68.0
-    bot_test.go:258: fighter crypt2     24    6  140    48   8-20    8-14   10%   209   433   Skeleton      2.2/3.2/4.4  2.3/2.8/3.0  39.0/53.4/63.4
-    bot_test.go:258: fighter crypt4     23    9  204    72  16-31    9-15   14%   336  1264   Skeleton      2.1/2.6/4.1  3.6/4.0/4.3  42.7/53.8/68.3
-    bot_test.go:258: fighter marsh      21   11  247    83  26-40    9-16   19%   426   615   Drowned Dead  2.7/4.4/5.9  7.5/8.5/9.5  39.5/48.9/57.6
-    bot_test.go:258: fighter grotto1    14   13  264   101  28-48   10-17   21%   463  1357   Grotto Spider 2.0/2.9/5.4  6.6/7.0/7.6  26.6/34.2/38.5
-    bot_test.go:255: fighter grotto3     0
-    bot_test.go:255: fighter abyss1      0
-    bot_test.go:255: fighter abyss2      0
-    bot_test.go:191: caster: gold is +drop/chest/sell/quest -potion/scroll/heal/gear/reroll/gamble
-    bot_test.go:222: caster: 24 runs · alive 0 · stuck 0 · Bone King 24 · Oracle 0 · median clvl 14, kills 390, turns 10075, gold earned 14086 · reached: fields 24, crypt1 24, crypt2 24, crypt4 24, marsh 24, grotto1 21, grotto3 2, abyss1 0, abyss2 0
-    bot_test.go:225: caster deaths: the Drowned Dead ×6, the Crystal Golem ×4, the Grotto Spider ×4, the Ghoul ×2, Emberskull the Vile ×1, Frostmarrow the Hungry ×1, Frostmarrow the Vile ×1, Grotto Spider's death flames ×1, Skullcleave the Weeping ×1, the Dire Wolf ×1, the Marsh Horror ×1, the Wraith ×1 · in: grotto1 ×13, grotto2 ×6, marsh ×3, grotto3 ×2
-    bot_test.go:235: caster  arrival  runs clvl   HP armor   melee    bolt crit  gear  gold   vs normal      swings P10/P50/P90  bolts P10/P50/P90  turns to die P10/P50/P90
-    bot_test.go:258: caster  fields     24    1   60    10   2-8     8-13    6%     9     0   Fallen One    2.8/3.0/3.3  1.0/1.0/1.0  45.4/46.8/48.4
-    bot_test.go:258: caster  crypt1     24    4  109    29   2-10   11-18    6%   128   180   Skeleton      2.3/5.3/8.3  1.9/2.0/2.0  41.3/49.2/70.1
-    bot_test.go:258: caster  crypt2     24    6  137    43   4-13   13-20   10%   204   324   Skeleton      2.5/4.5/10.6  1.9/2.0/2.1  35.6/49.8/59.6
-    bot_test.go:258: caster  crypt4     24    9  188    69   7-20   17-26   12%   364   716   Skeleton      3.0/5.2/11.8  2.1/2.4/2.8  42.1/50.6/62.3
-    bot_test.go:258: caster  marsh      24   11  219    82  10-22   19-29   14%   441   808   Drowned Dead  6.0/9.3/19.2  4.4/4.9/5.6  32.4/40.8/54.5
-    bot_test.go:258: caster  grotto1    21   13  238    82  14-25   21-32   11%   505   625   Grotto Spider 4.2/5.6/9.3  3.4/3.8/4.4  21.1/27.7/33.8
-    bot_test.go:258: caster  grotto3     2   16  309   138  15-31   23-36   18%   630  1096   Grotto Spider 8.1/8.5/8.5  4.6/4.7/4.7  23.6/29.8/29.8
-    bot_test.go:255: caster  abyss1      0
-    bot_test.go:255: caster  abyss2      0
-    eval_test.go:92: score 19.76 (95% 18.40–22.03 over seeds) in 9 s · 46 goals missed, largest first:
-    eval_test.go:95:   fighter.oracle             0.00  (0.3–0.45)  +3.00
-    eval_test.go:95:   caster.oracle              0.00  (0.3–0.45)  +3.00
-    eval_test.go:95:   fighter.gold               5.23  (0.8–1.5)  +2.49
-    eval_test.go:95:   caster.gold                3.16  (0.8–1.5)  +1.11
-    eval_test.go:95:   fighter.kills.grotto3       n/a  (3–5)  +1.00
-    eval_test.go:95:   fighter.packLive.grotto3    n/a  (8–12)  +1.00
-    eval_test.go:95:   abyssDeath                 7.00  (11–13)  +0.73
-    eval_test.go:95:   caster.king                1.00  (0.7–0.85)  +0.53
-    eval_test.go:95:   fighter.fight.grotto3       n/a  (1–2)  +0.50
-    eval_test.go:95:   fighter.killsSpread.grotto3    n/a  (0–3)  +0.50
-    eval_test.go:95:   fighter.liveSpread.grotto3    n/a  (0–3)  +0.50
-    eval_test.go:95:   fighter.packLive.crypt4   17.93  (8–12)  +0.49
-    eval_test.go:95:   fighter.packLive.crypt2   17.79  (8–12)  +0.48
-    eval_test.go:95:   caster.packLive.crypt4    16.88  (8–12)  +0.41
-    eval_test.go:95:   caster.packLive.crypt2    16.60  (8–12)  +0.38
-    eval_test.go:95:   caster.kills.crypt2        1.98  (3–5)  +0.34
-    eval_test.go:95:   caster.kills.grotto3        n/a  (3–5)  +0.33
-    eval_test.go:95:   caster.packLive.grotto3     n/a  (8–12)  +0.33
-    eval_test.go:95:   fighter.king               0.92  (0.7–0.85)  +0.24
-    eval_test.go:95:   caster.wrongKill.crypt4    1.57  (2–4)  +0.22
-    eval_test.go:95:   caster.wrongKill.grotto1   1.58  (2–4)  +0.21
-    eval_test.go:95:   caster.fight.crypt2        2.80  (1–2)  +0.20
-    eval_test.go:95:   caster.kills.crypt4        2.44  (3–5)  +0.19
-    eval_test.go:95:   caster.fight.grotto1       0.66  (1–2)  +0.17
-    eval_test.go:95:   caster.fight.grotto3        n/a  (1–2)  +0.17
-    eval_test.go:95:   caster.killsSpread.grotto3    n/a  (0–3)  +0.17
-    eval_test.go:95:   caster.liveSpread.grotto3    n/a  (0–3)  +0.17
-    eval_test.go:95:   caster.wrongLive.grotto1   0.57  (0.2–0.5)  +0.14
-    eval_test.go:95:   fighter.kills.crypt4       2.59  (3–5)  +0.14
-    eval_test.go:95:   fighter.wrongLive.grotto1   0.56  (0.2–0.5)  +0.12
-    eval_test.go:95:   fighter.fight.crypt4       2.41  (1–2)  +0.10
-    eval_test.go:95:   caster.fight.crypt4        2.41  (1–2)  +0.10
-    eval_test.go:95:   caster.wrongLive.crypt4    0.55  (0.2–0.5)  +0.09
-    eval_test.go:95:   fighter.wrongKill.grotto1   1.82  (2–4)  +0.09
-    eval_test.go:95:   fighter.kills.grotto1      2.89  (3–5)  +0.04
-    eval_test.go:95:   fighter.wrongLive.crypt4   0.52  (0.2–0.5)  +0.04
-    eval_test.go:95:   caster.packLive.grotto1    7.71  (8–12)  +0.04
-    eval_test.go:95:   fighter.wrongKill.crypt4   1.95  (2–4)  +0.02
---- PASS: TestBotBalance (9.18s)
+BOTSEEDS=48 BOTFIRST=1 BOTRULES=balance/rules/073-wake10.json go test -count=1 -v -run 'BotBalance|RefHeroes' . | grep -v "^=== RUN"
+    eval_test.go:73: rules: WakeRange: 16 → 10
+    bot_test.go:195: fighter: gold is +drop/chest/sell/quest -potion/scroll/heal/gear/reroll/gamble
+    bot_test.go:197: fighter seed  1  grotto1  clvl 14  kills 381  gold +3181/1406/6641/1100 -1636/0/201/8650/370/1500  potions 43/11  bolts 210 novas  0  trips 10  equips 30 (5.0/lvl)  turns  8802  killed by the Crystal Golem (normal) in grotto1 · 2 adjacent, 4 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed  2  grotto1  clvl 14  kills 389  gold +4289/1637/8503/1100 -4412/530/535/7578/460/2040  potions 80/18  bolts 311 novas  0  trips 15  equips 39 (6.5/lvl)  turns  9593  killed by the Crystal Golem (champion) in grotto1 · 2 adjacent, 2 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed  3  grotto2  clvl 14  kills 373  gold +4617/967/6635/1000 -2112/640/170/6700/650/1350  potions 54/15  bolts 278 novas  0  trips  8  equips 40 (5.7/lvl)  turns  8247  killed by the Ghoul (champion) in grotto2 · 6 adjacent, 22 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: fighter seed  4  grotto1  clvl 13  kills 387  gold +3913/1249/7613/1200 -3252/746/306/7344/410/1290  potions 77/22  bolts 305 novas  0  trips 11  equips 29 (4.8/lvl)  turns 10092  killed by the Grotto Spider (champion) in grotto1 · 5 adjacent, 10 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed  5  grotto1  clvl 13  kills 385  gold +4533/1467/7702/1100 -1572/364/218/7478/510/1530  potions 43/17  bolts 296 novas  0  trips  7  equips 36 (6.0/lvl)  turns  8913  killed by the Grotto Spider (champion) in grotto1 · 4 adjacent, 11 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed  6  grotto1  clvl 13  kills 347  gold +3711/956/4419/1100 -1944/394/156/5546/400/720  potions 50/19  bolts 234 novas  0  trips  7  equips 34 (5.7/lvl)  turns  8593  killed by the Grotto Spider (normal) in grotto1 · 4 adjacent, 10 awake, 0 potions and 2 scrolls left
+    bot_test.go:197: fighter seed  7  grotto2  clvl 15  kills 394  gold +5366/946/6991/1100 -4748/708/169/4454/900/2400  potions 83/16  bolts 258 novas  0  trips 15  equips 39 (5.6/lvl)  turns  8891  killed by the Crystal Golem (champion) in grotto2 · 4 adjacent, 7 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: fighter seed  8  grotto1  clvl 12  kills 351  gold +2858/1367/6285/1100 -600/276/148/7016/370/990  potions 18/16  bolts 273 novas  0  trips  5  equips 31 (5.2/lvl)  turns  7688  killed by the Drowned Dead (normal) in grotto1 · 6 adjacent, 10 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed  9  grotto1  clvl 13  kills 348  gold +2934/951/7028/1100 -2176/686/214/6460/510/810  potions 48/17  bolts 247 novas  0  trips  9  equips 31 (5.2/lvl)  turns  8631  killed by the Drowned Dead (champion) in grotto1 · 5 adjacent, 15 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 10  grotto1  clvl 13  kills 354  gold +2975/1311/5284/1200 -2888/534/275/4694/270/1560  potions 68/22  bolts 249 novas  0  trips 10  equips 34 (5.7/lvl)  turns  9117  killed by the Ghoul (champion) in grotto1 · 5 adjacent, 12 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 11  crypt4   clvl 10  kills 287  gold +1767/903/2887/0 -536/64/156/1464/100/720  potions 23/18  bolts 189 novas  0  trips  4  equips 28 (7.0/lvl)  turns  6747  killed by The Bone King (boss) in crypt4 · 5 adjacent, 10 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 12  marsh    clvl 12  kills 352  gold +3725/1690/6827/1100 -2160/300/328/9142/460/960  potions 40/19  bolts 260 novas  0  trips 11  equips 35 (7.0/lvl)  turns  8673  killed by Rotgut the Vile (unique) in marsh · 2 adjacent, 2 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 13  grotto1  clvl 13  kills 397  gold +4217/1504/8613/1100 -2536/758/216/10432/500/990  potions 57/14  bolts 304 novas  0  trips 12  equips 36 (6.0/lvl)  turns  9402  killed by the Drowned Dead (normal) in grotto1 · 1 adjacent, 8 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 14  grotto2  clvl 15  kills 445  gold +5347/1647/7862/1100 -3924/784/278/8910/350/1710  potions 73/18  bolts 233 novas  0  trips 13  equips 31 (4.4/lvl)  turns 10093  killed by Hollowgrin the Pale (unique) in grotto2 · 3 adjacent, 4 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 15  grotto1  clvl 12  kills 332  gold +4133/998/7020/1100 -1048/0/160/7550/470/1080  potions 26/15  bolts 260 novas  0  trips  6  equips 33 (5.5/lvl)  turns  8413  killed by the Ghoul (normal) in grotto1 · 6 adjacent, 13 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: fighter seed 16  grotto3  clvl 17  kills 477  gold +6439/1255/13754/1100 -5620/1018/690/9405/870/4230  potions 90/20  bolts 351 novas  0  trips 17  equips 44 (5.5/lvl)  turns 10593  killed by Hollowgrin the Gnawer (unique) in grotto3 · 2 adjacent, 38 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 17  grotto1  clvl 13  kills 346  gold +3886/1281/6389/1100 -2516/270/106/6110/500/1620  potions 53/15  bolts 249 novas  0  trips  9  equips 39 (6.5/lvl)  turns  8925  killed by Frostmarrow the Hungry (unique) in grotto1 · 5 adjacent, 12 awake, 1 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 18  grotto1  clvl 13  kills 373  gold +2697/866/7211/1100 -2232/176/217/6720/630/1260  potions 45/21  bolts 297 novas  0  trips  9  equips 36 (6.0/lvl)  turns  8864  killed by the Drowned Dead (champion) in grotto1 · 5 adjacent, 7 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: fighter seed 19  grotto1  clvl 12  kills 363  gold +4185/1226/6064/1100 -2484/370/286/6970/520/1050  potions 51/15  bolts 315 novas  0  trips  9  equips 32 (5.3/lvl)  turns  8909  killed by the Grotto Spider (champion) in grotto1 · 2 adjacent, 12 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 20  grotto3  clvl 17  kills 496  gold +7369/2090/11268/1000 -4712/996/411/10810/1090/3750  potions 86/27  bolts 440 novas  0  trips 18  equips 42 (5.2/lvl)  turns 10956  killed by Wormheart the Weeping (unique) in grotto3 · 1 adjacent, 2 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 21  grotto3  clvl 16  kills 497  gold +7733/2687/12381/1100 -3468/418/349/11632/940/3510  potions 69/26  bolts 291 novas  0  trips 12  equips 39 (4.9/lvl)  turns 10281  killed by the Wraith (champion) in grotto3 · 4 adjacent, 24 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: fighter seed 22  grotto2  clvl 15  kills 429  gold +5245/1638/8563/1100 -4564/978/231/6872/480/2550  potions 92/16  bolts 390 novas  0  trips 17  equips 34 (4.9/lvl)  turns 10324  killed by the Will-o'-Wisp (normal) in grotto2 · 4 adjacent, 12 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 23  grotto1  clvl 14  kills 387  gold +4280/1387/8759/1100 -2284/588/283/6142/550/1710  potions 49/14  bolts 304 novas  0  trips  9  equips 47 (7.8/lvl)  turns  9663  killed by the Grotto Spider (champion) in grotto1 · 4 adjacent, 6 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: fighter seed 24  grotto1  clvl 13  kills 437  gold +3345/1488/7117/1200 -1056/318/212/8466/300/1080  potions 30/14  bolts 250 novas  0  trips  6  equips 40 (6.7/lvl)  turns  8968  killed by the Crystal Golem (normal) in grotto1 · 4 adjacent, 8 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 25  grotto1  clvl 17  kills 858  gold +4853/985/8555/1500 -4924/1180/411/5551/400/2370  potions 80/18  bolts 312 novas  0  trips 15  equips 35 (5.8/lvl)  turns 10861  killed by the Grotto Spider (champion) in grotto1 · 4 adjacent, 5 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: fighter seed 26  grotto1  clvl 13  kills 360  gold +4479/1081/7841/1100 -1996/224/326/9770/370/1110  potions 47/24  bolts 336 novas  0  trips  9  equips 49 (8.2/lvl)  turns  9225  killed by the Ghoul (champion) in grotto1 · 4 adjacent, 4 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 27  crypt4   clvl 10  kills 302  gold +2091/866/3192/0 -868/140/162/3376/170/690  potions 27/14  bolts 185 novas  0  trips  5  equips 32 (8.0/lvl)  turns  6890  killed by The Bone King (boss) in crypt4 · 4 adjacent, 12 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 28  grotto1  clvl 13  kills 356  gold +3474/1039/8678/1100 -2228/464/349/8474/320/1170  potions 53/17  bolts 309 novas  0  trips  9  equips 43 (7.2/lvl)  turns  8859  killed by the Ghoul (champion) in grotto1 · 5 adjacent, 17 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 29  fields   clvl  3  kills  24  gold +4/0/3/0 -40/0/0/0/0/0  potions  5/ 2  bolts  19 novas  0  trips  2  equips  2 (2.0/lvl)  turns   470  killed by the Fallen Shaman (normal) in fields · 3 adjacent, 8 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 30  grotto1  clvl 13  kills 359  gold +4827/1193/6877/1100 -1480/0/248/8850/510/1350  potions 33/22  bolts 358 novas  0  trips  7  equips 42 (7.0/lvl)  turns  9133  killed by the Ghoul (champion) in grotto1 · 4 adjacent, 17 awake, 0 potions and 4 scrolls left
+    bot_test.go:197: fighter seed 31  grotto1  clvl 13  kills 375  gold +2869/781/7298/1100 -2116/406/218/8490/200/480  potions 39/18  bolts 198 novas  0  trips  9  equips 33 (5.5/lvl)  turns  7847  killed by the Ghoul (champion) in grotto1 · 2 adjacent, 14 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 32  grotto1  clvl 13  kills 366  gold +3088/738/6846/1100 -2640/440/262/6158/290/750  potions 61/17  bolts 228 novas  0  trips 10  equips 42 (7.0/lvl)  turns  8394  killed by the Crystal Golem (champion) in grotto1 · 5 adjacent, 14 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 33  grotto3  clvl 16  kills 459  gold +6072/1767/11773/1000 -3028/978/451/11550/1090/2280  potions 58/18  bolts 354 novas  0  trips 13  equips 32 (4.0/lvl)  turns 10223  killed by the Will-o'-Wisp (champion) in grotto3 · 2 adjacent, 5 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 34  grotto1  clvl 13  kills 386  gold +3304/1274/7325/1100 -2980/116/230/5604/630/2550  potions 76/21  bolts 322 novas  0  trips 15  equips 35 (5.8/lvl)  turns  9719  killed by the Grotto Spider (normal) in grotto1 · 8 adjacent, 11 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: fighter seed 35  fields   clvl  2  kills  12  gold +0/0/0/0 -40/0/0/0/0/0  potions  5/ 2  bolts  10 novas  0  trips  1  equips  0 (0.0/lvl)  turns   220  killed by Bloodmaw the Pale (unique) in fields · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 36  grotto1  clvl 13  kills 364  gold +3143/1352/6962/1100 -1616/0/220/7582/420/900  potions 45/16  bolts 323 novas  0  trips  7  equips 39 (6.5/lvl)  turns  9046  killed by the Grotto Spider (champion) in grotto1 · 4 adjacent, 9 awake, 1 potions and 2 scrolls left
+    bot_test.go:197: fighter seed 37  grotto1  clvl 13  kills 357  gold +4285/1541/8758/1100 -2968/642/367/9232/430/1110  potions 59/17  bolts 332 novas  0  trips 14  equips 43 (7.2/lvl)  turns  9433  killed by the Grotto Spider (champion) in grotto1 · 3 adjacent, 9 awake, 1 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 38  abyss1   clvl 19  kills 525  gold +8303/2967/14974/3100 -7120/1918/530/12344/990/3540  potions 109/26  bolts 405 novas  0  trips 21  equips 44 (4.9/lvl)  turns 12104  killed by the Ember Cultist (normal) in abyss1 · 2 adjacent, 12 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 39  grotto3  clvl 16  kills 466  gold +7305/1366/9162/1100 -7420/1706/476/7256/310/1710  potions 119/25  bolts 283 novas  0  trips 21  equips 36 (4.5/lvl)  turns  9898  killed by the Grotto Spider (champion) in grotto3 · 4 adjacent, 7 awake, 1 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 40  grotto2  clvl 15  kills 418  gold +4691/1458/9641/1100 -3892/590/355/10248/470/1380  potions 74/14  bolts 321 novas  0  trips 15  equips 40 (5.7/lvl)  turns  9999  killed by the Wraith (normal) in grotto2 · 2 adjacent, 12 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 41  grotto1  clvl 13  kills 378  gold +3373/898/7631/1100 -3036/394/314/7418/500/1350  potions 60/17  bolts 218 novas  0  trips 13  equips 31 (5.2/lvl)  turns  9016  killed by Dreadhowl the Gnawer (unique) in grotto1 · 2 adjacent, 8 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 42  grotto2  clvl 15  kills 434  gold +5505/1759/10691/1100 -3132/170/261/11228/550/1410  potions 68/16  bolts 288 novas  0  trips 12  equips 39 (5.6/lvl)  turns 10266  killed by the Crystal Golem (champion) in grotto2 · 5 adjacent, 5 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 43  grotto1  clvl 12  kills 366  gold +3381/923/7230/1100 -1584/76/219/7140/370/1530  potions 37/21  bolts 258 novas  0  trips  7  equips 38 (6.3/lvl)  turns  8137  killed by the Grotto Spider (normal) in grotto1 · 4 adjacent, 22 awake, 1 potions and 2 scrolls left
+    bot_test.go:197: fighter seed 44  grotto2  clvl 15  kills 443  gold +4824/1841/8769/1100 -3156/708/357/6646/1240/2790  potions 55/20  bolts 338 novas  0  trips 13  equips 37 (5.3/lvl)  turns  9596  killed by the Ghoul (normal) in grotto2 · 3 adjacent, 4 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: fighter seed 45  grotto2  clvl 14  kills 422  gold +5510/1461/9194/1200 -3680/0/374/10970/460/1890  potions 76/24  bolts 260 novas  0  trips 17  equips 42 (6.0/lvl)  turns 10569  killed by Skullcleave the Unburied (unique) in grotto2 · 3 adjacent, 3 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 46  grotto3  clvl 17  kills 487  gold +6884/1978/13066/1200 -5120/1084/546/9604/1750/4170  potions 79/20  bolts 386 novas  0  trips 17  equips 39 (4.9/lvl)  turns 10876  killed by the Grotto Spider (champion) in grotto3 · 5 adjacent, 15 awake, 1 potions and 0 scrolls left
+    bot_test.go:197: fighter seed 47  grotto1  clvl 13  kills 354  gold +3252/840/6932/1100 -3656/742/416/5342/210/1320  potions 69/26  bolts 380 novas  0  trips 12  equips 34 (5.7/lvl)  turns  8681  killed by the Grotto Spider (normal) in grotto1 · 4 adjacent, 11 awake, 4 potions and 2 scrolls left
+    bot_test.go:197: fighter seed 48  grotto2  clvl 16  kills 419  gold +5306/1825/9511/1100 -3876/908/187/10326/490/1800  potions 63/19  bolts 292 novas  0  trips 16  equips 29 (4.1/lvl)  turns  9906  killed by the Crystal Golem (champion) in grotto2 · 4 adjacent, 4 awake, 0 potions and 0 scrolls left
+    bot_test.go:226: fighter: 48 runs · alive 0 · stuck 0 · Bone King 44 · Oracle 1 · median clvl 13, kills 381, turns 9117, gold earned 13997 · reached: fields 48, crypt1 46, crypt2 46, crypt4 46, marsh 44, grotto1 43, grotto3 7, abyss1 1, abyss2 0
+    bot_test.go:229: fighter deaths: the Grotto Spider ×13, the Ghoul ×8, the Crystal Golem ×7, the Drowned Dead ×4, The Bone King ×2, the Will-o'-Wisp ×2, the Wraith ×2, Bloodmaw the Pale ×1, Dreadhowl the Gnawer ×1, Frostmarrow the Hungry ×1, Hollowgrin the Gnawer ×1, Hollowgrin the Pale ×1, Rotgut the Vile ×1, Skullcleave the Unburied ×1, Wormheart the Weeping ×1, the Ember Cultist ×1, the Fallen Shaman ×1 · in: grotto1 ×27, grotto2 ×9, grotto3 ×6, crypt4 ×2, fields ×2, abyss1 ×1, marsh ×1
+    bot_test.go:238: fighter arrival  runs clvl   HP armor   melee    bolt crit  gear  gold   vs normal      swings P10/P50/P90  bolts P10/P50/P90  turns to die P10/P50/P90
+    bot_test.go:260: fighter fields     48    1   60    10   2-8     8-13    6%    31    20   Fallen One    2.8/3.0/3.3  1.0/1.0/1.0  45.3/46.8/48.0
+    bot_test.go:260: fighter crypt1     46    4  106    33   5-14    8-14   10%   147   356   Skeleton      2.0/3.3/4.5  2.0/2.1/2.1  41.6/52.7/72.2
+    bot_test.go:260: fighter crypt2     46    6  139    46  10-20    9-14   11%   225   614   Skeleton      1.7/2.6/3.9  2.3/2.6/2.9  44.1/53.7/64.6
+    bot_test.go:260: fighter crypt4     46    9  204    80  18-32    9-15   14%   357  1453   Skeleton      1.9/2.6/3.8  3.4/3.9/4.3  49.9/58.2/67.1
+    bot_test.go:260: fighter marsh      44   11  245    96  24-43    9-15   18%   446  1164   Drowned Dead  2.9/4.5/7.0  7.7/9.0/10.0  44.5/52.1/61.8
+    bot_test.go:260: fighter grotto1    43   13  265    99  31-52   10-16   20%   468  1682   Grotto Spider 2.1/2.9/4.8  6.2/7.1/8.3  27.7/33.8/39.2
+    bot_test.go:260: fighter grotto3     7   16  320   122  51-76   11-17   18%   583  2062   Grotto Spider 2.1/2.4/2.6  8.3/9.2/11.0  25.1/27.6/29.9
+    bot_test.go:260: fighter abyss1      1   19  319   191  70-94   11-17   14%   619  2859   Hellspawn     12.2/12.2/12.2  38.9/38.9/38.9  13.6/13.6/13.6
+    bot_test.go:257: fighter abyss2      0
+    bot_test.go:195: caster: gold is +drop/chest/sell/quest -potion/scroll/heal/gear/reroll/gamble
+    bot_test.go:197: caster  seed  1  grotto1  clvl 13  kills 363  gold +3343/1260/4399/1100 -4128/1296/1344/2514/100/780  potions 22/80  bolts 794 novas 64  trips 24  equips 29 (4.8/lvl)  turns  9761  killed by the Crystal Golem (champion) in grotto1 · 6 adjacent, 20 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed  2  abyss1   clvl 19  kills 542  gold +7802/2714/16323/3000 -12628/2792/2711/5336/880/3000  potions 86/141  bolts 1395 novas 324  trips 42  equips 38 (4.2/lvl)  turns 13830  killed by the Wraith (champion) in abyss1 · 3 adjacent, 15 awake, 1 potions and 2 scrolls left
+    bot_test.go:197: caster  seed  3  grotto1  clvl 12  kills 331  gold +3147/1214/5495/1000 -4128/1234/951/2258/100/600  potions 18/88  bolts 819 novas 34  trips 20  equips 38 (6.3/lvl)  turns  9271  killed by the Grotto Spider (champion) in grotto1 · 2 adjacent, 10 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed  4  grotto2  clvl 15  kills 440  gold +5832/1208/9689/1100 -8076/2266/1759/3848/200/1740  potions 34/131  bolts 1067 novas 136  trips 29  equips 35 (5.0/lvl)  turns 11029  killed by Gravelurk the Cruel (unique) in grotto2 · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed  5  grotto3  clvl 16  kills 476  gold +5600/1858/10073/1100 -9776/3012/2589/1926/200/750  potions 61/129  bolts 1133 novas 247  trips 37  equips 34 (4.2/lvl)  turns 11252  killed by the Grotto Spider (champion) in grotto3 · 4 adjacent, 14 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed  6  abyss1   clvl 18  kills 515  gold +10783/1679/15085/2900 -12092/2932/3117/4084/320/4470  potions 102/100  bolts 1195 novas 281  trips 36  equips 41 (4.6/lvl)  turns 12936  killed by the Hellspawn (normal) in abyss1 · 2 adjacent, 10 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: caster  seed  7  grotto2  clvl 15  kills 407  gold +4711/659/6806/1100 -4704/1084/1057/4182/0/510  potions 36/68  bolts 883 novas 102  trips 19  equips 40 (5.7/lvl)  turns  9438  killed by the Wraith (champion) in grotto2 · 4 adjacent, 9 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: caster  seed  8  grotto2  clvl 14  kills 412  gold +5734/1670/7703/1100 -5616/1246/1538/4706/550/1140  potions 35/91  bolts 971 novas 155  trips 19  equips 33 (4.7/lvl)  turns  8829  killed by the Grotto Spider (champion) in grotto2 · 3 adjacent, 7 awake, 0 potions and 5 scrolls left
+    bot_test.go:197: caster  seed  9  grotto1  clvl 13  kills 366  gold +5927/1323/5426/1200 -3964/1190/1081/3104/410/2190  potions 22/77  bolts 903 novas 52  trips 16  equips 29 (4.8/lvl)  turns  9393  killed by the Grotto Spider (champion) in grotto1 · 5 adjacent, 9 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 10  grotto1  clvl 13  kills 379  gold +4762/1489/7876/1100 -2676/466/834/4058/590/1620  potions 15/63  bolts 861 novas 59  trips 14  equips 38 (6.3/lvl)  turns  8964  killed by the Drowned Dead (champion) in grotto1 · 2 adjacent, 3 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 11  grotto2  clvl 14  kills 383  gold +5815/1459/5657/1100 -5332/1262/1654/3888/520/1410  potions 31/83  bolts 890 novas 116  trips 23  equips 37 (5.3/lvl)  turns  9292  killed by the Grotto Spider (champion) in grotto2 · 3 adjacent, 19 awake, 2 potions and 2 scrolls left
+    bot_test.go:197: caster  seed 12  grotto1  clvl 13  kills 396  gold +2947/1746/6223/1100 -3612/960/1183/4331/190/1800  potions 19/63  bolts 820 novas 104  trips 19  equips 32 (5.3/lvl)  turns  9154  killed by the Crystal Golem (champion) in grotto1 · 3 adjacent, 3 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 13  grotto1  clvl 14  kills 408  gold +4229/1301/7953/1200 -6056/1348/1563/4136/220/1320  potions 43/90  bolts 999 novas 92  trips 22  equips 38 (6.3/lvl)  turns 10035  killed by the Crystal Golem (champion) in grotto1 · 3 adjacent, 5 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 14  grotto2  clvl 14  kills 407  gold +3783/1160/7899/1000 -4764/1748/2360/3286/0/540  potions 40/79  bolts 969 novas 154  trips 31  equips 41 (5.9/lvl)  turns 10884  killed by the Grotto Spider (champion) in grotto2 · 3 adjacent, 16 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 15  grotto3  clvl 17  kills 496  gold +5147/1896/10418/1100 -8728/1852/2403/3138/610/1890  potions 51/113  bolts 1090 novas 202  trips 28  equips 39 (4.9/lvl)  turns 10263  killed by the Crystal Golem (normal) in grotto3 · 2 adjacent, 7 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 16  grotto2  clvl 15  kills 426  gold +5806/1253/11063/1100 -7956/1762/1915/3836/410/3360  potions 36/123  bolts 1129 novas 144  trips 35  equips 34 (4.9/lvl)  turns 10753  killed by the Drowned Dead (champion) in grotto2 · 4 adjacent, 5 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 17  grotto2  clvl 15  kills 437  gold +4702/1817/7956/1100 -7148/1354/2183/4570/110/270  potions 58/98  bolts 1051 novas 182  trips 26  equips 36 (5.1/lvl)  turns 11018  killed by the Wraith (champion) in grotto2 · 3 adjacent, 8 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 18  grotto1  clvl 14  kills 392  gold +3149/1054/7600/1100 -3696/592/1139/6126/480/930  potions 24/62  bolts 773 novas 78  trips 17  equips 33 (5.5/lvl)  turns  8921  killed by the Crystal Golem (champion) in grotto1 · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 19  marsh    clvl 11  kills 334  gold +3179/1059/4695/1100 -3708/1246/1142/3080/290/270  potions 15/80  bolts 747 novas 32  trips 23  equips 32 (6.4/lvl)  turns  8937  killed by the Marsh Horror (champion) in marsh · 3 adjacent, 3 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 20  grotto3  clvl 17  kills 496  gold +5664/2305/11983/1100 -9528/2082/2086/4068/480/2640  potions 54/132  bolts 1157 novas 210  trips 26  equips 38 (4.8/lvl)  turns 11425  killed by the Crystal Golem (normal) in grotto3 · 3 adjacent, 5 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 21  grotto1  clvl 14  kills 416  gold +4956/1759/9369/1100 -6388/1560/1536/5574/320/1830  potions 40/102  bolts 1045 novas 80  trips 25  equips 37 (6.2/lvl)  turns 10258  killed by Wormheart the Gnawer (unique) in grotto1 · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 22  marsh    clvl 12  kills 330  gold +2355/1033/4664/1100 -2588/554/1115/4220/90/480  potions 19/61  bolts 728 novas 27  trips 19  equips 31 (6.2/lvl)  turns  8214  killed by the Drowned Dead (normal) in marsh · 2 adjacent, 2 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 23  grotto2  clvl 16  kills 437  gold +5039/1773/12361/1100 -9324/2272/2781/4636/180/1140  potions 56/130  bolts 1183 novas 212  trips 37  equips 44 (6.3/lvl)  turns 11920  killed by Bloodmaw the Cruel (unique) in grotto2 · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 24  grotto1  clvl 13  kills 371  gold +3655/1512/6065/1100 -5672/1560/1524/1986/0/1650  potions 24/101  bolts 832 novas 87  trips 23  equips 43 (7.2/lvl)  turns  9382  killed by the Drowned Dead (champion) in grotto1 · 3 adjacent, 3 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 25  grotto2  clvl 16  kills 450  gold +4779/1215/8945/1200 -7624/1794/2100/3691/90/900  potions 39/104  bolts 947 novas 178  trips 27  equips 38 (5.4/lvl)  turns 10283  killed by the Crystal Golem (normal) in grotto2 · 3 adjacent, 5 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 26  grotto1  clvl 14  kills 374  gold +5141/1326/6001/1200 -5440/1826/1409/3763/0/1290  potions 37/89  bolts 895 novas 78  trips 22  equips 41 (6.8/lvl)  turns 10310  killed by the Drowned Dead (champion) in grotto1 · 2 adjacent, 9 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 27  grotto2  clvl 14  kills 404  gold +3778/1642/6976/1100 -4200/1008/1361/5166/190/510  potions 23/81  bolts 842 novas 85  trips 21  equips 32 (4.6/lvl)  turns  9461  killed by the Drowned Dead (champion) in grotto2 · 4 adjacent, 6 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 28  grotto2  clvl 15  kills 405  gold +4659/1660/7763/1100 -4932/974/1506/5574/570/900  potions 47/65  bolts 967 novas 136  trips 17  equips 38 (5.4/lvl)  turns  9382  killed by the Wraith (normal) in grotto2 · 4 adjacent, 5 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 29  grotto3  clvl 17  kills 493  gold +7696/1635/13255/1200 -8100/1330/2041/6564/390/3780  potions 37/113  bolts 1130 novas 158  trips 26  equips 39 (4.9/lvl)  turns 11018  killed by the Grotto Spider (champion) in grotto3 · 8 adjacent, 9 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 30  grotto1  clvl 13  kills 369  gold +4487/1258/7626/1100 -3856/660/1041/7134/190/1650  potions 22/67  bolts 912 novas 61  trips 17  equips 30 (5.0/lvl)  turns  9804  killed by Ashfang the Defiler (unique) in grotto1 · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 31  grotto2  clvl 15  kills 440  gold +5151/1601/8383/1100 -7832/1320/1797/4446/0/570  potions 43/123  bolts 989 novas 127  trips 26  equips 31 (4.4/lvl)  turns  9285  killed by the Crystal Golem (champion) in grotto2 · 4 adjacent, 22 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 32  grotto1  clvl 14  kills 408  gold +4526/915/4857/1100 -5260/1640/1801/2104/90/540  potions 26/98  bolts 979 novas 97  trips 31  equips 39 (6.5/lvl)  turns 10572  killed by the Will-o'-Wisp (champion) in marsh · 1 adjacent, 2 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 33  grotto2  clvl 15  kills 425  gold +6576/1851/8682/1100 -5132/1610/1387/4939/810/2010  potions 27/77  bolts 982 novas 113  trips 24  equips 31 (4.4/lvl)  turns 10283  killed by the Grotto Spider (champion) in grotto2 · 3 adjacent, 5 awake, 1 potions and 2 scrolls left
+    bot_test.go:197: caster  seed 34  grotto1  clvl 13  kills 377  gold +4390/1362/7657/1100 -5484/956/1609/3940/300/2280  potions 27/96  bolts 890 novas 69  trips 24  equips 33 (5.5/lvl)  turns  9231  killed by Frostmarrow the Gnawer (unique) in grotto1 · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 35  grotto2  clvl 15  kills 471  gold +6072/2120/10408/1100 -8800/1316/2055/3680/450/2640  potions 61/117  bolts 1112 novas 170  trips 27  equips 33 (4.7/lvl)  turns 10398  killed by the Drowned Dead (champion) in grotto2 · 6 adjacent, 9 awake, 1 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 36  grotto1  clvl 13  kills 363  gold +3067/1331/6035/1100 -5648/1624/1455/1676/110/1080  potions 27/100  bolts 932 novas 54  trips 27  equips 32 (5.3/lvl)  turns 10274  killed by the Ghoul (champion) in grotto1 · 3 adjacent, 3 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 37  grotto1  clvl 13  kills 354  gold +4372/1434/8628/1200 -6316/1456/1064/4376/500/690  potions 25/102  bolts 902 novas 37  trips 23  equips 32 (5.3/lvl)  turns  9540  killed by the Crystal Golem (normal) in grotto1 · 7 adjacent, 16 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 38  abyss1   clvl 19  kills 533  gold +8619/2686/18389/3100 -14156/2696/3157/5964/880/3750  potions 90/151  bolts 1304 novas 339  trips 35  equips 42 (4.7/lvl)  turns 12350  killed by the Wraith (champion) in abyss1 · 2 adjacent, 9 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 39  grotto3  clvl 16  kills 472  gold +8608/1255/9940/1100 -11076/2642/2553/3782/100/810  potions 68/144  bolts 1072 novas 208  trips 39  equips 39 (4.9/lvl)  turns 10603  killed by the Drowned Dead (champion) in grotto3 · 1 adjacent, 1 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 40  grotto3  clvl 16  kills 463  gold +5778/1742/11639/1100 -7184/1158/1854/7520/460/1230  potions 47/92  bolts 1024 novas 182  trips 26  equips 51 (6.4/lvl)  turns 11002  killed by the Grotto Spider (normal) in grotto3 · 4 adjacent, 14 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 41  grotto2  clvl 14  kills 417  gold +3807/1071/8713/1100 -5040/938/1440/3822/410/2100  potions 28/82  bolts 886 novas 158  trips 17  equips 34 (4.9/lvl)  turns  9284  killed by the Crystal Golem (champion) in grotto2 · 3 adjacent, 3 awake, 0 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 42  grotto2  clvl 15  kills 435  gold +6456/1964/9570/1100 -7400/1656/1896/5098/490/2610  potions 42/110  bolts 1041 novas 195  trips 27  equips 40 (5.7/lvl)  turns 10761  killed by the Crystal Golem (champion) in grotto2 · 2 adjacent, 2 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 43  grotto1  clvl 12  kills 360  gold +3493/727/7073/1100 -4732/1360/1238/4320/0/780  potions 12/101  bolts 848 novas 42  trips 24  equips 41 (6.8/lvl)  turns  9499  killed by the Crystal Golem (champion) in grotto1 · 6 adjacent, 21 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 44  grotto3  clvl 16  kills 466  gold +6363/2460/12993/1100 -9568/1958/2169/6256/1180/1620  potions 53/111  bolts 1072 novas 223  trips 33  equips 45 (5.6/lvl)  turns 11810  killed by the Crystal Golem (champion) in grotto3 · 4 adjacent, 10 awake, 2 potions and 2 scrolls left
+    bot_test.go:197: caster  seed 45  grotto2  clvl 14  kills 417  gold +6453/1585/9616/1100 -6180/910/1443/7420/320/1680  potions 35/91  bolts 990 novas 108  trips 19  equips 41 (5.9/lvl)  turns 10172  killed by the Ghoul (normal) in grotto2 · 4 adjacent, 7 awake, 1 potions and 1 scrolls left
+    bot_test.go:197: caster  seed 46  grotto1  clvl 15  kills 381  gold +4279/753/6432/1200 -4844/1536/1718/3216/840/570  potions 33/73  bolts 967 novas 88  trips 25  equips 39 (6.5/lvl)  turns 10027  killed by the Crystal Golem (champion) in grotto1 · 3 adjacent, 3 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 47  grotto2  clvl 16  kills 453  gold +7953/1491/11568/1100 -8712/1712/2004/7274/430/2040  potions 48/127  bolts 1248 novas 137  trips 26  equips 40 (5.7/lvl)  turns 10329  killed by the Crystal Golem (normal) in grotto2 · 2 adjacent, 3 awake, 0 potions and 0 scrolls left
+    bot_test.go:197: caster  seed 48  grotto2  clvl 15  kills 426  gold +5111/2118/10866/1100 -8408/1860/1792/2936/270/2940  potions 62/94  bolts 963 novas 199  trips 28  equips 37 (5.3/lvl)  turns 10569  killed by the Crystal Golem (champion) in grotto2 · 5 adjacent, 9 awake, 1 potions and 3 scrolls left
+    bot_test.go:226: caster: 48 runs · alive 0 · stuck 0 · Bone King 48 · Oracle 3 · median clvl 15, kills 416, turns 10263, gold earned 15634 · reached: fields 48, crypt1 48, crypt2 48, crypt4 48, marsh 48, grotto1 46, grotto3 10, abyss1 3, abyss2 0
+    bot_test.go:229: caster deaths: the Crystal Golem ×16, the Grotto Spider ×9, the Drowned Dead ×8, the Wraith ×5, the Ghoul ×2, Ashfang the Defiler ×1, Bloodmaw the Cruel ×1, Frostmarrow the Gnawer ×1, Gravelurk the Cruel ×1, Wormheart the Gnawer ×1, the Hellspawn ×1, the Marsh Horror ×1, the Will-o'-Wisp ×1 · in: grotto2 ×19, grotto1 ×16, grotto3 ×7, abyss1 ×3, marsh ×3
+    bot_test.go:238: caster  arrival  runs clvl   HP armor   melee    bolt crit  gear  gold   vs normal      swings P10/P50/P90  bolts P10/P50/P90  turns to die P10/P50/P90
+    bot_test.go:260: caster  fields     48    1   60    10   2-8     8-13    6%     9     0   Fallen One    2.8/3.1/3.4  1.0/1.0/1.0  45.4/46.4/47.8
+    bot_test.go:260: caster  crypt1     48    4  106    28   4-11   11-17   10%   131   151   Skeleton      2.1/4.3/6.6  1.9/2.0/2.0  40.9/50.4/68.1
+    bot_test.go:260: caster  crypt2     48    6  138    40   5-13   12-20   10%   195   340   Skeleton      2.6/4.5/8.2  2.0/2.0/2.1  38.1/49.9/60.6
+    bot_test.go:260: caster  crypt4     48    9  194    66   6-18   16-25   10%   348  1187   Skeleton      3.1/5.5/11.6  2.1/2.5/2.9  41.2/50.2/64.7
+    bot_test.go:260: caster  marsh      48   11  225    83  11-21   18-29   12%   443  1515   Drowned Dead  4.7/9.2/23.3  4.3/4.9/5.6  35.4/43.7/54.1
+    bot_test.go:260: caster  grotto1    46   13  241    92  15-30   20-32   13%   489  1416   Grotto Spider 3.6/5.9/17.6  3.4/3.9/4.6  23.1/28.2/34.5
+    bot_test.go:260: caster  grotto3    10   16  285   125  16-31   22-33   10%   637  1440   Grotto Spider 4.8/7.6/23.2  4.4/5.0/5.2  19.6/24.1/28.7
+    bot_test.go:260: caster  abyss1      3   19  332   115  16-29   27-42   11%   744  3492   Hellspawn     25.8/43.0/108.6  15.0/16.0/17.2  10.5/13.5/16.4
+    bot_test.go:257: caster  abyss2      0
+    eval_test.go:94: score 14.47 (95% 13.46–15.73 over seeds) in 17 s · 39 goals missed, largest first:
+    eval_test.go:97:   fighter.oracle             0.02  (0.3–0.45)  +2.79
+    eval_test.go:97:   fighter.gold               5.30  (0.8–1.5)  +2.53
+    eval_test.go:97:   caster.oracle              0.06  (0.3–0.45)  +2.38
+    eval_test.go:97:   caster.gold                3.09  (0.8–1.5)  +1.06
+    eval_test.go:97:   fighter.packLive.crypt4   19.41  (8–12)  +0.62
+    eval_test.go:97:   caster.king                1.00  (0.7–0.85)  +0.53
+    eval_test.go:97:   fighter.packLive.crypt2   17.91  (8–12)  +0.49
+    eval_test.go:97:   caster.packLive.crypt4    16.74  (8–12)  +0.40
+    eval_test.go:97:   caster.packLive.crypt2    16.62  (8–12)  +0.39
+    eval_test.go:97:   caster.kills.crypt2        2.00  (3–5)  +0.33
+    eval_test.go:97:   caster.fight.grotto3       0.51  (1–2)  +0.25
+    eval_test.go:97:   fighter.king               0.92  (0.7–0.85)  +0.24
+    eval_test.go:97:   caster.wrongKill.crypt4    1.57  (2–4)  +0.22
+    eval_test.go:97:   caster.wrongKill.grotto1   1.58  (2–4)  +0.21
+    eval_test.go:97:   caster.fight.crypt2        2.75  (1–2)  +0.19
+    eval_test.go:97:   fighter.kills.grotto3      2.44  (3–5)  +0.19
+    eval_test.go:97:   abyssDeath                10.00  (11–13)  +0.18
+    eval_test.go:97:   caster.fight.grotto1       0.66  (1–2)  +0.17
+    eval_test.go:97:   caster.packLive.grotto3    6.69  (8–12)  +0.16
+    eval_test.go:97:   caster.kills.crypt4        2.52  (3–5)  +0.16
+    eval_test.go:97:   caster.wrongLive.grotto1   0.57  (0.2–0.5)  +0.14
+    eval_test.go:97:   fighter.kills.crypt2       2.63  (3–5)  +0.12
+    eval_test.go:97:   fighter.kills.crypt4       2.63  (3–5)  +0.12
+    eval_test.go:97:   fighter.wrongLive.grotto1   0.56  (0.2–0.5)  +0.12
+    eval_test.go:97:   fighter.fight.crypt4       2.39  (1–2)  +0.10
+    eval_test.go:97:   caster.wrongLive.crypt4    0.55  (0.2–0.5)  +0.09
+    eval_test.go:97:   fighter.wrongKill.grotto1   1.82  (2–4)  +0.09
+    eval_test.go:97:   fighter.kills.grotto1      2.86  (3–5)  +0.05
+    eval_test.go:97:   caster.fight.crypt4        2.19  (1–2)  +0.05
+    eval_test.go:97:   fighter.packLive.grotto3   7.68  (8–12)  +0.04
+    eval_test.go:97:   fighter.wrongLive.crypt4   0.52  (0.2–0.5)  +0.04
+    eval_test.go:97:   fighter.wrongKill.crypt4   1.95  (2–4)  +0.02
+    eval_test.go:97:   caster.packLive.grotto1    7.85  (8–12)  +0.02
+--- PASS: TestBotBalance (16.98s)
     ref_test.go:272: reference heroes, at least 1000 rolls and 30 kills or deaths per measure · gear: the policy's gearScore of everything worn, bot: the bot's P50 on arrival that par is calibrated to · per monster: swings to kill, bolts to kill, player turns survived from full life with no potions, damage per monster attack with misses · ranged monsters fight in melee here · dps/hp: mean hit (melee for fighter, bolt for caster) over the first normal's life · ! = outside a band
     ref_test.go:286: fields  depth 1  clvl 1  ·  Fallen One 8hp  ·  Zombie 18hp  ·  Zombie champion (Extra Strong) 39hp  ·  wrong way: depth 4, same monsters
     ref_test.go:286: hero             HP armor melee    crit bolt   gear  bot | fallen                 | zombie                 | zombie champion        | dps/hp | !
@@ -126,6 +218,6 @@ BOTSEEDS=24 BOTFIRST=1 BOTRULES= go test -count=1 -v -run 'BotBalance|RefHeroes'
     ref_test.go:286: caster lucky    398   235 27-44     22% 33-49  1070      |   8.0   6.0  31.1 11.9 |  29.2  15.3  15.2 27.3 |  64.5  33.3   8.0 53.5 |   0.24 | 
     ref_test.go:286: fighter wrong   443   192 60-95     23% 10-16   812      |   4.5  25.7  23.8 17.3 |  16.3  70.1  11.6 40.3 |  34.7 153.3   6.2 78.5 |   0.52 | !kill !live
     ref_test.go:286: caster wrong    400   150 15-30     11% 30-44   917      |  20.2   9.6  19.0 19.5 |  79.2  25.5   9.4 45.2 | 178.1  55.6   5.0 89.8 |   0.21 | !kill !live
---- PASS: TestRefHeroes (0.82s)
+--- PASS: TestRefHeroes (0.84s)
 PASS
-ok  	github.com/antonmedv/termablo	10.154s
+ok  	github.com/antonmedv/termablo	17.941s

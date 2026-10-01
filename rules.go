@@ -75,8 +75,9 @@ type Rules struct {
 }
 
 // DefaultRules is today's game: the pick of the 2026-09-30 balance pass
-// (StrDiv, PotionHeal, ManaPerEne, GoldPerLvl, QuestGoldPerLvl moved).
-// A balance pass that keeps a change edits this literal.
+// (StrDiv, PotionHeal, ManaPerEne, GoldPerLvl, QuestGoldPerLvl moved) and
+// of the 2026-10-01 pass (WakeRange 16 -> 10). A balance pass that keeps a
+// change edits this literal.
 func DefaultRules() *Rules {
 	return &Rules{
 		HPPerLvl:          4,
@@ -102,7 +103,7 @@ func DefaultRules() *Rules {
 		PackMul:           1,
 		MonArmorPerLvl:    2,
 		MonToHitPerLvl:    3,
-		WakeRange:         16,
+		WakeRange:         10,
 		ArmorCap:          0.5,
 		ArmorK:            50,
 		ArmorPerLvl:       10,

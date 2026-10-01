@@ -44,6 +44,7 @@
  "SellDiv": 12,
  "StrDiv": 45,
  "ToHitPerLvl": 0,
+ "WakeRange": 10,
  "XPBase": 35,
  "XPExp": 1.8
 }
