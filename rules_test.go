@@ -33,8 +33,8 @@ func TestKnobRegistry(t *testing.T) {
 		if k.Desc == "" || k.Step <= 0 || k.Step > (k.Hi-k.Lo)/2 {
 			t.Errorf("%s: wants a description and a step inside the range, got %q, %v", k.Name, k.Desc, k.Step)
 		}
-		if k.Int != (k.Name == "DropChance" || k.Name == "GoldChance") {
-			t.Errorf("%s: Int %v; dropLoot reads DropChance and GoldChance as whole numbers", k.Name, k.Int)
+		if k.Int != (k.Name == "DropChance" || k.Name == "GoldChance" || k.Name == "WakeRange") {
+			t.Errorf("%s: Int %v; dropLoot reads DropChance and GoldChance as whole numbers, monsterTurn WakeRange", k.Name, k.Int)
 		}
 	}
 	rt := reflect.TypeOf(*r)

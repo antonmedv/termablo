@@ -923,7 +923,7 @@ func (g *Game) hurtPlayer(dmg int, by, verb string) {
 // recordDeath notes how the hero stood when the blow landed.
 func (g *Game) recordDeath() {
 	d := &g.Stats.Death
-	d.Rank, d.Adj, d.Awake, d.Potions = -1, 0, 0, g.P.HPot
+	d.Rank, d.Adj, d.Awake, d.Potions, d.Scrolls = -1, 0, 0, g.P.HPot, g.P.Scrolls
 	if m := g.hitter; m != nil {
 		d.Rank = m.Rank
 	}
@@ -984,7 +984,9 @@ func (g *Game) readPortal() {
 		return
 	}
 	p.Scrolls--
-	x, y := l.FreeNear(p.X+1, p.Y, p.X, p.Y)
+	// The portal opens on the nearest free cell: in a crowd, the one
+	// side that is still open, not the far side of whoever stands east.
+	x, y := l.FreeNear(p.X, p.Y, p.X, p.Y)
 	g.Portal = &Portal{l.ID, x, y}
 	g.portalLight.ver = -1
 	g.msg(colBlue, "A shimmering blue portal tears open.")
@@ -1151,7 +1153,7 @@ func (g *Game) monsterTurn(m *Monster) {
 		return
 	}
 	d := cheb(m.X, m.Y, p.X, p.Y)
-	sees := g.fov[l.Idx(m.X, m.Y)] == g.fovGen && d <= 16
+	sees := g.fov[l.Idx(m.X, m.Y)] == g.fovGen && d <= int(g.Rules.WakeRange)
 	if sees {
 		if !m.Awake {
 			m.Awake = true

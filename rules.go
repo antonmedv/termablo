@@ -39,6 +39,7 @@ type Rules struct {
 	PackMul         float64 // scales Pack sizes, at least 1
 	MonArmorPerLvl  float64 // NewMonster armor per level
 	MonToHitPerLvl  float64 // NewMonster to-hit per level
+	WakeRange       float64 // monsterTurn: a monster in view this close notices the hero
 
 	// armor
 	ArmorCap    float64 // monsterDamage: most the hero's armor takes off
@@ -101,6 +102,7 @@ func DefaultRules() *Rules {
 		PackMul:           1,
 		MonArmorPerLvl:    2,
 		MonToHitPerLvl:    3,
+		WakeRange:         16,
 		ArmorCap:          0.5,
 		ArmorK:            50,
 		ArmorPerLvl:       10,
@@ -217,6 +219,9 @@ var knobs = []Knob{
 	{"MonToHitPerLvl", "combat",
 		"monster to-hit per monster level, base 55",
 		2, 4, 0.25, false, func(r *Rules) *float64 { return &r.MonToHitPerLvl }},
+	{"WakeRange", "combat",
+		"a monster with the hero in view this many cells away or closer wakes, and wakes its neighbors within 6; in open caves this is how many packs join a fight",
+		8, 20, 1, true, func(r *Rules) *float64 { return &r.WakeRange }},
 	{"ArmorCap", "combat",
 		"most damage the hero's armor can take off a blow, as a fraction",
 		0.4, 0.7, 0.05, false, func(r *Rules) *float64 { return &r.ArmorCap }},
