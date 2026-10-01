@@ -30,7 +30,6 @@ type Level struct {
 	T        []Tile
 	V        []uint8
 	Seen     []bool
-	Spent    []bool // the hero stood here: what is unseen from it will stay unseen
 	Decal    []uint8
 	Lights   []*Light
 	Monsters []*Monster
@@ -58,7 +57,6 @@ func newLevel(id, name string, kind LevelKind, w, h, depth int, seed int64, r *R
 	l.T = make([]Tile, w*h)
 	l.V = make([]uint8, w*h)
 	l.Seen = make([]bool, w*h)
-	l.Spent = make([]bool, w*h)
 	l.Decal = make([]uint8, w*h)
 	l.rng = rand.New(rand.NewSource(seed))
 	for i := range l.V {

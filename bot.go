@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 	"sort"
 	"strings"
@@ -231,7 +230,6 @@ func (b *Bot) track() {
 			b.par = make([]int32, l.W*l.H)
 		}
 	}
-	l.Spent[l.Idx(g.P.X, g.P.Y)] = true // for frontier, as autoStep does for itself
 	seen := 0
 	for _, s := range l.Seen {
 		if s {
@@ -390,8 +388,7 @@ func (b *Bot) wants(it *Item) bool {
 // round of bites ends the run.
 func (b *Bot) hp() float64 {
 	p := b.g.P
-	next := math.Min(p.HealPool, p.HealPool*0.35+1)
-	return (p.HP + next) / float64(p.MaxHP())
+	return (p.HP + drainStep(p.HealPool)) / float64(p.MaxHP())
 }
 
 // threats are the visible enemies a player deals with now: the ones that
@@ -632,7 +629,7 @@ func (b *Bot) retreat(n int) bool {
 	order := b.search(-1, -1, 5)
 	best, bo := -1, here
 	for _, i := range order[1:] {
-		if o := b.open(i%l.W, i/l.W); o < bo || (o == bo && best < 0 && o <= 2) {
+		if o := b.open(i%l.W, i/l.W); o < bo {
 			best, bo = i, o
 		}
 		if bo <= 2 {
@@ -1104,7 +1101,7 @@ func (b *Bot) explore() bool {
 		if b.walkTo(b.front.X, b.front.Y, false) {
 			return true
 		}
-		l.Spent[l.Idx(b.front.X, b.front.Y)] = true // no way there
+		b.skip[b.front] = true // no way there now; track clears it when more is seen
 		b.front = Pos{-1, -1}
 		return false
 	}
@@ -1151,7 +1148,9 @@ func (b *Bot) descend() bool {
 	}
 	b.enter(BotDescend, "stairs to "+to)
 	if b.walkTo(x, y, true) {
-		b.progress = b.n // a long walk across a cleared level is not a stall
+		if b.par[l.Idx(x, y)] >= 0 {
+			b.progress = b.n // a long walk on a known path across a cleared level is not a stall
+		}
 		return true
 	}
 	return false
@@ -1177,8 +1176,8 @@ func (b *Bot) wander() {
 // frontier says whether a cell borders the unknown.
 func (b *Bot) frontier(x, y int) bool {
 	l := b.g.Lv
-	if !l.In(x, y) || l.Spent[l.Idx(x, y)] {
-		return false // stood there already: what is unseen from it stays unseen
+	if !l.In(x, y) || b.skip[Pos{x, y}] {
+		return false // no known way there, until more is seen
 	}
 	for _, d := range dirs8 {
 		if nx, ny := x+d.X, y+d.Y; l.In(nx, ny) && !l.Seen[l.Idx(nx, ny)] {

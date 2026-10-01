@@ -421,10 +421,14 @@ func (g *Game) targetAt(mx, my int) bool {
 // drain takes this turn's share of a potion pool: most of it lands in the
 // first few turns.
 func drain(pool *float64) float64 {
-	d := math.Min(*pool, *pool*0.35+1)
+	d := drainStep(*pool)
 	*pool -= d
 	return d
 }
+
+// drainStep is how much of a potion pool the next turn delivers; the
+// bot plans with it too (Bot.hp).
+func drainStep(pool float64) float64 { return math.Min(pool, pool*0.35+1) }
 
 func (g *Game) endTurn() {
 	p := g.P
@@ -892,6 +896,9 @@ func (g *Game) useAltar(x, y int) {
 // hurtPlayer applies damage and logs "<By> <verb> you for N." (by doubles as the killer's name).
 func (g *Game) hurtPlayer(dmg int, by, verb string) {
 	p := g.P
+	if g.Mode == ModeDead {
+		return // the blow that killed is the one on record
+	}
 	if dmg < 1 {
 		dmg = 1
 	}
@@ -916,7 +923,7 @@ func (g *Game) hurtPlayer(dmg int, by, verb string) {
 // recordDeath notes how the hero stood when the blow landed.
 func (g *Game) recordDeath() {
 	d := &g.Stats.Death
-	d.Rank, d.Potions = -1, g.P.HPot
+	d.Rank, d.Adj, d.Awake, d.Potions = -1, 0, 0, g.P.HPot
 	if m := g.hitter; m != nil {
 		d.Rank = m.Rank
 	}
@@ -1448,10 +1455,6 @@ func (g *Game) autoStep() bool {
 		par[i] = -1
 	}
 	start := l.Idx(p.X, p.Y)
-	// Standing on a cell beside unseen ones is the best look at them; if
-	// they stay unseen from here they never will be, and walking back to
-	// this cell for them would go on forever.
-	l.Spent[start] = true
 	par[start] = int32(start)
 	q := []int{start}
 	target := -1
@@ -1467,7 +1470,7 @@ func (g *Game) autoStep() bool {
 			}
 			for _, d := range dirs8 {
 				nx, ny := cx+d.X, cy+d.Y
-				if l.In(nx, ny) && !l.Seen[l.Idx(nx, ny)] && !l.Spent[c] {
+				if l.In(nx, ny) && !l.Seen[l.Idx(nx, ny)] {
 					target = c
 					break
 				}
