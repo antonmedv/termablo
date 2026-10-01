@@ -8,19 +8,19 @@ the rules files; `balance/runs/` (the raw results) is ignored by git.
 
 ## Instruments
 
-| what | how |
-|---|---|
-| knobs (name, meaning, value, range, step) | `make knobs` — the registry in `rules.go` |
-| one evaluation → JSON | `make eval OUT=balance/runs/NNN-slug.json [RULES=balance/rules/slug.json] [SEEDS=48] [FIRST=1]` |
-| human report only | `make report [RULES=..] [SEEDS=24]` (adds the reference-heroes table) |
-| read a result | `go run ./cmd/balance show RUN.json` |
-| paired comparison | `go run ./cmd/balance compare BASE.json RUN.json` |
-| seeds needed | `go run ./cmd/balance seeds RUN.json` |
-| record a decision | `go run ./cmd/balance log RUN.json -keep\|-revert\|-baseline -change ".." -why ".." [-base BASE.json]` |
-| ledger | `go run ./cmd/balance ls`, `balance/LEDGER.md`, `balance/ledger.jsonl` |
-| best known | `balance/best.json` (rules), `balance/best-run.json` (its result) |
-| read one run's end | `BOTTRACE=fighter:7:60 go test -count=1 -v -run BotTrace .` (last 60 log lines with life, potions, bot state; `BOTRULES` applies) |
-| watch a run | `go run . -bot fighter -seed 7` |
+| what                                      | how                                                                                                                               |
+|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| knobs (name, meaning, value, range, step) | `make knobs` — the registry in `rules.go`                                                                                         |
+| one evaluation → JSON                     | `make eval OUT=balance/runs/NNN-slug.json [RULES=balance/rules/slug.json] [SEEDS=48] [FIRST=1]`                                   |
+| human report only                         | `make report [RULES=..] [SEEDS=24]` (adds the reference-heroes table)                                                             |
+| read a result                             | `go run ./cmd/balance show RUN.json`                                                                                              |
+| paired comparison                         | `go run ./cmd/balance compare BASE.json RUN.json`                                                                                 |
+| seeds needed                              | `go run ./cmd/balance seeds RUN.json`                                                                                             |
+| record a decision                         | `go run ./cmd/balance log RUN.json -keep\|-revert\|-baseline -change ".." -why ".." [-base BASE.json]`                            |
+| ledger                                    | `go run ./cmd/balance ls`, `balance/LEDGER.md`, `balance/ledger.jsonl`                                                            |
+| best known                                | `balance/best.json` (rules), `balance/best-run.json` (its result)                                                                 |
+| read one run's end                        | `BOTTRACE=fighter:7:60 go test -count=1 -v -run BotTrace .` (last 60 log lines with life, potions, bot state; `BOTRULES` applies) |
+| watch a run                               | `go run . -bot fighter -seed 7`                                                                                                   |
 
 A rules file is a JSON overlay on `DefaultRules`: `{"HpLin": 0.3}`. Unknown
 knobs fail, out-of-range values warn. The goals (bands and weights) are
