@@ -375,7 +375,10 @@ func logEntry(args []string) error {
 		if err := writeJSON(bestPath, res.Rules); err != nil {
 			return err
 		}
-		data, _ := os.ReadFile(args[0])
+		data, err := os.ReadFile(args[0])
+		if err != nil {
+			return err
+		}
 		if err := os.WriteFile(bestRun, data, 0o644); err != nil {
 			return err
 		}

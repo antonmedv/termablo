@@ -50,6 +50,12 @@ func TestExpandAndScore(t *testing.T) {
 	if s, _ := Score(m, Goals); math.Abs(s-1.5-1.0/3) > 1e-9 {
 		t.Errorf("two arrivals score %v, want 1.833", s)
 	}
+	m["fighter.kills.grotto3"] = 4
+	delete(m, "fighter.luckyPar.crypt4") // a reference measure: a full miss whatever the arrivals
+	m["fighter.arrivals.crypt4"] = 2
+	if s, _ := Score(m, Goals); s != 2.5 {
+		t.Errorf("missing reference measure scores %v, want 2.5", s)
+	}
 }
 
 func run(pol string, seed int64, deepest int, king bool) Run {
@@ -93,6 +99,10 @@ func TestPaired(t *testing.T) {
 	p = pair("y", []float64{1, 2, 3, 4}, []float64{4, 1, 2, 3})
 	if p.Sure() || p.Diff != 0 || p.Up != 1 || p.Down != 3 {
 		t.Errorf("shuffle: %+v", p)
+	}
+	p = pair("z", []float64{2}, []float64{5})
+	if p.Sure() || p.Diff != 3 || !math.IsInf(p.Lo, -1) || !math.IsInf(p.Hi, 1) || p.Up != 1 {
+		t.Errorf("one pair: %+v", p)
 	}
 	if n := SeedsFor(0.5, 0.1); n != 97 {
 		t.Errorf("SeedsFor(.5, .1) = %d, want 97", n)

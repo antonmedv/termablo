@@ -31,7 +31,9 @@ func TestBotTrace(t *testing.T) {
 	}
 	lines := 40
 	if len(parts) > 2 {
-		lines, _ = strconv.Atoi(parts[2])
+		if lines, err = strconv.Atoi(parts[2]); err != nil || lines < 1 {
+			t.Fatalf("BOTTRACE=%q: want a positive line count", spec)
+		}
 	}
 	r, _, err := rulesFromFile(os.Getenv("BOTRULES"))
 	if err != nil {

@@ -152,8 +152,9 @@ var botTypical = map[string]string{"fields": "fallen", "crypt": "skel", "marsh":
 const botRolls = 100
 
 // sampleRuns pits every checkpoint arrival against the area's typical
-// normal at that depth and stores the duel on the run.
-func sampleRuns(t testing.TB, r *Rules, rs []botRun) {
+// normal at that depth, stores the duel on the run and returns the
+// monsters it used, by checkpoint.
+func sampleRuns(t testing.TB, r *Rules, rs []botRun) map[string]*Monster {
 	ar := newArena(t, r)
 	rng := rand.New(rand.NewSource(1))
 	typical := map[string]*Monster{}
@@ -170,6 +171,7 @@ func sampleRuns(t testing.TB, r *Rules, rs []botRun) {
 			}
 		}
 	}
+	return typical
 }
 
 // packOf is the mean pack size of a template under r, as populate rolls
@@ -182,8 +184,9 @@ func packOf(t *MTemplate, r *Rules) (pack, speed float64) {
 	return n / float64(t.Pack[1]-t.Pack[0]+1), float64(t.Speed) / 100
 }
 
-// botReport logs one policy's runs and their summary.
-func botReport(t *testing.T, name string, rs []botRun, r *Rules) {
+// botReport logs one policy's runs and their summary; typical is what
+// sampleRuns pitted the arrivals against.
+func botReport(t *testing.T, name string, rs []botRun, typical map[string]*Monster) {
 	var lvls, kills, turns, gold []int
 	alive, stuck, king, oracle := 0, 0, 0, 0
 	reached := map[string]int{}
@@ -224,21 +227,19 @@ func botReport(t *testing.T, name string, rs []botRun, r *Rules) {
 	if len(killers) > 0 {
 		t.Logf("%s deaths: %s · in: %s", name, counts(killers), counts(areas))
 	}
-	botTable(t, name, rs, r)
+	botTable(t, name, rs, typical)
 }
 
 // botTable prints the hero at each checkpoint: medians over the runs that
 // arrived, and P10/P50/P90 across them of the sampler against the area's
 // typical normal at that depth.
-func botTable(t *testing.T, name string, rs []botRun, r *Rules) {
-	rng := rand.New(rand.NewSource(1))
+func botTable(t *testing.T, name string, rs []botRun, typical map[string]*Monster) {
 	t.Logf("%-7s %-8s %4s %4s %4s %5s %7s %7s %4s %5s %5s   vs normal      swings P10/P50/P90  bolts P10/P50/P90  turns to die P10/P50/P90",
 		name, "arrival", "runs", "clvl", "HP", "armor", "melee", "bolt", "crit", "gear", "gold")
 	for _, cp := range botCheckpoints {
 		var lvl, hp, armor, lo, hi, blo, bhi, crit, gear, gold []int
 		var swings, bolts, turns []float64
-		area, _ := splitID(cp)
-		m := NewMonster(rng, mtemps[botTypical[area]], botDepth(cp), RankNormal, r)
+		m := typical[cp]
 		for _, run := range rs {
 			for i := range run.snaps {
 				s := &run.snaps[i]
@@ -295,6 +296,9 @@ func TestBotDeterministic(t *testing.T) {
 	for _, pol := range botPolicies {
 		a, b := runBot(3, pol, 3000), runBot(3, pol, 3000)
 		as, bs := arrivals(a.snaps), arrivals(b.snaps)
+		if a.fail != "" {
+			t.Fatalf("%s: %s", pol.name, a.status())
+		}
 		if a.botResult != b.botResult || as != bs {
 			t.Errorf("%s: two runs of seed 3 differ:\n%+v %s\n%+v %s", pol.name, a.botResult, as, b.botResult, bs)
 		}

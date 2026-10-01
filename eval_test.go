@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -73,7 +74,7 @@ func TestBotBalance(t *testing.T) {
 	}
 
 	rs := runBotsWith(r, first, seeds, botTurns)
-	sampleRuns(t, r, rs)
+	typical := sampleRuns(t, r, rs)
 	for _, pol := range botPolicies {
 		var prs []botRun
 		for _, run := range rs {
@@ -81,10 +82,11 @@ func TestBotBalance(t *testing.T) {
 				prs = append(prs, run)
 			}
 		}
-		botReport(t, pol.name, prs, r)
+		botReport(t, pol.name, prs, typical)
 	}
 
 	res := evalResult(t, r, rs, first, seeds)
+	res.Warnings = warnings
 	res.Seconds = time.Since(started).Seconds()
 	if res.Fail != "" {
 		t.Logf("hard fail: %s", res.Fail)
@@ -121,8 +123,30 @@ func TestBotBalance(t *testing.T) {
 	if med := median(turns); med < 1500 {
 		t.Errorf("median run lasted %d turns, want at least 1500", med)
 	}
-	if res.Fail != "" && os.Getenv("BOTOUT") == "" {
+	// A hard fail is written to BOTOUT for the record and still fails the
+	// test: a panic must not pass as an unscorable run.
+	if res.Fail != "" {
 		t.Errorf("hard fail: %s", res.Fail)
+	}
+}
+
+// The balance package carries its own copy of the counter names and
+// the starting gold; the game is the source.
+func TestBalanceConstantsMatchGame(t *testing.T) {
+	if got, want := goldSrcNames[:], balance.GoldSrcNames; !slices.Equal(got, want) {
+		t.Errorf("gold sources %v, balance.GoldSrcNames %v", got, want)
+	}
+	if got, want := goldSinkNames[:], balance.GoldSinkNames; !slices.Equal(got, want) {
+		t.Errorf("gold sinks %v, balance.GoldSinkNames %v", got, want)
+	}
+	if got := NewPlayer(DefaultRules()).Gold; got != balance.StartingGold {
+		t.Errorf("starting gold %d, balance.StartingGold %d", got, balance.StartingGold)
+	}
+	if got, want := botDepth("abyss1"), balance.AbyssDepth; got != want {
+		t.Errorf("abyss1 depth %d, balance.AbyssDepth %d", got, want)
+	}
+	if got, want := botDepth("grotto1"), balance.GrottoDepth; got != want {
+		t.Errorf("grotto1 depth %d, balance.GrottoDepth %d", got, want)
 	}
 }
 

@@ -130,6 +130,17 @@ func pair(name string, xs, ys []float64) Paired {
 		p.Lo, p.Hi = math.NaN(), math.NaN()
 		return p
 	}
+	if p.N == 1 {
+		p.MeanA, p.MeanB, p.Diff = xs[0], ys[0], ys[0]-xs[0]
+		p.Lo, p.Hi = math.Inf(-1), math.Inf(1) // one pair bounds nothing
+		switch {
+		case p.Diff > 0:
+			p.Up = 1
+		case p.Diff < 0:
+			p.Down = 1
+		}
+		return p
+	}
 	var sx, sy, sd, sd2 float64
 	for i := range xs {
 		d := ys[i] - xs[i]

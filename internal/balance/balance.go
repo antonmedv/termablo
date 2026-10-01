@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -83,6 +84,10 @@ var (
 	Areas          = []string{"fields", "crypt", "marsh", "grotto", "abyss"}
 	Policies       = []string{"fighter", "caster"}
 )
+
+// CheckpointMeasures are the per-arrival numbers a checkpoint carries;
+// each becomes a metric policy.measure.checkpoint.
+var CheckpointMeasures = []string{"kills", "live", "packLive", "fight", "killsSpread", "liveSpread", "turnAt", "gear", "clvl"}
 
 // Route depths, as the bot counts them.
 const (
@@ -199,7 +204,7 @@ func (g Goal) Distance(v float64) float64 {
 // gets there. Any other unmeasured metric is a full miss.
 func unmeasured(m map[string]float64, metric string) float64 {
 	parts := strings.Split(metric, ".")
-	if len(parts) != 3 {
+	if len(parts) != 3 || !slices.Contains(CheckpointMeasures, parts[1]) {
 		return 1
 	}
 	arrivals, ok := m[parts[0]+".arrivals."+parts[2]]
@@ -366,7 +371,7 @@ func Metrics(runs []Run, refs []Ref, gamble float64) map[string]float64 {
 				}
 			}
 			m[p+".arrivals."+cp] = float64(len(ks))
-			for _, k := range []string{"kills", "live", "packLive", "fight", "killsSpread", "liveSpread", "turnAt", "gear", "clvl"} {
+			for _, k := range CheckpointMeasures {
 				m[p+"."+k+"."+cp] = math.NaN()
 			}
 			if len(ks) >= MinArrivals {
