@@ -18,11 +18,31 @@ func (g *Game) SetHover(x, y int) {
 	g.hoverX, g.hoverY, g.hoverOn = x, y, true
 }
 
+// hitBox is a clickable run of cells on one screen row, as drawn last
+// frame. The zero value matches nothing.
+type hitBox struct{ X0, X1, Y int }
+
+func (b hitBox) in(x, y int) bool { return b.X1 > b.X0 && y == b.Y && x >= b.X0 && x <= b.X1 }
+
 // Click handles a left click at screen cell (x,y) on a w×h screen: an
-// enemy under the cursor becomes the target.
+// enemy under the cursor becomes the target, a belt row drinks or reads.
 func (g *Game) Click(x, y, w, h int) {
+	if g.Mode != ModePlay || x < 0 || y < 0 {
+		return
+	}
 	mapW, mapH := w-panelW, h-logH
-	if g.Mode != ModePlay || x < 0 || y < 0 || x >= mapW || y >= mapH {
+	if x >= mapW {
+		switch {
+		case g.beltHit[0].in(x, y):
+			g.drinkHealth()
+		case g.beltHit[1].in(x, y):
+			g.drinkMana()
+		case g.beltHit[2].in(x, y):
+			g.readPortal()
+		}
+		return
+	}
+	if y >= mapH {
 		return
 	}
 	camX, camY := g.camera(mapW, mapH)

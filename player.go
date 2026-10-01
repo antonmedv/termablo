@@ -121,6 +121,11 @@ func (p *Player) NovaDmg() (int, int) {
 func (p *Player) FireboltCost() int { return costFirebolt + int(float64(p.Lvl-1)*p.r.BoltCostLvl) }
 func (p *Player) NovaCost() int     { return costNova + p.Lvl - 1 }
 
+// A potion restores a share of the maximum plus a flat bit, drained over
+// the following turns. The belt shows the amount.
+func (p *Player) HealAmt() float64 { return float64(p.MaxHP())*p.r.PotionHeal + 12 }
+func (p *Player) ManaAmt() float64 { return float64(p.MaxMP())*p.r.ManaPotion + 5 }
+
 const (
 	costFirebolt = 6
 	costNova     = 14

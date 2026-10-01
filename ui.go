@@ -282,19 +282,26 @@ func (g *Game) drawMap(s *Screen, x0, y0, w, h int) {
 
 // ------------------------------------------------------------ panel & log
 
-func bar(s *Screen, x, y, w int, frac float64, full, empty RGB) {
+// bar draws frac of w cells solid; pend more (a potion still working)
+// as a pale ghost segment after them.
+func bar(s *Screen, x, y, w int, frac, pend float64, full, empty RGB) {
 	frac = math.Max(0, math.Min(1, frac))
 	fill := frac * float64(w)
+	ghost := math.Min(1, frac+math.Max(0, pend)) * float64(w)
 	for i := range w {
 		c := empty
 		ch := '░'
-		if float64(i)+1 <= fill {
+		switch {
+		case float64(i)+1 <= fill:
 			k := float32(i) / float32(w)
 			c = full.Scale(0.75 + 0.35*k)
 			ch = '█'
-		} else if float64(i) < fill {
+		case float64(i) < fill:
 			c = full.Scale(0.7)
 			ch = '▓'
+		case float64(i) < ghost:
+			c = full.Scale(0.45).Add(C(.18, .18, .18))
+			ch = '▒'
 		}
 		s.Put(x+i, y, ch, c.C8())
 	}
@@ -308,6 +315,10 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	p, l := g.P, g.Lv
 	cx := x + 2
 	row := 1
+	sp := 2 // blank rows between groups; a short terminal gets one
+	if h < 30 {
+		sp = 1
+	}
 	title := "T E R M A B L O"
 	for i, r := range title {
 		f := float32(0.8 + 0.2*math.Sin(g.time*3+float64(i)*0.5))
@@ -321,7 +332,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 		area = fmt.Sprintf("Area level %d", l.Depth)
 	}
 	s.Text(cx, row, area, colDim.C8())
-	row += 2
+	row += sp
 	s.Text(cx, row, fmt.Sprintf("Wanderer  ·  Level %d", p.Lvl), colWhite.C8())
 	if p.Points > 0 {
 		s.TextBold(cx+22, row, fmt.Sprintf("+%d", p.Points), colGold.C8())
@@ -331,38 +342,32 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	s.Text(cx, row, "Life", C(.9, .4, .35).C8())
 	s.Text(cx+bw-12, row, fmt.Sprintf("%12s", fmt.Sprintf("%d/%d", int(p.HP), p.MaxHP())), colWhite.C8())
 	row++
-	bar(s, cx, row, bw, p.HP/float64(p.MaxHP()), C(.85, .12, .1), C(.2, .05, .05))
+	bar(s, cx, row, bw, p.HP/float64(p.MaxHP()), p.HealPool/float64(p.MaxHP()), C(.85, .12, .1), C(.2, .05, .05))
 	row++
 	s.Text(cx, row, "Mana", C(.45, .6, 1).C8())
 	s.Text(cx+bw-12, row, fmt.Sprintf("%12s", fmt.Sprintf("%d/%d", int(p.MP), p.MaxMP())), colWhite.C8())
 	row++
-	bar(s, cx, row, bw, p.MP/float64(p.MaxMP()), C(.2, .35, .95), C(.05, .07, .2))
+	bar(s, cx, row, bw, p.MP/float64(p.MaxMP()), p.ManaPool/float64(p.MaxMP()), C(.2, .35, .95), C(.05, .07, .2))
 	row++
 	s.Text(cx, row, "Experience", C(.8, .7, .4).C8())
 	row++
-	bar(s, cx, row, bw, float64(p.XP)/float64(g.Rules.xpNext(p.Lvl)), C(.85, .7, .3), C(.15, .12, .05))
-	row += 2
-	// consumables: hotkey, name, count — in the same two columns as the stats below
-	hot := func(x, y int, key, label string, n int, c RGB) {
-		if n == 0 {
-			c = colDim
-		}
-		s.TextBold(x, y, key, c.C8())
-		s.Text(x+2, y, fmt.Sprintf("%s %d", label, n), c.Scale(.85).C8())
-	}
+	bar(s, cx, row, bw, float64(p.XP)/float64(g.Rules.xpNext(p.Lvl)), 0, C(.85, .7, .3), C(.15, .12, .05))
+	row += sp
+	// the belt: a well per potion slot, the scroll beside the gold
 	s.Text(cx, row, fmt.Sprintf("Gold %d", p.Gold), colGold.C8())
-	hot(cx+15, row, "t", "Portal", p.Scrolls, C(.85, .8, .65))
+	g.beltHit[2] = g.beltRow(s, cx+14, row, bw-14, "t", '?', p.Scrolls, 1, C(.85, .8, .65), fmt.Sprintf("Portal %d", p.Scrolls))
 	row++
-	hot(cx, row, "q", "Heal", p.HPot, C(1, .35, .35))
-	hot(cx+15, row, "w", "Mana", p.MPot, C(.45, .6, 1))
-	row += 2
+	g.beltHit[0] = g.beltRow(s, cx, row, bw, "q", '!', p.HPot, beltMax, C(1, .25, .25), "Heal")
+	row++
+	g.beltHit[1] = g.beltRow(s, cx, row, bw, "w", '!', p.MPot, beltMax, C(.35, .5, 1), "Mana")
+	row += sp
 	lo, hi := p.DmgRange()
 	s.Text(cx, row, fmt.Sprintf("Damage %d-%d", lo, hi), colGray.C8())
 	s.Text(cx+15, row, fmt.Sprintf("Armor %d", p.ArmorVal()), colGray.C8())
 	row++
 	s.Text(cx, row, fmt.Sprintf("Crit %d%%", p.Crit()), colGray.C8())
 	s.Text(cx+15, row, fmt.Sprintf("Light %.1f", p.Torch.Radius), C(1, .7, .4).C8())
-	row += 2
+	row += sp
 	s.Text(cx, row, "Skills", colDim.C8())
 	row++
 	fl, fh := p.FireboltDmg()
@@ -380,7 +385,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	s.TextBold(cx, row, "r", colCyan.C8())
 	s.Text(cx+2, row, fmt.Sprintf("Frost Nova %d-%d", nl, nh), skc(p.NovaCost()))
 	s.Text(cx+bw-4, row, fmt.Sprintf("%2dmp", p.NovaCost()), C(.45, .6, 1).C8())
-	row += 2
+	row += sp
 	// target
 	if row < h-10 {
 		t := g.Target
@@ -394,7 +399,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 			}
 			s.TextBold(cx, row, name, t.Color().C8())
 			row++
-			bar(s, cx, row, bw-8, float64(t.HP)/float64(t.MaxHP), C(.7, .1, .1), C(.15, .04, .04))
+			bar(s, cx, row, bw-8, float64(t.HP)/float64(t.MaxHP), 0, C(.7, .1, .1), C(.15, .04, .04))
 			s.Text(cx+bw-7, row, fmt.Sprintf("Lv %d", t.Level), colDim.C8())
 			row++
 			if d := t.Describe(); d != "" {
@@ -430,6 +435,32 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 		}
 	}
 	s.Text(cx, h-2, "? help  i inv  c char  m map", colDim.C8())
+}
+
+// beltRow draws one belt line: the hotkey, slot wells holding a glyph per
+// item left, and a right-aligned label. It returns the row's clickable
+// area. A drink still working shows on the Life/Mana bar, not here.
+func (g *Game) beltRow(s *Screen, x, y, w int, key string, glyph rune, n, slots int, col RGB, label string) hitBox {
+	n = mini(n, slots)
+	keyCol, labCol := col, col.Scale(.85)
+	if n == 0 {
+		keyCol, labCol = colDim, colDim
+	}
+	s.TextBold(x, y, key, keyCol.C8())
+	empty, full := C(.09, .085, .09), col.Scale(.2).Add(C(.03, .03, .03))
+	for i := range slots {
+		wx := x + 2 + i*4
+		bg, ch, fg := empty, '·', C(.24, .23, .27)
+		if i < n {
+			bg, ch, fg = full, glyph, col
+		}
+		for k := range 3 {
+			s.Set(wx+k, y, ' ', bg.C8(), bg.C8())
+		}
+		s.SetBold(wx+1, y, ch, fg.C8(), bg.C8(), i < n)
+	}
+	s.Text(x+w-utf8.RuneCountInString(label), y, label, labCol.C8())
+	return hitBox{x, x + w - 1, y}
 }
 
 func (g *Game) drawLog(s *Screen, x, y, w, h int) {
@@ -768,6 +799,7 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		"Glowing drops are rare or unique. Look for the light.",
 		"Items with ▲ beat what you're wearing.",
 		"Hover the mouse over the map to see what things are.",
+		"Click a belt row to drink a potion or read the scroll.",
 	}
 	for i, t := range tips {
 		s.Text(x+3, y+17+i, "· "+t, C(.75, .65, .5).C8())

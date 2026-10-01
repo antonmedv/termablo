@@ -87,6 +87,7 @@ type Game struct {
 	hoverX, hoverY int
 	hoverOn        bool
 	hoverLines     []hoverLine // this frame's hover info (nil = nothing hovered)
+	beltHit        [3]hitBox   // this frame's belt rows: heal, mana, portal
 
 	auto       bool
 	autoNext   float64
@@ -949,7 +950,7 @@ func (g *Game) drinkHealth() {
 	}
 	p.HPot--
 	g.Stats.HPots++
-	amt := float64(p.MaxHP())*g.Rules.PotionHeal + 12
+	amt := p.HealAmt()
 	p.HealPool += amt
 	g.textFx(p.X, p.Y, "+"+strconv.Itoa(int(amt)), colGreen)
 	g.msg(C(1, .45, .45), "You drink a healing potion.")
@@ -968,7 +969,7 @@ func (g *Game) drinkMana() {
 	}
 	p.MPot--
 	g.Stats.MPots++
-	p.ManaPool += float64(p.MaxMP())*g.Rules.ManaPotion + 5
+	p.ManaPool += p.ManaAmt()
 	g.msg(C(.45, .6, 1), "You drink a mana potion.")
 	g.endTurn()
 }
