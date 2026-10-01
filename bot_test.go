@@ -48,6 +48,7 @@ type botResult struct {
 		Adj     int
 		Awake   int
 		Potions int
+		Scrolls int
 	}
 }
 
@@ -68,7 +69,7 @@ func (r botResult) status() string {
 		if r.death.Rank >= 0 {
 			rank = rankNames[r.death.Rank]
 		}
-		return fmt.Sprintf("killed by %s (%s) in %s · %d adjacent, %d awake, %d potions left", r.by, rank, r.where, r.death.Adj, r.death.Awake, r.death.Potions)
+		return fmt.Sprintf("killed by %s (%s) in %s · %d adjacent, %d awake, %d potions and %d scrolls left", r.by, rank, r.where, r.death.Adj, r.death.Awake, r.death.Potions, r.death.Scrolls)
 	case r.stuck:
 		return "stuck in " + r.where
 	}

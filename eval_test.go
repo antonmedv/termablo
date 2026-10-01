@@ -182,7 +182,7 @@ func evalRun(run botRun, r *Rules) balance.Run {
 	out := balance.Run{Policy: b.policy, Seed: b.seed, Turns: b.turns, Dead: b.dead, By: b.by, Where: b.where, WhereDepth: botDepth(b.where),
 		Stuck: b.stuck, King: b.king, Oracle: b.oracle, Lvl: b.lvl, Kills: b.kills, Deepest: b.deepest, DeepestDepth: botDepth(b.deepest),
 		Gold: b.gold, In: append([]int(nil), b.in[:]...), Out: append([]int(nil), b.out[:]...), Potions: b.potions, MPots: b.mpots, Bolts: b.bolts, Novas: b.novas, Trips: b.trips,
-		Equips: b.equips, Levels: b.levels, Fail: b.fail, Adj: b.death.Adj, Awake: b.death.Awake, PotionsLeft: b.death.Potions}
+		Equips: b.equips, Levels: b.levels, Fail: b.fail, Adj: b.death.Adj, Awake: b.death.Awake, PotionsLeft: b.death.Potions, ScrollsLeft: b.death.Scrolls}
 	if b.dead {
 		out.ByRank = "none"
 		if b.death.Rank >= 0 {

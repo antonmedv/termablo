@@ -51,6 +51,7 @@ type Stats struct {
 		Adj     int // hostiles adjacent
 		Awake   int // hostiles awake in view
 		Potions int // healing potions left in the belt
+		Scrolls int // portal scrolls left
 	}
 }
 

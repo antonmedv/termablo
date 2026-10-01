@@ -42,6 +42,7 @@ type Run struct {
 	ByRank       string // the killer's rank: normal, champion, unique, boss, none
 	Adj, Awake   int    // hostiles adjacent and awake in view at death
 	PotionsLeft  int    // healing potions in the belt at death
+	ScrollsLeft  int    // portal scrolls at death
 	Snaps        []Snap
 }
 
@@ -281,7 +282,7 @@ func Metrics(runs []Run, refs []Ref, gamble float64) map[string]float64 {
 		if len(prs) == 0 {
 			continue
 		}
-		var deep, lvls, kills, turns, gold, goldIn, goldHeld, equips, potions, trips, deaths, adj, left, bolts []float64
+		var deep, lvls, kills, turns, gold, goldIn, goldHeld, equips, potions, trips, deaths, adj, left, scrolls, bolts []float64
 		king, oracle, pstuck, alive, arrivals := 0, 0, 0, 0, 0
 		byArea, byRank := map[string]int{}, map[string]int{}
 		in := make([]float64, len(GoldSrcNames))
@@ -318,7 +319,7 @@ func Metrics(runs []Run, refs []Ref, gamble float64) map[string]float64 {
 				byArea[area(r.Where)]++
 				byRank[r.ByRank]++
 				allDeaths = append(allDeaths, float64(r.WhereDepth))
-				adj, left = append(adj, float64(r.Adj)), append(left, float64(r.PotionsLeft))
+				adj, left, scrolls = append(adj, float64(r.Adj)), append(left, float64(r.PotionsLeft)), append(scrolls, float64(r.ScrollsLeft))
 			}
 			for i, v := range r.In {
 				in[i] += float64(v) / n
@@ -344,7 +345,7 @@ func Metrics(runs []Run, refs []Ref, gamble float64) map[string]float64 {
 		for _, k := range Ranks {
 			m[p+".deathsBy."+k] = float64(byRank[k])
 		}
-		m[p+".deathAdj"], m[p+".deathPotions"] = Pct(adj, .5), Pct(left, .5)
+		m[p+".deathAdj"], m[p+".deathPotions"], m[p+".deathScrolls"] = Pct(adj, .5), Pct(left, .5), Pct(scrolls, .5)
 		for i, s := range GoldSrcNames {
 			m[p+".in."+s] = in[i]
 		}
