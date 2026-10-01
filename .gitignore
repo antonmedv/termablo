@@ -18,3 +18,7 @@ err.log
 /shots/
 bench.txt
 .ssh/
+
+# balance pass: raw results stay local, the ledger and the pick are shared
+/balance/runs/
+/balance/best-run.json
