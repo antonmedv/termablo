@@ -1,4 +1,4 @@
-.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones report eval knobs
+.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones report eval hearth knobs
 
 GOBIN := $(shell go env GOPATH)/bin
 
@@ -56,6 +56,12 @@ report:
 eval:
 	@test -n "$(OUT)" || { echo "make eval OUT=balance/runs/NAME.json [RULES=x.json SEEDS=48 FIRST=1]"; exit 2; }
 	BOTSEEDS=$(SEEDS) BOTFIRST=$(FIRST) BOTRULES=$(RULES) BOTOUT=$(OUT) BOTNAME=$(notdir $(basename $(OUT))) go test -count=1 -v -run 'BotBalance$$' . | grep -v "^=== RUN"
+
+# the final fight on its own, which no eval run reaches: a par hero from
+# the Hearth stairs, on the floor as generated and on a duel floor.
+# make hearth [SEEDS=48 FIRST=1 RULES=x.json]
+hearth:
+	BOTHEARTH=$(SEEDS) BOTHEARTHFIRST=$(FIRST) BOTRULES=$(RULES) go test -count=1 -v -run 'HearthTrial$$' . | grep -E "won|stuck:"
 
 # the knob registry: every tunable with its range, step and meaning
 knobs:
