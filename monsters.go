@@ -165,6 +165,10 @@ func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int, r *Rules) *Monster 
 		rank = RankBoss
 		hpMul = 1 + r.BossHpLin*l1
 	}
+	if t.AI == AIWanderer {
+		hpMul *= r.WandererHp
+		dMul *= r.WandererDmg
+	}
 	m := &Monster{T: t, Name: t.Name, Level: lvl, Rank: rank, Speed: t.Speed}
 	hp := float64(t.HP) * hpMul
 	xp := float64(t.XP) * (1 + 0.45*float64(lvl-1))

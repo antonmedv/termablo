@@ -32,6 +32,9 @@ type Rules struct {
 	HpLin, HpQuad   float64 // NewMonster hpMul = 1 + HpLin·l + HpQuad·l²
 	DmgLin, DmgQuad float64 // dMul likewise
 	BossHpLin       float64 // boss hpMul = 1 + BossHpLin·l
+	WandererHp      float64 // the Last Wanderer's life factor
+	WandererDmg     float64 // the Last Wanderer's damage factor
+	WandererRift    float64 // life fraction at which he leaves for Emberhold
 	ChampHp         float64 // champion life factor
 	ChampDmg        float64 // champion damage factor
 	ChampBase       float64 // populate: champion pack chance, percent
@@ -96,6 +99,9 @@ func DefaultRules() *Rules {
 		DmgLin:            0.24,
 		DmgQuad:           0.02,
 		BossHpLin:         0.22,
+		WandererHp:        3,
+		WandererDmg:       1,
+		WandererRift:      0.5,
 		ChampHp:           2.2,
 		ChampDmg:          1.3,
 		ChampBase:         8,
@@ -199,6 +205,15 @@ var knobs = []Knob{
 	{"BossHpLin", "combat",
 		"boss life multiplier is 1 + BossHpLin*(lvl-1), no quadratic term",
 		0.15, 0.5, 0.02, false, func(r *Rules) *float64 { return &r.BossHpLin }},
+	{"WandererHp", "combat",
+		"multiplies the Last Wanderer's life; measured by the Hearth trial (BOTHEARTH), not the eval",
+		0.8, 4, 0.1, false, func(r *Rules) *float64 { return &r.WandererHp }},
+	{"WandererDmg", "combat",
+		"multiplies the Last Wanderer's damage; measured by the Hearth trial (BOTHEARTH), not the eval",
+		0.8, 2, 0.1, false, func(r *Rules) *float64 { return &r.WandererDmg }},
+	{"WandererRift", "combat",
+		"life fraction at which the Last Wanderer leaves the Hearth for Emberhold through his own portal",
+		0.2, 0.8, 0.05, false, func(r *Rules) *float64 { return &r.WandererRift }},
 	{"ChampHp", "combat",
 		"champion life factor over a normal of its level",
 		1.5, 3, 0.1, false, func(r *Rules) *float64 { return &r.ChampHp }},

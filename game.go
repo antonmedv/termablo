@@ -1322,7 +1322,7 @@ func (g *Game) monsterTurn(m *Monster) {
 			return
 		}
 	case AIWanderer:
-		if m.HP*2 <= m.MaxHP && l.SealedDown != "" && g.Rift == nil {
+		if float64(m.HP) <= g.Rules.WandererRift*float64(m.MaxHP) && l.SealedDown != "" && g.Rift == nil {
 			g.openRift(m)
 			return
 		}
