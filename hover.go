@@ -138,7 +138,7 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 			if m.Flee > 0 {
 				st = append(st, "fleeing")
 			}
-			if m.T.AI == AIRanged || m.T.AI == AIOracle {
+			if m.T.AI == AIRanged || m.T.AI == AIOracle || m.T.AI == AIWanderer {
 				st = append(st, "ranged")
 			}
 			if m.Light != nil {
@@ -168,7 +168,13 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 			add("Step on it and press g to pick up", colDim)
 		}
 	}
-	if g.portalAt(mx, my) {
+	if g.Rift != nil && g.Rift.Level == l.ID && mx == g.Rift.X && my == g.Rift.Y {
+		if len(out) > 0 {
+			add("", colDim)
+		}
+		add("Red Portal", colRed)
+		add("He went through to Emberhold", colGray)
+	} else if g.portalAt(mx, my) {
 		if len(out) > 0 {
 			add("", colDim)
 		}

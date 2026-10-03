@@ -57,11 +57,22 @@ type Game struct {
 	Mode   Mode
 	time   float64
 
-	fov       []uint32
-	fovGen    uint32
-	vis       []bool
-	light     []RGB
-	lstamp    []uint32
+	fov    []uint32
+	fovGen uint32
+	vis    []bool
+	light  []RGB
+	lstamp []uint32
+	dark   []Pos // where light drinkers stand, refreshed with the lights
+	// The Last Wanderer between levels: once he has noticed the hero he
+	// follows them out of any level and steps out followDelay turns later.
+	stalker *Monster
+	stalkIn int
+	stalkAt Pos      // where the hero arrived, where he will step out
+	homeYet bool     // he has reached Emberhold
+	ahead   *Monster // gone ahead to Emberhold through his own portal
+	// Rift is the red portal he opens at half life; it leads to town.
+	Rift      *Portal
+	riftLight *Light
 	lgen      uint32
 	dist      []int32
 	lightsBuf []*Light
@@ -108,6 +119,7 @@ func NewGameWith(seed int64, r *Rules) *Game {
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
+	g.riftLight = NewLight(0, 0, &LightSpec{C(1, .15, .1), 4.5, 1.1, .05, .3}, 3)
 	sw := &Item{Kind: IKEquip, Base: baseByName("Short Sword"), Name: "Short Sword", ILvl: 1}
 	sw.finishStats(g.rng)
 	ar := &Item{Kind: IKEquip, Base: baseByName("Leather Armor"), Name: "Leather Armor", ILvl: 1}
@@ -191,6 +203,10 @@ func (g *Game) getLevel(id string) *Level {
 			s.Up = fmt.Sprintf("abyss%d", n-1)
 		}
 		s.Down = fmt.Sprintf("abyss%d", n+1)
+		if n == hearthFloor {
+			s.Name, s.Boss = "The Hearth Below", "wanderer"
+			s.SealedDown, s.Down = s.Down, ""
+		}
 		l = genDungeon(s, seed)
 	default:
 		l = genTown(seed, g.Rules)
@@ -200,6 +216,9 @@ func (g *Game) getLevel(id string) *Level {
 }
 
 func (g *Game) changeLevel(id, from string, arrive *Pos) {
+	if old := g.Lv; old != nil {
+		g.followOut(old)
+	}
 	l := g.getLevel(id)
 	g.Lv = l
 	n := l.W * l.H
@@ -227,6 +246,15 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 		x, y = l.FreeNear(x, y, -1, -1)
 	}
 	p.X, p.Y = x, y
+	g.stalkAt = Pos{x, y}
+	if m := g.ahead; m != nil && l.Kind == KTown {
+		g.ahead = nil
+		m.Gone, m.Awake, m.LostTurns = false, true, 0
+		m.X, m.Y = l.FreeNear(l.PortalAt.X-2, l.PortalAt.Y, x, y)
+		l.Monsters = append(l.Monsters, m)
+		g.homeYet = true
+		g.msg(colRed, "The Last Wanderer is already here.")
+	}
 	p.Torch.ver = -1
 	g.Effects = nil
 	g.Target = nil
@@ -253,38 +281,73 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 
 // ------------------------------------------------------------ light & sight
 
+// drinkRadius is how far the Last Wanderer's presence reaches: every
+// light within it goes out but his own, the hero's torch included.
+const drinkRadius = 6
+
+// drinks says whether a cell lies within drinkRadius of a light drinker,
+// measured the way light falls off: a cell is twice as tall as it is wide.
+func drinks(at []Pos, x, y int) bool {
+	for _, d := range at {
+		fx, fy := float64(x-d.X)/Aspect, float64(y-d.Y)
+		if fx*fx+fy*fy <= drinkRadius*drinkRadius {
+			return true
+		}
+	}
+	return false
+}
+
 func (g *Game) gatherLights() []*Light {
 	l, p := g.Lv, g.P
 	ls := g.lightsBuf[:0]
+	g.dark = g.dark[:0]
+	for _, m := range l.Monsters {
+		if m.T.AI == AIWanderer && !m.Dead {
+			g.dark = append(g.dark, Pos{m.X, m.Y})
+		}
+	}
+	add := func(lt *Light) {
+		if !drinks(g.dark, lt.X, lt.Y) {
+			ls = append(ls, lt)
+		}
+	}
 	near := func(x, y int, r float32) bool {
 		return abs(x-p.X) < 80+int(r*2) && abs(y-p.Y) < 45+int(r)
 	}
 	for _, lt := range l.Lights {
 		if near(lt.X, lt.Y, lt.Radius) {
-			ls = append(ls, lt)
+			add(lt)
 		}
 	}
 	p.Torch.X, p.Torch.Y = p.X, p.Y
-	ls = append(ls, p.Torch)
+	add(p.Torch)
 	for _, m := range l.Monsters {
 		if m.Light != nil && !m.Dead {
 			m.Light.X, m.Light.Y = m.X, m.Y
-			ls = append(ls, m.Light)
+			if m.T.AI == AIWanderer {
+				ls = append(ls, m.Light)
+			} else {
+				add(m.Light)
+			}
 		}
 	}
 	for _, it := range l.Items {
 		if it.Light != nil {
-			ls = append(ls, it.Light)
+			add(it.Light)
 		}
+	}
+	if g.Rift != nil && g.Rift.Level == l.ID {
+		g.riftLight.X, g.riftLight.Y = g.Rift.X, g.Rift.Y
+		add(g.riftLight)
 	}
 	if g.Portal != nil {
 		if g.Portal.Level == l.ID {
 			g.portalLight.X, g.portalLight.Y = g.Portal.X, g.Portal.Y
-			ls = append(ls, g.portalLight)
+			add(g.portalLight)
 		}
 		if l.Kind == KTown {
 			g.townPortalL.X, g.townPortalL.Y = l.PortalAt.X, l.PortalAt.Y
-			ls = append(ls, g.townPortalL)
+			add(g.townPortalL)
 		}
 	}
 	for _, e := range g.Effects {
@@ -436,6 +499,11 @@ func (g *Game) endTurn() {
 	p := g.P
 	g.Turn++
 	g.Stats.Turns[g.Lv.ID]++
+	if g.stalker != nil {
+		if g.stalkIn--; g.stalkIn <= 0 {
+			g.stalkerArrives()
+		}
+	}
 	// No natural regeneration: life and mana come back from potions,
 	// shrines, Mirela, and regeneration affixes on gear.
 	hp := float64(p.S(StLifeRegen))*0.08 + drain(&p.HealPool)
@@ -460,11 +528,13 @@ func (g *Game) endTurn() {
 	}
 }
 
-func (g *Game) cleanup() {
-	l := g.Lv
+func (g *Game) cleanup() { g.cleanupLevel(g.Lv) }
+
+// cleanupLevel drops the dead and those who left from a level.
+func (g *Game) cleanupLevel(l *Level) {
 	alive := l.Monsters[:0]
 	for _, m := range l.Monsters {
-		if !m.Dead {
+		if !m.Dead && !m.Gone {
 			alive = append(alive, m)
 		}
 	}
@@ -553,6 +623,12 @@ func (g *Game) move(dx, dy int) {
 		g.changeLevel(lk.To, from, nil)
 		return
 	}
+	if g.Rift != nil && g.Rift.Level == l.ID && nx == g.Rift.X && ny == g.Rift.Y {
+		g.Rift = nil
+		g.msg(colRed, "You step through the red portal after him.")
+		g.changeLevel("town", "", &Pos{l2(g).PortalAt.X, l2(g).PortalAt.Y + 1})
+		return
+	}
 	if g.Portal != nil {
 		if g.Portal.Level == l.ID && nx == g.Portal.X && ny == g.Portal.Y {
 			g.msg(colBlue, "You step through the portal.")
@@ -581,6 +657,9 @@ func (g *Game) move(dx, dy int) {
 // level, or its town end.
 func (g *Game) portalAt(x, y int) bool {
 	l := g.Lv
+	if g.Rift != nil && g.Rift.Level == l.ID && x == g.Rift.X && y == g.Rift.Y {
+		return true
+	}
 	if g.Portal == nil {
 		return false
 	}
@@ -774,6 +853,10 @@ func (g *Game) killMonster(m *Monster) {
 	case "oracle":
 		g.Quests[1] = maxi(g.Quests[1], 1)
 		g.msg(colOrange, "The Oracle's song ends. Deeper still, something burns... Return to Voss.")
+	case "wanderer":
+		g.msg(m.T.Color, "The Last Wanderer: \"Keep walking.\"")
+		g.msg(colLore, "The red light goes out, and the dark lets go of the fire.")
+		g.unseal(l)
 	}
 	if m.T.ID == "fallen" || m.T.ID == "shaman" {
 		// the Fallen are cowards: seeing kin die sends them running
@@ -1206,6 +1289,18 @@ func (g *Game) monsterTurn(m *Monster) {
 			g.novaFx(m.X, m.Y, C(.5, 1, .45), 2.5)
 			return
 		}
+	case AIWanderer:
+		if m.HP*2 <= m.MaxHP && l.SealedDown != "" && g.Rift == nil {
+			g.openRift(m)
+			return
+		}
+		// he closes in, throwing fire now and then; he never backs away
+		if sees && d > 1 && d <= m.T.Range && g.rng.Intn(100) < 35 {
+			if _, _, hitsP := g.traceBolt(m.X, m.Y, p.X, p.Y, m.T.Range+2, false); hitsP {
+				g.monsterShoot(m)
+				return
+			}
+		}
 	case AIOracle:
 		if sees && m.Timer%9 == 0 {
 			for range 30 {
@@ -1261,6 +1356,8 @@ func (g *Game) bossTaunt(m *Monster) {
 		g.msg(C(.8, 1, .6), "The Bone King: \"Another torch to snuff. Kneel, and join my court.\"")
 	case "oracle":
 		g.msg(colCyan, "The Drowned Oracle: \"I have seen your ending, little flame. It is wet and cold.\"")
+	case "wanderer":
+		g.msg(m.T.Color, "The Last Wanderer: \"Another stranger. They always send a stranger.\"")
 	}
 }
 
@@ -1556,6 +1653,9 @@ func (g *Game) restock() {
 	}
 	g.shops = [2]*Shop{smith, alch}
 }
+
+// hearthFloor is the Abyss floor where the Last Wanderer waits.
+const hearthFloor = 3
 
 // questDepth is where each quest's boss sits: crypt4 and grotto3.
 var questDepth = [2]int{5, 9}
@@ -1902,4 +2002,81 @@ func (g *Game) equippedFor(it *Item) *Item {
 		return p.Eq[EqRing1]
 	}
 	return nil
+}
+
+// followDelay is how many turns the Last Wanderer takes to step out after
+// the hero leaves a level he has noticed them on.
+const followDelay = 2
+
+// followOut takes the Last Wanderer off a level the hero is leaving, if
+// he has noticed them there. He arrives followDelay turns later wherever
+// they are by then.
+func (g *Game) followOut(l *Level) {
+	for _, m := range l.Monsters {
+		if m.T.AI == AIWanderer && !m.Dead && !m.Gone && m.Awake {
+			m.Gone = true
+			g.stalker, g.stalkIn = m, followDelay
+		}
+	}
+	g.cleanupLevel(l)
+}
+
+// stalkerArrives steps the Last Wanderer out where the hero arrived. In
+// town he comes through the town portal, which collapses behind him.
+func (g *Game) stalkerArrives() {
+	l, m := g.Lv, g.stalker
+	g.stalker = nil
+	at := g.stalkAt
+	viaPortal := l.Kind == KTown && g.Portal != nil
+	if viaPortal {
+		at = l.PortalAt
+	}
+	m.X, m.Y = l.FreeNear(at.X, at.Y, g.P.X, g.P.Y)
+	m.Gone, m.Awake, m.LostTurns = false, true, 0
+	l.Monsters = append(l.Monsters, m)
+	g.novaFx(m.X, m.Y, C(1, .15, .1), 3)
+	if viaPortal {
+		g.Portal = nil
+		g.msg(colRed, "The Last Wanderer steps out of the portal. It collapses behind him.")
+	} else {
+		g.msg(colRed, "The Last Wanderer follows you.")
+	}
+	if l.Kind == KTown && !g.homeYet {
+		g.homeYet = true
+		g.msg(m.T.Color, "The Last Wanderer: \"You showed me the way home.\"")
+	}
+}
+
+// openRift is the Last Wanderer at half life on his own floor: he reads
+// a scroll of his own and goes to Emberhold ahead of the hero. His red
+// portal stays open behind him for the hero to follow.
+func (g *Game) openRift(m *Monster) {
+	l := g.Lv
+	x, y := l.FreeNear(m.X, m.Y, g.P.X, g.P.Y)
+	g.Rift = &Portal{l.ID, x, y}
+	g.riftLight.ver = -1
+	g.novaFx(x, y, C(1, .15, .1), 3)
+	g.msg(colRed, "The Last Wanderer reads a scroll. A red portal tears open.")
+	g.msg(m.T.Color, "The Last Wanderer: \"I know the way home too.\"")
+	m.Gone = true // off this level at cleanup
+	g.ahead = m
+}
+
+// unseal opens the Hearth Below's way down where its chamber stands,
+// wherever the Last Wanderer died.
+func (g *Game) unseal(here *Level) {
+	for _, l := range g.Levels {
+		if l.SealedDown == "" {
+			continue
+		}
+		x, y := l.SealedAt.X, l.SealedAt.Y
+		l.Set(x, y, TStairsDown)
+		l.Links = append(l.Links, Link{x, y, x, y, l.SealedDown, -1, -1})
+		l.SealedDown = ""
+		if l == here {
+			g.msg(colGray, "Where he waited, a way down opens.")
+		} else {
+			g.msg(colGray, "Far below, in the Hearth, a way down opens.")
+		}
+	}
 }

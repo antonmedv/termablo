@@ -464,6 +464,7 @@ type DungeonSpec struct {
 	Depth      int
 	Style      int // 0 crypt, 1 grotto, 2 abyss
 	Up, Down   string
+	SealedDown string // a down link that opens when the boss dies
 	Boss       string
 	SpawnTable string
 	Rules      *Rules
@@ -789,6 +790,13 @@ func genCave(s DungeonSpec, seed int64) *Level {
 			}
 		}
 	}
+	safe := []Pos{{ux, uy}}
+	if s.Boss == "wanderer" {
+		c := l.hearth(fx, fy)
+		fx, fy = c.X, c.Y
+		// no packs in the chamber: he fights alone
+		safe = append(safe, c, Pos{c.X - 10, c.Y}, Pos{c.X + 10, c.Y})
+	}
 	l.Set(ux, uy, TStairsUp)
 	l.Links = append(l.Links, Link{ux, uy, ux, uy, s.Up, -1, -1})
 	l.Start = Pos{ux, uy}
@@ -797,20 +805,25 @@ func genCave(s DungeonSpec, seed int64) *Level {
 		l.Set(fx, fy, TStairsDown)
 		l.Links = append(l.Links, Link{fx, fy, fx, fy, s.Down, -1, -1})
 	}
+	l.SealedDown, l.SealedAt = s.SealedDown, Pos{fx, fy}
 	if s.Boss != "" {
 		b := placeMonster(l, s.Boss, fx, fy, s.Depth, RankBoss)
 		b.Awake = false
-		for range 3 {
-			placeMonster(l, "wisp", fx+l.rng.Intn(5)-2, fy+l.rng.Intn(3)-1, s.Depth, RankNormal)
+		if s.Boss == "oracle" {
+			for range 3 {
+				placeMonster(l, "wisp", fx+l.rng.Intn(5)-2, fy+l.rng.Intn(3)-1, s.Depth, RankNormal)
+			}
 		}
 	}
-	switch s.Style {
-	case 1:
+	switch {
+	case s.Boss == "wanderer":
+		l.Lore = s.Name + ". The braziers lean away from the middle of the room."
+	case s.Style == 1:
 		l.Lore = s.Name + ". Cold water presses down; the crystals hum."
 	default:
 		l.Lore = s.Name + ". The rock itself is bleeding."
 	}
-	populate(l, s.SpawnTable, 16+s.Depth, []Pos{{ux, uy}})
+	populate(l, s.SpawnTable, 16+s.Depth, safe)
 	l.finalize()
 	return l
 }
@@ -841,4 +854,54 @@ func bfsDist(l *Level, sx, sy int) []int {
 		}
 	}
 	return d
+}
+
+// hearth carves the Last Wanderer's chamber around (cx, cy): an open oval
+// ringed by braziers, with lava pooled against the wall where no passage
+// comes in. The ring sits just beyond his reach from the middle, so the
+// braziers burn until he walks toward them. The chamber moves
+// in from the map's edge far enough for the whole ring to fit, never so
+// far that it leaves (cx, cy) outside, so it stays joined to the cave.
+// It returns the chamber's center.
+func (l *Level) hearth(cx, cy int) Pos {
+	const rx, ry = 16.0, 8.0
+	cx = mini(maxi(cx, 15), l.W-16)
+	cy = mini(maxi(cy, 8), l.H-9)
+	in := func(x, y float64, rx, ry float64) bool {
+		dx, dy := (x-float64(cx))/rx, (y-float64(cy))/ry
+		return dx*dx+dy*dy < 1
+	}
+	for y := 1; y < l.H-1; y++ {
+		for x := 1; x < l.W-1; x++ {
+			if in(float64(x), float64(y), rx, ry) {
+				l.Set(x, y, TCaveFloor)
+			}
+		}
+	}
+	for k := range 6 {
+		a := math.Pi/6 + float64(k)*math.Pi/3
+		bx := cx + int(math.Round((rx-2.5)*math.Cos(a)))
+		by := cy + int(math.Round((ry-1.5)*math.Sin(a)))
+		if l.In(bx, by) && l.At(bx, by) == TCaveFloor {
+			l.Set(bx, by, TBrazier)
+		}
+		// lava on the rim between braziers, only against solid rock
+		a += math.Pi / 6
+		lx := cx + int(math.Round((rx-1)*math.Cos(a)))
+		ly := cy + int(math.Round((ry-1)*math.Sin(a)))
+		if !l.In(lx, ly) || l.At(lx, ly) != TCaveFloor {
+			continue
+		}
+		closed := true
+		for _, d := range dirs8 {
+			x, y := lx+d.X, ly+d.Y
+			if !in(float64(x), float64(y), rx, ry) && l.At(x, y) != TCaveWall {
+				closed = false
+			}
+		}
+		if closed {
+			l.Set(lx, ly, TLava)
+		}
+	}
+	return Pos{cx, cy}
 }

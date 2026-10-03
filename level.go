@@ -40,9 +40,13 @@ type Level struct {
 	PortalAt Pos // town only: where the town portal appears
 	LightVer int
 	Lore     string
-	visited  bool
-	rng      *rand.Rand
-	rules    *Rules
+	// SealedDown is a down link that opens where the boss stood once it
+	// dies: the Hearth Below has no way on until the Last Wanderer falls.
+	SealedDown string
+	SealedAt   Pos
+	visited    bool
+	rng        *rand.Rand
+	rules      *Rules
 }
 
 const (

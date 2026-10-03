@@ -13,6 +13,7 @@ const (
 	AINPC
 	AIBoneKing
 	AIOracle
+	AIWanderer
 )
 
 type MTemplate struct {
@@ -61,6 +62,7 @@ var mtList = []*MTemplate{
 
 	{ID: "boneking", Name: "The Bone King", Glyph: 'K', Color: C(1, 1, .75), HP: 150, MinD: 7, MaxD: 14, Armor: 25, Speed: 100, XP: 500, AI: AIBoneKing, Light: &LightSpec{C(.5, 1, .45), 4.5, 1, .08, .2}, Undead: true, Verb: "smites"},
 	{ID: "oracle", Name: "The Drowned Oracle", Glyph: 'O', Color: C(.45, .9, 1), HP: 170, MinD: 6, MaxD: 12, Armor: 20, Speed: 100, XP: 1100, AI: AIOracle, Range: 8, ProjColor: C(.45, .8, 1), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(.3, .8, 1), 5.5, 1, .05, .3}, Verb: "drowns"},
+	{ID: "wanderer", Name: "The Last Wanderer", Glyph: '@', Color: C(1, .32, .26), HP: 210, MinD: 7, MaxD: 15, Armor: 22, Speed: 100, XP: 1800, AI: AIWanderer, Range: 7, ProjColor: C(1, .25, .12), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(1, .1, .06), drinkRadius + 1, 1.25, .12, .15}, Verb: "cuts"},
 
 	{ID: "smith", Name: "Hadrik the Smith", Glyph: '@', Color: C(1, .6, .3), AI: AINPC, HP: 999, Speed: 100},
 	{ID: "alch", Name: "Old Mirela", Glyph: '@', Color: C(.55, .85, .95), AI: AINPC, HP: 999, Speed: 100},
@@ -123,6 +125,7 @@ type Monster struct {
 	HomeY     int
 	Timer     int
 	Minion    bool
+	Gone      bool // left the level this turn; cleanup drops it
 	Talk      int
 	Flee      int
 }
@@ -158,7 +161,7 @@ func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int, r *Rules) *Monster 
 	l1 := float64(lvl - 1)
 	hpMul := 1 + r.HpLin*l1 + r.HpQuad*l1*l1
 	dMul := 1 + r.DmgLin*l1 + r.DmgQuad*l1*l1
-	if t.AI == AIBoneKing || t.AI == AIOracle {
+	if t.AI == AIBoneKing || t.AI == AIOracle || t.AI == AIWanderer {
 		rank = RankBoss
 		hpMul = 1 + r.BossHpLin*l1
 	}
