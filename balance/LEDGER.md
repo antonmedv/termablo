@@ -79,6 +79,7 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 | 73 | 2026-10-03T21:42 | keep | b9a1a41+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the Last Wanderer follows: through the town portal (which collapses), any stairs, and his own red portal at half life | slice 2 of the final boss; no bot run reaches abyss3, so the metrics are unchanged by construction |
 | 74 | 2026-10-03T22:05 | keep | 8c0f950+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | Emberhold goes dark: the Last Wanderer hunts the townsfolk, the forge dies with Hadrik | slice 3 of the final boss; no bot run reaches abyss3, so the metrics are unchanged by construction |
 | 75 | 2026-10-03T23:27 | keep | e621af1+ | 747d270b9a | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the ending: choice over the Last Wanderer's body, survivors page, his shroud, third quest, foreshadowing lines; the bot keeps walking | slice 4 of the final boss; no bot run reaches abyss3, so the metrics are unchanged by construction |
+| 76 | 2026-10-03T23:39 | keep | 7644350+ | 5cc1ee087a | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | WandererHp 1 -> 3 (new knobs WandererHp, WandererDmg, WandererRift); bot follows his red portal; Hearth trial (BOTHEARTH) | no eval run reaches abyss3, so the Hearth trial measures him: par hero lvl 21, full belt, duel on a cleared floor. At 1x both builds won 100% on under 1 potion. At 3x, seeds 1-96 and fresh 1001-1096 agree: fighter 96/96 on 2.6 potions, caster 69/96 on the whole belt. Full floor: about 1 in 8 wins, deaths mostly to imp packs, the existing abyss wall. Eval unchanged by construction. |
 
 ## Rules per entry
 
@@ -157,3 +158,4 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 - #73 `095-wanderer-slice2.json`: defaults
 - #74 `096-wanderer-slice3.json`: defaults
 - #75 `097-wanderer-slice4.json`: defaults
+- #76 `098-wanderer-hp3.json`: defaults
