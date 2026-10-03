@@ -38,6 +38,7 @@ type Level struct {
 	Ambient  RGB
 	Start    Pos // default arrival
 	PortalAt Pos // town only: where the town portal appears
+	Forge    Pos // town only: Hadrik's forge, lit from the Ember
 	LightVer int
 	Lore     string
 	// SealedDown is a down link that opens where the boss stood once it

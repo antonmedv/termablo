@@ -263,3 +263,164 @@ func TestWandererDiesAwayFromHearth(t *testing.T) {
 		t.Fatalf("its stairs lead to %v", k)
 	}
 }
+
+// townGame puts the hero in Emberhold with the Last Wanderer loose in it.
+func townGame(t *testing.T) (*Game, *Monster) {
+	t.Helper()
+	g, boss := hearthGame(t)
+	g.changeLevel("town", "", nil)
+	g.wait()
+	g.wait()
+	if !on(g.Lv, boss) {
+		t.Fatal("he did not follow to town")
+	}
+	return g, boss
+}
+
+func townsperson(g *Game, id string) *Monster {
+	for _, m := range g.Lv.Monsters {
+		if m.T.ID == id && !m.Dead {
+			return m
+		}
+	}
+	return nil
+}
+
+// With him in town Emberhold goes dark: no ambient light, the panel says
+// so, and the lights he passes stay out until he dies.
+func TestTownGoesDark(t *testing.T) {
+	g, boss := townGame(t)
+	l := g.Lv
+	if !g.townHunted() {
+		t.Fatal("town is not hunted")
+	}
+	g.composeLight(0, false)
+	far := l.Idx(1, 1)
+	if g.light[far] != (RGB{}) {
+		t.Errorf("the town's corner is still lit: %v", g.light[far])
+	}
+	var near *Light
+	for _, lt := range l.Lights {
+		if drinks([]Pos{{boss.X, boss.Y}}, lt.X, lt.Y) {
+			near = lt
+		}
+	}
+	if near == nil {
+		t.Skip("no town light near the portal")
+	}
+	g.gatherLights()
+	boss.X, boss.Y = l.FreeNear(boss.X+30, boss.Y, -1, -1)
+	g.gatherLights()
+	if !near.Off {
+		t.Error("a lantern he passed came back while he lives")
+	}
+	s := NewScreen(110, 40)
+	g.Draw(s)
+	if !screenHas(s, "Not safe") {
+		t.Error("the panel does not warn")
+	}
+	g.killMonster(boss)
+	g.cleanup()
+	if near.Off {
+		t.Error("the lantern stays out after he dies")
+	}
+	if g.townHunted() {
+		t.Error("town is still hunted after he dies")
+	}
+}
+
+// He goes for the nearest townsperson and kills them in three cuts.
+func TestWandererHuntsTownsfolk(t *testing.T) {
+	g, boss := townGame(t)
+	l := g.Lv
+	mirela := townsperson(g, "alch")
+	boss.X, boss.Y = l.FreeNear(mirela.X+1, mirela.Y, -1, -1)
+	g.P.X, g.P.Y = l.FreeNear(boss.X+20, boss.Y, -1, -1)
+	if g.prey(boss) != mirela {
+		t.Fatalf("he goes for %v, not Mirela", g.prey(boss))
+	}
+	for range 3 {
+		g.huntStep(boss, mirela)
+	}
+	if !mirela.Dead {
+		t.Fatalf("Mirela survives three cuts with %d life", mirela.HP)
+	}
+	if len(g.Fallen) != 1 || g.Fallen[0] != "alch" {
+		t.Errorf("fallen: %v", g.Fallen)
+	}
+}
+
+// Standing nearer than any townsperson makes the hero his target.
+func TestWandererPreysOnNearestHero(t *testing.T) {
+	g, boss := townGame(t)
+	g.P.X, g.P.Y = g.Lv.FreeNear(boss.X+1, boss.Y, -1, -1)
+	if p := g.prey(boss); p != nil && cheb(p.X, p.Y, boss.X, boss.Y) > 1 {
+		t.Errorf("he goes for %s past the hero", p.Name)
+	}
+}
+
+// Townsfolk near him run, and will not talk or trade while he is in town.
+func TestTownsfolkFlee(t *testing.T) {
+	g, boss := townGame(t)
+	l := g.Lv
+	voss := townsperson(g, "captain")
+	boss.X, boss.Y = l.FreeNear(voss.X+2, voss.Y, -1, -1)
+	d0 := cheb(voss.X, voss.Y, boss.X, boss.Y)
+	for range 6 {
+		g.monsterTurn(voss)
+	}
+	if cheb(voss.X, voss.Y, boss.X, boss.Y) <= d0 {
+		t.Error("Voss does not run")
+	}
+	g.talkTo(voss)
+	if g.Mode == ModeTalk {
+		t.Error("Voss stops to talk")
+	}
+}
+
+// With Hadrik the forge dies for good: it stays cold after he does.
+func TestForgeGoesCold(t *testing.T) {
+	g, boss := townGame(t)
+	l := g.Lv
+	g.townspersonDies(townsperson(g, "smith"))
+	f := l.Forge
+	if l.At(f.X, f.Y) != TColdBrazier || !g.ForgeOut {
+		t.Fatal("the forge still burns")
+	}
+	g.killMonster(boss)
+	for _, lt := range l.Lights {
+		if lt.X == f.X && lt.Y == f.Y {
+			t.Fatal("the forge lit again")
+		}
+	}
+}
+
+// Gone ahead through his own portal, he hunts while the hero dawdles.
+func TestTownTollWhileAway(t *testing.T) {
+	g, boss := hearthGame(t)
+	boss.HP = boss.MaxHP / 2
+	g.monsterTurn(boss)
+	g.cleanup()
+	g.Turn += 2*townHuntTurns + 1
+	g.changeLevel("town", "", nil)
+	if len(g.Fallen) != 2 {
+		t.Fatalf("%d fell while the hero was away, want 2", len(g.Fallen))
+	}
+	if !on(g.Lv, boss) {
+		t.Fatal("he is not in town")
+	}
+}
+
+// Left alone in town he keeps hunting: he does not doze off when the hero
+// is out of sight, and he paths through the streets to them.
+func TestWandererHuntsUnwatched(t *testing.T) {
+	g, _ := townGame(t)
+	l := g.Lv
+	for range 4 * townHuntTurns {
+		g.P.X, g.P.Y = l.FreeNear(l.W-6, 4, -1, -1)
+		g.wait()
+	}
+	if len(g.Fallen) < 2 {
+		t.Errorf("only %v fell in %d turns", g.Fallen, 4*townHuntTurns)
+	}
+}

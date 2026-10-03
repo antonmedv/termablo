@@ -122,6 +122,7 @@ func genTown(seed int64, r *Rules) *Level {
 	// Smithy with a forge
 	l.building(48, 11, 61, 19, 54, 19)
 	l.Set(50, 13, TBrazier)
+	l.Forge = Pos{50, 13}
 	l.Set(59, 13, TShelf)
 	l.Set(59, 14, TShelf)
 	// Alchemist with a crystal lamp

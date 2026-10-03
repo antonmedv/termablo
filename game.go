@@ -65,11 +65,15 @@ type Game struct {
 	dark   []Pos // where light drinkers stand, refreshed with the lights
 	// The Last Wanderer between levels: once he has noticed the hero he
 	// follows them out of any level and steps out followDelay turns later.
-	stalker *Monster
-	stalkIn int
-	stalkAt Pos      // where the hero arrived, where he will step out
-	homeYet bool     // he has reached Emberhold
-	ahead   *Monster // gone ahead to Emberhold through his own portal
+	stalker  *Monster
+	stalkIn  int
+	stalkAt  Pos      // where the hero arrived, where he will step out
+	homeYet  bool     // he has reached Emberhold
+	ahead    *Monster // gone ahead to Emberhold through his own portal
+	aheadAt  int      // the turn he went ahead
+	snuffed  []*Light // town lights he has put out; back when he dies
+	Fallen   []string // townsfolk he has killed, by template ID, in order
+	ForgeOut bool     // Hadrik is dead and the forge with him
 	// Rift is the red portal he opens at half life; it leads to town.
 	Rift      *Portal
 	riftLight *Light
@@ -254,6 +258,7 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 		l.Monsters = append(l.Monsters, m)
 		g.homeYet = true
 		g.msg(colRed, "The Last Wanderer is already here.")
+		g.tollWhileAway(g.Turn - g.aheadAt)
 	}
 	p.Torch.ver = -1
 	g.Effects = nil
@@ -306,9 +311,14 @@ func (g *Game) gatherLights() []*Light {
 			g.dark = append(g.dark, Pos{m.X, m.Y})
 		}
 	}
+	town := l.Kind == KTown
 	add := func(lt *Light) {
 		if !drinks(g.dark, lt.X, lt.Y) {
 			ls = append(ls, lt)
+		} else if town && !lt.Off && lt != p.Torch && slices.Contains(l.Lights, lt) {
+			// in Emberhold what he puts out stays out while he lives
+			lt.Off = true
+			g.snuffed = append(g.snuffed, lt)
 		}
 	}
 	near := func(x, y int, r float32) bool {
@@ -362,6 +372,9 @@ func (g *Game) gatherLights() []*Light {
 func (g *Game) composeLight(t float64, flick bool) {
 	l := g.Lv
 	amb := l.Ambient
+	if g.townHunted() {
+		amb = RGB{}
+	}
 	for i := range g.light {
 		g.light[i] = amb
 	}
@@ -854,6 +867,7 @@ func (g *Game) killMonster(m *Monster) {
 		g.Quests[1] = maxi(g.Quests[1], 1)
 		g.msg(colOrange, "The Oracle's song ends. Deeper still, something burns... Return to Voss.")
 	case "wanderer":
+		g.relight()
 		g.msg(m.T.Color, "The Last Wanderer: \"Keep walking.\"")
 		g.msg(colLore, "The red light goes out, and the dark lets go of the fire.")
 		g.unseal(l)
@@ -1221,6 +1235,13 @@ func (g *Game) castNova() {
 func (g *Game) monsterTurn(m *Monster) {
 	l, p := g.Lv, g.P
 	if m.Friendly {
+		if w := g.hunter(); w != nil && cheb(m.X, m.Y, w.X, w.Y) <= 8 {
+			// panicked: they stumble away two turns in three
+			if g.rng.Intn(3) != 0 {
+				g.fleeFrom(m, w.X, w.Y)
+			}
+			return
+		}
 		if g.rng.Intn(8) == 0 {
 			d := dirs8[g.rng.Intn(8)]
 			nx, ny := m.X+d.X, m.Y+d.Y
@@ -1252,6 +1273,8 @@ func (g *Game) monsterTurn(m *Monster) {
 			}
 		}
 		m.LostTurns = 0
+	} else if m.Awake && m.T.AI == AIWanderer && l.Kind == KTown {
+		m.LostTurns = 0 // loose in Emberhold he never stops hunting
 	} else if m.Awake {
 		m.LostTurns++
 		if m.LostTurns > 30 {
@@ -1293,6 +1316,12 @@ func (g *Game) monsterTurn(m *Monster) {
 		if m.HP*2 <= m.MaxHP && l.SealedDown != "" && g.Rift == nil {
 			g.openRift(m)
 			return
+		}
+		if l.Kind == KTown {
+			if prey := g.prey(m); prey != nil {
+				g.huntStep(m, prey)
+				return
+			}
 		}
 		// he closes in, throwing fire now and then; he never backs away
 		if sees && d > 1 && d <= m.T.Range && g.rng.Intn(100) < 35 {
@@ -1675,6 +1704,14 @@ var villagerLines = []string{
 
 func (g *Game) talkTo(m *Monster) {
 	p := g.P
+	if g.townHunted() {
+		who := m.Name
+		if m.T.ID == "villager" {
+			who = "The villager"
+		}
+		g.msg(m.T.Color, "%s is running for their life.", who)
+		return
+	}
 	switch m.T.ID {
 	case "smith":
 		g.shop = g.shops[0]
@@ -2059,7 +2096,7 @@ func (g *Game) openRift(m *Monster) {
 	g.msg(colRed, "The Last Wanderer reads a scroll. A red portal tears open.")
 	g.msg(m.T.Color, "The Last Wanderer: \"I know the way home too.\"")
 	m.Gone = true // off this level at cleanup
-	g.ahead = m
+	g.ahead, g.aheadAt = m, g.Turn
 }
 
 // unseal opens the Hearth Below's way down where its chamber stands,
@@ -2078,5 +2115,163 @@ func (g *Game) unseal(here *Level) {
 		} else {
 			g.msg(colGray, "Far below, in the Hearth, a way down opens.")
 		}
+	}
+}
+
+// townHuntTurns is how long the Last Wanderer takes to find and kill
+// one townsperson while the hero is not in Emberhold to stop him.
+const townHuntTurns = 25
+
+// hunter returns the Last Wanderer when he is loose in the hero's town.
+func (g *Game) hunter() *Monster {
+	l := g.Lv
+	if l.Kind != KTown {
+		return nil
+	}
+	for _, m := range l.Monsters {
+		if m.T.AI == AIWanderer && !m.Dead && !m.Gone {
+			return m
+		}
+	}
+	return nil
+}
+
+// townHunted says whether Emberhold is dark: he is in it and alive.
+func (g *Game) townHunted() bool { return g.hunter() != nil }
+
+// prey picks who the Last Wanderer goes for in town: the nearest living
+// townsperson, unless the hero stands nearer. Nil means the hero.
+func (g *Game) prey(w *Monster) *Monster {
+	best, bd := (*Monster)(nil), cheb(w.X, w.Y, g.P.X, g.P.Y)
+	for _, m := range g.Lv.Monsters {
+		if m.Friendly && !m.Dead {
+			if d := cheb(w.X, w.Y, m.X, m.Y); d <= bd {
+				best, bd = m, d
+			}
+		}
+	}
+	return best
+}
+
+// huntStep moves the Last Wanderer one step toward a townsperson, or cuts
+// them when he is beside them. Three cuts kill.
+func (g *Game) huntStep(w, prey *Monster) {
+	l := g.Lv
+	if cheb(w.X, w.Y, prey.X, prey.Y) <= 1 {
+		prey.HP -= prey.MaxHP/3 + 1
+		prey.Flash = g.time
+		g.textFx(prey.X, prey.Y, "cut", colRed)
+		if prey.HP <= 0 {
+			g.townspersonDies(prey)
+		} else {
+			g.msg(colRed, "The Last Wanderer cuts %s.", townName(prey))
+		}
+		return
+	}
+	d := bfsDist(l, prey.X, prey.Y)
+	cur := d[l.Idx(w.X, w.Y)]
+	for _, dd := range dirs8 {
+		nx, ny := w.X+dd.X, w.Y+dd.Y
+		if l.In(nx, ny) {
+			if v := d[l.Idx(nx, ny)]; v >= 0 && (cur < 0 || v < cur) && g.stepMonster(w, nx, ny) {
+				return
+			}
+		}
+	}
+	g.stepToward(w) // walled off from them: come for the hero instead
+}
+
+func townName(m *Monster) string {
+	if m.T.ID == "villager" {
+		return "a villager"
+	}
+	return m.Name
+}
+
+// townspersonDies is a townsperson killed by the Last Wanderer. With
+// Hadrik the forge goes cold for good.
+func (g *Game) townspersonDies(m *Monster) {
+	l := g.Lv
+	m.Dead = true
+	l.Decal[l.Idx(m.X, m.Y)] = DecalCorpse
+	g.msg(colRed, "The Last Wanderer cuts down %s.", townName(m))
+	if len(g.Fallen) == 0 {
+		g.msg(C(1, .32, .26), "The Last Wanderer: \"They gave me a sword and a captain's speech too.\"")
+	}
+	g.Fallen = append(g.Fallen, m.T.ID)
+	if m.T.ID == "smith" {
+		g.forgeOut(l)
+	}
+	for _, o := range l.Monsters {
+		if o.Friendly && !o.Dead {
+			return
+		}
+	}
+	g.msg(colLore, "No one is left in Emberhold but you.")
+}
+
+// forgeOut puts out Hadrik's forge, the Ember's hearth, for good.
+func (g *Game) forgeOut(l *Level) {
+	g.ForgeOut = true
+	f := l.Forge
+	l.Set(f.X, f.Y, TColdBrazier)
+	keep := l.Lights[:0]
+	for _, lt := range l.Lights {
+		if lt.X != f.X || lt.Y != f.Y {
+			keep = append(keep, lt)
+		}
+	}
+	l.Lights = keep
+	g.msg(colLore, "Hadrik's forge goes cold.")
+}
+
+// relight brings back the town lights he put out, all but a dead forge.
+func (g *Game) relight() {
+	for _, lt := range g.snuffed {
+		lt.Off = false
+	}
+	g.snuffed = nil
+}
+
+// tollWhileAway is what the Last Wanderer did in Emberhold while the hero
+// was elsewhere: a townsperson for every townHuntTurns, nearest the portal
+// first, and the lights around each of them put out.
+func (g *Game) tollWhileAway(turns int) {
+	l := g.Lv
+	if turns >= townHuntTurns {
+		g.msg(colLore, "Emberhold is dark. You are too late for some of them.")
+	}
+	for n := turns / townHuntTurns; n > 0; n-- {
+		var next *Monster
+		for _, m := range l.Monsters {
+			if m.Friendly && !m.Dead && (next == nil || cheb(m.X, m.Y, l.PortalAt.X, l.PortalAt.Y) < cheb(next.X, next.Y, l.PortalAt.X, l.PortalAt.Y)) {
+				next = m
+			}
+		}
+		if next == nil {
+			break
+		}
+		for _, lt := range l.Lights {
+			if !lt.Off && drinks([]Pos{{next.X, next.Y}}, lt.X, lt.Y) {
+				lt.Off = true
+				g.snuffed = append(g.snuffed, lt)
+			}
+		}
+		g.townspersonDies(next)
+	}
+	g.cleanup()
+}
+
+// fleeFrom steps a monster to the neighboring cell farthest from (x, y).
+func (g *Game) fleeFrom(m *Monster, x, y int) {
+	best, bd := Pos{}, cheb(m.X, m.Y, x, y)
+	for _, d := range dirs8 {
+		nx, ny := m.X+d.X, m.Y+d.Y
+		if dd := cheb(nx, ny, x, y); dd > bd && g.Lv.Walkable(nx, ny) && g.Lv.MonsterAt(nx, ny) == nil {
+			best, bd = Pos{nx, ny}, dd
+		}
+	}
+	if bd > cheb(m.X, m.Y, x, y) {
+		g.stepMonster(m, best.X, best.Y)
 	}
 }

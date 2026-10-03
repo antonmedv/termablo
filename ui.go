@@ -337,11 +337,13 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	row += 2
 	s.TextBold(cx, row, l.Name, colGold.C8())
 	row++
-	area := "Safe haven"
+	area, areaCol := "Safe haven", colDim
 	if l.Kind != KTown {
 		area = fmt.Sprintf("Area level %d", l.Depth)
+	} else if g.townHunted() {
+		area, areaCol = "Not safe", colRed
 	}
-	s.Text(cx, row, area, colDim.C8())
+	s.Text(cx, row, area, areaCol.C8())
 	row += sp
 	s.Text(cx, row, fmt.Sprintf("Wanderer  ·  Level %d", p.Lvl), colWhite.C8())
 	if p.Points > 0 {
