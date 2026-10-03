@@ -1568,6 +1568,9 @@ var villagerLines = []string{
 	"Rare things glimmer in the dark. Gold-light means something old and named.",
 	"Old Mirela's crystal was dug out of the grotto. It sings when the Oracle dreams.",
 	"A portal scroll is cheaper than a funeral.",
+	"King Edran carried the Ember up in his bare hands. It cost him his face.",
+	"My uncle joined the Ember Cult. Said the dark was owed. He went down to pay it.",
+	"Mirela says the Oracle isn't hunting anyone. She's holding something down.",
 }
 
 func (g *Game) talkTo(m *Monster) {
@@ -1599,6 +1602,7 @@ func (g *Game) talkTo(m *Monster) {
 			case g.Quests[0] == 0:
 				lines = []string{
 					"Wanderer. Good. We need a blade that doesn't shake.",
+					"The Ember keeps the dark out. The dark wants it back.",
 					"East of the gate, past the Ashen Fields, lies the Crypt of the Fallen.",
 					"Four floors down, the Bone King sits his throne of ribs. Destroy him.",
 					"And north, in Blackmarsh, the Drowned Oracle calls the lost into the water.",

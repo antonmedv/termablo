@@ -216,7 +216,7 @@ func genFields(seed int64, r *Rules) *Level {
 	W, H := 150, 90
 	l := newLevel("fields", "Ashen Fields", KSurface, W, H, 1, seed, r)
 	l.Ambient = C(.05, .06, .12)
-	l.Lore = "The Ashen Fields. Moonlight, and the smell of old smoke."
+	l.Lore = "The Ashen Fields. Moonlight on the ash of a burned forest."
 	nz := Noise{uint32(seed) + 7}
 	nz2 := Noise{uint32(seed) + 99}
 	for y := range H {
@@ -618,7 +618,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 			placeMonster(l, "skel", c.X+l.rng.Intn(5)-2, c.Y+l.rng.Intn(3)-1, s.Depth, RankNormal)
 		}
 	}
-	l.Lore = s.Name + ". The air is cold and tastes of dust."
+	l.Lore = s.Name + ". A royal tomb; the air tastes of dust."
 	populate(l, s.SpawnTable, 14+s.Depth*2, []Pos{up})
 	l.finalize()
 	return l
@@ -806,9 +806,9 @@ func genCave(s DungeonSpec, seed int64) *Level {
 	}
 	switch s.Style {
 	case 1:
-		l.Lore = s.Name + ". Water drips; crystals hum a low blue note."
+		l.Lore = s.Name + ". Cold water presses down; the crystals hum."
 	default:
-		l.Lore = s.Name + ". The rock itself is bleeding fire."
+		l.Lore = s.Name + ". The rock itself is bleeding."
 	}
 	populate(l, s.SpawnTable, 16+s.Depth, []Pos{{ux, uy}})
 	l.finalize()

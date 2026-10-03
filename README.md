@@ -24,6 +24,10 @@ Add `-seed 42` and the world is the same every time. Share the seed, race a frie
 
 <p align="center"><img src="demo/zones.png" width="854" alt="Emberhold, the Ashen Fields, the Throne of the Bone King, Blackmarsh, the Sunken Grotto and the Burning Abyss"></p>
 
+A king once carried a coal up out of the Abyss and built a town around it.
+The dark cannot cross light taken from it, so it climbs toward the town
+instead. You are the stranger they hire to go down and meet it.
+
 ## Host your own
 
 ```sh
