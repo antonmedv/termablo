@@ -74,6 +74,9 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 | 68 | 2026-10-01T10:46 | keep | db71fc7+ | b8c74bbb0b | 2001–2096 | 13.71 (13.1–14.9) | +0.13 (-1.47…+1.10) | 86%/96% | 1%/4% | 10 | 0.09 | 13.19 | validation: the final bot (monster memory, wobble guard) on seeds 2001-2096, defaults | vs the earlier bot of #051: score 13.58 -> 13.71 (noise), fighter deepest +0.23, clvl +0.36, king +0.04, caster flat; 0 stuck of 192 (was 1). The control for the WakeRange re-validation (#092) |
 | 69 | 2026-10-01T10:48 | keep | db71fc7+ | b8c74bbb0b | 1–96 | 13.84 (13.3–14.5) | +0.65 (-1.10…+1.75) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | rules: WakeRange 16 -> 10 on the final bot, seeds 1-96 | paired: fighter deepest +0.73, clvl +1.25, kills +44, king 0.78 -> 0.92 (all sure); caster deepest +0.22, king 0.95; gap 0.16 -> 0.03; grotto3 arrivals 9/19 -> 16/15, abyss 3/4; 0 stuck. Score 13.19 -> 13.84 (noise): fighter.king and fighter.gold overshoot their bands by what the grotto gives back. The recommended rule, as a design choice |
 | 70 | 2026-10-01T10:48 | keep | db71fc7+ | b8c74bbb0b | 2001–2096 | 13.58 (12.7–14.3) | -0.13 (-1.58…+0.89) | 89%/96% | 2%/5% | 10 | 0.07 | 13.19 | validation: WakeRange 10 on the final bot, fresh seeds 2001-2096 | paired vs #58: fighter deepest +0.32 (34 up/20 down), clvl +0.58, king 0.86 -> 0.89, oracle 0.01 -> 0.02; caster deepest +0.15, king 0.96, oracle 0.04 -> 0.05; grotto3 arrivals 8/16 -> 15/20, abyss 1/3 -> 2/5; goldIn +1558 (sure); score 13.71 -> 13.58 (noise); 0 stuck of 192. Same direction as seeds 1-96, about half the size: the pick holds |
+| 71 | 2026-10-03T20:55 | baseline | b9a1a41 | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.65 (-1.10…+1.75) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | baseline before the Last Wanderer boss | slice 1 of the final boss adds a boss to abyss3; this is the before run |
+| 72 | 2026-10-03T21:01 | keep | b9a1a41+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the Last Wanderer on abyss3: light-drinking boss, Hearth Below chamber, sealed way down | slice 1 of the final boss; no bot run reaches abyss3 today, so the metrics are unchanged by construction |
+| 73 | 2026-10-03T21:42 | keep | b9a1a41+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the Last Wanderer follows: through the town portal (which collapses), any stairs, and his own red portal at half life | slice 2 of the final boss; no bot run reaches abyss3, so the metrics are unchanged by construction |
 
 ## Rules per entry
 
@@ -147,3 +150,6 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 - #68 `090-val-wobble.json`: defaults
 - #69 `091-wake10-final.json`: WakeRange: 16 → 10
 - #70 `092-val-wake10-final.json`: WakeRange: 16 → 10
+- #71 `093-baseline-pre-wanderer.json`: defaults
+- #72 `094-wanderer-slice1.json`: defaults
+- #73 `095-wanderer-slice2.json`: defaults
