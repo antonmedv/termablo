@@ -876,7 +876,8 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 }
 
 func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
-	w := 64
+	// size the box first: centerBox narrows it on small screens
+	w := mini(64, mapW-2)
 	var wrapped []string
 	for _, ln := range g.talkLines {
 		wrapped = append(wrapped, wrap(ln, w-6)...)

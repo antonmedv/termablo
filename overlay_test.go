@@ -135,3 +135,37 @@ func TestShopScrollHint(t *testing.T) {
 		t.Errorf("%d shop items, no hint of rows below", n)
 	}
 }
+
+// Talk text wraps to the box it is drawn in, at any size.
+func TestTalkStaysInBox(t *testing.T) {
+	for _, sz := range [][2]int{{80, 24}, {110, 34}} {
+		g := NewGame(1)
+		g.Mode = ModePlay
+		play := NewScreen(sz[0], sz[1])
+		g.Draw(play)
+		for _, m := range g.Lv.Monsters {
+			if m.T.ID == "captain" {
+				g.talkTo(m)
+			}
+		}
+		talk := NewScreen(sz[0], sz[1])
+		g.Draw(talk)
+		x0, y0, x1, y1 := boxRect(t, talk)
+		for y := range talk.H {
+			for x := range talk.W {
+				if x >= x0 && x <= x1 && y >= y0 && y <= y1 {
+					continue
+				}
+				if talk.C[y*talk.W+x] != play.C[y*play.W+x] {
+					t.Fatalf("%dx%d: talk wrote outside its box at %d,%d: %q", sz[0], sz[1], x, y, talk.C[y*talk.W+x].Ch)
+				}
+			}
+		}
+		if !strings.Contains(screenRow(talk, y1), "press any key") {
+			t.Errorf("%dx%d: footer missing: %q", sz[0], sz[1], screenRow(talk, y1))
+		}
+		if !screenHas(talk, "alive.") {
+			t.Errorf("%dx%d: last line missing", sz[0], sz[1])
+		}
+	}
+}
