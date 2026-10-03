@@ -424,3 +424,107 @@ func TestWandererHuntsUnwatched(t *testing.T) {
 		t.Errorf("only %v fell in %d turns", g.Fallen, 4*townHuntTurns)
 	}
 }
+
+// His death asks how the story ends, drops his shroud and marks the quest.
+func TestWandererDeathAsksTheEnding(t *testing.T) {
+	g, boss := hearthGame(t)
+	g.killMonster(boss)
+	if g.Mode != ModeChoice {
+		t.Fatalf("mode %v after his death, want the choice", g.Mode)
+	}
+	if g.Quests[2] != 1 {
+		t.Error("the quest is not done")
+	}
+	found := false
+	for _, fi := range g.Lv.Items {
+		if fi.It.Name == lastShroud.Name {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("no Last Wanderer's Shroud on the ground")
+	}
+	s := NewScreen(80, 24)
+	g.Draw(s)
+	for _, want := range []string{"Return the Ember", "Hold the dark", "Keep walking", "press 1, 2 or 3"} {
+		if !screenHas(s, want) {
+			t.Errorf("the choice at 80x24 lacks %q", want)
+		}
+	}
+}
+
+// Keep walking goes back to play; the other two end the run.
+func TestEndingChoices(t *testing.T) {
+	for _, e := range []int{EndReturn, EndHold, EndWalk} {
+		g, boss := hearthGame(t)
+		g.killMonster(boss)
+		g.chooseEnding(e)
+		if e == EndWalk {
+			if g.Mode != ModePlay {
+				t.Errorf("keep walking leaves mode %v", g.Mode)
+			}
+			continue
+		}
+		if g.Mode != ModeEnd {
+			t.Errorf("ending %d leaves mode %v", e, g.Mode)
+		}
+		s := NewScreen(80, 24)
+		g.Draw(s)
+		if !screenHas(s, "n: new game") || !screenHas(s, "Survived:") {
+			t.Errorf("ending %d at 80x24 is clipped", e)
+		}
+	}
+}
+
+// The ending names who is left, and changes when the town is gone.
+func TestEndingNamesSurvivors(t *testing.T) {
+	g, boss := townGame(t)
+	g.townspersonDies(townsperson(g, "smith"))
+	g.townspersonDies(townsperson(g, "villager"))
+	g.cleanup()
+	g.killMonster(boss)
+	_, lines := g.endingText(EndReturn)
+	last := lines[len(lines)-1]
+	if last != "Survived: Old Mirela, Captain Voss and one villager." {
+		t.Errorf("survivors: %q", last)
+	}
+	if lines[0][:len("The forge went cold")] != "The forge went cold" {
+		t.Errorf("a cold forge is not mentioned: %q", lines[0])
+	}
+	for _, id := range []string{"alch", "captain", "villager"} {
+		g.townspersonDies(townsperson(g, id))
+	}
+	g.cleanup()
+	_, lines = g.endingText(EndHold)
+	if lines[len(lines)-1] != "No one in Emberhold survived." {
+		t.Errorf("empty town: %q", lines[len(lines)-1])
+	}
+}
+
+// Voss's reward speech for both bosses at once still fits 80x24.
+func TestVossRewardsFit(t *testing.T) {
+	g := NewGame(1)
+	g.Mode = ModePlay
+	g.Quests = [3]int{1, 1, 0}
+	for _, m := range g.Lv.Monsters {
+		if m.T.ID == "captain" {
+			g.talkTo(m)
+		}
+	}
+	s := NewScreen(80, 24)
+	g.Draw(s)
+	if !screenHas(s, "press any key") || !screenHas(s, "counting the days.") {
+		t.Error("Voss's rewards run off the screen")
+	}
+}
+
+// The bot always keeps walking, so deep runs stay measurable.
+func TestBotKeepsWalking(t *testing.T) {
+	g, boss := hearthGame(t)
+	g.killMonster(boss)
+	b := NewBot(g, policyByName("fighter"))
+	b.turn()
+	if g.Mode == ModeChoice || g.Ending != EndWalk {
+		t.Errorf("the bot left mode %v, ending %d", g.Mode, g.Ending)
+	}
+}

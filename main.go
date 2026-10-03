@@ -110,12 +110,21 @@ func (m *model) key(k string) bool {
 	switch g.Mode {
 	case ModeTitle:
 		g.Mode = ModePlay
-	case ModeDead:
+	case ModeDead, ModeEnd:
 		switch k {
 		case "n":
 			m.restart()
 		case "Q", "esc":
 			return true
+		}
+	case ModeChoice:
+		switch k {
+		case "1":
+			g.chooseEnding(EndReturn)
+		case "2":
+			g.chooseEnding(EndHold)
+		case "3":
+			g.chooseEnding(EndWalk)
 		}
 	case ModeTalk:
 		g.Mode = ModePlay

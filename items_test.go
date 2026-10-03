@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"slices"
 	"testing"
 )
 
@@ -156,7 +157,8 @@ func TestUniquesBudget(t *testing.T) {
 	r := DefaultRules()
 	r.BudgetMul = 1
 	over := 0
-	for _, u := range uniques {
+	all := slices.Concat(uniques, []UniqueDef{lastShroud})
+	for _, u := range all {
 		it := &Item{Kind: IKEquip, Base: baseByName(u.Base), Aff: u.Aff}
 		b := budget(u.Lvl, RUnique, r)
 		mark := ""
@@ -165,5 +167,5 @@ func TestUniquesBudget(t *testing.T) {
 		}
 		t.Logf("%-20s lvl %2d  power %6.1f  budget %6.1f  ×%.2f%s", u.Name, u.Lvl, it.power(), b, it.power()/b, mark)
 	}
-	t.Logf("%d of %d uniques over budget", over, len(uniques))
+	t.Logf("%d of %d uniques over budget", over, len(all))
 }

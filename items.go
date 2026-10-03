@@ -293,6 +293,16 @@ type UniqueDef struct {
 	Flavor string
 }
 
+// lastShroud drops only from the Last Wanderer, never from the pool.
+var lastShroud = UniqueDef{"Last Wanderer's Shroud", "Rags", 13, []Affix{{StArmor, 40}, {StLife, 45}, {StAllAttr, 8}, {StLight, -2}}, "Still warm. It was never yours, and now it is."}
+
+// uniqueItem makes a unique as it drops at ilvl.
+func uniqueItem(u UniqueDef, ilvl int) *Item {
+	it := &Item{Kind: IKEquip, Base: baseByName(u.Base), Name: u.Name, Rarity: RUnique, ILvl: maxi(ilvl, u.Lvl), Flavor: u.Flavor}
+	it.Aff = append(it.Aff, u.Aff...)
+	return it
+}
+
 var uniques = []UniqueDef{
 	{"Wanderer's Shroud", "Rags", 1, []Affix{{StAllAttr, 3}, {StLife, 20}, {StLight, 1}}, "Worn by one who never stopped walking."},
 	{"Shard of Night", "Dagger", 2, []Affix{{StCrit, 15}, {StDmgPct, 60}, {StDex, 8}}, "It drinks the torchlight."},
@@ -569,11 +579,7 @@ func rollItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Ite
 			}
 		}
 		if len(pool) > 0 {
-			u := pool[rng.Intn(len(pool))]
-			b := baseByName(u.Base)
-			it := &Item{Kind: IKEquip, Base: b, Name: u.Name, Rarity: RUnique, ILvl: maxi(ilvl, u.Lvl), Flavor: u.Flavor}
-			it.Aff = append(it.Aff, u.Aff...)
-			return it
+			return uniqueItem(pool[rng.Intn(len(pool))], ilvl)
 		}
 		rarity = RRare
 	}
