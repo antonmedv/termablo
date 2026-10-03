@@ -78,6 +78,7 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 | 72 | 2026-10-03T21:01 | keep | b9a1a41+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the Last Wanderer on abyss3: light-drinking boss, Hearth Below chamber, sealed way down | slice 1 of the final boss; no bot run reaches abyss3 today, so the metrics are unchanged by construction |
 | 73 | 2026-10-03T21:42 | keep | b9a1a41+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the Last Wanderer follows: through the town portal (which collapses), any stairs, and his own red portal at half life | slice 2 of the final boss; no bot run reaches abyss3, so the metrics are unchanged by construction |
 | 74 | 2026-10-03T22:05 | keep | 8c0f950+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | Emberhold goes dark: the Last Wanderer hunts the townsfolk, the forge dies with Hadrik | slice 3 of the final boss; no bot run reaches abyss3, so the metrics are unchanged by construction |
+| 75 | 2026-10-03T23:27 | keep | e621af1+ | 747d270b9a | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the ending: choice over the Last Wanderer's body, survivors page, his shroud, third quest, foreshadowing lines; the bot keeps walking | slice 4 of the final boss; no bot run reaches abyss3, so the metrics are unchanged by construction |
 
 ## Rules per entry
 
@@ -155,3 +156,4 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 - #72 `094-wanderer-slice1.json`: defaults
 - #73 `095-wanderer-slice2.json`: defaults
 - #74 `096-wanderer-slice3.json`: defaults
+- #75 `097-wanderer-slice4.json`: defaults
