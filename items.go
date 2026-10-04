@@ -33,6 +33,9 @@ const (
 	EqCount
 )
 
+// eqSlotFor is the item slot each equipment place takes.
+var eqSlotFor = [EqCount]Slot{SlotWeapon, SlotOffhand, SlotHelm, SlotArmor, SlotGloves, SlotBoots, SlotRing, SlotRing, SlotAmulet}
+
 var eqNames = [EqCount]string{"Weapon", "Off-hand", "Helm", "Armor", "Gloves", "Boots", "Ring", "Ring", "Amulet"}
 
 type Rarity int

@@ -528,3 +528,34 @@ func TestBotKeepsWalking(t *testing.T) {
 		t.Errorf("the bot left mode %v, ending %d", g.Mode, g.Ending)
 	}
 }
+
+// -lvl readies the hero for a deep start: level, points spent, a full
+// kit for the area, a full belt, and the quests on the way done.
+func TestReady(t *testing.T) {
+	for _, build := range []string{"fighter", "caster"} {
+		g := NewGame(3)
+		g.changeLevel("abyss3", "", nil)
+		if err := g.Ready(21, build); err != nil {
+			t.Fatal(err)
+		}
+		p := g.P
+		if p.Lvl != 21 || p.Points != 0 {
+			t.Errorf("%s: level %d with %d points unspent", build, p.Lvl, p.Points)
+		}
+		for slot, it := range p.Eq {
+			twoHanded := slot == EqOffhand && p.Eq[EqWeapon].Base.TwoHanded
+			if it == nil && !twoHanded {
+				t.Errorf("%s: %s is empty", build, eqNames[slot])
+			}
+		}
+		if p.HPot != beltMax || p.Scrolls != 2 || p.HP != float64(p.MaxHP()) {
+			t.Errorf("%s: belt %d, scrolls %d, life %.0f/%d", build, p.HPot, p.Scrolls, p.HP, p.MaxHP())
+		}
+		if g.Quests != [3]int{2, 2, 0} {
+			t.Errorf("%s: quests %v", build, g.Quests)
+		}
+	}
+	if NewGame(3).Ready(5, "rogue") == nil {
+		t.Error("an unknown build is accepted")
+	}
+}

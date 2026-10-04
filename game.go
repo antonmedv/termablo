@@ -2373,3 +2373,49 @@ func joinAnd(xs []string) string {
 	}
 	return strings.Join(xs[:len(xs)-1], ", ") + " and " + xs[len(xs)-1]
 }
+
+// Ready makes the hero fit for a start past the town (-lvl): character
+// level lvl, attribute points spent the way the build's bot spends them,
+// the best of a dozen rares per slot at the area's depth, a full belt,
+// two scrolls, and the quests on the way already done.
+func (g *Game) Ready(lvl int, build string) error {
+	pol := policyByName(build)
+	if pol == nil {
+		return fmt.Errorf("build %q: want fighter or caster", build)
+	}
+	if lvl < 1 || lvl > 99 {
+		return fmt.Errorf("level %d: want 1 to 99", lvl)
+	}
+	p := g.P
+	p.Lvl, p.XP, p.Points = lvl, 0, 5*(lvl-1)
+	for i := 0; p.Points > 0; i++ {
+		g.spendPoint(pol.points[i%len(pol.points)])
+	}
+	depth := maxi(g.Lv.Depth, maxi(1, lvl/2))
+	for slot := range EqCount {
+		if slot == EqOffhand && p.Eq[EqWeapon] != nil && p.Eq[EqWeapon].Base.TwoHanded {
+			p.Eq[slot] = nil
+			continue
+		}
+		var best *Item
+		bestScore := 0
+		for range 12 {
+			it := GenItem(g.rng, depth, RRare, eqSlotFor[slot], g.Rules)
+			if v, _ := pol.gearScore(it); best == nil || v > bestScore {
+				best, bestScore = it, v
+			}
+		}
+		p.Eq[slot] = best
+	}
+	p.HPot, p.MPot, p.Scrolls, p.Gold = beltMax, pol.mana, 2, 60*lvl
+	if depth > questDepth[0] {
+		g.Quests[0] = 2
+	}
+	if depth > questDepth[1] {
+		g.Quests[1] = 2
+	}
+	g.Deepest = maxi(g.Deepest, depth)
+	p.recalc()
+	p.HP, p.MP = float64(p.MaxHP()), float64(p.MaxMP())
+	return nil
+}

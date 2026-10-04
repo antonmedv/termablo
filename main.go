@@ -408,6 +408,8 @@ func newModel(seed int64, level string) *model {
 func main() {
 	seed := flag.Int64("seed", 0, "world seed (0 = random)")
 	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
+	lvl := flag.Int("lvl", 0, "start at this character level, geared and stocked to match (use with -level)")
+	build := flag.String("build", "fighter", "with -lvl: spend points like the fighter or the caster")
 	bot := flag.String("bot", "", "watch a scripted player: fighter or caster (ignored with -ssh)")
 	tps := flag.Int("tps", 5, "bot: turns per second to start at; + and - change it")
 	addr := flag.String("ssh", "", "serve the game over SSH on this address (e.g. :2222)")
@@ -425,6 +427,12 @@ func main() {
 		return
 	}
 	m := newModel(*seed, *level)
+	if *lvl > 0 {
+		if err := m.g.Ready(*lvl, *build); err != nil {
+			fmt.Fprintf(os.Stderr, "-lvl: %v\n", err)
+			os.Exit(2)
+		}
+	}
 	if *bot != "" {
 		pol := policyByName(*bot)
 		if pol == nil {

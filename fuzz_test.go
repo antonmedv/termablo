@@ -97,6 +97,4 @@ func checkGame(g *Game) error {
 	return nil
 }
 
-var eqSlotFor = [EqCount]Slot{SlotWeapon, SlotOffhand, SlotHelm, SlotArmor, SlotGloves, SlotBoots, SlotRing, SlotRing, SlotAmulet}
-
 func eqSlotOK(eq int, it *Item) bool { return it.Slot() == eqSlotFor[eq] }
