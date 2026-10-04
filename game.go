@@ -2374,7 +2374,7 @@ func joinAnd(xs []string) string {
 	return strings.Join(xs[:len(xs)-1], ", ") + " and " + xs[len(xs)-1]
 }
 
-// Ready makes the hero fit for a start past the town (-lvl): character
+// Ready makes the hero fit for a start past the town (-level): character
 // level lvl, attribute points spent the way the build's bot spends them,
 // the best of a dozen rares per slot at the area's depth, a full belt,
 // two scrolls, and the quests on the way already done.

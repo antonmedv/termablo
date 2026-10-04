@@ -11,7 +11,7 @@ Set Padding 0
 Set Framerate 10
 Set TypingSpeed 100ms
 Hide
-Type "./termablo -seed 148 -level fields"
+Type "./termablo -seed 148 -area fields"
 Enter
 Sleep 800ms
 Enter

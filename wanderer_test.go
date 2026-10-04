@@ -529,7 +529,7 @@ func TestBotKeepsWalking(t *testing.T) {
 	}
 }
 
-// -lvl readies the hero for a deep start: level, points spent, a full
+// -level readies the hero for a deep start: level, points spent, a full
 // kit for the area, a full belt, and the quests on the way done.
 func TestReady(t *testing.T) {
 	for _, build := range []string{"fighter", "caster"} {

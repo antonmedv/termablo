@@ -407,9 +407,9 @@ func newModel(seed int64, level string) *model {
 
 func main() {
 	seed := flag.Int64("seed", 0, "world seed (0 = random)")
-	level := flag.String("level", "", "start in this level instead of town (e.g. crypt1, grotto2, abyss1)")
-	lvl := flag.Int("lvl", 0, "start at this character level, geared and stocked to match (use with -level)")
-	build := flag.String("build", "fighter", "with -lvl: spend points like the fighter or the caster")
+	area := flag.String("area", "", "start in this area instead of town (e.g. crypt1, grotto2, abyss3)")
+	lvl := flag.Int("level", 0, "start at this character level, geared and stocked for the area")
+	build := flag.String("build", "fighter", "with -level: spend points like the fighter or the caster")
 	bot := flag.String("bot", "", "watch a scripted player: fighter or caster (ignored with -ssh)")
 	tps := flag.Int("tps", 5, "bot: turns per second to start at; + and - change it")
 	addr := flag.String("ssh", "", "serve the game over SSH on this address (e.g. :2222)")
@@ -419,17 +419,17 @@ func main() {
 	connectEvery := flag.Duration("connect-every", 10*time.Second, "SSH: one new game per address this often, 3 at once (0 = no limit)")
 	flag.Parse()
 	if *addr != "" {
-		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *level, maxSessions: *maxSessions, idle: *idle, connectEvery: *connectEvery})
+		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *area, maxSessions: *maxSessions, idle: *idle, connectEvery: *connectEvery})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		return
 	}
-	m := newModel(*seed, *level)
+	m := newModel(*seed, *area)
 	if *lvl > 0 {
 		if err := m.g.Ready(*lvl, *build); err != nil {
-			fmt.Fprintf(os.Stderr, "-lvl: %v\n", err)
+			fmt.Fprintf(os.Stderr, "-level: %v\n", err)
 			os.Exit(2)
 		}
 	}
