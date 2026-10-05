@@ -201,10 +201,7 @@ func (b *Bot) leave() {
 // equipping are free, as they are for anyone.
 func (b *Bot) turn() {
 	g := b.g
-	if g.Mode == ModeChoice {
-		g.chooseEnding(EndWalk) // the bot plays on: the Abyss has more to measure
-	}
-	if g.Mode == ModeDead || g.Mode == ModeEnd {
+	if g.Mode == ModeDead {
 		return
 	}
 	b.n++

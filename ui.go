@@ -49,10 +49,6 @@ func (g *Game) Draw(s *Screen) {
 		g.drawTalk(s, mapW, mapH)
 	case ModeDead:
 		g.drawDead(s, mapW, mapH)
-	case ModeChoice:
-		g.drawChoice(s, mapW, mapH)
-	case ModeEnd:
-		g.drawEnd(s, mapW, mapH)
 	}
 }
 
@@ -945,65 +941,6 @@ func (g *Game) drawDead(s *Screen, mapW, mapH int) {
 	}
 	h := "n: new game   Q: quit"
 	s.Text(x+(50-len(h))/2, y+8, h, colOrange.C8())
-}
-
-// drawChoice is the choice over the Last Wanderer's body.
-func (g *Game) drawChoice(s *Screen, mapW, mapH int) {
-	w := mini(60, mapW-2)
-	forge := "Far above, the forge still burns."
-	if g.ForgeOut {
-		forge = "Far above, the forge is cold."
-	}
-	type row struct {
-		text string
-		col  RGB
-	}
-	var rows []row
-	add := func(text string, col RGB, indent string) {
-		for k, ln := range wrap(text, w-6-len(indent)) {
-			if k > 0 {
-				ln = strings.Repeat(" ", len(indent)) + ln
-			} else {
-				ln = indent + ln
-			}
-			rows = append(rows, row{ln, col})
-		}
-	}
-	add("His shroud lies empty on the stones. "+forge, colGray, "")
-	rows = append(rows, row{})
-	add("Return the Ember. Carry it down and let the wound close.", colOrange, "1  ")
-	add("Hold the dark. Stay below, as the Oracle did.", colCyan, "2  ")
-	add("Keep walking.", colWhite, "3  ")
-	x, y := centerBox(s, mapW, mapH, w, len(rows)+5, "The Last Wanderer is dead")
-	for i, r := range rows {
-		s.Text(x+3, y+2+i, r.text, r.col.C8())
-	}
-	s.Text(x+3, y+len(rows)+3, "press 1, 2 or 3", colDim.C8())
-}
-
-// drawEnd is the story's last page.
-func (g *Game) drawEnd(s *Screen, mapW, mapH int) {
-	w := mini(60, mapW-2)
-	title, text := g.endingText(g.Ending)
-	var rows []string
-	for _, t := range text {
-		rows = append(rows, wrap(t, w-6)...)
-		rows = append(rows, "")
-	}
-	p := g.P
-	kills := fmt.Sprintf("%d kills", p.Kills)
-	if p.Kills == 1 {
-		kills = "1 kill"
-	}
-	rows = append(rows, fmt.Sprintf("Level %d · %s · %d gold", p.Lvl, kills, p.Gold))
-	x, y := centerBox(s, mapW, mapH, w, len(rows)+6, "")
-	f := float32(0.8 + 0.2*math.Sin(g.time*1.5))
-	s.TextBold(x+(w-len(title))/2, y+2, title, colGold.Scale(f).C8())
-	for i, r := range rows {
-		s.Text(x+3, y+4+i, r, colGray.C8())
-	}
-	h := "n: new game   Q: quit"
-	s.Text(x+(w-len(h))/2, y+len(rows)+4, h, colOrange.C8())
 }
 
 func (g *Game) drawOverview(s *Screen, mapW, mapH int) {

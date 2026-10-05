@@ -285,10 +285,10 @@ existing text.
 
 - **What the Ember was cut from.** Decided on 2026-10-03: it wears the
   Last Wanderer. See Bosses.
-- **The ending.** Built on 2026-10-03 as a choice over the Last
-  Wanderer's body: return the Ember, hold the dark as the new dam, or keep
-  walking. The first two end the run with a page that names who in
-  Emberhold survived; keep walking goes on into the endless Abyss.
+- **The ending.** Open again. A choice over the Last Wanderer's body
+  (return the Ember, hold the dark, keep walking) was built on 2026-10-03
+  and taken out on 2026-10-05: for now his death opens the way down and
+  play goes on.
 - **The Cult's founder.** A name, a line for a villager, maybe a champion
   Cultist in the Abyss.
 - **The Oracle's name.** Keep it withheld until something earns it.

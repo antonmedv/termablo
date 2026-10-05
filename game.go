@@ -22,8 +22,6 @@ const (
 	ModeMap
 	ModeDead
 	ModeTalk
-	ModeChoice // the Last Wanderer is dead: choose how the story ends
-	ModeEnd    // the story has ended; the run is over
 )
 
 const visThresh = 0.035
@@ -91,7 +89,6 @@ type Game struct {
 	hitter      *Monster // the last monster to strike the hero, for Stats.Death
 
 	Quests  [3]int // 0 hunting, 1 slain, 2 rewarded; the third ends at 1
-	Ending  int    // the choice made over the Last Wanderer's body
 	Deepest int    // deepest Depth entered: what the shops and Voss's rewards roll at
 	stocked int    // Deepest at the last restock
 	shops   [2]*Shop
@@ -872,7 +869,6 @@ func (g *Game) killMonster(m *Monster) {
 	case "wanderer":
 		g.relight()
 		g.Quests[2] = 1
-		g.Mode = ModeChoice
 		g.msg(m.T.Color, "The Last Wanderer: \"Keep walking.\"")
 		g.msg(colLore, "The red light goes out, and the dark lets go of the fire.")
 		g.unseal(l)
@@ -2290,88 +2286,6 @@ func (g *Game) fleeFrom(m *Monster, x, y int) {
 	if bd > cheb(m.X, m.Y, x, y) {
 		g.stepMonster(m, best.X, best.Y)
 	}
-}
-
-// The endings, chosen over the Last Wanderer's body.
-const (
-	EndReturn = 1 // carry the Ember down; Emberhold goes dark for good
-	EndHold   = 2 // stay below as the new dam
-	EndWalk   = 3 // put it off: the run goes on into the Abyss
-)
-
-// chooseEnding settles the choice screen. Keep walking returns to play;
-// the other two end the story and the run.
-func (g *Game) chooseEnding(e int) {
-	g.Ending = e
-	if e == EndWalk {
-		g.Mode = ModePlay
-		g.msg(colLore, "You leave the choice where he left it, and keep walking.")
-		return
-	}
-	g.Mode = ModeEnd
-}
-
-// survivors lists who is left alive in Emberhold, by name.
-func (g *Game) survivors() []string {
-	var out []string
-	villagers := 0
-	for _, m := range g.getLevel("town").Monsters {
-		if !m.Friendly || m.Dead {
-			continue
-		}
-		if m.T.ID == "villager" {
-			villagers++
-		} else {
-			out = append(out, m.Name)
-		}
-	}
-	switch villagers {
-	case 0:
-	case 1:
-		out = append(out, "one villager")
-	default:
-		out = append(out, fmt.Sprintf("%d villagers", villagers))
-	}
-	return out
-}
-
-// endingText is the story's last page for an ending, given who is left.
-func (g *Game) endingText(e int) (title string, lines []string) {
-	alive := g.survivors()
-	switch e {
-	case EndReturn:
-		title = "THE EMBER RETURNED"
-		if g.ForgeOut {
-			lines = append(lines, "The forge went cold with Hadrik. You carry down a handful of its ash and bury it where Edran dug. It is enough. The wound closes on nothing.")
-		} else {
-			lines = append(lines, "You carry the coal down past the Oracle's empty pool and set it where Edran found it. Above you, every lantern in Emberhold goes out at once.")
-		}
-		lines = append(lines, "The dark stops climbing. There is nothing left to climb toward.")
-	default:
-		title = "THE NEW DAM"
-		lines = append(lines, "You stay. The Hearth is quiet while someone holds it.")
-		switch {
-		case len(alive) == 0:
-			lines = append(lines, "Far above, Emberhold is empty. Its lanterns burn all night for no one.")
-		case g.ForgeOut:
-			lines = append(lines, "Far above, what is left of Emberhold lights candles where the forge used to burn, and never learns why the dark stopped pressing at the gate.")
-		default:
-			lines = append(lines, "Far above, Emberhold lights its lanterns for another night and never learns why the dark stopped pressing at the gate.")
-		}
-	}
-	if len(alive) == 0 {
-		lines = append(lines, "No one in Emberhold survived.")
-	} else {
-		lines = append(lines, "Survived: "+joinAnd(alive)+".")
-	}
-	return title, lines
-}
-
-func joinAnd(xs []string) string {
-	if len(xs) < 2 {
-		return strings.Join(xs, "")
-	}
-	return strings.Join(xs[:len(xs)-1], ", ") + " and " + xs[len(xs)-1]
 }
 
 // Ready makes the hero fit for a start past the town (-level): character
