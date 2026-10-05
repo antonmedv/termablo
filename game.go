@@ -65,18 +65,13 @@ type Game struct {
 	dark   []Pos // where light drinkers stand, refreshed with the lights
 	// The Last Wanderer between levels: once he has noticed the hero he
 	// follows them out of any level and steps out followDelay turns later.
-	stalker  *Monster
-	stalkIn  int
-	stalkAt  Pos      // where the hero arrived, where he will step out
-	homeYet  bool     // he has reached Emberhold
-	ahead    *Monster // gone ahead to Emberhold through his own portal
-	aheadAt  int      // the turn he went ahead
-	snuffed  []*Light // town lights he has put out; back when he dies
-	Fallen   []string // townsfolk he has killed, by template ID, in order
-	ForgeOut bool     // Hadrik is dead and the forge with him
-	// Rift is the red portal he opens at half life; it leads to town.
-	Rift      *Portal
-	riftLight *Light
+	stalker   *Monster
+	stalkIn   int
+	stalkAt   Pos      // where the hero arrived, where he will step out
+	homeYet   bool     // he has reached Emberhold
+	snuffed   []*Light // town lights he has put out; back when he dies
+	Fallen    []string // townsfolk he has killed, by template ID, in order
+	ForgeOut  bool     // Hadrik is dead and the forge with him
 	lgen      uint32
 	dist      []int32
 	lightsBuf []*Light
@@ -123,7 +118,6 @@ func NewGameWith(seed int64, r *Rules) *Game {
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
-	g.riftLight = NewLight(0, 0, &LightSpec{C(1, .15, .1), 4.5, 1.1, .05, .3}, 3)
 	sw := &Item{Kind: IKEquip, Base: baseByName("Short Sword"), Name: "Short Sword", ILvl: 1}
 	sw.finishStats(g.rng)
 	ar := &Item{Kind: IKEquip, Base: baseByName("Leather Armor"), Name: "Leather Armor", ILvl: 1}
@@ -251,15 +245,6 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 	}
 	p.X, p.Y = x, y
 	g.stalkAt = Pos{x, y}
-	if m := g.ahead; m != nil && l.Kind == KTown {
-		g.ahead = nil
-		m.Gone, m.Awake, m.LostTurns = false, true, 0
-		m.X, m.Y = l.FreeNear(l.PortalAt.X-2, l.PortalAt.Y, x, y)
-		l.Monsters = append(l.Monsters, m)
-		g.homeYet = true
-		g.msg(colRed, "The Last Wanderer is already here.")
-		g.tollWhileAway(g.Turn - g.aheadAt)
-	}
 	p.Torch.ver = -1
 	g.Effects = nil
 	g.Target = nil
@@ -345,10 +330,6 @@ func (g *Game) gatherLights() []*Light {
 		if it.Light != nil {
 			add(it.Light)
 		}
-	}
-	if g.Rift != nil && g.Rift.Level == l.ID {
-		g.riftLight.X, g.riftLight.Y = g.Rift.X, g.Rift.Y
-		add(g.riftLight)
 	}
 	if g.Portal != nil {
 		if g.Portal.Level == l.ID {
@@ -636,12 +617,6 @@ func (g *Game) move(dx, dy int) {
 		g.changeLevel(lk.To, from, nil)
 		return
 	}
-	if g.Rift != nil && g.Rift.Level == l.ID && nx == g.Rift.X && ny == g.Rift.Y {
-		g.Rift = nil
-		g.msg(colRed, "You step through the red portal after him.")
-		g.changeLevel("town", "", &Pos{l2(g).PortalAt.X, l2(g).PortalAt.Y + 1})
-		return
-	}
 	if g.Portal != nil {
 		if g.Portal.Level == l.ID && nx == g.Portal.X && ny == g.Portal.Y {
 			g.msg(colBlue, "You step through the portal.")
@@ -670,9 +645,6 @@ func (g *Game) move(dx, dy int) {
 // level, or its town end.
 func (g *Game) portalAt(x, y int) bool {
 	l := g.Lv
-	if g.Rift != nil && g.Rift.Level == l.ID && x == g.Rift.X && y == g.Rift.Y {
-		return true
-	}
 	if g.Portal == nil {
 		return false
 	}
@@ -1318,10 +1290,6 @@ func (g *Game) monsterTurn(m *Monster) {
 			return
 		}
 	case AIWanderer:
-		if float64(m.HP) <= g.Rules.WandererRift*float64(m.MaxHP) && l.SealedDown != "" && g.Rift == nil {
-			g.openRift(m)
-			return
-		}
 		if l.Kind == KTown {
 			if prey := g.prey(m); prey != nil {
 				g.huntStep(m, prey)
@@ -2096,21 +2064,6 @@ func (g *Game) stalkerArrives() {
 	}
 }
 
-// openRift is the Last Wanderer at half life on his own floor: he reads
-// a scroll of his own and goes to Emberhold ahead of the hero. His red
-// portal stays open behind him for the hero to follow.
-func (g *Game) openRift(m *Monster) {
-	l := g.Lv
-	x, y := l.FreeNear(m.X, m.Y, g.P.X, g.P.Y)
-	g.Rift = &Portal{l.ID, x, y}
-	g.riftLight.ver = -1
-	g.novaFx(x, y, C(1, .15, .1), 3)
-	g.msg(colRed, "The Last Wanderer reads a scroll. A red portal tears open.")
-	g.msg(m.T.Color, "The Last Wanderer: \"I know the way home too.\"")
-	m.Gone = true // off this level at cleanup
-	g.ahead, g.aheadAt = m, g.Turn
-}
-
 // unseal opens the Hearth Below's way down where its chamber stands,
 // wherever the Last Wanderer died.
 func (g *Game) unseal(here *Level) {
@@ -2129,10 +2082,6 @@ func (g *Game) unseal(here *Level) {
 		}
 	}
 }
-
-// townHuntTurns is how long the Last Wanderer takes to find and kill
-// one townsperson while the hero is not in Emberhold to stop him.
-const townHuntTurns = 25
 
 // hunter returns the Last Wanderer when he is loose in the hero's town.
 func (g *Game) hunter() *Monster {
@@ -2243,35 +2192,6 @@ func (g *Game) relight() {
 		lt.Off = false
 	}
 	g.snuffed = nil
-}
-
-// tollWhileAway is what the Last Wanderer did in Emberhold while the hero
-// was elsewhere: a townsperson for every townHuntTurns, nearest the portal
-// first, and the lights around each of them put out.
-func (g *Game) tollWhileAway(turns int) {
-	l := g.Lv
-	if turns >= townHuntTurns {
-		g.msg(colLore, "Emberhold is dark. You are too late for some of them.")
-	}
-	for n := turns / townHuntTurns; n > 0; n-- {
-		var next *Monster
-		for _, m := range l.Monsters {
-			if m.Friendly && !m.Dead && (next == nil || cheb(m.X, m.Y, l.PortalAt.X, l.PortalAt.Y) < cheb(next.X, next.Y, l.PortalAt.X, l.PortalAt.Y)) {
-				next = m
-			}
-		}
-		if next == nil {
-			break
-		}
-		for _, lt := range l.Lights {
-			if !lt.Off && drinks([]Pos{{next.X, next.Y}}, lt.X, lt.Y) {
-				lt.Off = true
-				g.snuffed = append(g.snuffed, lt)
-			}
-		}
-		g.townspersonDies(next)
-	}
-	g.cleanup()
 }
 
 // fleeFrom steps a monster to the neighboring cell farthest from (x, y).

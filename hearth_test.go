@@ -16,9 +16,10 @@ import (
 // dies. Two variants: the floor as generated, and the duel, the floor
 // cleared of everything but him. BOTHEARTH=n runs n seeds per policy,
 // from BOTHEARTHFIRST (default 1); BOTRULES lays knobs over the defaults.
-// Tuned 2026-10-03 to WandererHp 3: on seeds 1-96 the duel is won by the
-// fighter every time on about 2.6 potions and by the caster about 7 in
-// 10 on the whole belt.
+// Tuned 2026-10-05 to WandererHp 2.8, the fight all in the Hearth or
+// in town after he follows: on seeds 1-96 and 1001-1096 the fighter
+// wins every duel on about 2.4 potions and the caster about 7 in 10 on
+// the whole belt; half the casters portal home and he follows.
 //
 //	BOTHEARTH=48 go test -count=1 -v -run HearthTrial .
 

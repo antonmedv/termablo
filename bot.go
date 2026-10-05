@@ -521,13 +521,6 @@ func (b *Bot) act() {
 	if b.errand && b.runErrand() {
 		return
 	}
-	if g := b.g; g.Rift != nil && g.Rift.Level == l.ID {
-		// he went home through his own portal: after him
-		b.enter(BotDescend, "after him through the red portal")
-		if b.walkTo(g.Rift.X, g.Rift.Y, true) {
-			return
-		}
-	}
 	if b.loot() || b.explore() || b.descend() {
 		return
 	}

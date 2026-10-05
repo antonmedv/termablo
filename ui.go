@@ -176,24 +176,20 @@ func (g *Game) drawMap(s *Screen, x0, y0, w, h int) {
 		return base.Scale(0.5+0.6*b).Lerp(base.Mul(tl).Scale(1.6), 0.2)
 	}
 	// Portals
-	portalGlyph := func(x, y int, fg, back RGB) {
+	portalGlyph := func(x, y int) {
 		i := l.Idx(x, y)
 		if lit, _ := g.litAt(i); lit {
 			f := float32(0.75 + 0.25*math.Sin(t*4))
-			bg := back.Scale(f)
-			put(x, y, 'Ω', fg.Scale(f+.2), &bg, true)
+			bg := C(.05, .1, .35).Scale(f)
+			put(x, y, 'Ω', C(.55, .75, 1).Scale(f+.2), &bg, true)
 		}
-	}
-	blue, blueBG := C(.55, .75, 1), C(.05, .1, .35)
-	if g.Rift != nil && g.Rift.Level == l.ID {
-		portalGlyph(g.Rift.X, g.Rift.Y, C(1, .4, .3), C(.35, .04, .03))
 	}
 	if g.Portal != nil {
 		if g.Portal.Level == l.ID {
-			portalGlyph(g.Portal.X, g.Portal.Y, blue, blueBG)
+			portalGlyph(g.Portal.X, g.Portal.Y)
 		}
 		if l.Kind == KTown {
-			portalGlyph(l.PortalAt.X, l.PortalAt.Y, blue, blueBG)
+			portalGlyph(l.PortalAt.X, l.PortalAt.Y)
 		}
 	}
 	// Items
@@ -995,9 +991,6 @@ func (g *Game) drawOverview(s *Screen, mapW, mapH int) {
 			}
 			s.Put(x+2+mx/sc, y+1+my/sc, ch, c.C8())
 		}
-	}
-	if g.Rift != nil && g.Rift.Level == l.ID {
-		s.Put(x+2+g.Rift.X/sc, y+1+g.Rift.Y/sc, 'Ω', colRed.C8())
 	}
 	if g.Portal != nil && g.Portal.Level == l.ID {
 		s.Put(x+2+g.Portal.X/sc, y+1+g.Portal.Y/sc, 'Ω', colBlue.C8())

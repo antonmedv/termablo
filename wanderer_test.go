@@ -219,34 +219,6 @@ func TestWandererAsleepStays(t *testing.T) {
 	}
 }
 
-// At half life on his own floor he opens a red portal and goes home
-// ahead of the hero; the hero follows through it and finds him there.
-func TestWandererOpensRift(t *testing.T) {
-	g, boss := hearthGame(t)
-	boss.HP = boss.MaxHP / 2
-	g.monsterTurn(boss)
-	g.cleanup()
-	if g.Rift == nil || on(g.Lv, boss) {
-		t.Fatal("no red portal, or he is still here")
-	}
-	g.P.X, g.P.Y = g.Rift.X-1, g.Rift.Y
-	if !g.Lv.Walkable(g.P.X, g.P.Y) {
-		g.P.X, g.P.Y = g.Rift.X+1, g.Rift.Y
-		g.move(-1, 0)
-	} else {
-		g.move(1, 0)
-	}
-	if g.Lv.Kind != KTown {
-		t.Fatalf("the red portal led to %s", g.Lv.ID)
-	}
-	if g.Rift != nil {
-		t.Error("the red portal stays open after use")
-	}
-	if !on(g.Lv, boss) {
-		t.Fatal("he is not in town")
-	}
-}
-
 // Wherever he dies, the Hearth's way down opens where his chamber is.
 func TestWandererDiesAwayFromHearth(t *testing.T) {
 	g, boss := hearthGame(t)
@@ -395,33 +367,17 @@ func TestForgeGoesCold(t *testing.T) {
 	}
 }
 
-// Gone ahead through his own portal, he hunts while the hero dawdles.
-func TestTownTollWhileAway(t *testing.T) {
-	g, boss := hearthGame(t)
-	boss.HP = boss.MaxHP / 2
-	g.monsterTurn(boss)
-	g.cleanup()
-	g.Turn += 2*townHuntTurns + 1
-	g.changeLevel("town", "", nil)
-	if len(g.Fallen) != 2 {
-		t.Fatalf("%d fell while the hero was away, want 2", len(g.Fallen))
-	}
-	if !on(g.Lv, boss) {
-		t.Fatal("he is not in town")
-	}
-}
-
 // Left alone in town he keeps hunting: he does not doze off when the hero
 // is out of sight, and he paths through the streets to them.
 func TestWandererHuntsUnwatched(t *testing.T) {
 	g, _ := townGame(t)
 	l := g.Lv
-	for range 4 * townHuntTurns {
+	for range 100 {
 		g.P.X, g.P.Y = l.FreeNear(l.W-6, 4, -1, -1)
 		g.wait()
 	}
 	if len(g.Fallen) < 2 {
-		t.Errorf("only %v fell in %d turns", g.Fallen, 4*townHuntTurns)
+		t.Errorf("only %v fell in 100 turns", g.Fallen)
 	}
 }
 

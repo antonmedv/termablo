@@ -169,13 +169,7 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 			add("Step on it and press g to pick up", colDim)
 		}
 	}
-	if g.Rift != nil && g.Rift.Level == l.ID && mx == g.Rift.X && my == g.Rift.Y {
-		if len(out) > 0 {
-			add("", colDim)
-		}
-		add("Red Portal", colRed)
-		add("He went through to Emberhold", colGray)
-	} else if g.portalAt(mx, my) {
+	if g.portalAt(mx, my) {
 		if len(out) > 0 {
 			add("", colDim)
 		}
