@@ -69,6 +69,7 @@ type Game struct {
 	stalkIn   int
 	stalkAt   Pos      // where the hero arrived, where he will step out
 	homeYet   bool     // he has reached Emberhold
+	byPortal  bool     // the hero came to this level through the town portal
 	snuffed   []*Light // town lights he has put out; back when he dies
 	Fallen    []string // townsfolk he has killed, by template ID, in order
 	ForgeOut  bool     // Hadrik is dead and the forge with him
@@ -214,6 +215,7 @@ func (g *Game) getLevel(id string) *Level {
 }
 
 func (g *Game) changeLevel(id, from string, arrive *Pos) {
+	g.byPortal = false
 	if old := g.Lv; old != nil {
 		g.followOut(old)
 	}
@@ -296,14 +298,9 @@ func (g *Game) gatherLights() []*Light {
 			g.dark = append(g.dark, Pos{m.X, m.Y})
 		}
 	}
-	town := l.Kind == KTown
 	add := func(lt *Light) {
 		if !drinks(g.dark, lt.X, lt.Y) {
 			ls = append(ls, lt)
-		} else if town && !lt.Off && lt != p.Torch && slices.Contains(l.Lights, lt) {
-			// in Emberhold what he puts out stays out while he lives
-			lt.Off = true
-			g.snuffed = append(g.snuffed, lt)
 		}
 	}
 	near := func(x, y int, r float32) bool {
@@ -621,6 +618,7 @@ func (g *Game) move(dx, dy int) {
 		if g.Portal.Level == l.ID && nx == g.Portal.X && ny == g.Portal.Y {
 			g.msg(colBlue, "You step through the portal.")
 			g.changeLevel("town", "", &Pos{l2(g).PortalAt.X, l2(g).PortalAt.Y + 1})
+			g.byPortal = true
 			return
 		}
 		if l.Kind == KTown && nx == l.PortalAt.X && ny == l.PortalAt.Y {
@@ -1211,12 +1209,20 @@ func (g *Game) castNova() {
 
 func (g *Game) monsterTurn(m *Monster) {
 	l, p := g.Lv, g.P
+	if m.T.AI == AIWanderer && l.Kind == KTown {
+		g.snuffAround(m)
+	}
 	if m.Friendly {
 		if w := g.hunter(); w != nil && cheb(m.X, m.Y, w.X, w.Y) <= 8 {
 			// panicked: they stumble away two turns in three
 			if g.rng.Intn(3) != 0 {
 				g.fleeFrom(m, w.X, w.Y)
 			}
+			return
+		}
+		if cheb(m.X, m.Y, m.HomeX, m.HomeY) > 3 {
+			// back home after running from him
+			g.stepMonster(m, m.X+sign(m.HomeX-m.X), m.Y+sign(m.HomeY-m.Y))
 			return
 		}
 		if g.rng.Intn(8) == 0 {
@@ -2044,7 +2050,7 @@ func (g *Game) stalkerArrives() {
 	l, m := g.Lv, g.stalker
 	g.stalker = nil
 	at := g.stalkAt
-	viaPortal := l.Kind == KTown && g.Portal != nil
+	viaPortal := l.Kind == KTown && g.byPortal && g.Portal != nil
 	if viaPortal {
 		at = l.PortalAt
 	}
@@ -2186,6 +2192,28 @@ func (g *Game) forgeOut(l *Level) {
 	g.msg(colLore, "Hadrik's forge goes cold.")
 }
 
+// snuffAround puts out the town's lights within his reach. In Emberhold
+// what he puts out stays out while he lives.
+func (g *Game) snuffAround(m *Monster) {
+	at := []Pos{{m.X, m.Y}}
+	for _, lt := range g.Lv.Lights {
+		if !lt.Off && drinks(at, lt.X, lt.Y) {
+			lt.Off = true
+			g.snuffed = append(g.snuffed, lt)
+		}
+	}
+}
+
+// snuffedAt says whether a town light he put out stands at (x, y).
+func (g *Game) snuffedAt(x, y int) bool {
+	for _, lt := range g.snuffed {
+		if lt.X == x && lt.Y == y {
+			return true
+		}
+	}
+	return false
+}
+
 // relight brings back the town lights he put out, all but a dead forge.
 func (g *Game) relight() {
 	for _, lt := range g.snuffed {
@@ -2249,6 +2277,9 @@ func (g *Game) Ready(lvl int, build string) error {
 		g.Quests[1] = 2
 	}
 	g.Deepest = maxi(g.Deepest, depth)
+	if g.Lv.Kind == KTown {
+		g.restock()
+	}
 	p.recalc()
 	p.HP, p.MP = float64(p.MaxHP()), float64(p.MaxMP())
 	return nil

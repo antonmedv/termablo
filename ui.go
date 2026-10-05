@@ -131,7 +131,7 @@ func (g *Game) drawMap(s *Screen, x0, y0, w, h int) {
 			fg := lightC.Scale(1.6)
 			bg := lightC.Scale(td.BG)
 			if td.Emit {
-				if drinks(g.dark, mx, my) {
+				if drinks(g.dark, mx, my) || (l.Kind == KTown && g.snuffedAt(mx, my)) {
 					// put out: cold ash in his red light
 					fg = C(.3, .27, .26).Mul(tl).Scale(1.6)
 					bg = RGB{}

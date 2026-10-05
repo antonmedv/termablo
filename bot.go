@@ -808,6 +808,9 @@ func (b *Bot) runErrand() bool {
 // name is here at all.
 func (b *Bot) visit(id string, trade func()) (acted, found bool) {
 	g, p := b.g, b.g.P
+	if g.townHunted() {
+		return false, false // they are running for their lives, not trading
+	}
 	for _, m := range g.Lv.Monsters {
 		if m.T.ID != id {
 			continue

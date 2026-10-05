@@ -280,7 +280,7 @@ func TestTownGoesDark(t *testing.T) {
 	if near == nil {
 		t.Skip("no town light near the portal")
 	}
-	g.gatherLights()
+	g.snuffAround(boss)
 	boss.X, boss.Y = l.FreeNear(boss.X+30, boss.Y, -1, -1)
 	g.gatherLights()
 	if !near.Off {
@@ -447,5 +447,83 @@ func TestReady(t *testing.T) {
 	}
 	if NewGame(3).Ready(5, "rogue") == nil {
 		t.Error("an unknown build is accepted")
+	}
+}
+
+// The bot does not try to trade with townsfolk running for their lives.
+func TestBotWontTradeInHuntedTown(t *testing.T) {
+	g, _ := townGame(t)
+	b := NewBot(g, policyByName("caster"))
+	if acted, found := b.visit("smith", func() { t.Fatal("traded during the hunt") }); acted || found {
+		t.Errorf("visit acted %v, found %v", acted, found)
+	}
+}
+
+// Townsfolk who ran from him walk back home afterwards.
+func TestTownsfolkWalkHome(t *testing.T) {
+	g := NewGame(1)
+	g.Mode = ModePlay
+	l := g.Lv
+	v := townsperson(g, "villager")
+	v.X, v.Y = l.FreeNear(v.HomeX-10, v.HomeY, -1, -1)
+	for range 40 {
+		g.monsterTurn(v)
+	}
+	if d := cheb(v.X, v.Y, v.HomeX, v.HomeY); d > 3 {
+		t.Errorf("the villager is still %d cells from home", d)
+	}
+}
+
+// A street lamp he put out draws cold after he walks on, not lit.
+func TestSnuffedLampDrawsCold(t *testing.T) {
+	g, boss := townGame(t)
+	l := g.Lv
+	var lamp *Light
+	for _, lt := range l.Lights {
+		if l.At(lt.X, lt.Y) == TLamp {
+			lamp = lt
+		}
+	}
+	boss.X, boss.Y = l.FreeNear(lamp.X+1, lamp.Y, -1, -1)
+	g.snuffAround(boss)
+	boss.X, boss.Y = l.FreeNear(lamp.X+40, lamp.Y, -1, -1)
+	g.P.X, g.P.Y = l.FreeNear(lamp.X, lamp.Y+1, -1, -1)
+	g.computeVisibility()
+	s := NewScreen(110, 40)
+	g.Draw(s)
+	cx, cy := g.camera(s.W-panelW, s.H-logH)
+	c := s.C[(lamp.Y-cy)*s.W+lamp.X-cx]
+	if c.Ch != '¥' {
+		t.Fatalf("no lamp drawn at its cell: %q", c.Ch)
+	}
+	if c.FG.R > 128 {
+		t.Errorf("the put-out lamp still glows: %v", c.FG)
+	}
+}
+
+// Back in town by the stairs, he does not collapse a portal left open
+// on another floor.
+func TestStairsArrivalKeepsPortal(t *testing.T) {
+	g, boss := hearthGame(t)
+	g.Portal = &Portal{"crypt2", 5, 5}
+	g.changeLevel("town", "", nil)
+	g.wait()
+	g.wait()
+	if !on(g.Lv, boss) {
+		t.Fatal("he did not follow")
+	}
+	if g.Portal == nil {
+		t.Error("he collapsed a portal the hero never used")
+	}
+}
+
+// A -level start in town restocks the shops for the depth.
+func TestReadyInTownRestocks(t *testing.T) {
+	g := NewGame(2)
+	if err := g.Ready(30, "fighter"); err != nil {
+		t.Fatal(err)
+	}
+	if g.stocked != g.Deepest {
+		t.Errorf("stock for depth %d, deepest %d", g.stocked, g.Deepest)
 	}
 }
