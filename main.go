@@ -116,8 +116,7 @@ func (m *model) key(k string) bool {
 			g.SetLang(nextLang(g.L.Lang.Code, 1))
 		case "left", "h", "shift+tab":
 			g.SetLang(nextLang(g.L.Lang.Code, -1))
-		case "up", "down", "k", "j":
-		default: // enter, space, or any other key
+		case "enter", " ":
 			g.Mode = ModePlay
 		}
 	case ModeDead:

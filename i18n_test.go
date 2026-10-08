@@ -280,6 +280,12 @@ func TestTitleLanguages(t *testing.T) {
 		t.Fatalf("a second click should begin, mode %v", g.Mode)
 	}
 	m2 := newModel(1, "")
+	for _, k := range []string{"x", "q", "up", "esc"} {
+		m2.key(k)
+	}
+	if m2.g.Mode != ModeTitle {
+		t.Fatalf("only enter and space should begin, mode %v", m2.g.Mode)
+	}
 	m2.key("enter")
 	if m2.g.Mode != ModePlay {
 		t.Errorf("enter should begin")
