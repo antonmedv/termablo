@@ -209,8 +209,8 @@ func (c *Catalog) pick(m *Msg, args []any) *Msg {
 }
 
 // choose is the variant key for the arguments: the gender of the first
-// noun that has a variant, else the plural category of n, else "other",
-// else the first variant.
+// noun that has a variant, else the plural category of n, else "other"
+// or the language's last plural category, else the first variant.
 func (c *Catalog) choose(m *Msg, args []any) string {
 	for i := 1; i < len(args); i += 2 {
 		if n, ok := args[i].(Noun); ok && n.Gender != "" {
@@ -228,6 +228,11 @@ func (c *Catalog) choose(m *Msg, args []any) string {
 	}
 	if _, ok := m.Vars["other"]; ok {
 		return "other"
+	}
+	// A language without "other" falls back to its last category, the
+	// plural most counts take (Russian "many"), not the singular.
+	if ps := c.Lang.Plurals; len(ps) > 0 && m.Vars[ps[len(ps)-1]] != nil {
+		return ps[len(ps)-1]
 	}
 	return m.Order[0]
 }

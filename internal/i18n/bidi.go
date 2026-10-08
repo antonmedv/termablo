@@ -187,6 +187,19 @@ func Visual(s string, rtl bool) string {
 	if rtl {
 		para = bR
 	}
+	// A number after a Latin word reads with it, left to right: "turn 12"
+	// (the bidi algorithm's rule W7).
+	last := para
+	for i, c := range cls {
+		switch c {
+		case bL, bR:
+			last = c
+		case bEN:
+			if last == bL {
+				cls[i] = bL
+			}
+		}
+	}
 	// A number counts as right-to-left when it decides a neutral's side.
 	side := func(c int) int {
 		if c == bEN {

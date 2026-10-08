@@ -110,6 +110,14 @@ func TestPlurals(t *testing.T) {
 	if got := ru.T("msg.gold", "n", 22); got != "Вы подобрали 22 золотых." {
 		t.Errorf("got %q", got)
 	}
+	// a form left out falls back to the plural most counts take
+	c, err := Parse("ru", []byte(`{ x: { one: "{n} монета", many: "{n} монет" } }`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := c.T("x", "n", 3); got != "3 монет" {
+		t.Errorf("missing few: got %q", got)
+	}
 }
 
 func TestPlaceholders(t *testing.T) {
@@ -189,8 +197,15 @@ func TestVisual(t *testing.T) {
 	if got, want := Visual("سلام", true), string([]rune{0xFEE1, 0xFEFC, 0xFEB3}); got != want {
 		t.Errorf("shape: got %U, want %U", []rune(got), []rune(want))
 	}
-	if got := Visual("abc 12", true); got != "12 abc" {
-		t.Errorf("ltr in rtl: %q", got)
+	// Latin text keeps its order, numbers included
+	for _, s := range []string{"abc 12", "Level 3 · HP 4/10", "Crypt of the Fallen 2"} {
+		if got := Visual(s, true); got != s {
+			t.Errorf("ltr in rtl: %q became %q", s, got)
+		}
+	}
+	// a number after Arabic still reads right to left with it
+	if got := []rune(Visual("قبو 2", true)); got[0] != '2' {
+		t.Errorf("number after arabic: %q", string(got))
 	}
 	if got := Visual("plain text", false); got != "plain text" {
 		t.Errorf("ltr untouched: %q", got)

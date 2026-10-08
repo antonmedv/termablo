@@ -342,7 +342,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	s.Text(cx, row, fit(L.T("ui.panel.hero", "n", p.Lvl), bw-5), colWhite.C8())
 	if p.Points > 0 {
 		pts := fmt.Sprintf("+%d", p.Points)
-		s.TextBold(cx+bw-len(pts), row, pts, colGold.C8())
+		s.TextBold(cx+bw-i18n.Width(pts), row, pts, colGold.C8())
 	}
 	row++
 	s.Text(cx, row, fit(L.T("ui.panel.life"), bw-12), C(.9, .4, .35).C8())
