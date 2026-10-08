@@ -3,6 +3,8 @@ WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY *.go ./
+COPY internal ./internal
+COPY locales/*.maml ./locales/
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /termablo . && mkdir /data
 
 FROM gcr.io/distroless/static-debian12:nonroot
