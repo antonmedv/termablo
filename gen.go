@@ -214,7 +214,7 @@ func (l *Level) ruin(x0, y0, w, h int, keep float64) {
 }
 
 func genFields(seed int64, r *Rules) *Level {
-	W, H := 150, 90
+	W, H := 180, 108
 	l := newLevel("fields", "Ashen Fields", KSurface, W, H, 1, seed, r)
 	l.Ambient = C(.05, .06, .12)
 	l.Lore = "The Ashen Fields. Moonlight on the ash of a burned forest."
@@ -249,7 +249,7 @@ func genFields(seed int64, r *Rules) *Level {
 		}
 	}
 	// Crypt entrance ruin
-	ex, ey := 118, 64
+	ex, ey := 142, 77
 	l.ruin(ex-6, ey-4, 12, 8, 0.85)
 	for y := ey - 1; y <= ey+1; y++ {
 		l.Set(ex-6, y, TFloor)
@@ -269,7 +269,7 @@ func genFields(seed int64, r *Rules) *Level {
 	main := l.carvePath(1, cy, ex-8, ey, 2, road)
 	l.carvePath(ex-8, ey, ex-6, ey, 3, road)
 	mid := main[len(main)/2]
-	north := l.carvePath(mid.X, mid.Y, 100, 1, 2, road)
+	north := l.carvePath(mid.X, mid.Y, 120, 1, 2, road)
 	roadPts := append(append([]Pos{}, main...), north...)
 	trail := func(x, y int) {
 		switch l.At(x, y) {
@@ -295,16 +295,16 @@ func genFields(seed int64, r *Rules) *Level {
 		l.Fill(1, y, 3, y, TDirt)
 	}
 	l.Links = append(l.Links, Link{0, cy - 1, 0, cy + 1, "town", 2, cy})
-	for x := 99; x <= 101; x++ {
+	for x := 119; x <= 121; x++ {
 		l.Set(x, 0, TExit)
 		l.Set(x, 1, TDirt)
 	}
-	l.Links = append(l.Links, Link{99, 0, 101, 0, "marsh", 100, 2})
+	l.Links = append(l.Links, Link{119, 0, 121, 0, "marsh", 120, 2})
 
 	l.Start = Pos{3, cy}
 	safe := []Pos{{2, cy}}
 	// Ruins scattered in the fields
-	for range 7 {
+	for range 10 {
 		rx, ry := 20+l.rng.Intn(W-50), 8+l.rng.Intn(H-20)
 		if cheb(rx, ry, ex, ey) < 16 || cheb(rx, ry, 2, cy) < 15 {
 			continue
@@ -322,7 +322,7 @@ func genFields(seed int64, r *Rules) *Level {
 	// Campfires of the Fallen, kept apart: a fire set inside an earlier
 	// camp lands on one of its Fallen.
 	var fires []Pos
-	for tries := 0; tries < 60 && len(fires) < 5; tries++ {
+	for tries := 0; tries < 60 && len(fires) < 7; tries++ {
 		fx, fy := 20+l.rng.Intn(W-40), 10+l.rng.Intn(H-20)
 		if cheb(fx, fy, 2, cy) < 20 || cheb(fx, fy, ex, ey) < 12 {
 			continue
@@ -349,7 +349,7 @@ func genFields(seed int64, r *Rules) *Level {
 		placeMonster(l, "shaman", fx, fy+1, lvl, RankNormal)
 	}
 	// Guarantee a way through: re-carve if trees block crypt reach
-	populate(l, "fields", 20, safe)
+	populate(l, "fields", 29, safe)
 	l.finalize()
 	return l
 }
@@ -357,7 +357,7 @@ func genFields(seed int64, r *Rules) *Level {
 // ---------------------------------------------------------------- marsh
 
 func genMarsh(seed int64, r *Rules) *Level {
-	W, H := 130, 80
+	W, H := 156, 96
 	l := newLevel("marsh", "Blackmarsh", KSurface, W, H, 6, seed, r)
 	l.Ambient = C(.04, .07, .09)
 	l.Lore = "Blackmarsh. Cold lights drift over the water. Do not follow them."
@@ -389,7 +389,7 @@ func genMarsh(seed int64, r *Rules) *Level {
 		}
 	}
 	// Grotto mouth
-	gx, gy := 102, 16
+	gx, gy := 122, 19
 	l.circle(gx, gy, 5, func(x, y int, d float64) {
 		if d > 3.6 {
 			l.Set(x, y, TCaveWall)
@@ -417,19 +417,19 @@ func genMarsh(seed int64, r *Rules) *Level {
 	// carver walks through cave wall without painting it, so a road aimed
 	// at the stairs could tunnel in through the wall and leave deep water
 	// in front of the opening.
-	l.carvePath(40, H-2, gx, gy+7, 2, path)
-	for x := 39; x <= 41; x++ {
+	l.carvePath(48, H-2, gx, gy+7, 2, path)
+	for x := 47; x <= 49; x++ {
 		l.Set(x, H-1, TExit)
 		l.Set(x, H-2, TMud)
 	}
-	l.Links = append(l.Links, Link{39, H - 1, 41, H - 1, "fields", 40, H - 3})
-	l.Start = Pos{40, H - 3}
+	l.Links = append(l.Links, Link{47, H - 1, 49, H - 1, "fields", 48, H - 3})
+	l.Start = Pos{48, H - 3}
 
 	// Standing stones with crystals, clear of the start and of the grotto
 	// mouth: a ring of boulders over its opening would seal the way down.
-	for range 6 {
+	for range 8 {
 		sx, sy := 10+l.rng.Intn(W-20), 8+l.rng.Intn(H-16)
-		if cheb(sx, sy, 40, H-3) < 10 || cheb(sx, sy, gx, gy) < 12 {
+		if cheb(sx, sy, 48, H-3) < 10 || cheb(sx, sy, gx, gy) < 12 {
 			continue
 		}
 		l.circle(sx, sy, 2.6, func(x, y int, d float64) {
@@ -442,14 +442,14 @@ func genMarsh(seed int64, r *Rules) *Level {
 		l.Set(sx, sy, TCrystal)
 	}
 	// Drowned shrine
-	sx, sy := 25+l.rng.Intn(40), 10+l.rng.Intn(20)
+	sx, sy := 30+l.rng.Intn(48), 12+l.rng.Intn(24)
 	l.ruin(sx, sy, 10, 6, 0.8)
 	l.Set(sx+5, sy+3, TAltar)
 	l.Set(sx+2, sy+2, TChest)
 	l.Set(sx, sy+3, TFloor)
-	l.carvePath(sx, sy+3, 40, H/2, 1, path)
+	l.carvePath(sx, sy+3, 48, H/2, 1, path)
 
-	populate(l, "marsh", 24, []Pos{l.Start})
+	populate(l, "marsh", 35, []Pos{l.Start})
 	l.finalize()
 	return l
 }

@@ -82,6 +82,7 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 | 76 | 2026-10-03T23:39 | keep | 7644350+ | 5cc1ee087a | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | WandererHp 1 -> 3 (new knobs WandererHp, WandererDmg, WandererRift); bot follows his red portal; Hearth trial (BOTHEARTH) | no eval run reaches abyss3, so the Hearth trial measures him: par hero lvl 21, full belt, duel on a cleared floor. At 1x both builds won 100% on under 1 potion. At 3x, seeds 1-96 and fresh 1001-1096 agree: fighter 96/96 on 2.6 potions, caster 69/96 on the whole belt. Full floor: about 1 in 8 wins, deaths mostly to imp packs, the existing abyss wall. Eval unchanged by construction. |
 | 77 | 2026-10-05T11:28 | keep | 3fb0411+ | 159d3bde9b | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | the Last Wanderer's own portal cut (and the WandererRift knob, the off-screen toll); WandererHp 3 -> 2.8 | without his half-life portal the duel stays in the Hearth or follows a hero who portals home, so the caster fell to 60% at 3x. Hearth trial at 2.8, seeds 1-96 and 1001-1096: fighter 96/96 on 2.4 potions both times, caster 72/96 and 69/96; about half the casters portal home and he follows. Eval unchanged by construction. |
 | 78 | 2026-10-05T13:51 | keep | 549f938+ | 896af5f7dd | 1–96 | 13.84 (13.3–14.5) | +0.00 (+0.00…+0.00) | 92%/95% | 3%/4% | 10 | 0.03 | 13.19 | review fixes: bot skips trade in a hunted town, townsfolk walk home, snuffed lamps draw cold, he collapses only a portal the hero came through, snuffing on his turn, -level town start restocks | bug review of the branch; Hearth trial and eval identical to #77 |
+| 79 | 2026-10-08T13:50 | keep | 025a61b+ | 896af5f7dd | 1–48 | 15.16 (14.0–17.7) | +0.69 (-0.58…+3.42) | 92%/98% | 2%/8% | 10 | 0.06 | 13.19 | maps: Ashen Fields 150x90→180x108, Blackmarsh 130x80→156x96; packs, fires, ruins, stones scaled by area (fields 20→29 packs, marsh 24→35) | user: bigger surface areas; score noise on seeds 1–48 (+0.69) and 1001–1048 (+1.47), more kills/turns, fighter gold surplus up a little |
 
 ## Rules per entry
 
@@ -163,3 +164,4 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 - #76 `098-wanderer-hp3.json`: defaults
 - #77 `099-wanderer-noportal.json`: defaults
 - #78 `100-wanderer-review-fixes.json`: defaults
+- #79 `102-bigger-maps.json`: defaults
