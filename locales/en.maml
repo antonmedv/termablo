@@ -1,0 +1,1001 @@
+# Termablo's text, in English: the source every translation is made
+# from and the fallback for any key a translation lacks. The runbook is
+# docs/translating.md; the terms live in locales/glossary.maml.
+#
+# A value is a string, or an object:
+#   - plural forms, chosen by the count {n}:   { one: "...", other: "..." }
+#   - gender forms, chosen by a noun argument:  { m: "...", f: "...", n: "..." }
+#   - a noun that other words agree with:       { text: "...", gender: "f" }
+# Placeholders are {name}; {{ is a literal brace. Comments above a key are
+# context for translators. "# max: N" limits the key (and everything inside
+# it) to N terminal cells; a CJK character takes two.
+{
+  # The message log: whole sentences, the first letter capitalized by the
+  # game. A monster in a message comes as {who}: already carrying its
+  # article ("the Plague Rat", "a Fire Imp") or a proper name ("Bloodmaw
+  # the Hungry"), in the nominative. Translations should keep {who} as the
+  # sentence's subject so no other case is needed.
+  msg: {
+    welcome_goal: "Hunt the Bone King in the crypt and the Drowned Oracle beneath Blackmarsh."
+    welcome_help: "Press ? for help. Captain Voss by the tavern has work for you."
+    # {area}: the level's name, area.*
+    enter: "You enter {area}."
+    far_beyond: "Something here is far beyond you."
+    fountain: "The cold water closes your wounds."
+    portal_step: "You step through the portal."
+    portal_collapse: "The portal collapses behind you."
+    portal_open: "A shimmering blue portal tears open."
+    # {item}: an item's name, no article. "g" is the pick-up key.
+    see_item: "You see {item} here. (g to pick up)"
+    see_items: "Several items lie here. (g to pick up)"
+    pickup_gold: "You pick up {n} gold."
+    # {item}: "Healing Potion" or "Mana Potion"
+    pickup_potion: "You pick up a {item}."
+    belt_no_room: "Your belt has no room for another {item}."
+    # {item}: "Scroll of Town Portal"
+    pickup_scroll: "You pick up a {item}."
+    pickup_item: "You pick up {item}."
+    pack_full: "Your pack is full."
+    pack_too_full: "Your pack is too full to swap that."
+    nothing_to_pick_up: "There is nothing here to pick up."
+    notice_item: "You notice something on the ground."
+    explored: "Nothing left to explore here."
+    # {who}: a monster as met for the first time, ref.a ("a Fire Imp")
+    spot: "You spot {who}."
+    # A boss dies; {who} is its name ("The Bone King").
+    boss_destroyed: "{who} has been destroyed!"
+    # A champion or unique dies.
+    elite_slain: "{who} is slain!"
+    monster_dies: "{who} dies."
+    out_of_range: "{who} is out of range."
+    no_target: "No target in sight."
+    no_mana: "Not enough mana."
+    # {n}: the new character level; "c" opens the character sheet
+    level_up: "You have reached level {n}! (c to spend 5 attribute points)"
+    open_chest: "You open the chest."
+    altar_cold: "The altar is cold now."
+    altar_restore: "Blood-light washes over you. You are restored."
+    altar_xp: "Forbidden knowledge floods your mind. (+{n} XP)"
+    altar_gift: "The altar offers up a gift."
+    # {who}: what killed the hero, as in hit.*
+    slain: "You have been slain by {who}."
+    no_healing_potions: "You have no healing potions."
+    full_life: "You are already at full life."
+    drink_healing: "You drink a healing potion."
+    no_mana_potions: "You have no mana potions."
+    full_mana: "Your mana is already full."
+    drink_mana: "You drink a mana potion."
+    already_in_town: "You are already in town."
+    no_scrolls: "You have no Scrolls of Town Portal."
+    boneking_raises: "The Bone King raises the dead!"
+    boneking_greets: "The Bone King: \"Another torch to snuff. Kneel, and join my court.\""
+    boneking_dead: "The crypts fall silent. Return to Captain Voss."
+    oracle_reforms: "The Oracle dissolves into mist and reforms."
+    oracle_lights: "Cold lights gather around the Oracle."
+    oracle_greets: "The Drowned Oracle: \"I have seen your ending, little flame. It is wet and cold.\""
+    oracle_dead: "The Oracle's song ends. Deeper still, something burns... Return to Voss."
+    wanderer_greets: "The Last Wanderer: \"Another stranger. They always send a stranger.\""
+    wanderer_portal: "The Last Wanderer steps out of the portal. It collapses behind him."
+    wanderer_follows: "The Last Wanderer follows you."
+    wanderer_home: "The Last Wanderer: \"You showed me the way home.\""
+    # {who}: a townsperson, the object: "a Villager", "Old Mirela"
+    wanderer_cuts: "The Last Wanderer cuts {who}."
+    wanderer_kills: "The Last Wanderer cuts down {who}."
+    wanderer_taunt: "The Last Wanderer: \"They gave me a sword and a captain's speech too.\""
+    town_empty: "No one is left in Emberhold but you."
+    forge_cold: "Hadrik's forge goes cold."
+    wanderer_last_words: "The Last Wanderer: \"Keep walking.\""
+    wanderer_dead: "The red light goes out, and the dark lets go of the fire."
+    unseal_here: "Where he waited, a way down opens."
+    unseal_far: "Far below, in the Hearth, a way down opens."
+    # A townsperson while the Last Wanderer hunts the town; {who} is the
+    # townsperson as the subject.
+    running: "{who} is running for their life."
+    # {n}: gold; {item}: the unique he hands over
+    voss_reward: "Voss gives you {n} gold and {item}."
+    cannot_afford: "You cannot afford that."
+    belt_full: "Your belt is full."
+    # Hadrik's gamble: {item} the item it turned out to be, {n} the price
+    gamble: "Hadrik unwraps {item}. {n}g, no refunds."
+    reroll: "Hadrik hauls out fresh stock for {n}g."
+    bought: "Bought {item} for {n}g."
+    sold: "Sold {item} for {n}g."
+    equip: "You equip {item}."
+    unequip: "You remove {item}."
+    drop: "You drop {item}."
+    # Mirela, the alchemist, calls the hero "dear". {n}: gold paid
+    mirela_healthy: "Mirela looks you over. \"Hale as an ox. Buy something, dear.\""
+    mirela_free: "Mirela tends your wounds. \"No charge for the young. Now buy something, dear.\""
+    mirela_broke: "Mirela shakes her head. \"Herbs cost coin, dear.\""
+    mirela_partial: "Mirela does what your {n}g allows. \"Come back with more, dear.\""
+    mirela_paid: "Mirela tends your wounds for {n}g. \"There. Now buy something, dear.\""
+  }
+
+  # How a monster is referred to in messages. {name} is a monster noun;
+  # write gender forms where the article agrees. Named monsters (uniques,
+  # bosses, Hadrik, Mirela, Voss) skip these and appear by name.
+  ref: {
+    # the monster as a known subject: "the Plague Rat"
+    the: "the {name}"
+    # a monster first seen: "a Plague Rat"; English uses "an" for the nouns
+    # marked gender "an"
+    a: { other: "a {name}", an: "an {name}" }
+    # a fire-enchanted monster's dying blast, the subject of hit.burn; may
+    # be a noun { text, gender } so hit.burn can agree with it
+    death_flames: "{name}'s death flames"
+  }
+
+  # Spoken lines. Multi-line values are dialogues, one paragraph a line.
+  talk: {
+    hadrik: {
+      greet: "Hadrik: \"Steel for the dark. Take a look.\""
+      after_oracle: "Hadrik: \"Last one I armed for the deep never came back for repairs.\""
+    }
+    # Captain Voss is earnest and clipped. He believes the town's story.
+    voss: {
+      intro: """
+Wanderer. Good. We need a blade that doesn't shake.
+The Ember keeps the dark out. The dark wants it back.
+East of the gate, past the Ashen Fields, lies the Crypt of the Fallen.
+Four floors down, the Bone King sits his throne of ribs. Destroy him.
+And north, in Blackmarsh, the Drowned Oracle calls the lost into the water.
+Buy potions from Mirela. Keep a portal scroll. Come back alive."""
+      boneking_reward: """
+The Bone King is dust? Then the crypt bells may ring again.
+Take this — it was my father's. And the gold, of course."""
+      oracle_reward: """
+The Oracle, silenced... I never thought I'd sleep without hearing her.
+Beneath her pool, the rock burns. The Abyss has no floor, they say. Be careful.
+I sent someone down there once. I stopped counting the days."""
+      after_boneking: """
+The crypt is quiet. Now: Blackmarsh, north of the fields.
+Follow the cold lights down into the grotto. End the Oracle."""
+      after_oracle: """
+You've done more than any of us dared.
+If you must go deeper... the Abyss waits below the Oracle's pool."""
+      after_wanderer: """
+The lanterns are lit again. Whoever he was, he was one of ours once.
+Keep walking, stranger. It is what we hire you for."""
+    }
+  }
+
+  # What villagers say, one picked at random. Rumors; most are true.
+  rumor: {
+    braziers: "They say the braziers in the crypt light themselves at dusk. Nobody tends them."
+    brother: "My brother went into Blackmarsh after the lights. He came back wet. He came back wrong."
+    torch: "Keep your torch high. The dark down there isn't empty — it's hungry."
+    forge: "Hadrik's forge hasn't gone out in forty years. He says the day it does, we run."
+    glimmer: "Rare things glimmer in the dark. Gold-light means something old and named."
+    crystal: "Old Mirela's crystal was dug out of the grotto. It sings when the Oracle dreams."
+    scroll: "A portal scroll is cheaper than a funeral."
+    stranger: "There was a stranger before you. Bought the same sword. Went past the marsh and kept going."
+    edran: "King Edran carried the Ember up in his bare hands. It cost him his face."
+    uncle: "My uncle joined the Ember Cult. Said the dark was owed. He went down to pay it."
+    holding: "Mirela says the Oracle isn't hunting anyone. She's holding something down."
+  }
+
+  # Level names, as the side panel, the map and the log show them.
+  # max: 26
+  area: {
+    town: "Emberhold"
+    fields: "Ashen Fields"
+    marsh: "Blackmarsh"
+    # {n}: the floor, 1 to 3
+    crypt: "Crypt of the Fallen {n}"
+    throne: "Throne of the Bone King"
+    grotto: "Sunken Grotto {n}"
+    oracle_pool: "The Oracle's Pool"
+    abyss: "The Burning Abyss {n}"
+    hearth: "The Hearth Below"
+  }
+
+  # Where a path leads, before the level there exists: "Leads to {place}".
+  region: {
+    town: "Emberhold"
+    fields: "the Ashen Fields"
+    marsh: "Blackmarsh"
+    crypt: "the Crypt of the Fallen"
+    grotto: "the Sunken Grotto"
+    abyss: "the Burning Abyss"
+  }
+
+  # Logged the first time the hero enters a level; {area} is its name.
+  lore: {
+    town: "Emberhold. The last lit town before the dark. Lanterns burn all night here."
+    fields: "The Ashen Fields. Moonlight on the ash of a burned forest."
+    marsh: "Blackmarsh. Cold lights drift over the water. Do not follow them."
+    crypt: "{area}. A royal tomb; the air tastes of dust."
+    grotto: "{area}. Cold water presses down; the crystals hum."
+    abyss: "{area}. The rock itself is bleeding."
+    hearth: "{area}. The braziers lean away from the middle of the room."
+  }
+
+  shop: {
+    smith: "Hadrik's Forge"
+    alch: "Mirela's Remedies"
+  }
+
+  item: {
+    # {n} gold coins on the ground or in a shop list
+    gold: "{n} gold"
+    healing_potion: "Healing Potion"
+    mana_potion: "Mana Potion"
+    town_portal_scroll: "Scroll of Town Portal"
+    # one of Hadrik's gambles; {base} is a gamble.* noun
+    unidentified: "Unidentified {base}"
+    fresh_stock: "Fresh stock"
+    # A Magic item: prefix.*, base.*, suffix.*; either affix may be empty
+    # and spaces around an empty one are dropped. Reorder freely.
+    magic: "{prefix} {base} {suffix}"
+    # A Rare item: rare.first.* and rare.second.*
+    rare: "{first} {second}"
+    # Tooltip lines of potions, scrolls and Hadrik's services; one line each.
+    desc: {
+      healing_potion: "Restores a large portion of life"
+      mana_potion: "Restores a large portion of mana"
+      town_portal_scroll: "Opens a portal back to Emberhold"
+      unidentified: """
+Hadrik's pick from the depth you have reached.
+Could be anything. No refunds."""
+      fresh_stock: "Hadrik hauls out new stock, and Mirela does too."
+    }
+  }
+
+  # A Rare or Unique item's kind under its name: "Rare Chain Mail".
+  rarity: {
+    rare: "Rare {base}"
+    unique: "Unique {base}"
+  }
+
+  # Equipment slots, the inventory's left column.
+  # max: 12
+  slot: {
+    weapon: "Weapon"
+    off_hand: "Off-hand"
+    helm: "Helm"
+    armor: "Armor"
+    gloves: "Gloves"
+    boots: "Boots"
+    ring: "Ring"
+    amulet: "Amulet"
+  }
+
+  # Item properties; {n} is the amount.
+  stat: {
+    str: "+{n} Strength"
+    dex: "+{n} Dexterity"
+    vit: "+{n} Vitality"
+    ene: "+{n} Energy"
+    life: "+{n} Life"
+    mana: "+{n} Mana"
+    dmg_pct: "+{n}% Enhanced Damage"
+    flat_dmg: "+{n} Damage"
+    armor: "+{n} Armor"
+    armor_pct: "+{n}% Enhanced Armor"
+    crit: "+{n}% Critical Strike"
+    life_steal: "{n}% Life Stolen per Hit"
+    light: "+{n} Light Radius"
+    spell_pct: "+{n}% Spell Damage"
+    # per turn
+    life_regen: "Regenerate {n} Life"
+    mana_regen: "Regenerate {n} Mana"
+    mf: "+{n}% Magic Find"
+    thorns: "Attackers take {n} Damage"
+    to_hit: "+{n} Attack Rating"
+    all_attr: "+{n} All Attributes"
+    gold_find: "+{n}% Extra Gold"
+  }
+
+  # Hover notes on map tiles that do something.
+  tile_note: {
+    door: "Walk into it to open."
+    chest: "Walk into it to open."
+    fountain: "Walk into it to restore life."
+    blood_altar: "Walk into it to make an offering."
+    brazier: "Casts warm firelight."
+    cold_forge: "Hadrik's forge. It has gone out."
+    street_lamp: "Casts warm lamplight."
+    campfire: "A camp of the Fallen is never far."
+    glowing_crystal: "Glows with cold blue light."
+    lava: "Molten rock. Impassable, and bright."
+    deep_water: "Too deep to wade."
+    shallow_water: "Shallow enough to wade."
+    tree: "Blocks movement and sight."
+    open_chest: "Already looted."
+    grave: "Here lies someone unlucky."
+  }
+
+  # The help screen: each key and what it does. Key names (hjkl, tab,
+  # ctrl+c) are keyboard keys and stay as they are; words like "arrows" and
+  # "or" are translated.
+  help: {
+    # max: 26
+    key: {
+      move: "arrows hjkl yubn"
+      wait: ". or 5"
+      pickup: "g or ,"
+      firebolt: "f"
+      nova: "r"
+      target: "tab / shift+tab"
+      potions: "q / w"
+      portal: "t"
+      explore: "o"
+      inventory: "i"
+      character: "c"
+      map: "m"
+      quit: "Q / ctrl+c"
+    }
+    does: {
+      move: "move / attack (numpad works too)"
+      wait: "wait a turn"
+      pickup: "pick up equipment (gold & potions are automatic)"
+      firebolt: "Firebolt at target (lights up the dark!)"
+      nova: "Frost Nova: damage + brief freeze around you"
+      target: "next / previous target (or click one)"
+      potions: "drink healing / mana potion (works over a few turns)"
+      portal: "read Scroll of Town Portal"
+      explore: "auto-explore (stops when enemies appear)"
+      inventory: "inventory & equipment"
+      character: "character sheet, spend attribute points"
+      map: "map of explored area"
+      quit: "quit"
+    }
+    tip: {
+      walk_into: "Walk into doors, chests, altars and fountains to use them."
+      talk: "Talk to townsfolk by walking into them."
+      darkness: "Monsters in darkness are invisible until light touches them."
+      names: "Blue names are champions; gold names are uniques."
+      glow: "Glowing drops are rare or unique. Look for the light."
+      upgrade: "Items with ▲ beat what you're wearing."
+      hover: "Hover the mouse over the map to see what things are."
+      belt: "Click a belt row to drink a potion or read the scroll."
+    }
+  }
+
+  ui: {
+    too_small: "Termablo needs at least 80x24."
+    too_small_now: "Current: {w}x{h}"
+    # joins a list: "Swift, Vampiric"
+    list_sep: ", "
+    esc_close: "esc to close"
+    any_key: "press any key"
+    # max: 28
+    currently_equipped: "Currently equipped:"
+    more_above: "↑ {n} more"
+    more_below: "↓ {n} more"
+    # after a log line that repeated: "You drink a mana potion. (x3)"
+    log: {
+      repeat: " (x{n})"
+    }
+
+    title: {
+      subtitle: "a descent into lit darkness"
+      begin: "press any key to begin"
+      # after the language name on the title screen; tab and the arrows switch
+      lang_keys: "tab: language"
+    }
+
+    # The side panel is 28 cells wide.
+    panel: {
+      # max: 28
+      safe: "Safe haven"
+      # max: 28
+      area_level: "Area level {n}"
+      # max: 28
+      not_safe: "Not safe"
+      # the hero is always "the Wanderer"
+      # max: 23
+      hero: "Wanderer  ·  Level {n}"
+      # max: 16
+      life: "Life"
+      # max: 16
+      mana: "Mana"
+      # max: 28
+      experience: "Experience"
+      # max: 13
+      gold: "Gold {n}"
+      # the belt: hotkey, slot wells, then these right-aligned labels
+      # max: 8 n=1
+      belt_portal: "Portal {n}"
+      # max: 8
+      belt_heal: "Heal"
+      # max: 8
+      belt_mana: "Mana"
+      # max: 14
+      damage: "Damage {lo}-{hi}"
+      # max: 13
+      armor: "Armor {n}"
+      # max: 14
+      crit: "Crit {n}%"
+      # {r}: the torch radius, like 4.5
+      # max: 13
+      light: "Light {r}"
+      # max: 28
+      skills: "Skills"
+      # max: 20
+      firebolt: "Firebolt {lo}-{hi}"
+      # max: 20
+      nova: "Frost Nova {lo}-{hi}"
+      # mana cost; "mp" is mana points
+      # max: 5
+      mp: "{n}mp"
+      # the target's level, short
+      # max: 7
+      target_lvl: "Lv {n}"
+      # max: 28
+      frozen: "Frozen"
+      # max: 28
+      no_enemies: "No enemies in sight"
+      # max: 28
+      quests: "Quests"
+      # the hotkeys
+      # max: 28
+      keys: "? help  i inv  c char  m map"
+    }
+
+    hover: {
+      darkness: "Darkness"
+      unexplored: "Unexplored, or beyond your light."
+      remembered: "Remembered — not currently in sight."
+      you: "You — the Wanderer"
+      you_stats: "Level {lvl} · Life {hp}/{maxhp} · Mana {mp}/{maxmp}"
+      torch: "Torch radius {r}"
+      townsfolk: "Townsfolk · walk into them to talk"
+      # a monster's rank, level and life
+      rank: {
+        normal: "Level {lvl} · HP {hp}/{maxhp}"
+        champion: "Champion · Level {lvl} · HP {hp}/{maxhp}"
+        unique: "Unique · Level {lvl} · HP {hp}/{maxhp}"
+        boss: "Boss · Level {lvl} · HP {hp}/{maxhp}"
+      }
+      hits: "Hits for {lo}-{hi} · armor {armor}"
+      # a monster's state, listed with list_sep, the first capitalized
+      state: {
+        frozen: "frozen"
+        unaware: "unaware of you"
+        fleeing: "fleeing"
+        ranged: "ranged"
+        glows: "glows"
+      }
+      # {item}: what the hero wears in that slot now
+      replaces: "Replaces {item}"
+      pick_up: "Step on it and press g to pick up"
+      portal: "Town Portal"
+      # {place}: area.* or region.*
+      leads_back: "Leads back to {place}"
+      leads_to: "Leads to {place}"
+      # after a tile's name: "Stone floor · bloodstained"
+      decal: {
+        corpse: "a corpse"
+        blood: "bloodstained"
+        scorch: "scorched"
+      }
+    }
+
+    # tooltip lines of an equipment item
+    item: {
+      damage: "Damage: {lo}-{hi}"
+      damage_2h: "Damage: {lo}-{hi} (two-handed)"
+      armor: "Armor: {n}"
+      # {lvl}: item level; {n}: what a merchant pays
+      footer: "Item level {lvl}  ·  worth {n}g"
+    }
+
+    inv: {
+      title: "Inventory"
+      # max: 26
+      equipped: "Equipped"
+      pack: "Pack {n}/{max}"
+      empty: "Your pack is empty."
+      # beside an item no slot holds yet
+      # max: 3
+      new: "new"
+      # max: 76
+      keys: "←→/tab switch · ↑↓ select · enter equip/remove · d drop · esc"
+    }
+
+    char: {
+      title: "Character"
+      hero: "Wanderer · Level {lvl}"
+      experience: "Experience {xp} / {next}"
+      # max: 14
+      attr: {
+        str: "Strength"
+        dex: "Dexterity"
+        vit: "Vitality"
+        ene: "Energy"
+      }
+      # what an attribute point buys
+      # max: 26
+      attr_desc: {
+        str: "+melee damage"
+        dex: "+hit, crit, dodge"
+        vit: "+life"
+        ene: "+mana, spell damage"
+      }
+      # max: 50
+      points: "{n} points to spend — press 1-4"
+      # max: 17
+      stat: {
+        life: "Life"
+        mana: "Mana"
+        damage: "Damage"
+        firebolt: "Firebolt"
+        armor: "Armor"
+        attack: "Attack"
+        crit: "Critical"
+        life_steal: "Life steal"
+        magic_find: "Magic find"
+        kills: "Kills"
+      }
+    }
+
+    shop: {
+      # max: 10
+      buy: "Buy"
+      # max: 10
+      sell: "Sell"
+      gold: "Gold: {n}"
+      empty: "Nothing here."
+      # max: 72
+      keys: "tab buy/sell · ↑↓ select · enter confirm · esc leave"
+    }
+
+    help: {
+      title: "Help"
+      scroll: "↑↓ scroll"
+    }
+
+    dead: {
+      # max: 46
+      title: "YOU HAVE DIED"
+      # {who}: the killer as in hit.*
+      # max: 46
+      slain_by: "Slain by {who}"
+      # max: 46
+      summary: "Level {lvl} · {kills} kills · {gold} gold"
+      # {area}: area.*
+      # max: 46
+      where: "in {area}"
+      # max: 46
+      keys: "n: new game   Q: quit"
+    }
+  }
+
+  # ---- game data: one line per row of the Go tables (TestCatalogCoversData)
+
+  # Item bases: nouns. Each is { text, gender } in languages with gender, so
+  # prefixes and rare names can agree with it.
+  base: {
+    dagger: "Dagger"
+    short_sword: "Short Sword"
+    club: "Club"
+    hand_axe: "Hand Axe"
+    mace: "Mace"
+    long_sword: "Long Sword"
+    battle_axe: "Battle Axe"
+    war_hammer: "War Hammer"
+    great_sword: "Great Sword"
+    runeblade: "Runeblade"
+    executioners_axe: "Executioner's Axe"
+    doom_flail: "Doom Flail"
+    buckler: "Buckler"
+    kite_shield: "Kite Shield"
+    tower_shield: "Tower Shield"
+    bone_ward: "Bone Ward"
+    rags: "Rags"
+    leather_armor: "Leather Armor"
+    studded_leather: "Studded Leather"
+    ring_mail: "Ring Mail"
+    chain_mail: "Chain Mail"
+    scale_mail: "Scale Mail"
+    plate_mail: "Plate Mail"
+    gothic_plate: "Gothic Plate"
+    cap: "Cap"
+    skull_cap: "Skull Cap"
+    helm: "Helm"
+    great_helm: "Great Helm"
+    grim_visage: "Grim Visage"
+    leather_gloves: "Leather Gloves"
+    chain_gloves: "Chain Gloves"
+    gauntlets: "Gauntlets"
+    boots: "Boots"
+    chain_boots: "Chain Boots"
+    greaves: "Greaves"
+    ring: "Ring"
+    amulet: "Amulet"
+  }
+
+  # Magic item prefixes: adjectives on the base, ordered weakest to strongest
+  # within each stat. Where adjectives agree, write the forms, e.g.
+  # { m: "...", f: "...", n: "...", pl: "..." }.
+  prefix: {
+    jagged: "Jagged"
+    deadly: "Deadly"
+    vicious: "Vicious"
+    brutal: "Brutal"
+    savage: "Savage"
+    merciless: "Merciless"
+    sharp: "Sharp"
+    keen: "Keen"
+    cruel: "Cruel"
+    wicked: "Wicked"
+    bronze: "Bronze"
+    iron: "Iron"
+    steel: "Steel"
+    silver: "Silver"
+    gold: "Gold"
+    platinum: "Platinum"
+    sturdy: "Sturdy"
+    strong: "Strong"
+    glorious: "Glorious"
+    blessed: "Blessed"
+    saintly: "Saintly"
+    godly: "Godly"
+    fine: "Fine"
+    warriors: "Warrior's"
+    soldiers: "Soldier's"
+    knights: "Knight's"
+    lords: "Lord's"
+    kings: "King's"
+    lizards: "Lizard's"
+    snakes: "Snake's"
+    serpents: "Serpent's"
+    drakes: "Drake's"
+    dragons: "Dragon's"
+    smoldering: "Smoldering"
+    fiery: "Fiery"
+    blazing: "Blazing"
+    infernal: "Infernal"
+    hellfire: "Hellfire"
+    honed: "Honed"
+    precise: "Precise"
+    lethal: "Lethal"
+    assassins: "Assassin's"
+    humming: "Humming"
+    resonant: "Resonant"
+    singing: "Singing"
+  }
+
+  # Magic item suffixes: "of the Wolf". May agree with the base too.
+  suffix: {
+    of_the_jackal: "of the Jackal"
+    of_the_fox: "of the Fox"
+    of_the_wolf: "of the Wolf"
+    of_the_tiger: "of the Tiger"
+    of_the_mammoth: "of the Mammoth"
+    of_the_whale: "of the Whale"
+    of_strength: "of Strength"
+    of_might: "of Might"
+    of_power: "of Power"
+    of_the_giant: "of the Giant"
+    of_the_titan: "of the Titan"
+    of_dexterity: "of Dexterity"
+    of_skill: "of Skill"
+    of_accuracy: "of Accuracy"
+    of_precision: "of Precision"
+    of_perfection: "of Perfection"
+    of_vigor: "of Vigor"
+    of_vitality: "of Vitality"
+    of_zest: "of Zest"
+    of_life: "of Life"
+    of_the_mind: "of the Mind"
+    of_energy: "of Energy"
+    of_brilliance: "of Brilliance"
+    of_sorcery: "of Sorcery"
+    of_wizardry: "of Wizardry"
+    of_the_leech: "of the Leech"
+    of_the_bat: "of the Bat"
+    of_the_vampire: "of the Vampire"
+    of_light: "of Light"
+    of_radiance: "of Radiance"
+    of_the_sun: "of the Sun"
+    of_regeneration: "of Regeneration"
+    of_renewal: "of Renewal"
+    of_the_troll: "of the Troll"
+    of_fortune: "of Fortune"
+    of_luck: "of Luck"
+    of_greed: "of Greed"
+    of_thorns: "of Thorns"
+    of_spikes: "of Spikes"
+    of_retribution: "of Retribution"
+    of_the_sky: "of the Sky"
+    of_the_moon: "of the Moon"
+    of_the_stars: "of the Stars"
+    of_the_heavens: "of the Heavens"
+    of_wealth: "of Wealth"
+    of_avarice: "of Avarice"
+  }
+
+  # Rare items are named from two words, first + second: "Grim Bite". The
+  # first word agrees with the second, which is a noun with a gender.
+  rare: {
+    first: {
+      grim: "Grim"
+      doom: "Doom"
+      blood: "Blood"
+      storm: "Storm"
+      death: "Death"
+      shadow: "Shadow"
+      rune: "Rune"
+      gloom: "Gloom"
+      bone: "Bone"
+      ash: "Ash"
+      raven: "Raven"
+      soul: "Soul"
+      dread: "Dread"
+      havoc: "Havoc"
+      wraith: "Wraith"
+      corpse: "Corpse"
+      ember: "Ember"
+      venom: "Venom"
+      night: "Night"
+      hollow: "Hollow"
+      cinder: "Cinder"
+      pale: "Pale"
+    }
+    second: {
+      bite: "Bite"
+      edge: "Edge"
+      fang: "Fang"
+      song: "Song"
+      reaver: "Reaver"
+      cleaver: "Cleaver"
+      thirst: "Thirst"
+      kiss: "Kiss"
+      needle: "Needle"
+      ward: "Ward"
+      bulwark: "Bulwark"
+      aegis: "Aegis"
+      guard: "Guard"
+      wall: "Wall"
+      shell: "Shell"
+      coat: "Coat"
+      hide: "Hide"
+      carapace: "Carapace"
+      mantle: "Mantle"
+      shroud: "Shroud"
+      crown: "Crown"
+      visor: "Visor"
+      cowl: "Cowl"
+      brow: "Brow"
+      horn: "Horn"
+      grip: "Grip"
+      fist: "Fist"
+      hand: "Hand"
+      claw: "Claw"
+      knuckle: "Knuckle"
+      stride: "Stride"
+      track: "Track"
+      trail: "Trail"
+      spur: "Spur"
+      tread: "Tread"
+      loop: "Loop"
+      coil: "Coil"
+      band: "Band"
+      circle: "Circle"
+      spiral: "Spiral"
+      eye: "Eye"
+      heart: "Heart"
+      charm: "Charm"
+      talisman: "Talisman"
+      star: "Star"
+    }
+  }
+
+  # Unique items: a proper name (a noun, it may carry a gender) and a line of
+  # flavor. See docs/lore.md, "Named things".
+  unique: {
+    last_wanderers_shroud: {
+      name: "Last Wanderer's Shroud"
+      flavor: "Still warm. It was never yours, and now it is."
+    }
+    wanderers_shroud: {
+      name: "Wanderer's Shroud"
+      flavor: "Worn by one who never stopped walking."
+    }
+    shard_of_night: {
+      name: "Shard of Night"
+      flavor: "It drinks the torchlight."
+    }
+    hollow_crown: {
+      name: "Hollow Crown"
+      flavor: "The king it belonged to did not need a skull."
+    }
+    emberbrand: {
+      name: "Emberbrand"
+      flavor: "Its edge never cools."
+    }
+    the_last_lantern: {
+      name: "The Last Lantern"
+      flavor: "It burns when all else is dark."
+    }
+    moonstride: {
+      name: "Moonstride"
+      flavor: "Footsteps like falling snow."
+    }
+    band_of_ashes: {
+      name: "Band of Ashes"
+      flavor: "Warm to the touch, always."
+    }
+    gravewardens_coat: {
+      name: "Gravewarden's Coat"
+      flavor: "Stitched from the shrouds of the unquiet."
+    }
+    eye_of_the_deep: {
+      name: "Eye of the Deep"
+      flavor: "It blinks when you are not looking."
+    }
+    crown_of_the_drowned: {
+      name: "Crown of the Drowned"
+      flavor: "Water still drips from its rim."
+    }
+    bloodfist: {
+      name: "Bloodfist"
+      flavor: "Never clean. Never dry."
+    }
+    kingsbane: {
+      name: "Kingsbane"
+      flavor: "Seven crowns have rolled beneath it."
+    }
+    starfall_plate: {
+      name: "Starfall Plate"
+      flavor: "Forged from a fallen star; it remembers the sky."
+    }
+  }
+
+  # What an unidentified item from Hadrik is called by its slot: see item.unidentified.
+  gamble: {
+    weapon: "Weapon"
+    shield: "Shield"
+    helm: "Helm"
+    armor: "Armor"
+    gloves: "Gloves"
+    boots: "Boots"
+    ring: "Ring"
+    amulet: "Amulet"
+  }
+
+  # Monsters and townsfolk by ID: nouns. English marks the nouns that take
+  # "an" with gender "an". Names starting "The" are bosses, used without an article.
+  monster: {
+    rat: "Plague Rat"
+    bat: "Cave Bat"
+    fallen: "Fallen One"
+    shaman: "Fallen Shaman"
+    zombie: "Zombie"
+    wolf: "Dire Wolf"
+    skel: "Skeleton"
+    archer: "Skeleton Archer"
+    ghoul: "Ghoul"
+    cultist: { text: "Ember Cultist", gender: "an" }
+    wraith: "Wraith"
+    wisp: "Will-o'-Wisp"
+    drowned: "Drowned Dead"
+    horror: "Marsh Horror"
+    spider: "Grotto Spider"
+    golem: "Crystal Golem"
+    imp: "Fire Imp"
+    hellspawn: "Hellspawn"
+    boneking: "The Bone King"
+    oracle: "The Drowned Oracle"
+    wanderer: "The Last Wanderer"
+    smith: "Hadrik the Smith"
+    alch: "Old Mirela"
+    captain: "Captain Voss"
+    villager: "Villager"
+  }
+
+  # Unique monsters are named first + last: "Bloodmaw the Hungry". The last
+  # part may agree with the first, a noun with a gender.
+  unique_monster: {
+    name: "{first} {last}"
+    first: {
+      bloodmaw: "Bloodmaw"
+      grimtooth: "Grimtooth"
+      ashfang: "Ashfang"
+      hollowgrin: "Hollowgrin"
+      rotgut: "Rotgut"
+      blackvein: "Blackvein"
+      skullcleave: "Skullcleave"
+      mournwind: "Mournwind"
+      gravelurk: "Gravelurk"
+      emberskull: "Emberskull"
+      frostmarrow: "Frostmarrow"
+      dreadhowl: "Dreadhowl"
+      cinderjaw: "Cinderjaw"
+      wormheart: "Wormheart"
+    }
+    last: {
+      the_hungry: "the Hungry"
+      the_vile: "the Vile"
+      the_unburied: "the Unburied"
+      the_defiler: "the Defiler"
+      the_pale: "the Pale"
+      the_cruel: "the Cruel"
+      the_wretched: "the Wretched"
+      the_weeping: "the Weeping"
+      the_gnawer: "the Gnawer"
+    }
+  }
+
+  # Champion and unique monster modifiers, listed after the name.
+  # max: 14
+  mod: {
+    extra_strong: "Extra Strong"
+    swift: "Swift"
+    stone_skin: "Stone Skin"
+    fire_enchanted: "Fire Enchanted"
+    vampiric: "Vampiric"
+  }
+
+  # A monster hits the hero: {who} is the attacker as a subject ("the Plague
+  # Rat", "Bloodmaw the Hungry"), {n} the damage. One line per verb.
+  hit: {
+    bites: "{who} bites you for {n}."
+    stabs: "{who} stabs you for {n}."
+    hurls_fire_at: "{who} hurls fire at you for {n}."
+    claws: "{who} claws you for {n}."
+    mauls: "{who} mauls you for {n}."
+    slashes: "{who} slashes you for {n}."
+    shoots: "{who} shoots you for {n}."
+    rends: "{who} rends you for {n}."
+    casts_fire_at: "{who} casts fire at you for {n}."
+    chills: "{who} chills you for {n}."
+    shocks: "{who} shocks you for {n}."
+    grasps: "{who} grasps you for {n}."
+    crushes: "{who} crushes you for {n}."
+    pummels: "{who} pummels you for {n}."
+    spits_fire_at: "{who} spits fire at you for {n}."
+    cleaves: "{who} cleaves you for {n}."
+    smites: "{who} smites you for {n}."
+    drowns: "{who} drowns you for {n}."
+    cuts: "{who} cuts you for {n}."
+    hits: "{who} hits you for {n}."
+    # {who} is "<monster>'s death flames" (ref.death_flames), a plural subject
+    burn: "{who} burn you for {n}."
+  }
+
+  # Map tiles, as hover text. Lowercase; the game capitalizes the first letter.
+  tile: {
+    void: "void"
+    stone_floor: "stone floor"
+    wall: "wall"
+    door: "door"
+    open_door: "open door"
+    stairs_down: "stairs down"
+    stairs_up: "stairs up"
+    grass: "grass"
+    dirt: "dirt"
+    cobblestones: "cobblestones"
+    wooden_floor: "wooden floor"
+    tree: "tree"
+    dead_tree: "dead tree"
+    boulder: "boulder"
+    shallow_water: "shallow water"
+    deep_water: "deep water"
+    bridge: "bridge"
+    lava: "lava"
+    mud: "mud"
+    reeds: "reeds"
+    cave_floor: "cave floor"
+    cave_wall: "cave wall"
+    glowing_crystal: "glowing crystal"
+    brazier: "brazier"
+    street_lamp: "street lamp"
+    campfire: "campfire"
+    fountain: "fountain"
+    grave: "grave"
+    pillar: "pillar"
+    chest: "chest"
+    open_chest: "open chest"
+    town_wall: "town wall"
+    bones: "bones"
+    rubble: "rubble"
+    path_onward: "path onward"
+    carpet: "carpet"
+    shelf: "shelf"
+    blood_altar: "blood altar"
+    cold_forge: "cold forge"
+  }
+}

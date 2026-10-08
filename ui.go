@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"math"
 	"slices"
-	"strings"
-	"unicode/utf8"
+	"strconv"
+
+	"github.com/antonmedv/termablo/internal/i18n"
 )
 
 const (
@@ -17,9 +18,10 @@ var bgDark = colPanelBG.C8()
 
 func (g *Game) Draw(s *Screen) {
 	s.Clear()
+	s.RTL = g.L.Lang.RTL
 	if s.W < 80 || s.H < 24 {
-		s.Text(1, 1, "Termablo needs at least 80x24.", colWhite.C8())
-		s.Text(1, 2, fmt.Sprintf("Current: %dx%d", s.W, s.H), colGray.C8())
+		s.Text(1, 1, g.L.T("ui.too_small"), colWhite.C8())
+		s.Text(1, 2, g.L.T("ui.too_small_now", "w", s.W, "h", s.H), colGray.C8())
 		return
 	}
 	if g.Mode == ModeTitle {
@@ -269,7 +271,7 @@ func (g *Game) drawMap(s *Screen, x0, y0, w, h int) {
 			}
 		case EffText:
 			pr := e.progress(t)
-			sx := e.X - camX - utf8.RuneCountInString(e.Text)/2
+			sx := e.X - camX - len(e.Text)/2 // numbers: one byte a cell
 			sy := e.Y - camY - 1 - int(pr*1.8) - e.Row
 			if sy < 0 || sy >= h {
 				continue
@@ -318,8 +320,9 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	for yy := range h {
 		s.Set(x, yy, '│', colBorder.C8(), bgDark)
 	}
-	p, l := g.P, g.Lv
+	p, l, L := g.P, g.Lv, g.L
 	cx := x + 2
+	bw := w - 4
 	row := 1
 	sp := 2 // blank rows between groups; a short terminal gets one
 	if h < 30 {
@@ -331,52 +334,52 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 		s.TextBold(cx+i, row, string(r), C(1, .55, .2).Scale(f).C8())
 	}
 	row += 2
-	s.TextBold(cx, row, l.Name, colGold.C8())
+	s.TextBold(cx, row, fit(areaName(L, l.ID), bw), colGold.C8())
 	row++
-	area, areaCol := "Safe haven", colDim
+	area, areaCol := L.T("ui.panel.safe"), colDim
 	if l.Kind != KTown {
-		area = fmt.Sprintf("Area level %d", l.Depth)
+		area = L.T("ui.panel.area_level", "n", l.Depth)
 	} else if g.townHunted() {
-		area, areaCol = "Not safe", colRed
+		area, areaCol = L.T("ui.panel.not_safe"), colRed
 	}
-	s.Text(cx, row, area, areaCol.C8())
+	s.Text(cx, row, fit(area, bw), areaCol.C8())
 	row += sp
-	s.Text(cx, row, fmt.Sprintf("Wanderer  ·  Level %d", p.Lvl), colWhite.C8())
+	s.Text(cx, row, fit(L.T("ui.panel.hero", "n", p.Lvl), bw-5), colWhite.C8())
 	if p.Points > 0 {
-		s.TextBold(cx+22, row, fmt.Sprintf("+%d", p.Points), colGold.C8())
+		pts := fmt.Sprintf("+%d", p.Points)
+		s.TextBold(cx+bw-len(pts), row, pts, colGold.C8())
 	}
 	row++
-	bw := w - 4
-	s.Text(cx, row, "Life", C(.9, .4, .35).C8())
+	s.Text(cx, row, fit(L.T("ui.panel.life"), bw-12), C(.9, .4, .35).C8())
 	s.Text(cx+bw-12, row, fmt.Sprintf("%12s", fmt.Sprintf("%d/%d", int(p.HP), p.MaxHP())), colWhite.C8())
 	row++
 	bar(s, cx, row, bw, p.HP/float64(p.MaxHP()), p.HealPool/float64(p.MaxHP()), C(.85, .12, .1), C(.2, .05, .05))
 	row++
-	s.Text(cx, row, "Mana", C(.45, .6, 1).C8())
+	s.Text(cx, row, fit(L.T("ui.panel.mana"), bw-12), C(.45, .6, 1).C8())
 	s.Text(cx+bw-12, row, fmt.Sprintf("%12s", fmt.Sprintf("%d/%d", int(p.MP), p.MaxMP())), colWhite.C8())
 	row++
 	bar(s, cx, row, bw, p.MP/float64(p.MaxMP()), p.ManaPool/float64(p.MaxMP()), C(.2, .35, .95), C(.05, .07, .2))
 	row++
-	s.Text(cx, row, "Experience", C(.8, .7, .4).C8())
+	s.Text(cx, row, fit(L.T("ui.panel.experience"), bw), C(.8, .7, .4).C8())
 	row++
 	bar(s, cx, row, bw, float64(p.XP)/float64(g.Rules.xpNext(p.Lvl)), 0, C(.85, .7, .3), C(.15, .12, .05))
 	row += sp
 	// the belt: a well per potion slot, the scroll beside the gold
-	s.Text(cx, row, fmt.Sprintf("Gold %d", p.Gold), colGold.C8())
-	g.beltHit[2] = g.beltRow(s, cx+14, row, bw-14, "t", '?', p.Scrolls, 1, C(.85, .8, .65), fmt.Sprintf("Portal %d", p.Scrolls))
+	s.Text(cx, row, fit(L.T("ui.panel.gold", "n", p.Gold), 13), colGold.C8())
+	g.beltHit[2] = g.beltRow(s, cx+14, row, bw-14, "t", '?', p.Scrolls, 1, C(.85, .8, .65), L.T("ui.panel.belt_portal", "n", p.Scrolls))
 	row++
-	g.beltHit[0] = g.beltRow(s, cx, row, bw, "q", '!', p.HPot, beltMax, C(1, .25, .25), "Heal")
+	g.beltHit[0] = g.beltRow(s, cx, row, bw, "q", '!', p.HPot, beltMax, C(1, .25, .25), L.T("ui.panel.belt_heal"))
 	row++
-	g.beltHit[1] = g.beltRow(s, cx, row, bw, "w", '!', p.MPot, beltMax, C(.35, .5, 1), "Mana")
+	g.beltHit[1] = g.beltRow(s, cx, row, bw, "w", '!', p.MPot, beltMax, C(.35, .5, 1), L.T("ui.panel.belt_mana"))
 	row += sp
 	lo, hi := p.DmgRange()
-	s.Text(cx, row, fmt.Sprintf("Damage %d-%d", lo, hi), colGray.C8())
-	s.Text(cx+15, row, fmt.Sprintf("Armor %d", p.ArmorVal()), colGray.C8())
+	s.Text(cx, row, fit(L.T("ui.panel.damage", "lo", lo, "hi", hi), 14), colGray.C8())
+	s.Text(cx+15, row, fit(L.T("ui.panel.armor", "n", p.ArmorVal()), bw-15), colGray.C8())
 	row++
-	s.Text(cx, row, fmt.Sprintf("Crit %d%%", p.Crit()), colGray.C8())
-	s.Text(cx+15, row, fmt.Sprintf("Light %.1f", p.Torch.Radius), C(1, .7, .4).C8())
+	s.Text(cx, row, fit(L.T("ui.panel.crit", "n", p.Crit()), 14), colGray.C8())
+	s.Text(cx+15, row, fit(L.T("ui.panel.light", "r", fmt.Sprintf("%.1f", p.Torch.Radius)), bw-15), C(1, .7, .4).C8())
 	row += sp
-	s.Text(cx, row, "Skills", colDim.C8())
+	s.Text(cx, row, fit(L.T("ui.panel.skills"), bw), colDim.C8())
 	row++
 	fl, fh := p.FireboltDmg()
 	skc := func(cost int) Col8 {
@@ -386,13 +389,13 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 		return colDim.C8()
 	}
 	s.TextBold(cx, row, "f", colOrange.C8())
-	s.Text(cx+2, row, fmt.Sprintf("Firebolt %d-%d", fl, fh), skc(p.FireboltCost()))
-	s.Text(cx+bw-4, row, fmt.Sprintf("%2dmp", p.FireboltCost()), C(.45, .6, 1).C8())
+	s.Text(cx+2, row, fit(L.T("ui.panel.firebolt", "lo", fl, "hi", fh), bw-8), skc(p.FireboltCost()))
+	s.TextRight(cx, row, bw, L.T("ui.panel.mp", "n", p.FireboltCost()), C(.45, .6, 1).C8())
 	row++
 	nl, nh := p.NovaDmg()
 	s.TextBold(cx, row, "r", colCyan.C8())
-	s.Text(cx+2, row, fmt.Sprintf("Frost Nova %d-%d", nl, nh), skc(p.NovaCost()))
-	s.Text(cx+bw-4, row, fmt.Sprintf("%2dmp", p.NovaCost()), C(.45, .6, 1).C8())
+	s.Text(cx+2, row, fit(L.T("ui.panel.nova", "lo", nl, "hi", nh), bw-8), skc(p.NovaCost()))
+	s.TextRight(cx, row, bw, L.T("ui.panel.mp", "n", p.NovaCost()), C(.45, .6, 1).C8())
 	row += sp
 	// target
 	if row < h-10 {
@@ -401,38 +404,31 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 			t = g.nearestHostile()
 		}
 		if t != nil {
-			name := t.Name
-			if len(name) > bw {
-				name = name[:bw]
-			}
-			s.TextBold(cx, row, name, t.Color().C8())
+			s.TextBold(cx, row, fit(monsterNoun(L, t).Text, bw), t.Color().C8())
 			row++
 			bar(s, cx, row, bw-8, float64(t.HP)/float64(t.MaxHP), 0, C(.7, .1, .1), C(.15, .04, .04))
-			s.Text(cx+bw-7, row, fmt.Sprintf("Lv %d", t.Level), colDim.C8())
+			s.TextRight(cx+bw-7, row, 7, fit(L.T("ui.panel.target_lvl", "n", t.Level), 7), colDim.C8())
 			row++
-			if d := t.Describe(); d != "" {
-				if len(d) > bw {
-					d = d[:bw]
-				}
-				s.Text(cx, row, d, C(.45, .6, 1).C8())
+			if len(t.Mods) > 0 {
+				s.Text(cx, row, fit(modsText(L, t), bw), C(.45, .6, 1).C8())
 				row++
 			}
 			if t.Frozen > 0 {
-				s.Text(cx, row, "Frozen", colCyan.C8())
+				s.Text(cx, row, fit(L.T("ui.panel.frozen"), bw), colCyan.C8())
 				row++
 			}
 		} else {
-			s.Text(cx, row, "No enemies in sight", colDim.C8())
+			s.Text(cx, row, fit(L.T("ui.panel.no_enemies"), bw), colDim.C8())
 			row++
 		}
 	}
 	// quests
 	qrow := h - 6
 	if qrow > row {
-		s.Text(cx, qrow, "Quests", colDim.C8())
-		qn := []string{"The Bone King", "The Drowned Oracle"}
+		s.Text(cx, qrow, fit(L.T("ui.panel.quests"), bw), colDim.C8())
+		qn := []string{L.T("monster.boneking"), L.T("monster.oracle")}
 		if g.Quests[1] > 0 || g.homeYet {
-			qn = append(qn, "The Last Wanderer")
+			qn = append(qn, L.T("monster.wanderer"))
 		}
 		for i, q := range qn {
 			mark, col := "○", colGray
@@ -442,11 +438,14 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 			case g.Quests[i] == 1:
 				mark, col = "◉", colGold
 			}
-			s.Text(cx, qrow+1+i, mark+" "+q, col.C8())
+			s.Text(cx, qrow+1+i, fit(mark+" "+q, bw), col.C8())
 		}
 	}
-	s.Text(cx, h-2, "? help  i inv  c char  m map", colDim.C8())
+	s.Text(cx, h-2, fit(L.T("ui.panel.keys"), bw), colDim.C8())
 }
+
+// fit cuts s to at most w cells.
+func fit(s string, w int) string { return i18n.Truncate(s, max(0, w)) }
 
 // beltRow draws one belt line: the hotkey, slot wells holding a glyph per
 // item left, and a right-aligned label. It returns the row's clickable
@@ -470,7 +469,8 @@ func (g *Game) beltRow(s *Screen, x, y, w int, key string, glyph rune, n, slots 
 		}
 		s.SetBold(wx+1, y, ch, fg.C8(), bg.C8(), i < n)
 	}
-	s.Text(x+w-utf8.RuneCountInString(label), y, label, labCol.C8())
+	label = fit(label, w-2-slots*4)
+	s.TextRight(x, y, w, label, labCol.C8())
 	return hitBox{x, x + w - 1, y}
 }
 
@@ -492,12 +492,9 @@ func (g *Game) drawLog(s *Screen, x, y, w, h int) {
 		}
 		txt := m.Text
 		if m.N > 1 {
-			txt += fmt.Sprintf(" (x%d)", m.N)
+			txt += g.L.T("ui.log.repeat", "n", m.N)
 		}
-		if utf8.RuneCountInString(txt) > w-2 {
-			txt = string([]rune(txt)[:w-2])
-		}
-		s.Text(x+1, y+1+i, txt, m.Col.Scale(f).C8())
+		s.TextStart(x+1, y+1+i, w-2, fit(txt, w-2), m.Col.Scale(f).C8())
 	}
 }
 
@@ -515,81 +512,47 @@ func centerBox(s *Screen, mapW, mapH, w, h int, title string) (int, int) {
 	return x, y
 }
 
-// clipStr cuts s to at most n runes.
-func clipStr(s string, n int) string {
-	if n <= 0 {
-		return ""
-	}
-	if r := []rune(s); len(r) > n {
-		return string(r[:n])
-	}
-	return s
-}
-
-// wrapText breaks s into lines of at most w runes, at spaces when it can.
-func wrapText(s string, w int) []string {
-	w = maxi(1, w)
-	var out []string
-	for utf8.RuneCountInString(s) > w {
-		r := []rune(s)
-		cut := strings.LastIndex(string(r[:w+1]), " ")
-		if cut <= 0 {
-			cut = len(string(r[:w]))
-		}
-		out = append(out, strings.TrimRight(s[:cut], " "))
-		s = strings.TrimLeft(s[cut:], " ")
-	}
-	return append(out, s)
-}
-
 // scrollHints marks a list that runs past its rows: how many are above,
 // right-aligned on the row over the list, and how many below, set into
 // the row under it. Both end at x+w.
-func scrollHints(s *Screen, x, w, top, bottom, above, below int) {
+func (g *Game) scrollHints(s *Screen, x, w, top, bottom, above, below int) {
 	if above > 0 {
-		t := fmt.Sprintf("↑ %d more", above)
-		s.Text(x+w-utf8.RuneCountInString(t), top, t, colDim.C8())
+		s.TextRight(x, top, w, g.L.T("ui.more_above", "n", above), colDim.C8())
 	}
 	if below > 0 {
-		t := fmt.Sprintf(" ↓ %d more ", below)
-		s.Text(x+w-utf8.RuneCountInString(t), bottom, t, colDim.C8())
+		s.TextRight(x, bottom, w, " "+g.L.T("ui.more_below", "n", below)+" ", colDim.C8())
 	}
 }
 
 func (g *Game) itemLines(s *Screen, x, y, w, maxRows int, it *Item) {
 	row := 0
-	for _, ln := range it.Lines(g.Rules) {
-		if row >= maxRows {
-			break
-		}
-		txt := ln.S
-		for utf8.RuneCountInString(txt) > w {
-			// wrap long flavor text
-			head := string([]rune(txt)[:w])
-			cut := strings.LastIndex(head, " ")
-			if cut <= 0 {
-				cut = len(head)
+	for _, ln := range it.Lines(g.L, g.Rules) {
+		for _, txt := range i18n.Wrap(ln.S, w) { // long flavor text wraps
+			if row >= maxRows {
+				return
 			}
-			s.Text(x, y+row, txt[:cut], ln.C.C8())
-			txt = strings.TrimSpace(txt[cut:])
+			s.TextStart(x, y+row, w, txt, ln.C.C8())
 			row++
 		}
-		s.Text(x, y+row, txt, ln.C.C8())
-		row++
 	}
 }
 
 func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
-	p := g.P
+	p, L := g.P, g.L
 	bw, bh := 84, mini(s.H-2, 34)
-	x, y := centerBox(s, mapW, mapH, bw, bh, "Inventory")
+	x, y := centerBox(s, mapW, mapH, bw, bh, L.T("ui.inv.title"))
 	bw = mini(bw, mapW-2)
 	// two columns, equipped and pack; the names split what the width
 	// leaves, the longest base name whole when there is room
-	eqW := mini(17, (bw-21)/2+1)
-	packW := bw - 21 - eqW
+	labW := 6
+	for _, n := range eqNames {
+		labW = max(labW, i18n.Width(L.T("slot."+slug(n))))
+	}
+	labW = min(labW, 12) + 1
+	eqW := mini(17, (bw-12-labW)/2+1)
+	packW := bw - 12 - labW - eqW
 	colL := x + 2
-	colR := colL + 9 + eqW + 2
+	colR := colL + labW + eqW + 2
 	hdr := func(xx int, t string, active bool) {
 		c := colDim
 		if active {
@@ -597,8 +560,8 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 		}
 		s.TextBold(xx, y+1, t, c.C8())
 	}
-	hdr(colL, "Equipped", g.pane == 0)
-	hdr(colR, fmt.Sprintf("Pack %d/%d", len(p.Inv), invMax), g.pane == 1)
+	hdr(colL, fit(L.T("ui.inv.equipped"), labW+eqW), g.pane == 0)
+	hdr(colR, fit(L.T("ui.inv.pack", "n", len(p.Inv), "max", invMax), packW), g.pane == 1)
 	sel := func(xx, yy, w int) {
 		for i := range w {
 			if s.in(xx+i, yy) {
@@ -609,13 +572,13 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 	for i := range EqCount {
 		yy := y + 3 + i
 		if g.pane == 0 && g.cur == i {
-			sel(colL-1, yy, 9+eqW+1)
+			sel(colL-1, yy, labW+eqW+1)
 		}
-		s.Text(colL, yy, fmt.Sprintf("%-8s", eqNames[i]), colDim.C8())
+		s.Text(colL, yy, fit(L.T("slot."+slug(eqNames[i])), labW-1), colDim.C8())
 		if it := p.Eq[i]; it != nil {
-			s.Text(colL+9, yy, clipStr(it.Name, eqW), it.Color().C8())
+			s.Text(colL+labW, yy, fit(iname(L, it), eqW), it.Color().C8())
 		} else {
-			s.Text(colL+9, yy, "—", colDim.C8())
+			s.Text(colL+labW, yy, "—", colDim.C8())
 		}
 	}
 	// the pack runs down to the divider over the details
@@ -632,20 +595,20 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 			sel(colR-1, yy, x+bw-colR)
 		}
 		s.Put(colR, yy, it.Glyph(), it.Color().C8())
-		s.Text(colR+2, yy, clipStr(it.Name, packW), it.Color().C8())
+		s.Text(colR+2, yy, fit(iname(L, it), packW), it.Color().C8())
 		if up := g.upgradeHint(it); up != "" {
 			s.Text(x+bw-4, yy, up, colGreen.C8())
 		}
 	}
 	if len(p.Inv) == 0 {
-		s.Text(colR, y+3, "Your pack is empty.", colDim.C8())
+		s.Text(colR, y+3, fit(L.T("ui.inv.empty"), x+bw-2-colR), colDim.C8())
 	}
 	// details
 	detRows := y + bh - 1 - dy
 	for xx := x + 1; xx < x+bw-1; xx++ {
 		s.Put(xx, dy-1, '─', colBorder.Scale(.6).C8())
 	}
-	scrollHints(s, colR, x+bw-2-colR, y+2, dy-1, off, len(p.Inv)-off-maxRows)
+	g.scrollHints(s, colR, x+bw-2-colR, y+2, dy-1, off, len(p.Inv)-off-maxRows)
 	var it *Item
 	if g.pane == 0 {
 		it = p.Eq[clampi(g.cur, 0, EqCount-1)]
@@ -657,12 +620,12 @@ func (g *Game) drawInventory(s *Screen, mapW, mapH int) {
 		g.itemLines(s, colL, dy, half, detRows, it)
 		if g.pane == 1 {
 			if cur := g.equippedFor(it); cur != nil {
-				s.Text(colL+half+2, dy, "Currently equipped:", colDim.C8())
+				s.Text(colL+half+2, dy, fit(L.T("ui.currently_equipped"), half), colDim.C8())
 				g.itemLines(s, colL+half+2, dy+1, half, detRows-1, cur)
 			}
 		}
 	}
-	s.Text(colL, y+bh-1, " ←→/tab switch · ↑↓ select · enter equip/remove · d drop · esc ", colDim.C8())
+	s.Text(colL, y+bh-1, fit(" "+L.T("ui.inv.keys")+" ", bw-4), colDim.C8())
 }
 
 func (g *Game) upgradeHint(it *Item) string {
@@ -671,7 +634,7 @@ func (g *Game) upgradeHint(it *Item) string {
 		return ""
 	}
 	if cur == nil {
-		return "new"
+		return fit(g.L.T("ui.inv.new"), 3)
 	}
 	if it.Slot() == SlotWeapon && it.MaxD+it.MinD > cur.MaxD+cur.MinD {
 		return "▲"
@@ -683,61 +646,75 @@ func (g *Game) upgradeHint(it *Item) string {
 }
 
 func (g *Game) drawChar(s *Screen, mapW, mapH int) {
-	p := g.P
-	x, y := centerBox(s, mapW, mapH, 56, 24, "Character")
+	p, L := g.P, g.L
+	const bw = 56
+	x, y := centerBox(s, mapW, mapH, bw, 24, L.T("ui.char.title"))
 	cx := x + 3
-	s.TextBold(cx, y+2, fmt.Sprintf("Wanderer · Level %d", p.Lvl), colWhite.C8())
-	s.Text(cx, y+3, fmt.Sprintf("Experience %d / %d", p.XP, g.Rules.xpNext(p.Lvl)), colDim.C8())
+	s.TextBold(cx, y+2, fit(L.T("ui.char.hero", "n", p.Lvl), bw-6), colWhite.C8())
+	s.Text(cx, y+3, fit(L.T("ui.char.experience", "xp", p.XP, "next", g.Rules.xpNext(p.Lvl)), bw-6), colDim.C8())
 	attrs := []struct {
 		k    string
-		name string
+		key  string
 		base int
 		tot  int
-		desc string
 	}{
-		{"1", "Strength", p.Str, p.STR(), "+melee damage"},
-		{"2", "Dexterity", p.Dex, p.DEX(), "+hit, crit, dodge"},
-		{"3", "Vitality", p.Vit, p.VIT(), "+life"},
-		{"4", "Energy", p.Ene, p.ENE(), "+mana, spell damage"},
+		{"1", "str", p.Str, p.STR()},
+		{"2", "dex", p.Dex, p.DEX()},
+		{"3", "vit", p.Vit, p.VIT()},
+		{"4", "ene", p.Ene, p.ENE()},
 	}
+	nameW := 10
+	for _, a := range attrs {
+		nameW = max(nameW, i18n.Width(L.T("ui.char.attr."+a.key)))
+	}
+	nameW = min(nameW, 14)
+	totX := cx + 4 + nameW + 1
+	descX := totX + 3 + 7
 	for i, a := range attrs {
 		yy := y + 5 + i
 		c := colWhite
 		if p.Points > 0 {
 			s.TextBold(cx, yy, "["+a.k+"]", colGold.C8())
 		}
-		s.Text(cx+4, yy, fmt.Sprintf("%-10s %3d", a.name, a.tot), c.C8())
+		s.Text(cx+4, yy, fit(L.T("ui.char.attr."+a.key), nameW), c.C8())
+		s.Text(totX, yy, fmt.Sprintf("%3d", a.tot), c.C8())
 		if a.tot != a.base {
-			s.Text(cx+19, yy, fmt.Sprintf("(%d)", a.base), colDim.C8())
+			s.Text(totX+4, yy, fmt.Sprintf("(%d)", a.base), colDim.C8())
 		}
-		s.Text(cx+26, yy, a.desc, colDim.C8())
+		s.Text(descX, yy, fit(L.T("ui.char.attr_desc."+a.key), x+bw-2-descX), colDim.C8())
 	}
 	if p.Points > 0 {
-		s.TextBold(cx, y+10, fmt.Sprintf("%d points to spend — press 1-4", p.Points), colGold.C8())
+		s.TextBold(cx, y+10, fit(L.T("ui.char.points", "n", p.Points), bw-6), colGold.C8())
 	}
 	lo, hi := p.DmgRange()
 	fl, fh := p.FireboltDmg()
-	stats := []string{
-		fmt.Sprintf("Life        %d", p.MaxHP()),
-		fmt.Sprintf("Mana        %d", p.MaxMP()),
-		fmt.Sprintf("Damage      %d-%d", lo, hi),
-		fmt.Sprintf("Firebolt    %d-%d", fl, fh),
-		fmt.Sprintf("Armor       %d", p.ArmorVal()),
-		fmt.Sprintf("Attack      %d", p.ToHit()),
-		fmt.Sprintf("Critical    %d%%", p.Crit()),
-		fmt.Sprintf("Life steal  %d%%", p.S(StLifeSteal)),
-		fmt.Sprintf("Magic find  %d%%", p.S(StMF)),
-		fmt.Sprintf("Kills       %d", p.Kills),
+	stats := []struct{ key, val string }{
+		{"life", strconv.Itoa(p.MaxHP())},
+		{"mana", strconv.Itoa(p.MaxMP())},
+		{"damage", fmt.Sprintf("%d-%d", lo, hi)},
+		{"firebolt", fmt.Sprintf("%d-%d", fl, fh)},
+		{"armor", strconv.Itoa(p.ArmorVal())},
+		{"attack", strconv.Itoa(p.ToHit())},
+		{"crit", fmt.Sprintf("%d%%", p.Crit())},
+		{"life_steal", fmt.Sprintf("%d%%", p.S(StLifeSteal))},
+		{"magic_find", fmt.Sprintf("%d%%", p.S(StMF))},
+		{"kills", strconv.Itoa(p.Kills)},
 	}
+	labW := 11
+	for _, st := range stats {
+		labW = max(labW, i18n.Width(L.T("ui.char.stat."+st.key)))
+	}
+	labW = min(labW, 17) + 1
 	for i, st := range stats {
 		col := cx
 		row := y + 12 + i%5
 		if i >= 5 {
 			col = cx + 26
 		}
-		s.Text(col, row, st, colGray.C8())
+		s.Text(col, row, fit(L.T("ui.char.stat."+st.key), labW-1), colGray.C8())
+		s.Text(col+labW, row, st.val, colGray.C8())
 	}
-	s.Text(cx, y+22, "esc to close", colDim.C8())
+	s.Text(cx, y+22, fit(L.T("ui.esc_close"), bw-6), colDim.C8())
 }
 
 func (g *Game) shopList() []*Item {
@@ -748,24 +725,24 @@ func (g *Game) shopList() []*Item {
 }
 
 func (g *Game) drawShop(s *Screen, mapW, mapH int) {
-	p := g.P
+	p, L := g.P, g.L
 	bw, bh := 80, mini(s.H-2, 32)
-	x, y := centerBox(s, mapW, mapH, bw, bh, g.shop.Name)
+	x, y := centerBox(s, mapW, mapH, bw, bh, L.T([...]string{"shop.smith", "shop.alch"}[g.shop.Kind]))
 	bw = mini(bw, mapW-2)
 	cx := x + 2
-	tabs := []string{" Buy ", " Sell "}
+	tabs := []string{" " + L.T("ui.shop.buy") + " ", " " + L.T("ui.shop.sell") + " "}
 	tx := cx
 	for i, t := range tabs {
 		c, bg := colDim, C(.03, .025, .025)
 		if g.tab == i {
 			c, bg = colGold, C(.2, .1, .04)
 		}
-		for k, r := range t {
-			s.SetBold(tx+k, y+1, r, c.C8(), bg.C8(), true)
-		}
-		tx += len(t) + 1
+		tw := i18n.Width(t)
+		s.Fill(tx, y+1, tw, 1, bg.C8())
+		s.TextBold(tx, y+1, t, c.C8())
+		tx += tw + 1
 	}
-	s.Text(x+bw-16, y+1, fmt.Sprintf("Gold: %d", p.Gold), colGold.C8())
+	s.TextRight(tx, y+1, x+bw-2-tx, L.T("ui.shop.gold", "n", p.Gold), colGold.C8())
 	items := g.shopList()
 	maxRows := bh - 16
 	off := 0
@@ -781,7 +758,7 @@ func (g *Game) drawShop(s *Screen, mapW, mapH int) {
 			}
 		}
 		s.Put(cx, yy, it.Glyph(), it.Color().C8())
-		s.Text(cx+2, yy, clipStr(it.DisplayName(), bw-24), it.Color().C8())
+		s.Text(cx+2, yy, fit(iname(L, it), bw-24), it.Color().C8())
 		price := g.buyPrice(it)
 		if g.tab == 1 {
 			price = sellPrice(it, g.Rules)
@@ -796,53 +773,27 @@ func (g *Game) drawShop(s *Screen, mapW, mapH int) {
 		}
 	}
 	if len(items) == 0 {
-		s.Text(cx, y+3, "Nothing here.", colDim.C8())
+		s.Text(cx, y+3, fit(L.T("ui.shop.empty"), bw-4), colDim.C8())
 	}
 	dy := y + bh - 12
 	for xx := x + 1; xx < x+bw-1; xx++ {
 		s.Put(xx, dy-1, '─', colBorder.Scale(.6).C8())
 	}
-	scrollHints(s, cx, bw-4, y+2, dy-1, off, len(items)-off-maxRows)
+	g.scrollHints(s, cx, bw-4, y+2, dy-1, off, len(items)-off-maxRows)
 	if g.cur < len(items) {
 		it := items[g.cur]
 		half := (bw - 6) / 2
 		g.itemLines(s, cx, dy, half, 10, it)
 		if cur := g.equippedFor(it); cur != nil && it.Kind == IKEquip {
-			s.Text(cx+half+2, dy, "Currently equipped:", colDim.C8())
+			s.Text(cx+half+2, dy, fit(L.T("ui.currently_equipped"), half), colDim.C8())
 			g.itemLines(s, cx+half+2, dy+1, half, 9, cur)
 		}
 	}
-	s.Text(cx, y+bh-1, " tab buy/sell · ↑↓ select · enter confirm · esc leave ", colDim.C8())
+	s.Text(cx, y+bh-1, fit(" "+L.T("ui.shop.keys")+" ", bw-4), colDim.C8())
 }
 
 func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
-	keys := []struct {
-		k, d string
-	}{
-		{"arrows hjkl yubn", "move / attack (numpad works too)"},
-		{". or 5", "wait a turn"},
-		{"g or ,", "pick up equipment (gold & potions are automatic)"},
-		{"f", "Firebolt at target (lights up the dark!)"},
-		{"r", "Frost Nova: damage + brief freeze around you"},
-		{"tab / shift+tab", "next / previous target (or click one)"},
-		{"q / w", "drink healing / mana potion (works over a few turns)"},
-		{"t", "read Scroll of Town Portal"},
-		{"o", "auto-explore (stops when enemies appear)"},
-		{"i", "inventory & equipment"},
-		{"c", "character sheet, spend attribute points"},
-		{"m", "map of explored area"},
-		{"Q / ctrl+c", "quit"},
-	}
-	tips := []string{
-		"Walk into doors, chests, altars and fountains to use them.",
-		"Talk to townsfolk by walking into them.",
-		"Monsters in darkness are invisible until light touches them.",
-		"Blue names are champions; gold names are uniques.",
-		"Glowing drops are rare or unique. Look for the light.",
-		"Items with ▲ beat what you're wearing.",
-		"Hover the mouse over the map to see what things are.",
-		"Click a belt row to drink a potion or read the scroll.",
-	}
+	L := g.L
 	// lay the text out for the width at hand, then show the rows that fit
 	type hline struct {
 		k, d string
@@ -850,19 +801,25 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		c    RGB
 	}
 	bw := mini(78, mapW-2)
+	keyW := 16
+	for _, k := range helpKeys {
+		keyW = max(keyW, i18n.Width(L.T("help.key."+k)))
+	}
+	keyW = min(keyW, 26)
+	dx := 3 + keyW + 2
 	var rows []hline
-	for _, l := range keys {
-		for i, d := range wrapText(l.d, bw-23) {
-			k := ""
+	for _, k := range helpKeys {
+		for i, d := range i18n.Wrap(L.T("help.does."+k), bw-dx-2) {
+			key := ""
 			if i == 0 {
-				k = l.k
+				key = fit(L.T("help.key."+k), keyW)
 			}
-			rows = append(rows, hline{k, d, 21, colGray})
+			rows = append(rows, hline{key, d, dx, colGray})
 		}
 	}
 	rows = append(rows, hline{})
-	for _, t := range tips {
-		for i, d := range wrapText(t, bw-7) {
+	for _, t := range helpTips {
+		for i, d := range i18n.Wrap(L.T("help.tip."+t), bw-7) {
 			pre := "· "
 			if i > 0 {
 				pre = "  "
@@ -871,72 +828,68 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 		}
 	}
 	bh := mini(len(rows)+5, s.H-2)
-	x, y := centerBox(s, mapW, mapH, bw, bh, "Help")
+	x, y := centerBox(s, mapW, mapH, bw, bh, L.T("ui.help.title"))
 	show := bh - 4
 	g.helpOff = clampi(g.helpOff, 0, maxi(0, len(rows)-show))
 	for i, l := range rows[g.helpOff:mini(len(rows), g.helpOff+show)] {
 		s.TextBold(x+3, y+2+i, l.k, colOrange.C8())
 		s.Text(x+l.dx, y+2+i, l.d, l.c.C8())
 	}
-	foot := "esc to close"
+	foot := L.T("ui.esc_close")
 	if len(rows) > show {
-		foot += " · ↑↓ scroll"
+		foot += " · " + L.T("ui.help.scroll")
 	}
 	s.Text(x+3, y+bh-2, foot, colDim.C8())
-	scrollHints(s, x, bw-2, y+1, y+bh-2, g.helpOff, len(rows)-show-g.helpOff)
+	g.scrollHints(s, x, bw-2, y+1, y+bh-2, g.helpOff, len(rows)-show-g.helpOff)
 }
+
+// helpKeys and helpTips are the help screen's rows: help.key.<k> and
+// help.does.<k>, help.tip.<t>.
+var helpKeys = []string{"move", "wait", "pickup", "firebolt", "nova", "target", "potions", "portal", "explore", "inventory", "character", "map", "quit"}
+var helpTips = []string{"walk_into", "talk", "darkness", "names", "glow", "upgrade", "hover", "belt"}
 
 func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 	// size the box first: centerBox narrows it on small screens
 	w := mini(64, mapW-2)
 	var wrapped []string
-	for _, ln := range g.talkLines {
-		wrapped = append(wrapped, wrap(ln, w-6)...)
+	for _, ln := range g.talkText {
+		wrapped = append(wrapped, i18n.Wrap(ln, w-6)...)
 		wrapped = append(wrapped, "")
 	}
 	x, y := centerBox(s, mapW, mapH, w, len(wrapped)+4, g.talkName)
 	for i, ln := range wrapped {
-		s.Text(x+3, y+2+i, ln, g.talkCol.Lerp(colWhite, .5).C8())
+		s.TextStart(x+3, y+2+i, w-6, ln, g.talkCol.Lerp(colWhite, .5).C8())
 	}
-	s.Text(x+3, y+len(wrapped)+3, "press any key", colDim.C8())
-}
-
-func wrap(s string, w int) []string {
-	var out []string
-	words := strings.Fields(s)
-	line := ""
-	for _, wd := range words {
-		if utf8.RuneCountInString(line)+utf8.RuneCountInString(wd)+1 > w && line != "" {
-			out = append(out, line)
-			line = wd
-		} else if line == "" {
-			line = wd
-		} else {
-			line += " " + wd
-		}
-	}
-	if line != "" {
-		out = append(out, line)
-	}
-	return out
+	s.TextStart(x+3, y+len(wrapped)+3, w-6, g.L.T("ui.any_key"), colDim.C8())
 }
 
 func (g *Game) drawDead(s *Screen, mapW, mapH int) {
-	x, y := centerBox(s, mapW, mapH, 50, 11, "")
+	const w = 50
+	x, y := centerBox(s, mapW, mapH, w, 11, "")
 	f := float32(0.75 + 0.25*math.Sin(g.time*2))
-	msg := "YOU HAVE DIED"
-	s.TextBold(x+(50-len(msg))/2, y+2, msg, C(.9, .1, .08).Scale(f).C8())
-	p := g.P
+	L, p := g.L, g.P
+	center := func(row int, str string, col Col8, bold bool) {
+		str = fit(str, w-4)
+		if bold {
+			s.TextBold(x+(w-i18n.Width(str))/2, row, str, col)
+		} else {
+			s.Text(x+(w-i18n.Width(str))/2, row, str, col)
+		}
+	}
+	center(y+2, L.T("ui.dead.title"), C(.9, .1, .08).Scale(f).C8(), true)
+	killer := g.killer
+	if killer == "" {
+		killer = p.KilledBy
+	}
 	lines := []string{
-		fmt.Sprintf("Slain by %s", p.KilledBy),
-		fmt.Sprintf("Level %d · %d kills · %d gold", p.Lvl, p.Kills, p.Gold),
-		fmt.Sprintf("in %s", g.Lv.Name),
+		L.T("ui.dead.slain_by", "who", killer),
+		L.T("ui.dead.summary", "lvl", p.Lvl, "kills", p.Kills, "gold", p.Gold),
+		L.T("ui.dead.where", "area", areaName(L, g.Lv.ID)),
 	}
 	for i, l := range lines {
-		s.Text(x+(50-utf8.RuneCountInString(l))/2, y+4+i, l, colGray.C8())
+		center(y+4+i, l, colGray.C8(), false)
 	}
-	h := "n: new game   Q: quit"
-	s.Text(x+(50-len(h))/2, y+8, h, colOrange.C8())
+	center(y+8, L.T("ui.dead.keys"), colOrange.C8(), false)
 }
 
 func (g *Game) drawOverview(s *Screen, mapW, mapH int) {
@@ -949,7 +902,7 @@ func (g *Game) drawOverview(s *Screen, mapW, mapH int) {
 		sc = 1
 	}
 	w, h := (l.W+sc-1)/sc+4, (l.H+sc-1)/sc+3
-	x, y := centerBox(s, mapW, mapH, w, h, l.Name)
+	x, y := centerBox(s, mapW, mapH, w, h, areaName(g.L, l.ID))
 	for my := 0; my < l.H; my += sc {
 		for mx := 0; mx < l.W; mx += sc {
 			var best Tile
@@ -1076,9 +1029,11 @@ func (g *Game) drawTitle(s *Screen) {
 		c := C(1, .5, .15).Scale(float32(1 - ph))
 		s.Put(ex, ey, '·', c.C8())
 	}
-	sub := "a descent into lit darkness"
-	s.Text(cx-len(sub)/2, cy+4, sub, C(.6, .5, .4).C8())
-	pr := "press any key to begin"
+	sub := g.L.T("ui.title.subtitle")
+	s.Text(cx-i18n.Width(sub)/2, cy+4, sub, C(.6, .5, .4).C8())
+	pr := g.L.T("ui.title.begin")
 	f := float32(0.55 + 0.45*math.Sin(t*3))
-	s.Text(cx-len(pr)/2, s.H-3, pr, C(1, .7, .4).Scale(f).C8())
+	s.Text(cx-i18n.Width(pr)/2, s.H-3, pr, C(1, .7, .4).Scale(f).C8())
+	lang := "◂ " + g.L.Lang.Native + " ▸  " + g.L.T("ui.title.lang_keys")
+	s.Text(cx-i18n.Width(lang)/2, s.H-2, lang, C(.5, .45, .4).C8())
 }

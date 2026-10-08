@@ -179,7 +179,7 @@ func (b *Bot) State() BotState { return b.state }
 func (b *Bot) Why() string     { return b.why }
 func (b *Bot) Policy() string  { return b.pol.name }
 
-func (b *Bot) say(f string, a ...any) { b.g.msg(colBot, "bot: "+f, a...) }
+func (b *Bot) say(f string, a ...any) { b.g.msg(colBot, fmt.Sprintf("bot: "+f, a...)) }
 
 // enter moves to a state, logging the change and its reason.
 func (b *Bot) enter(st BotState, why string) {

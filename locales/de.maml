@@ -1,0 +1,1304 @@
+# Termablo in German. Translated from en.maml; see docs/translating.md.
+# Plural forms: one, other. Genders: m, f, n, pl.
+{
+  msg: {
+    welcome_goal: "Jage den Knochenkönig in der Gruft und die Ertrunkene Seherin unter dem Schwarzmoor."
+    welcome_help: "Drücke ? für Hilfe. Hauptmann Voss bei der Taverne hat Arbeit für dich."
+    enter: "Gebiet betreten: {area}."
+    far_beyond: "Etwas hier ist dir weit überlegen."
+    fountain: "Das kalte Wasser schließt deine Wunden."
+    portal_step: "Du trittst durch das Portal."
+    portal_collapse: "Das Portal fällt hinter dir in sich zusammen."
+    portal_open: "Ein schimmerndes blaues Portal reißt auf."
+    see_item: "Hier liegt etwas: {item}. (g zum Aufheben)"
+    see_items: "Hier liegen mehrere Gegenstände. (g zum Aufheben)"
+    pickup_gold: "Du hebst {n} Gold auf."
+    pickup_potion: {
+        m: "Du hebst einen {item} auf."
+        f: "Du hebst eine {item} auf."
+        n: "Du hebst ein {item} auf."
+        other: "Du hebst einen {item} auf."
+      }
+    belt_no_room: {
+        m: "In deinem Gürtel ist kein Platz für noch einen {item}."
+        f: "In deinem Gürtel ist kein Platz für noch eine {item}."
+        n: "In deinem Gürtel ist kein Platz für noch ein {item}."
+        other: "In deinem Gürtel ist kein Platz mehr für {item}."
+      }
+    pickup_scroll: {
+        m: "Du hebst einen {item} auf."
+        f: "Du hebst eine {item} auf."
+        n: "Du hebst ein {item} auf."
+        other: "Du hebst eine {item} auf."
+      }
+    pickup_item: "Aufgehoben: {item}."
+    pack_full: "Dein Rucksack ist voll."
+    pack_too_full: "Dein Rucksack ist zu voll, um das zu tauschen."
+    nothing_to_pick_up: "Hier gibt es nichts aufzuheben."
+    notice_item: "Du bemerkst etwas am Boden."
+    explored: "Hier gibt es nichts mehr zu erkunden."
+    spot: "{who} kommt in Sicht."
+    boss_destroyed: "{who} ist vernichtet!"
+    elite_slain: "{who} ist erschlagen!"
+    monster_dies: "{who} stirbt."
+    out_of_range: "{who} ist außer Reichweite."
+    no_target: "Kein Ziel in Sicht."
+    no_mana: "Nicht genug Mana."
+    level_up: "Du hast Stufe {n} erreicht! (c: 5 Attributpunkte verteilen)"
+    open_chest: "Du öffnest die Truhe."
+    altar_cold: "Der Altar ist jetzt kalt."
+    altar_restore: "Blutlicht umspült dich. Du bist wiederhergestellt."
+    altar_xp: "Verbotenes Wissen durchflutet deinen Geist. (+{n} EP)"
+    altar_gift: "Der Altar bietet ein Geschenk dar."
+    slain: "Du bist gefallen. Dein Ende: {who}."
+    no_healing_potions: "Du hast keine Heiltränke."
+    full_life: "Dein Leben ist bereits voll."
+    drink_healing: "Du trinkst einen Heiltrank."
+    no_mana_potions: "Du hast keine Manatränke."
+    full_mana: "Dein Mana ist bereits voll."
+    drink_mana: "Du trinkst einen Manatrank."
+    already_in_town: "Du bist bereits in der Stadt."
+    no_scrolls: "Du hast keine Schriftrollen des Stadtportals."
+    boneking_raises: "Der Knochenkönig erweckt die Toten!"
+    boneking_greets: "Der Knochenkönig: „Wieder eine Fackel zum Auslöschen. Knie nieder und tritt meinem Hofstaat bei.“"
+    boneking_dead: "Die Grüfte verstummen. Kehre zu Hauptmann Voss zurück."
+    oracle_reforms: "Die Seherin zerfließt zu Nebel und formt sich neu."
+    oracle_lights: "Kalte Lichter sammeln sich um die Seherin."
+    oracle_greets: "Die Ertrunkene Seherin: „Ich habe dein Ende gesehen, kleine Flamme. Es ist nass und kalt.“"
+    oracle_dead: "Der Gesang der Seherin verstummt. Noch tiefer brennt etwas ... Kehre zu Voss zurück."
+    wanderer_greets: "Der Letzte Wanderer: „Wieder ein Fremder. Sie schicken immer einen Fremden.“"
+    wanderer_portal: "Der Letzte Wanderer tritt aus dem Portal. Es fällt hinter ihm in sich zusammen."
+    wanderer_follows: "Der Letzte Wanderer folgt dir."
+    wanderer_home: "Der Letzte Wanderer: „Du hast mir den Weg nach Hause gezeigt.“"
+    wanderer_cuts: "{who} blutet unter der Klinge des Letzten Wanderers."
+    wanderer_kills: "{who} fällt unter der Klinge des Letzten Wanderers."
+    wanderer_taunt: "Der Letzte Wanderer: „Mir haben sie auch ein Schwert gegeben. Und die Rede eines Hauptmanns.“"
+    town_empty: "In Emberhold ist niemand mehr außer dir."
+    forge_cold: "Hadriks Esse erkaltet."
+    wanderer_last_words: "Der Letzte Wanderer: „Geh weiter.“"
+    wanderer_dead: "Das rote Licht erlischt, und das Dunkel lässt das Feuer los."
+    unseal_here: "Wo er gewartet hat, öffnet sich ein Weg hinab."
+    unseal_far: "Tief unten, im Herd, öffnet sich ein Weg hinab."
+    running: {
+        m: "{who} rennt um sein Leben."
+        f: "{who} rennt um ihr Leben."
+        n: "{who} rennt um sein Leben."
+        pl: "{who} rennen um ihr Leben."
+        other: "{who} rennt um sein Leben."
+      }
+    voss_reward: "Voss gibt dir {n} Gold und dazu: {item}."
+    cannot_afford: "Das kannst du dir nicht leisten."
+    belt_full: "Dein Gürtel ist voll."
+    gamble: "Hadrik wickelt es aus: {item}. {n}g, kein Umtausch."
+    reroll: "Hadrik holt für {n}g frische Ware hervor."
+    bought: "Gekauft: {item} für {n}g."
+    sold: "Verkauft: {item} für {n}g."
+    equip: "Angelegt: {item}."
+    unequip: "Abgelegt: {item}."
+    drop: "Weggeworfen: {item}."
+    mirela_healthy: "Mirela mustert dich. „Gesund wie ein Ochse. Kauf etwas, Liebes.“"
+    mirela_free: "Mirela versorgt deine Wunden. „Für die Jungen kostet das nichts. Und jetzt kauf etwas, Liebes.“"
+    mirela_broke: "Mirela schüttelt den Kopf. „Kräuter kosten Münzen, Liebes.“"
+    mirela_partial: "Mirela tut, was deine {n}g erlauben. „Komm mit mehr wieder, Liebes.“"
+    mirela_paid: "Mirela versorgt deine Wunden für {n}g. „So. Und jetzt kauf etwas, Liebes.“"
+  }
+  ref: {
+    the: {
+        m: "der {name}"
+        f: "die {name}"
+        n: "das {name}"
+        pl: "die {name}"
+        other: "der {name}"
+      }
+    a: {
+        m: "ein {name}"
+        f: "eine {name}"
+        n: "ein {name}"
+        pl: "{name}"
+        other: "ein {name}"
+      }
+    death_flames: { text: "die Todesflammen ({name})", gender: "pl" }
+  }
+  talk: {
+    hadrik: {
+      greet: "Hadrik: „Stahl gegen das Dunkel. Sieh dich um.“"
+      after_oracle: "Hadrik: „Der Letzte, den ich für die Tiefe gerüstet habe, kam nie zur Reparatur zurück.“"
+    }
+    voss: {
+      intro: "Wanderer. Gut. Wir brauchen eine Klinge, die nicht zittert.\nDie Glut hält das Dunkel fern. Das Dunkel will sie zurück.\nÖstlich des Tors, hinter den Aschefeldern, liegt die Gruft der Gefallenen.\nVier Ebenen tief sitzt der Knochenkönig auf seinem Thron aus Rippen. Vernichte ihn.\nUnd im Norden, im Schwarzmoor, ruft die Ertrunkene Seherin die Verirrten ins Wasser.\nKauf Tränke bei Mirela. Halte eine Portalrolle bereit. Komm lebend zurück."
+      boneking_reward: "Der Knochenkönig ist Staub? Dann dürfen die Glocken der Gruft wieder läuten.\nNimm das — es gehörte meinem Vater. Und das Gold, natürlich."
+      oracle_reward: "Die Seherin, verstummt ... Ich hätte nie gedacht, dass ich schlafen könnte, ohne sie zu hören.\nUnter ihrem Teich brennt der Fels. Der Abgrund hat keinen Boden, sagt man. Sei vorsichtig.\nIch habe schon einmal jemanden hinuntergeschickt. Irgendwann habe ich aufgehört, die Tage zu zählen."
+      after_boneking: "In der Gruft ist es still. Jetzt: das Schwarzmoor, nördlich der Felder.\nFolge den kalten Lichtern hinab in die Grotte. Mach der Seherin ein Ende."
+      after_oracle: "Du hast mehr getan, als irgendeiner von uns gewagt hätte.\nWenn du tiefer musst ... der Abgrund wartet unter dem Teich der Seherin."
+      after_wanderer: "Die Laternen brennen wieder. Wer er auch war, einst war er einer von uns.\nGeh weiter, Fremder. Dafür heuern wir dich an."
+    }
+  }
+  rumor: {
+    braziers: "Es heißt, die Kohlenbecken in der Gruft entzünden sich bei Einbruch der Dämmerung von selbst. Niemand hütet sie."
+    brother: "Mein Bruder ist den Lichtern ins Schwarzmoor gefolgt. Er kam nass zurück. Und nicht mehr richtig."
+    torch: "Halt deine Fackel hoch. Das Dunkel da unten ist nicht leer — es ist hungrig."
+    forge: "Hadriks Esse ist seit vierzig Jahren nicht ausgegangen. Er sagt, an dem Tag, an dem sie ausgeht, fliehen wir."
+    glimmer: "Seltene Dinge schimmern im Dunkeln. Goldenes Licht heißt: etwas Altes, mit einem Namen."
+    crystal: "Der Kristall der alten Mirela wurde aus der Grotte gegraben. Er singt, wenn die Seherin träumt."
+    scroll: "Eine Portalrolle ist billiger als ein Begräbnis."
+    stranger: "Vor dir war schon ein Fremder hier. Kaufte dasselbe Schwert. Ging am Moor vorbei und immer weiter."
+    edran: "König Edran trug die Glut mit bloßen Händen herauf. Es kostete ihn sein Gesicht."
+    uncle: "Mein Onkel ist dem Glutkult beigetreten. Sagte, wir seien dem Dunkel etwas schuldig. Er ging hinab, um zu bezahlen."
+    holding: "Mirela sagt, die Seherin jagt niemanden. Sie hält etwas nieder."
+  }
+  area: {
+    town: "Emberhold"
+    fields: "Aschefelder"
+    marsh: "Schwarzmoor"
+    crypt: "Gruft der Gefallenen {n}"
+    throne: "Thron des Knochenkönigs"
+    grotto: "Versunkene Grotte {n}"
+    oracle_pool: "Teich der Seherin"
+    abyss: "Brennender Abgrund {n}"
+    hearth: "Der Herd in der Tiefe"
+  }
+  region: {
+    town: "Emberhold"
+    fields: "Aschefelder"
+    marsh: "Schwarzmoor"
+    crypt: "Gruft der Gefallenen"
+    grotto: "Versunkene Grotte"
+    abyss: "Brennender Abgrund"
+  }
+  lore: {
+    town: "Emberhold. Die letzte erleuchtete Stadt vor dem Dunkel. Hier brennen die Laternen die ganze Nacht."
+    fields: "Die Aschefelder. Mondlicht auf der Asche eines verbrannten Waldes."
+    marsh: "Das Schwarzmoor. Kalte Lichter treiben über dem Wasser. Folge ihnen nicht."
+    crypt: "{area}. Ein Königsgrab; die Luft schmeckt nach Staub."
+    grotto: "{area}. Kaltes Wasser drückt herab; die Kristalle summen."
+    abyss: "{area}. Der Fels selbst blutet."
+    hearth: "{area}. Die Kohlenbecken neigen sich von der Mitte des Raumes weg."
+  }
+  shop: {
+    smith: "Hadriks Schmiede"
+    alch: "Mirelas Heilmittel"
+  }
+  item: {
+    gold: "{n} Gold"
+    healing_potion: { text: "Heiltrank", gender: "m" }
+    mana_potion: { text: "Manatrank", gender: "m" }
+    town_portal_scroll: { text: "Schriftrolle des Stadtportals", gender: "f" }
+    unidentified: {
+        m: "Unbekannter {base}"
+        f: "Unbekannte {base}"
+        n: "Unbekanntes {base}"
+        pl: "Unbekannte {base}"
+        other: "Unbekannt: {base}"
+      }
+    fresh_stock: { text: "Frische Ware", gender: "f" }
+    magic: "{prefix} {base} {suffix}"
+    rare: "{first} {second}"
+    desc: {
+      healing_potion: "Stellt einen großen Teil des Lebens wieder her"
+      mana_potion: "Stellt einen großen Teil des Manas wieder her"
+      town_portal_scroll: "Öffnet ein Portal zurück nach Emberhold"
+      unidentified: "Hadriks Auswahl aus der Tiefe, die du erreicht hast.\nKann alles sein. Kein Umtausch."
+      fresh_stock: "Hadrik holt neue Ware hervor, und Mirela auch."
+    }
+  }
+  rarity: {
+    rare: {
+        m: "Seltener {base}"
+        f: "Seltene {base}"
+        n: "Seltenes {base}"
+        pl: "Seltene {base}"
+        other: "Selten: {base}"
+      }
+    unique: {
+        m: "Einzigartiger {base}"
+        f: "Einzigartige {base}"
+        n: "Einzigartiges {base}"
+        pl: "Einzigartige {base}"
+        other: "Einzigartig: {base}"
+      }
+  }
+  slot: {
+    weapon: "Waffe"
+    off_hand: "Nebenhand"
+    helm: "Helm"
+    armor: "Rüstung"
+    gloves: "Handschuhe"
+    boots: "Stiefel"
+    ring: "Ring"
+    amulet: "Amulett"
+  }
+  stat: {
+    str: "+{n} Stärke"
+    dex: "+{n} Geschick"
+    vit: "+{n} Vitalität"
+    ene: "+{n} Energie"
+    life: "+{n} Leben"
+    mana: "+{n} Mana"
+    dmg_pct: "+{n}% erhöhter Schaden"
+    flat_dmg: "+{n} Schaden"
+    armor: "+{n} Rüstung"
+    armor_pct: "+{n}% erhöhte Rüstung"
+    crit: "+{n}% Chance auf kritische Treffer"
+    life_steal: "{n}% Lebensraub pro Treffer"
+    light: "+{n} Lichtradius"
+    spell_pct: "+{n}% Zauberschaden"
+    life_regen: "Regeneriert {n} Leben"
+    mana_regen: "Regeneriert {n} Mana"
+    mf: "+{n}% Chance auf magische Gegenstände"
+    thorns: "Angreifer erleiden {n} Schaden"
+    to_hit: "+{n} Angriffswert"
+    all_attr: "+{n} auf alle Attribute"
+    gold_find: "+{n}% zusätzliches Gold"
+  }
+  tile_note: {
+    door: "Lauf dagegen, um sie zu öffnen."
+    chest: "Lauf dagegen, um sie zu öffnen."
+    fountain: "Lauf dagegen, um dein Leben wiederherzustellen."
+    blood_altar: "Lauf dagegen, um ein Opfer zu bringen."
+    brazier: "Spendet warmes Feuerlicht."
+    cold_forge: "Hadriks Esse. Sie ist erloschen."
+    street_lamp: "Spendet warmes Laternenlicht."
+    campfire: "Ein Lager der Gefallenen ist nie weit."
+    glowing_crystal: "Leuchtet in kaltem, blauem Licht."
+    lava: "Geschmolzenes Gestein. Unpassierbar und hell."
+    deep_water: "Zu tief zum Durchwaten."
+    shallow_water: "Flach genug zum Durchwaten."
+    tree: "Versperrt Weg und Sicht."
+    open_chest: "Bereits geplündert."
+    grave: "Hier liegt jemand, der Pech hatte."
+  }
+  help: {
+    key: {
+      move: "Pfeile hjkl yubn"
+      wait: ". oder 5"
+      pickup: "g oder ,"
+      firebolt: "f"
+      nova: "r"
+      target: "tab / shift+tab"
+      potions: "q / w"
+      portal: "t"
+      explore: "o"
+      inventory: "i"
+      character: "c"
+      map: "m"
+      quit: "Q / ctrl+c"
+    }
+    does: {
+      move: "bewegen / angreifen (Ziffernblock geht auch)"
+      wait: "eine Runde warten"
+      pickup: "Ausrüstung aufheben (Gold & Tränke automatisch)"
+      firebolt: "Feuerblitz aufs Ziel (erhellt das Dunkel!)"
+      nova: "Frostnova: Schaden + kurzes Einfrieren um dich herum"
+      target: "nächstes / vorheriges Ziel (oder anklicken)"
+      potions: "Heil- / Manatrank trinken (wirkt über einige Runden)"
+      portal: "Schriftrolle des Stadtportals lesen"
+      explore: "automatisch erkunden (stoppt, wenn Feinde auftauchen)"
+      inventory: "Inventar & Ausrüstung"
+      character: "Charakterbogen, Attributpunkte verteilen"
+      map: "Karte des erkundeten Gebiets"
+      quit: "beenden"
+    }
+    tip: {
+      walk_into: "Lauf gegen Türen, Truhen, Altäre und Brunnen, um sie zu benutzen."
+      talk: "Sprich mit den Leuten der Stadt, indem du auf sie zugehst."
+      darkness: "Monster im Dunkeln sind unsichtbar, bis Licht sie berührt."
+      names: "Blaue Namen sind Champions; goldene Namen sind Einzigartige."
+      glow: "Leuchtende Beute ist selten oder einzigartig. Achte auf das Licht."
+      upgrade: "Gegenstände mit ▲ sind besser als das, was du trägst."
+      hover: "Fahr mit der Maus über die Karte, um zu sehen, was etwas ist."
+      belt: "Klick auf eine Gürtelreihe, um einen Trank zu trinken oder die Schriftrolle zu lesen."
+    }
+  }
+  ui: {
+    too_small: "Termablo braucht mindestens 80x24."
+    too_small_now: "Aktuell: {w}x{h}"
+    list_sep: ", "
+    esc_close: "esc zum Schließen"
+    any_key: "beliebige Taste drücken"
+    currently_equipped: "Derzeit angelegt:"
+    more_above: "↑ {n} weitere"
+    more_below: "↓ {n} weitere"
+    log: {
+      repeat: " (x{n})"
+    }
+    title: {
+      subtitle: "ein Abstieg in erleuchtete Dunkelheit"
+      begin: "beliebige Taste zum Beginnen"
+      lang_keys: "tab: Sprache"
+    }
+    panel: {
+      safe: "Sicherer Ort"
+      area_level: "Gebietsstufe {n}"
+      not_safe: "Nicht sicher"
+      hero: "Wanderer  ·  Stufe {n}"
+      life: "Leben"
+      mana: "Mana"
+      experience: "Erfahrung"
+      gold: "Gold {n}"
+      belt_portal: "Portal {n}"
+      belt_heal: "Heilen"
+      belt_mana: "Mana"
+      damage: "Schaden {lo}-{hi}"
+      armor: "Rüstung {n}"
+      crit: "Krit. {n}%"
+      light: "Licht {r}"
+      skills: "Fertigkeiten"
+      firebolt: "Feuerblitz {lo}-{hi}"
+      nova: "Frostnova {lo}-{hi}"
+      mp: "{n}MP"
+      target_lvl: "St. {n}"
+      frozen: "Eingefroren"
+      no_enemies: "Keine Feinde in Sicht"
+      quests: "Aufträge"
+      keys: "? Hilfe i Inv c Held m Karte"
+    }
+    hover: {
+      darkness: "Dunkelheit"
+      unexplored: "Unerforscht oder jenseits deines Lichts."
+      remembered: "Aus der Erinnerung — gerade nicht in Sicht."
+      you: "Du — der Wanderer"
+      you_stats: "Stufe {lvl} · Leben {hp}/{maxhp} · Mana {mp}/{maxmp}"
+      torch: "Fackelradius {r}"
+      townsfolk: "Stadtvolk · zum Reden auf sie zugehen"
+      rank: {
+        normal: "Stufe {lvl} · LP {hp}/{maxhp}"
+        champion: "Champion · Stufe {lvl} · LP {hp}/{maxhp}"
+        unique: "Einzigartig · Stufe {lvl} · LP {hp}/{maxhp}"
+        boss: "Boss · Stufe {lvl} · LP {hp}/{maxhp}"
+      }
+      hits: "Schaden {lo}-{hi} · Rüstung {armor}"
+      state: {
+        frozen: "eingefroren"
+        unaware: "bemerkt dich nicht"
+        fleeing: "flieht"
+        ranged: "Fernkampf"
+        glows: "leuchtet"
+      }
+      replaces: "Ersetzt: {item}"
+      pick_up: "Draufstellen und g drücken zum Aufheben"
+      portal: "Stadtportal"
+      leads_back: "Führt zurück: {place}"
+      leads_to: "Führt zu: {place}"
+      decal: {
+        corpse: "eine Leiche"
+        blood: "blutbefleckt"
+        scorch: "versengt"
+      }
+    }
+    item: {
+      damage: "Schaden: {lo}-{hi}"
+      damage_2h: "Schaden: {lo}-{hi} (zweihändig)"
+      armor: "Rüstung: {n}"
+      footer: "Gegenstandsstufe {lvl}  ·  Wert {n}g"
+    }
+    inv: {
+      title: "Inventar"
+      equipped: "Angelegt"
+      pack: "Rucksack {n}/{max}"
+      empty: "Dein Rucksack ist leer."
+      new: "neu"
+      keys: "←→/tab wechseln · ↑↓ wählen · enter anlegen/ablegen · d wegwerfen · esc"
+    }
+    char: {
+      title: "Charakter"
+      hero: "Wanderer · Stufe {lvl}"
+      experience: "Erfahrung {xp} / {next}"
+      attr: {
+        str: "Stärke"
+        dex: "Geschick"
+        vit: "Vitalität"
+        ene: "Energie"
+      }
+      attr_desc: {
+        str: "+Nahkampfschaden"
+        dex: "+Treffer, Krit, Ausweichen"
+        vit: "+Leben"
+        ene: "+Mana, Zauberschaden"
+      }
+      points: {
+          one: "{n} Punkt zu verteilen — drücke 1-4"
+          other: "{n} Punkte zu verteilen — drücke 1-4"
+        }
+      stat: {
+        life: "Leben"
+        mana: "Mana"
+        damage: "Schaden"
+        firebolt: "Feuerblitz"
+        armor: "Rüstung"
+        attack: "Angriff"
+        crit: "Kritisch"
+        life_steal: "Lebensraub"
+        magic_find: "Magiefund"
+        kills: "Erlegt"
+      }
+    }
+    shop: {
+      buy: "Kaufen"
+      sell: "Verkaufen"
+      gold: "Gold: {n}"
+      empty: "Hier gibt es nichts."
+      keys: "tab kaufen/verkaufen · ↑↓ wählen · enter bestätigen · esc gehen"
+    }
+    help: {
+      title: "Hilfe"
+      scroll: "↑↓ blättern"
+    }
+    dead: {
+      title: "DU BIST GESTORBEN"
+      slain_by: "Getötet von: {who}"
+      summary: "Stufe {lvl} · {kills} erlegt · {gold} Gold"
+      where: "Ort: {area}"
+      keys: "n: neues Spiel   Q: beenden"
+    }
+  }
+  base: {
+    dagger: { text: "Dolch", gender: "m" }
+    short_sword: { text: "Kurzschwert", gender: "n" }
+    club: { text: "Keule", gender: "f" }
+    hand_axe: { text: "Handbeil", gender: "n" }
+    mace: { text: "Streitkolben", gender: "m" }
+    long_sword: { text: "Langschwert", gender: "n" }
+    battle_axe: { text: "Streitaxt", gender: "f" }
+    war_hammer: { text: "Kriegshammer", gender: "m" }
+    great_sword: { text: "Bihänder", gender: "m" }
+    runeblade: { text: "Runenklinge", gender: "f" }
+    executioners_axe: { text: "Henkersbeil", gender: "n" }
+    doom_flail: { text: "Unheilsflegel", gender: "m" }
+    buckler: { text: "Faustschild", gender: "m" }
+    kite_shield: { text: "Normannenschild", gender: "m" }
+    tower_shield: { text: "Turmschild", gender: "m" }
+    bone_ward: { text: "Knochenwehr", gender: "f" }
+    rags: { text: "Lumpen", gender: "pl" }
+    leather_armor: { text: "Lederrüstung", gender: "f" }
+    studded_leather: { text: "Nietenleder", gender: "n" }
+    ring_mail: { text: "Ringpanzer", gender: "m" }
+    chain_mail: { text: "Kettenhemd", gender: "n" }
+    scale_mail: { text: "Schuppenpanzer", gender: "m" }
+    plate_mail: { text: "Plattenpanzer", gender: "m" }
+    gothic_plate: { text: "Gotikharnisch", gender: "m" }
+    cap: { text: "Kappe", gender: "f" }
+    skull_cap: { text: "Schädelkappe", gender: "f" }
+    helm: { text: "Helm", gender: "m" }
+    great_helm: { text: "Topfhelm", gender: "m" }
+    grim_visage: { text: "Schreckensmaske", gender: "f" }
+    leather_gloves: { text: "Lederhandschuhe", gender: "pl" }
+    chain_gloves: { text: "Kettenhandschuhe", gender: "pl" }
+    gauntlets: { text: "Panzerhandschuhe", gender: "pl" }
+    boots: { text: "Stiefel", gender: "pl" }
+    chain_boots: { text: "Kettenstiefel", gender: "pl" }
+    greaves: { text: "Beinschienen", gender: "pl" }
+    ring: { text: "Ring", gender: "m" }
+    amulet: { text: "Amulett", gender: "n" }
+  }
+  prefix: {
+    jagged: {
+        m: "Gezackter"
+        f: "Gezackte"
+        n: "Gezacktes"
+        pl: "Gezackte"
+        other: "Gezackte"
+      }
+    deadly: {
+        m: "Tödlicher"
+        f: "Tödliche"
+        n: "Tödliches"
+        pl: "Tödliche"
+        other: "Tödliche"
+      }
+    vicious: {
+        m: "Bösartiger"
+        f: "Bösartige"
+        n: "Bösartiges"
+        pl: "Bösartige"
+        other: "Bösartige"
+      }
+    brutal: {
+        m: "Brutaler"
+        f: "Brutale"
+        n: "Brutales"
+        pl: "Brutale"
+        other: "Brutale"
+      }
+    savage: {
+        m: "Wilder"
+        f: "Wilde"
+        n: "Wildes"
+        pl: "Wilde"
+        other: "Wilde"
+      }
+    merciless: {
+        m: "Gnadenloser"
+        f: "Gnadenlose"
+        n: "Gnadenloses"
+        pl: "Gnadenlose"
+        other: "Gnadenlose"
+      }
+    sharp: {
+        m: "Scharfer"
+        f: "Scharfe"
+        n: "Scharfes"
+        pl: "Scharfe"
+        other: "Scharfe"
+      }
+    keen: {
+        m: "Messerscharfer"
+        f: "Messerscharfe"
+        n: "Messerscharfes"
+        pl: "Messerscharfe"
+        other: "Messerscharfe"
+      }
+    cruel: {
+        m: "Grausamer"
+        f: "Grausame"
+        n: "Grausames"
+        pl: "Grausame"
+        other: "Grausame"
+      }
+    wicked: {
+        m: "Ruchloser"
+        f: "Ruchlose"
+        n: "Ruchloses"
+        pl: "Ruchlose"
+        other: "Ruchlose"
+      }
+    bronze: {
+        m: "Bronzener"
+        f: "Bronzene"
+        n: "Bronzenes"
+        pl: "Bronzene"
+        other: "Bronzene"
+      }
+    iron: {
+        m: "Eiserner"
+        f: "Eiserne"
+        n: "Eisernes"
+        pl: "Eiserne"
+        other: "Eiserne"
+      }
+    steel: {
+        m: "Stählerner"
+        f: "Stählerne"
+        n: "Stählernes"
+        pl: "Stählerne"
+        other: "Stählerne"
+      }
+    silver: {
+        m: "Silberner"
+        f: "Silberne"
+        n: "Silbernes"
+        pl: "Silberne"
+        other: "Silberne"
+      }
+    gold: {
+        m: "Goldener"
+        f: "Goldene"
+        n: "Goldenes"
+        pl: "Goldene"
+        other: "Goldene"
+      }
+    platinum: {
+        m: "Platinbeschlagener"
+        f: "Platinbeschlagene"
+        n: "Platinbeschlagenes"
+        pl: "Platinbeschlagene"
+        other: "Platinbeschlagene"
+      }
+    sturdy: {
+        m: "Robuster"
+        f: "Robuste"
+        n: "Robustes"
+        pl: "Robuste"
+        other: "Robuste"
+      }
+    strong: {
+        m: "Starker"
+        f: "Starke"
+        n: "Starkes"
+        pl: "Starke"
+        other: "Starke"
+      }
+    glorious: {
+        m: "Glorreicher"
+        f: "Glorreiche"
+        n: "Glorreiches"
+        pl: "Glorreiche"
+        other: "Glorreiche"
+      }
+    blessed: {
+        m: "Gesegneter"
+        f: "Gesegnete"
+        n: "Gesegnetes"
+        pl: "Gesegnete"
+        other: "Gesegnete"
+      }
+    saintly: {
+        m: "Heiliger"
+        f: "Heilige"
+        n: "Heiliges"
+        pl: "Heilige"
+        other: "Heilige"
+      }
+    godly: {
+        m: "Göttlicher"
+        f: "Göttliche"
+        n: "Göttliches"
+        pl: "Göttliche"
+        other: "Göttliche"
+      }
+    fine: {
+        m: "Feiner"
+        f: "Feine"
+        n: "Feines"
+        pl: "Feine"
+        other: "Feine"
+      }
+    warriors: {
+        m: "Kriegerischer"
+        f: "Kriegerische"
+        n: "Kriegerisches"
+        pl: "Kriegerische"
+        other: "Kriegerische"
+      }
+    soldiers: {
+        m: "Soldatischer"
+        f: "Soldatische"
+        n: "Soldatisches"
+        pl: "Soldatische"
+        other: "Soldatische"
+      }
+    knights: {
+        m: "Ritterlicher"
+        f: "Ritterliche"
+        n: "Ritterliches"
+        pl: "Ritterliche"
+        other: "Ritterliche"
+      }
+    lords: {
+        m: "Fürstlicher"
+        f: "Fürstliche"
+        n: "Fürstliches"
+        pl: "Fürstliche"
+        other: "Fürstliche"
+      }
+    kings: {
+        m: "Königlicher"
+        f: "Königliche"
+        n: "Königliches"
+        pl: "Königliche"
+        other: "Königliche"
+      }
+    lizards: {
+        m: "Echsenhafter"
+        f: "Echsenhafte"
+        n: "Echsenhaftes"
+        pl: "Echsenhafte"
+        other: "Echsenhafte"
+      }
+    snakes: {
+        m: "Schlangenhafter"
+        f: "Schlangenhafte"
+        n: "Schlangenhaftes"
+        pl: "Schlangenhafte"
+        other: "Schlangenhafte"
+      }
+    serpents: {
+        m: "Vipernhafter"
+        f: "Vipernhafte"
+        n: "Vipernhaftes"
+        pl: "Vipernhafte"
+        other: "Vipernhafte"
+      }
+    drakes: {
+        m: "Lindwurmhafter"
+        f: "Lindwurmhafte"
+        n: "Lindwurmhaftes"
+        pl: "Lindwurmhafte"
+        other: "Lindwurmhafte"
+      }
+    dragons: {
+        m: "Drachenhafter"
+        f: "Drachenhafte"
+        n: "Drachenhaftes"
+        pl: "Drachenhafte"
+        other: "Drachenhafte"
+      }
+    smoldering: {
+        m: "Schwelender"
+        f: "Schwelende"
+        n: "Schwelendes"
+        pl: "Schwelende"
+        other: "Schwelende"
+      }
+    fiery: {
+        m: "Feuriger"
+        f: "Feurige"
+        n: "Feuriges"
+        pl: "Feurige"
+        other: "Feurige"
+      }
+    blazing: {
+        m: "Lodernder"
+        f: "Lodernde"
+        n: "Loderndes"
+        pl: "Lodernde"
+        other: "Lodernde"
+      }
+    infernal: {
+        m: "Höllischer"
+        f: "Höllische"
+        n: "Höllisches"
+        pl: "Höllische"
+        other: "Höllische"
+      }
+    hellfire: {
+        m: "Höllenglühender"
+        f: "Höllenglühende"
+        n: "Höllenglühendes"
+        pl: "Höllenglühende"
+        other: "Höllenglühende"
+      }
+    honed: {
+        m: "Geschliffener"
+        f: "Geschliffene"
+        n: "Geschliffenes"
+        pl: "Geschliffene"
+        other: "Geschliffene"
+      }
+    precise: {
+        m: "Präziser"
+        f: "Präzise"
+        n: "Präzises"
+        pl: "Präzise"
+        other: "Präzise"
+      }
+    lethal: {
+        m: "Letaler"
+        f: "Letale"
+        n: "Letales"
+        pl: "Letale"
+        other: "Letale"
+      }
+    assassins: {
+        m: "Meuchlerischer"
+        f: "Meuchlerische"
+        n: "Meuchlerisches"
+        pl: "Meuchlerische"
+        other: "Meuchlerische"
+      }
+    humming: {
+        m: "Summender"
+        f: "Summende"
+        n: "Summendes"
+        pl: "Summende"
+        other: "Summende"
+      }
+    resonant: {
+        m: "Hallender"
+        f: "Hallende"
+        n: "Hallendes"
+        pl: "Hallende"
+        other: "Hallende"
+      }
+    singing: {
+        m: "Singender"
+        f: "Singende"
+        n: "Singendes"
+        pl: "Singende"
+        other: "Singende"
+      }
+  }
+  suffix: {
+    of_the_jackal: "des Schakals"
+    of_the_fox: "des Fuchses"
+    of_the_wolf: "des Wolfes"
+    of_the_tiger: "des Tigers"
+    of_the_mammoth: "des Mammuts"
+    of_the_whale: "des Wals"
+    of_strength: "der Stärke"
+    of_might: "der Macht"
+    of_power: "der Kraft"
+    of_the_giant: "des Riesen"
+    of_the_titan: "des Titanen"
+    of_dexterity: "des Geschicks"
+    of_skill: "der Fertigkeit"
+    of_accuracy: "der Genauigkeit"
+    of_precision: "der Präzision"
+    of_perfection: "der Vollkommenheit"
+    of_vigor: "der Ausdauer"
+    of_vitality: "der Vitalität"
+    of_zest: "der Lebenslust"
+    of_life: "des Lebens"
+    of_the_mind: "des Geistes"
+    of_energy: "der Energie"
+    of_brilliance: "des Scharfsinns"
+    of_sorcery: "der Zauberei"
+    of_wizardry: "der Zauberkunst"
+    of_the_leech: "des Egels"
+    of_the_bat: "der Fledermaus"
+    of_the_vampire: "des Vampirs"
+    of_light: "des Lichts"
+    of_radiance: "des Glanzes"
+    of_the_sun: "der Sonne"
+    of_regeneration: "der Regeneration"
+    of_renewal: "der Erneuerung"
+    of_the_troll: "des Trolls"
+    of_fortune: "der Fortuna"
+    of_luck: "des Glücks"
+    of_greed: "der Gier"
+    of_thorns: "der Dornen"
+    of_spikes: "der Stacheln"
+    of_retribution: "der Vergeltung"
+    of_the_sky: "des Himmels"
+    of_the_moon: "des Mondes"
+    of_the_stars: "der Sterne"
+    of_the_heavens: "des Firmaments"
+    of_wealth: "des Wohlstands"
+    of_avarice: "der Habgier"
+  }
+  rare: {
+    first: {
+      grim: {
+          m: "Grimmiger"
+          f: "Grimmige"
+          n: "Grimmiges"
+          pl: "Grimmige"
+          other: "Grimmige"
+        }
+      doom: {
+          m: "Unheilvoller"
+          f: "Unheilvolle"
+          n: "Unheilvolles"
+          pl: "Unheilvolle"
+          other: "Unheilvolle"
+        }
+      blood: {
+          m: "Blutiger"
+          f: "Blutige"
+          n: "Blutiges"
+          pl: "Blutige"
+          other: "Blutige"
+        }
+      storm: {
+          m: "Stürmischer"
+          f: "Stürmische"
+          n: "Stürmisches"
+          pl: "Stürmische"
+          other: "Stürmische"
+        }
+      death: {
+          m: "Todbringender"
+          f: "Todbringende"
+          n: "Todbringendes"
+          pl: "Todbringende"
+          other: "Todbringende"
+        }
+      shadow: {
+          m: "Schattenhafter"
+          f: "Schattenhafte"
+          n: "Schattenhaftes"
+          pl: "Schattenhafte"
+          other: "Schattenhafte"
+        }
+      rune: {
+          m: "Runischer"
+          f: "Runische"
+          n: "Runisches"
+          pl: "Runische"
+          other: "Runische"
+        }
+      gloom: {
+          m: "Düsterer"
+          f: "Düstere"
+          n: "Düsteres"
+          pl: "Düstere"
+          other: "Düstere"
+        }
+      bone: {
+          m: "Knöcherner"
+          f: "Knöcherne"
+          n: "Knöchernes"
+          pl: "Knöcherne"
+          other: "Knöcherne"
+        }
+      ash: {
+          m: "Aschfahler"
+          f: "Aschfahle"
+          n: "Aschfahles"
+          pl: "Aschfahle"
+          other: "Aschfahle"
+        }
+      raven: {
+          m: "Rabenschwarzer"
+          f: "Rabenschwarze"
+          n: "Rabenschwarzes"
+          pl: "Rabenschwarze"
+          other: "Rabenschwarze"
+        }
+      soul: {
+          m: "Beseelter"
+          f: "Beseelte"
+          n: "Beseeltes"
+          pl: "Beseelte"
+          other: "Beseelte"
+        }
+      dread: {
+          m: "Grauenvoller"
+          f: "Grauenvolle"
+          n: "Grauenvolles"
+          pl: "Grauenvolle"
+          other: "Grauenvolle"
+        }
+      havoc: {
+          m: "Verheerender"
+          f: "Verheerende"
+          n: "Verheerendes"
+          pl: "Verheerende"
+          other: "Verheerende"
+        }
+      wraith: {
+          m: "Geisterhafter"
+          f: "Geisterhafte"
+          n: "Geisterhaftes"
+          pl: "Geisterhafte"
+          other: "Geisterhafte"
+        }
+      corpse: {
+          m: "Modriger"
+          f: "Modrige"
+          n: "Modriges"
+          pl: "Modrige"
+          other: "Modrige"
+        }
+      ember: {
+          m: "Glutroter"
+          f: "Glutrote"
+          n: "Glutrotes"
+          pl: "Glutrote"
+          other: "Glutrote"
+        }
+      venom: {
+          m: "Giftiger"
+          f: "Giftige"
+          n: "Giftiges"
+          pl: "Giftige"
+          other: "Giftige"
+        }
+      night: {
+          m: "Nächtlicher"
+          f: "Nächtliche"
+          n: "Nächtliches"
+          pl: "Nächtliche"
+          other: "Nächtliche"
+        }
+      hollow: {
+          m: "Hohler"
+          f: "Hohle"
+          n: "Hohles"
+          pl: "Hohle"
+          other: "Hohle"
+        }
+      cinder: {
+          m: "Verkohlter"
+          f: "Verkohlte"
+          n: "Verkohltes"
+          pl: "Verkohlte"
+          other: "Verkohlte"
+        }
+      pale: {
+          m: "Bleicher"
+          f: "Bleiche"
+          n: "Bleiches"
+          pl: "Bleiche"
+          other: "Bleiche"
+        }
+    }
+    second: {
+      bite: { text: "Biss", gender: "m" }
+      edge: { text: "Schneide", gender: "f" }
+      fang: { text: "Fangzahn", gender: "m" }
+      song: { text: "Lied", gender: "n" }
+      reaver: { text: "Schlächter", gender: "m" }
+      cleaver: { text: "Spalter", gender: "m" }
+      thirst: { text: "Durst", gender: "m" }
+      kiss: { text: "Kuss", gender: "m" }
+      needle: { text: "Nadel", gender: "f" }
+      ward: { text: "Wehr", gender: "f" }
+      bulwark: { text: "Bollwerk", gender: "n" }
+      aegis: { text: "Ägide", gender: "f" }
+      guard: { text: "Wacht", gender: "f" }
+      wall: { text: "Wall", gender: "m" }
+      shell: { text: "Schale", gender: "f" }
+      coat: { text: "Wams", gender: "n" }
+      hide: { text: "Haut", gender: "f" }
+      carapace: { text: "Panzer", gender: "m" }
+      mantle: { text: "Mantel", gender: "m" }
+      shroud: { text: "Schleier", gender: "m" }
+      crown: { text: "Krone", gender: "f" }
+      visor: { text: "Visier", gender: "n" }
+      cowl: { text: "Kapuze", gender: "f" }
+      brow: { text: "Stirn", gender: "f" }
+      horn: { text: "Horn", gender: "n" }
+      grip: { text: "Griff", gender: "m" }
+      fist: { text: "Faust", gender: "f" }
+      hand: { text: "Hand", gender: "f" }
+      claw: { text: "Klaue", gender: "f" }
+      knuckle: { text: "Knöchel", gender: "m" }
+      stride: { text: "Schritt", gender: "m" }
+      track: { text: "Fährte", gender: "f" }
+      trail: { text: "Pfad", gender: "m" }
+      spur: { text: "Sporn", gender: "m" }
+      tread: { text: "Tritt", gender: "m" }
+      loop: { text: "Schlinge", gender: "f" }
+      coil: { text: "Windung", gender: "f" }
+      band: { text: "Reif", gender: "m" }
+      circle: { text: "Kreis", gender: "m" }
+      spiral: { text: "Spirale", gender: "f" }
+      eye: { text: "Auge", gender: "n" }
+      heart: { text: "Herz", gender: "n" }
+      charm: { text: "Zauber", gender: "m" }
+      talisman: { text: "Talisman", gender: "m" }
+      star: { text: "Stern", gender: "m" }
+    }
+  }
+  unique: {
+    last_wanderers_shroud: {
+      name: { text: "Leichentuch des Letzten Wanderers", gender: "n" }
+      flavor: "Noch warm. Es gehörte nie dir, und jetzt doch."
+    }
+    wanderers_shroud: {
+      name: { text: "Leichentuch des Wanderers", gender: "n" }
+      flavor: "Getragen von einem, der nie aufhörte zu gehen."
+    }
+    shard_of_night: {
+      name: { text: "Splitter der Nacht", gender: "m" }
+      flavor: "Er trinkt das Fackellicht."
+    }
+    hollow_crown: {
+      name: { text: "Hohlkrone", gender: "f" }
+      flavor: "Der König, dem sie gehörte, brauchte keinen Schädel."
+    }
+    emberbrand: {
+      name: { text: "Glutbrand", gender: "m" }
+      flavor: "Seine Schneide kühlt nie ab."
+    }
+    the_last_lantern: {
+      name: { text: "Die Letzte Laterne", gender: "f" }
+      flavor: "Sie brennt, wenn alles andere dunkel ist."
+    }
+    moonstride: {
+      name: { text: "Mondschritt", gender: "m" }
+      flavor: "Schritte wie fallender Schnee."
+    }
+    band_of_ashes: {
+      name: { text: "Reif der Asche", gender: "m" }
+      flavor: "Warm in der Hand, immer."
+    }
+    gravewardens_coat: {
+      name: { text: "Mantel des Grabwächters", gender: "m" }
+      flavor: "Genäht aus den Leichentüchern der Ruhelosen."
+    }
+    eye_of_the_deep: {
+      name: { text: "Auge der Tiefe", gender: "n" }
+      flavor: "Es blinzelt, wenn du nicht hinsiehst."
+    }
+    crown_of_the_drowned: {
+      name: { text: "Krone der Ertrunkenen", gender: "f" }
+      flavor: "Noch immer tropft Wasser von ihrem Rand."
+    }
+    bloodfist: {
+      name: { text: "Blutfaust", gender: "f" }
+      flavor: "Nie sauber. Nie trocken."
+    }
+    kingsbane: {
+      name: { text: "Königstöter", gender: "m" }
+      flavor: "Sieben Kronen sind unter ihm gerollt."
+    }
+    starfall_plate: {
+      name: { text: "Sternfallharnisch", gender: "m" }
+      flavor: "Aus einem gefallenen Stern geschmiedet; er erinnert sich an den Himmel."
+    }
+  }
+  gamble: {
+    weapon: { text: "Waffe", gender: "f" }
+    shield: { text: "Schild", gender: "m" }
+    helm: { text: "Helm", gender: "m" }
+    armor: { text: "Rüstung", gender: "f" }
+    gloves: { text: "Handschuhe", gender: "pl" }
+    boots: { text: "Stiefel", gender: "pl" }
+    ring: { text: "Ring", gender: "m" }
+    amulet: { text: "Amulett", gender: "n" }
+  }
+  monster: {
+    rat: { text: "Pestratte", gender: "f" }
+    bat: { text: "Höhlenfledermaus", gender: "f" }
+    fallen: { text: "Gefallenendämon", gender: "m" }
+    shaman: { text: "Gefallenenschamane", gender: "m" }
+    zombie: { text: "Zombie", gender: "m" }
+    wolf: { text: "Schreckenswolf", gender: "m" }
+    skel: { text: "Skelett", gender: "n" }
+    archer: { text: "Skelettbogenschütze", gender: "m" }
+    ghoul: { text: "Ghul", gender: "m" }
+    cultist: { text: "Glutkultist", gender: "m" }
+    wraith: { text: "Gespenst", gender: "n" }
+    wisp: { text: "Irrlicht", gender: "n" }
+    drowned: { text: "Wasserleiche", gender: "f" }
+    horror: { text: "Moorschrecken", gender: "m" }
+    spider: { text: "Grottenspinne", gender: "f" }
+    golem: { text: "Kristallgolem", gender: "m" }
+    imp: { text: "Feuerkobold", gender: "m" }
+    hellspawn: { text: "Höllenbrut", gender: "f" }
+    boneking: { text: "Der Knochenkönig", gender: "m" }
+    oracle: { text: "Die Ertrunkene Seherin", gender: "f" }
+    wanderer: { text: "Der Letzte Wanderer", gender: "m" }
+    smith: { text: "Hadrik der Schmied", gender: "m" }
+    alch: { text: "Die alte Mirela", gender: "f" }
+    captain: { text: "Hauptmann Voss", gender: "m" }
+    villager: { text: "Dorfbewohner", gender: "m" }
+  }
+  unique_monster: {
+    name: "{first} {last}"
+    first: {
+      bloodmaw: { text: "Blutmaul", gender: "m" }
+      grimtooth: { text: "Grimmzahn", gender: "m" }
+      ashfang: { text: "Aschfang", gender: "m" }
+      hollowgrin: { text: "Hohlfratze", gender: "f" }
+      rotgut: { text: "Faulwanst", gender: "m" }
+      blackvein: { text: "Schwarzader", gender: "f" }
+      skullcleave: { text: "Schädelspalter", gender: "m" }
+      mournwind: { text: "Klagewind", gender: "m" }
+      gravelurk: { text: "Grablauer", gender: "m" }
+      emberskull: { text: "Glutschädel", gender: "m" }
+      frostmarrow: { text: "Frostmark", gender: "m" }
+      dreadhowl: { text: "Grauenheuler", gender: "m" }
+      cinderjaw: { text: "Schlackenkiefer", gender: "m" }
+      wormheart: { text: "Wurmherz", gender: "m" }
+    }
+    last: {
+      the_hungry: {
+          m: "der Hungrige"
+          f: "die Hungrige"
+          n: "das Hungrige"
+          other: "der Hungrige"
+        }
+      the_vile: {
+          m: "der Widerwärtige"
+          f: "die Widerwärtige"
+          n: "das Widerwärtige"
+          other: "der Widerwärtige"
+        }
+      the_unburied: {
+          m: "der Unbegrabene"
+          f: "die Unbegrabene"
+          n: "das Unbegrabene"
+          other: "der Unbegrabene"
+        }
+      the_defiler: {
+          m: "der Schänder"
+          f: "die Schänderin"
+          n: "das Schändende"
+          other: "der Schänder"
+        }
+      the_pale: {
+          m: "der Bleiche"
+          f: "die Bleiche"
+          n: "das Bleiche"
+          other: "der Bleiche"
+        }
+      the_cruel: {
+          m: "der Grausame"
+          f: "die Grausame"
+          n: "das Grausame"
+          other: "der Grausame"
+        }
+      the_wretched: {
+          m: "der Elende"
+          f: "die Elende"
+          n: "das Elende"
+          other: "der Elende"
+        }
+      the_weeping: {
+          m: "der Weinende"
+          f: "die Weinende"
+          n: "das Weinende"
+          other: "der Weinende"
+        }
+      the_gnawer: {
+          m: "der Nager"
+          f: "die Nagerin"
+          n: "das Nagende"
+          other: "der Nager"
+        }
+    }
+  }
+  mod: {
+    extra_strong: "Extrastark"
+    swift: "Flink"
+    stone_skin: "Steinhaut"
+    fire_enchanted: "Feuergeweiht"
+    vampiric: "Vampirisch"
+  }
+  hit: {
+    bites: "{who} beißt dich: {n} Schaden."
+    stabs: "{who} sticht dich: {n} Schaden."
+    hurls_fire_at: "{who} schleudert Feuer auf dich: {n} Schaden."
+    claws: "{who} zerkratzt dich: {n} Schaden."
+    mauls: "{who} zerfleischt dich: {n} Schaden."
+    slashes: "{who} schlitzt dich auf: {n} Schaden."
+    shoots: "{who} schießt auf dich: {n} Schaden."
+    rends: "{who} zerreißt dich: {n} Schaden."
+    casts_fire_at: "{who} beschwört Feuer gegen dich: {n} Schaden."
+    chills: "{who} trifft dich mit eisiger Kälte: {n} Schaden."
+    shocks: "{who} durchzuckt dich mit Blitzen: {n} Schaden."
+    grasps: "{who} packt dich: {n} Schaden."
+    crushes: "{who} zermalmt dich: {n} Schaden."
+    pummels: "{who} drischt auf dich ein: {n} Schaden."
+    spits_fire_at: "{who} spuckt Feuer auf dich: {n} Schaden."
+    cleaves: "{who} hackt auf dich ein: {n} Schaden."
+    smites: "{who} schmettert dich nieder: {n} Schaden."
+    drowns: "{who} zieht dich unter Wasser: {n} Schaden."
+    cuts: "{who} schneidet dich: {n} Schaden."
+    hits: "{who} trifft dich: {n} Schaden."
+    burn: "{who} verbrennen dich: {n} Schaden."
+  }
+  tile: {
+    void: "Leere"
+    stone_floor: "Steinboden"
+    wall: "Mauer"
+    door: "Tür"
+    open_door: "offene Tür"
+    stairs_down: "Treppe nach unten"
+    stairs_up: "Treppe nach oben"
+    grass: "Gras"
+    dirt: "Erde"
+    cobblestones: "Kopfsteinpflaster"
+    wooden_floor: "Holzboden"
+    tree: "Baum"
+    dead_tree: "toter Baum"
+    boulder: "Felsbrocken"
+    shallow_water: "seichtes Wasser"
+    deep_water: "tiefes Wasser"
+    bridge: "Brücke"
+    lava: "Lava"
+    mud: "Schlamm"
+    reeds: "Schilf"
+    cave_floor: "Höhlenboden"
+    cave_wall: "Höhlenwand"
+    glowing_crystal: "leuchtender Kristall"
+    brazier: "Kohlenbecken"
+    street_lamp: "Straßenlaterne"
+    campfire: "Lagerfeuer"
+    fountain: "Brunnen"
+    grave: "Grab"
+    pillar: "Säule"
+    chest: "Truhe"
+    open_chest: "offene Truhe"
+    town_wall: "Stadtmauer"
+    bones: "Knochen"
+    rubble: "Geröll"
+    path_onward: "weiterführender Pfad"
+    carpet: "Teppich"
+    shelf: "Regal"
+    blood_altar: "Blutaltar"
+    cold_forge: "kalte Esse"
+  }
+}

@@ -128,6 +128,8 @@ type Monster struct {
 	Gone      bool // left the level this turn; cleanup drops it
 	Talk      int
 	Flee      int
+	// a unique's rolled name, for monsterNoun
+	UFirst, ULast string
 }
 
 func (m *Monster) HasMod(md Mod) bool {
@@ -181,7 +183,9 @@ func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int, r *Rules) *Monster 
 		hp *= 3
 		dMul *= 1.3
 		xp *= 6
-		m.Name = uniqueFirst[rng.Intn(len(uniqueFirst))] + " " + uniqueLast[rng.Intn(len(uniqueLast))]
+		m.UFirst = uniqueFirst[rng.Intn(len(uniqueFirst))]
+		m.ULast = uniqueLast[rng.Intn(len(uniqueLast))]
+		m.Name = m.UFirst + " " + m.ULast
 	}
 	m.MaxHP = int(hp)
 	if t.AI == AINPC {

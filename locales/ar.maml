@@ -1,0 +1,1301 @@
+# Termablo in Arabic. Translated from en.maml; see docs/translating.md.
+# Plural forms: zero, one, two, few, many, other. Genders: m, f.
+{
+  msg: {
+    welcome_goal: "اصطد ملك العظام في السرداب، والعرافة الغريقة تحت المستنقع الأسود."
+    welcome_help: "اضغط ? للمساعدة. لدى القائد فوس عند الحانة عمل لك."
+    enter: "تدخل {area}."
+    far_beyond: "شيء هنا يفوق قدرتك بكثير."
+    fountain: "الماء البارد يضمد جراحك."
+    portal_step: "تعبر البوابة."
+    portal_collapse: "تنهار البوابة خلفك."
+    portal_open: "تنشق بوابة زرقاء متلألئة."
+    see_item: "هنا {item}. (g للالتقاط)"
+    see_items: "عدة أغراض ملقاة هنا. (g للالتقاط)"
+    pickup_gold: {
+        zero: "تلتقط {n} قطعة ذهبية."
+        one: "تلتقط قطعة ذهبية واحدة."
+        two: "تلتقط قطعتين ذهبيتين."
+        few: "تلتقط {n} قطع ذهبية."
+        many: "تلتقط {n} قطعة ذهبية."
+        other: "تلتقط {n} قطعة ذهبية."
+      }
+    pickup_potion: "حصلت على {item}."
+    belt_no_room: {
+        m: "لا متسع في حزامك ل{item} آخر."
+        f: "لا متسع في حزامك ل{item} أخرى."
+      }
+    pickup_scroll: "حصلت على {item}."
+    pickup_item: "حصلت على {item}."
+    pack_full: "حقيبتك ممتلئة."
+    pack_too_full: "لا متسع في حقيبتك لهذا التبديل."
+    nothing_to_pick_up: "لا شيء هنا لالتقاطه."
+    notice_item: "تلاحظ شيئا على الأرض."
+    explored: "لم يبق هنا ما يستكشف."
+    spot: "تلمح {who}."
+    boss_destroyed: {
+        m: "هلك {who}!"
+        f: "هلكت {who}!"
+      }
+    elite_slain: {
+        m: "سقط {who} صريعا!"
+        f: "سقطت {who} صريعة!"
+      }
+    monster_dies: {
+        m: "يهلك {who}."
+        f: "تهلك {who}."
+      }
+    out_of_range: "{who} خارج مرماك."
+    no_target: "لا هدف على مرأى منك."
+    no_mana: "المانا لا تكفي."
+    level_up: "بلغت المستوى {n}! (c لتوزيع 5 نقاط سمات)"
+    open_chest: "تفتح الصندوق."
+    altar_cold: "برد المذبح الآن."
+    altar_restore: "يغمرك نور الدم. استعدت عافيتك."
+    altar_xp: "معرفة محرمة تغمر عقلك. (+{n} خبرة)"
+    altar_gift: "يقدم المذبح هدية."
+    slain: {
+        m: "قتلك {who}."
+        f: "قتلتك {who}."
+      }
+    no_healing_potions: "ليس معك جرعات شفاء."
+    full_life: "حياتك ممتلئة أصلا."
+    drink_healing: "تشرب جرعة شفاء."
+    no_mana_potions: "ليس معك جرعات مانا."
+    full_mana: "المانا ممتلئة أصلا."
+    drink_mana: "تشرب جرعة مانا."
+    already_in_town: "أنت في البلدة أصلا."
+    no_scrolls: "ليس معك لفافات بوابة البلدة."
+    boneking_raises: "ملك العظام يبعث الموتى!"
+    boneking_greets: "ملك العظام: «شعلة أخرى تطفأ. اركع، وانضم إلى بلاطي.»"
+    boneking_dead: "سكنت السراديب. عد إلى القائد فوس."
+    oracle_reforms: "تذوب العرافة في الضباب ثم تتشكل من جديد."
+    oracle_lights: "تتجمع أضواء باردة حول العرافة."
+    oracle_greets: "العرافة الغريقة: «رأيت نهايتك أيها اللهب الصغير. إنها رطبة وباردة.»"
+    oracle_dead: "انتهت أغنية العرافة. وفي الأعماق، شيء ما يحترق... عد إلى فوس."
+    wanderer_greets: "الجوال الأخير: «غريب آخر. دائما يرسلون غريبا.»"
+    wanderer_portal: "يخرج الجوال الأخير من البوابة. تنهار خلفه."
+    wanderer_follows: "الجوال الأخير يتبعك."
+    wanderer_home: "الجوال الأخير: «أريتني طريق العودة إلى الديار.»"
+    wanderer_cuts: "يجرح الجوال الأخير {who}."
+    wanderer_kills: "يصرع الجوال الأخير {who}."
+    wanderer_taunt: "الجوال الأخير: «أعطوني أنا أيضا سيفا وخطبة قائد.»"
+    town_empty: "لم يبق في إمبرهولد أحد سواك."
+    forge_cold: "يبرد كور هادريك."
+    wanderer_last_words: "الجوال الأخير: «واصل المسير.»"
+    wanderer_dead: "ينطفئ الضوء الأحمر، ويفلت الظلام النار."
+    unseal_here: "حيث كان ينتظر، ينفتح طريق إلى الأسفل."
+    unseal_far: "بعيدا في الأسفل، في الموقد، ينفتح طريق إلى الأعماق."
+    running: {
+        m: "يفر {who} طلبا للنجاة."
+        f: "تفر {who} طلبا للنجاة."
+      }
+    voss_reward: {
+        zero: "يكافئك فوس ب{n} قطعة ذهبية وب{item}."
+        one: "يكافئك فوس بقطعة ذهبية واحدة وب{item}."
+        two: "يكافئك فوس بقطعتين ذهبيتين وب{item}."
+        few: "يكافئك فوس ب{n} قطع ذهبية وب{item}."
+        many: "يكافئك فوس ب{n} قطعة ذهبية وب{item}."
+        other: "يكافئك فوس ب{n} قطعة ذهبية وب{item}."
+      }
+    cannot_afford: "لا تملك ثمن ذلك."
+    belt_full: "حزامك ممتلئ."
+    gamble: "يكشف هادريك عن {item}. {n}g، ولا استرداد."
+    reroll: "يجلب هادريك بضاعة جديدة مقابل {n}g."
+    bought: "دفعت {n}g ثمنا ل{item}."
+    sold: "قبضت {n}g ثمنا ل{item}."
+    equip: "تتجهز ب{item}."
+    unequip: "تنزع {item}."
+    drop: "تلقي ب{item} أرضا."
+    mirela_healthy: "تتفحصك ميريلا. «سليم كالثور. اشتر شيئا يا عزيزي.»"
+    mirela_free: "تضمد ميريلا جراحك. «لا أجر على الشباب. والآن اشتر شيئا يا عزيزي.»"
+    mirela_broke: "تهز ميريلا رأسها. «الأعشاب تكلف مالا يا عزيزي.»"
+    mirela_partial: "تفعل ميريلا ما يسمح به ذهبك ({n}g). «عد بالمزيد يا عزيزي.»"
+    mirela_paid: "تضمد ميريلا جراحك مقابل {n}g. «ها قد انتهينا. والآن اشتر شيئا يا عزيزي.»"
+  }
+  ref: {
+    the: "{name}"
+    a: "{name}"
+    death_flames: { text: "لهيب احتضار {name}", gender: "m" }
+  }
+  talk: {
+    hadrik: {
+      greet: "هادريك: «فولاذ لمواجهة الظلام. ألق نظرة.»"
+      after_oracle: "هادريك: «آخر من سلحته للأعماق لم يعد قط ليصلح عدته.»"
+    }
+    voss: {
+      intro: "أيها الجوال. حسنا. نحتاج نصلا لا يرتجف.\nالجمرة تبقي الظلام خارجا. والظلام يريد استعادتها.\nشرق البوابة، وراء حقول الرماد، يقع سرداب الساقطين.\nعلى عمق أربعة طوابق، يجلس ملك العظام على عرشه من الأضلاع. اقض عليه.\nوفي الشمال، في المستنقع الأسود، تدعو العرافة الغريقة التائهين إلى الماء.\nاشتر الجرعات من ميريلا. احتفظ بلفافة بوابة. وعد حيا."
+      boneking_reward: "صار ملك العظام ترابا؟ إذن قد تقرع أجراس السرداب من جديد.\nخذ هذا — كان لأبي. والذهب طبعا."
+      oracle_reward: "العرافة صمتت... ما ظننت أني سأنام يوما دون أن أسمعها.\nتحت بركتها، الصخر يحترق. يقولون إن الهاوية بلا قرار. كن حذرا.\nأرسلت أحدهم إلى هناك ذات مرة. ثم كففت عن عد الأيام."
+      after_boneking: "السرداب هادئ. والآن: المستنقع الأسود، شمال الحقول.\nاتبع الأضواء الباردة نزولا إلى الكهف. واقض على العرافة."
+      after_oracle: "فعلت أكثر مما جرؤ عليه أي منا.\nإن كان لا بد أن تنزل أعمق... فالهاوية تنتظر تحت بركة العرافة."
+      after_wanderer: "أضيئت الفوانيس من جديد. أيا كان، فقد كان منا يوما.\nواصل المسير أيها الغريب. لهذا نستأجرك."
+    }
+  }
+  rumor: {
+    braziers: "يقولون إن مجامر السرداب تشتعل وحدها عند الغسق. لا أحد يرعاها."
+    brother: "ذهب أخي إلى المستنقع الأسود في إثر الأضواء. عاد مبتلا. عاد على غير حاله."
+    torch: "ارفع مشعلك عاليا. الظلام هناك ليس فارغا — إنه جائع."
+    forge: "كور هادريك لم يخمد منذ أربعين عاما. يقول إن اليوم الذي يخمد فيه، نهرب."
+    glimmer: "الأشياء النادرة تلمع في الظلام. وضوء الذهب يعني شيئا قديما له اسم."
+    crystal: "بلورة ميريلا العجوز استخرجت من الكهف. إنها تغني حين تحلم العرافة."
+    scroll: "لفافة البوابة أرخص من جنازة."
+    stranger: "كان هناك غريب قبلك. اشترى السيف نفسه. تجاوز المستنقع ومضى."
+    edran: "حمل الملك إدران الجمرة إلى الأعلى بيديه العاريتين. كلفه ذلك وجهه."
+    uncle: "انضم عمي إلى طائفة الجمرة. قال إن للظلام دينا علينا. ونزل ليسدده."
+    holding: "تقول ميريلا إن العرافة لا تطارد أحدا. إنها تكبح شيئا في الأسفل."
+  }
+  area: {
+    town: "إمبرهولد"
+    fields: "حقول الرماد"
+    marsh: "المستنقع الأسود"
+    crypt: "سرداب الساقطين {n}"
+    throne: "عرش ملك العظام"
+    grotto: "الكهف الغارق {n}"
+    oracle_pool: "بركة العرافة"
+    abyss: "الهاوية المشتعلة {n}"
+    hearth: "الموقد السفلي"
+  }
+  region: {
+    town: "إمبرهولد"
+    fields: "حقول الرماد"
+    marsh: "المستنقع الأسود"
+    crypt: "سرداب الساقطين"
+    grotto: "الكهف الغارق"
+    abyss: "الهاوية المشتعلة"
+  }
+  lore: {
+    town: "إمبرهولد. آخر بلدة مضاءة قبل الظلام. هنا تشتعل الفوانيس طوال الليل."
+    fields: "حقول الرماد. ضوء القمر على رماد غابة محترقة."
+    marsh: "المستنقع الأسود. أضواء باردة تنجرف فوق الماء. لا تتبعها."
+    crypt: "{area}. مقبرة ملكية؛ للهواء طعم الغبار."
+    grotto: "{area}. ماء بارد يثقل من فوق؛ والبلورات تطن."
+    abyss: "{area}. الصخر نفسه ينزف."
+    hearth: "{area}. المجامر تميل بعيدا عن وسط القاعة."
+  }
+  shop: {
+    smith: "كور هادريك"
+    alch: "علاجات ميريلا"
+  }
+  item: {
+    gold: {
+        zero: "{n} قطعة ذهبية"
+        one: "قطعة ذهبية واحدة"
+        two: "قطعتان ذهبيتان"
+        few: "{n} قطع ذهبية"
+        many: "{n} قطعة ذهبية"
+        other: "{n} قطعة ذهبية"
+      }
+    healing_potion: { text: "جرعة شفاء", gender: "f" }
+    mana_potion: { text: "جرعة مانا", gender: "f" }
+    town_portal_scroll: { text: "لفافة بوابة البلدة", gender: "f" }
+    unidentified: {
+        m: "{base} مجهول"
+        f: "{base} مجهولة"
+      }
+    fresh_stock: { text: "بضاعة جديدة", gender: "f" }
+    magic: "{base} {prefix} {suffix}"
+    rare: "{second} {first}"
+    desc: {
+      healing_potion: "تستعيد قدرا كبيرا من الحياة"
+      mana_potion: "تستعيد قدرا كبيرا من المانا"
+      town_portal_scroll: "تفتح بوابة تعود إلى إمبرهولد"
+      unidentified: "ما اختاره هادريك من العمق الذي بلغته.\nقد يكون أي شيء. لا استرداد."
+      fresh_stock: "يجلب هادريك بضاعة جديدة، وكذلك ميريلا."
+    }
+  }
+  rarity: {
+    rare: {
+        m: "{base} نادر"
+        f: "{base} نادرة"
+      }
+    unique: {
+        m: "{base} فريد"
+        f: "{base} فريدة"
+      }
+  }
+  slot: {
+    weapon: "سلاح"
+    off_hand: "اليد الأخرى"
+    helm: "خوذة"
+    armor: "درع"
+    gloves: "قفازات"
+    boots: "حذاء"
+    ring: "خاتم"
+    amulet: "تميمة"
+  }
+  stat: {
+    str: "+{n} إلى القوة"
+    dex: "+{n} إلى البراعة"
+    vit: "+{n} إلى الحيوية"
+    ene: "+{n} إلى الطاقة"
+    life: "+{n} إلى الحياة"
+    mana: "+{n} إلى المانا"
+    dmg_pct: "+{n}% ضرر معزز"
+    flat_dmg: "+{n} إلى الضرر"
+    armor: "+{n} إلى الدفاع"
+    armor_pct: "+{n}% دفاع معزز"
+    crit: "+{n}% إلى فرصة الضربة الحرجة"
+    life_steal: "{n}% من الحياة تسرق مع كل ضربة"
+    light: "+{n} إلى نطاق الضوء"
+    spell_pct: "+{n}% إلى ضرر التعاويذ"
+    life_regen: "تجدد {n} من الحياة"
+    mana_regen: "تجدد {n} من المانا"
+    mf: "+{n}% إلى إيجاد الأغراض السحرية"
+    thorns: "يتلقى المهاجمون ضررا قدره {n}"
+    to_hit: "+{n} إلى دقة الهجوم"
+    all_attr: "+{n} إلى كل السمات"
+    gold_find: "+{n}% ذهب إضافي"
+  }
+  tile_note: {
+    door: "امش نحوه لتفتحه."
+    chest: "امش نحوه لتفتحه."
+    fountain: "امش نحوها لتستعيد حياتك."
+    blood_altar: "امش نحوه لتقدم قربانا."
+    brazier: "تلقي ضوء نار دافئا."
+    cold_forge: "كور هادريك. لقد خمد."
+    street_lamp: "يلقي ضوء مصباح دافئا."
+    campfire: "لا يكون مخيم الساقطين بعيدا أبدا."
+    glowing_crystal: "تتوهج بضوء أزرق بارد."
+    lava: "صخر منصهر. لا سبيل لعبوره، وهو ساطع."
+    deep_water: "أعمق من أن تخوضه."
+    shallow_water: "ضحل بما يكفي لتخوضه."
+    tree: "تحجب الحركة والرؤية."
+    open_chest: "سبق نهبه."
+    grave: "هنا يرقد شخص سيئ الحظ."
+  }
+  help: {
+    key: {
+      move: "الأسهم hjkl yubn"
+      wait: ". أو 5"
+      pickup: "g أو ,"
+      firebolt: "f"
+      nova: "r"
+      target: "tab / shift+tab"
+      potions: "q / w"
+      portal: "t"
+      explore: "o"
+      inventory: "i"
+      character: "c"
+      map: "m"
+      quit: "Q / ctrl+c"
+    }
+    does: {
+      move: "تحرك / هاجم (لوحة الأرقام تعمل أيضا)"
+      wait: "انتظر دورا"
+      pickup: "التقط العتاد (الذهب والجرعات تلتقط تلقائيا)"
+      firebolt: "سهم النار على الهدف (يضيء الظلام!)"
+      nova: "موجة الصقيع: ضرر + تجميد قصير حولك"
+      target: "الهدف التالي / السابق (أو انقر عليه)"
+      potions: "اشرب جرعة شفاء / مانا (تعمل على مدى بضعة أدوار)"
+      portal: "اقرأ لفافة بوابة البلدة"
+      explore: "استكشاف تلقائي (يتوقف عند ظهور الأعداء)"
+      inventory: "الحقيبة والعتاد"
+      character: "ورقة الشخصية، وزع نقاط السمات"
+      map: "خريطة المنطقة المستكشفة"
+      quit: "خروج"
+    }
+    tip: {
+      walk_into: "امش نحو الأبواب والصناديق والمذابح والنوافير لتستخدمها."
+      talk: "كلم أهل البلدة بالمشي نحوهم."
+      darkness: "الوحوش في الظلام خفية حتى يلمسها الضوء."
+      names: "الاسم الأزرق يعني وحشا بطلا؛ والذهبي يعني وحشا فريدا."
+      glow: "الغنائم المتوهجة نادرة أو فريدة. ابحث عن الضوء."
+      upgrade: "الأغراض التي تحمل ▲ أفضل مما ترتديه."
+      hover: "مرر الفأرة فوق الخريطة لترى ماهية الأشياء."
+      belt: "انقر صفا في الحزام لتشرب جرعة أو تقرأ اللفافة."
+    }
+  }
+  ui: {
+    too_small: "يحتاج ترمابلو إلى 80x24 على الأقل."
+    too_small_now: "الحالي: {w}x{h}"
+    list_sep: "، "
+    esc_close: "esc للإغلاق"
+    any_key: "اضغط أي مفتاح"
+    currently_equipped: "المجهز حاليا:"
+    more_above: {
+        zero: "↑ لا مزيد"
+        one: "↑ عنصر آخر"
+        two: "↑ عنصران آخران"
+        few: "↑ {n} عناصر أخرى"
+        many: "↑ {n} عنصرا آخر"
+        other: "↑ {n} عنصر آخر"
+      }
+    more_below: {
+        zero: "↓ لا مزيد"
+        one: "↓ عنصر آخر"
+        two: "↓ عنصران آخران"
+        few: "↓ {n} عناصر أخرى"
+        many: "↓ {n} عنصرا آخر"
+        other: "↓ {n} عنصر آخر"
+      }
+    log: {
+      repeat: " (x{n})"
+    }
+    title: {
+      subtitle: "نزول إلى عتمة مضاءة"
+      begin: "اضغط أي مفتاح للبدء"
+      lang_keys: "tab: اللغة"
+    }
+    panel: {
+      safe: "ملاذ آمن"
+      area_level: "مستوى المنطقة {n}"
+      not_safe: "غير آمن"
+      hero: "الجوال  ·  المستوى {n}"
+      life: "الحياة"
+      mana: "المانا"
+      experience: "الخبرة"
+      gold: "الذهب {n}"
+      belt_portal: "بوابة {n}"
+      belt_heal: "شفاء"
+      belt_mana: "مانا"
+      damage: "الضرر {lo}-{hi}"
+      armor: "الدفاع {n}"
+      crit: "الحرجة {n}%"
+      light: "الضوء {r}"
+      skills: "المهارات"
+      firebolt: "سهم النار {lo}-{hi}"
+      nova: "موجة الصقيع {lo}-{hi}"
+      mp: "{n}م"
+      target_lvl: "مستوى{n}"
+      frozen: "متجمد"
+      no_enemies: "لا أعداء على مرأى منك"
+      quests: "المهام"
+      keys: "? دليل i عدة c سمات m خريطة"
+    }
+    hover: {
+      darkness: "ظلمة"
+      unexplored: "غير مستكشف، أو أبعد من ضوئك."
+      remembered: "في الذاكرة — ليس على مرأى منك الآن."
+      you: "أنت — الجوال"
+      you_stats: "المستوى {lvl} · الحياة {hp}/{maxhp} · المانا {mp}/{maxmp}"
+      torch: "نطاق المشعل {r}"
+      townsfolk: "من أهل البلدة · امش نحوه لتكلمه"
+      rank: {
+        normal: "المستوى {lvl} · الحياة {hp}/{maxhp}"
+        champion: "بطل · المستوى {lvl} · الحياة {hp}/{maxhp}"
+        unique: "فريد · المستوى {lvl} · الحياة {hp}/{maxhp}"
+        boss: "زعيم · المستوى {lvl} · الحياة {hp}/{maxhp}"
+      }
+      hits: "ضربته {lo}-{hi} · الدفاع {armor}"
+      state: {
+        frozen: "متجمد"
+        unaware: "غافل عنك"
+        fleeing: "هارب"
+        ranged: "يرمي عن بعد"
+        glows: "متوهج"
+      }
+      replaces: "يحل محل {item}"
+      pick_up: "قف عليه واضغط g لالتقاطه"
+      portal: "بوابة البلدة"
+      leads_back: "يعود إلى {place}"
+      leads_to: "يؤدي إلى {place}"
+      decal: {
+        corpse: "جثة"
+        blood: "بقع دم"
+        scorch: "آثار حريق"
+      }
+    }
+    item: {
+      damage: "الضرر: {lo}-{hi}"
+      damage_2h: "الضرر: {lo}-{hi} (بكلتا اليدين)"
+      armor: "الدفاع: {n}"
+      footer: "مستوى الغرض {lvl}  ·  قيمته {n}g"
+    }
+    inv: {
+      title: "الحقيبة"
+      equipped: "العتاد المجهز"
+      pack: "الحقيبة {n}/{max}"
+      empty: "حقيبتك فارغة."
+      new: "+"
+      keys: "←→/tab تبديل · ↑↓ اختيار · enter تجهيز/نزع · d إلقاء · esc"
+    }
+    char: {
+      title: "الشخصية"
+      hero: "الجوال · المستوى {lvl}"
+      experience: "الخبرة {xp} / {next}"
+      attr: {
+        str: "القوة"
+        dex: "البراعة"
+        vit: "الحيوية"
+        ene: "الطاقة"
+      }
+      attr_desc: {
+        str: "+ضرر الالتحام"
+        dex: "+الإصابة، الحرجة، المراوغة"
+        vit: "+الحياة"
+        ene: "+المانا، ضرر التعاويذ"
+      }
+      points: {
+          zero: "لا نقاط للتوزيع"
+          one: "نقطة واحدة للتوزيع — اضغط 1-4"
+          two: "نقطتان للتوزيع — اضغط 1-4"
+          few: "{n} نقاط للتوزيع — اضغط 1-4"
+          many: "{n} نقطة للتوزيع — اضغط 1-4"
+          other: "{n} نقطة للتوزيع — اضغط 1-4"
+        }
+      stat: {
+        life: "الحياة"
+        mana: "المانا"
+        damage: "الضرر"
+        firebolt: "سهم النار"
+        armor: "الدفاع"
+        attack: "الهجوم"
+        crit: "الحرجة"
+        life_steal: "سرقة الحياة"
+        magic_find: "إيجاد السحر"
+        kills: "القتلى"
+      }
+    }
+    shop: {
+      buy: "شراء"
+      sell: "بيع"
+      gold: "الذهب: {n}"
+      empty: "لا شيء هنا."
+      keys: "tab شراء/بيع · ↑↓ اختيار · enter تأكيد · esc مغادرة"
+    }
+    help: {
+      title: "المساعدة"
+      scroll: "↑↓ تمرير"
+    }
+    dead: {
+      title: "لقد مت"
+      slain_by: {
+          m: "صرعك {who}"
+          f: "صرعتك {who}"
+        }
+      summary: "المستوى {lvl} · القتلى: {kills} · الذهب: {gold}"
+      where: "في {area}"
+      keys: "n: لعبة جديدة   Q: خروج"
+    }
+  }
+  base: {
+    dagger: { text: "خنجر", gender: "m" }
+    short_sword: { text: "سيف قصير", gender: "m" }
+    club: { text: "هراوة", gender: "f" }
+    hand_axe: { text: "فأس يد", gender: "f" }
+    mace: { text: "مقمعة", gender: "f" }
+    long_sword: { text: "سيف طويل", gender: "m" }
+    battle_axe: { text: "فأس حرب", gender: "f" }
+    war_hammer: { text: "مطرقة حرب", gender: "f" }
+    great_sword: { text: "سيف عظيم", gender: "m" }
+    runeblade: { text: "نصل روني", gender: "m" }
+    executioners_axe: { text: "فأس جلاد", gender: "f" }
+    doom_flail: { text: "سوط هلاك", gender: "m" }
+    buckler: { text: "ترس صغير", gender: "m" }
+    kite_shield: { text: "ترس معيني", gender: "m" }
+    tower_shield: { text: "ترس برجي", gender: "m" }
+    bone_ward: { text: "ترس عظمي", gender: "m" }
+    rags: { text: "أسمال", gender: "f" }
+    leather_armor: { text: "درع جلدية", gender: "f" }
+    studded_leather: { text: "جلد مرصع", gender: "m" }
+    ring_mail: { text: "درع حلقية", gender: "f" }
+    chain_mail: { text: "زردية", gender: "f" }
+    scale_mail: { text: "درع حرشفية", gender: "f" }
+    plate_mail: { text: "درع صفائحية", gender: "f" }
+    gothic_plate: { text: "درع قوطية", gender: "f" }
+    cap: { text: "قلنسوة", gender: "f" }
+    skull_cap: { text: "طاسة", gender: "f" }
+    helm: { text: "خوذة", gender: "f" }
+    great_helm: { text: "خوذة كبرى", gender: "f" }
+    grim_visage: { text: "قناع عابس", gender: "m" }
+    leather_gloves: { text: "قفازات جلدية", gender: "f" }
+    chain_gloves: { text: "قفازات زرد", gender: "f" }
+    gauntlets: { text: "قفازات مدرعة", gender: "f" }
+    boots: { text: "حذاء", gender: "m" }
+    chain_boots: { text: "حذاء زرد", gender: "m" }
+    greaves: { text: "واقيات ساق", gender: "f" }
+    ring: { text: "خاتم", gender: "m" }
+    amulet: { text: "تميمة", gender: "f" }
+  }
+  prefix: {
+    jagged: {
+        m: "مسنن"
+        f: "مسننة"
+      }
+    deadly: {
+        m: "مميت"
+        f: "مميتة"
+      }
+    vicious: {
+        m: "شرس"
+        f: "شرسة"
+      }
+    brutal: {
+        m: "وحشي"
+        f: "وحشية"
+      }
+    savage: {
+        m: "ضار"
+        f: "ضارية"
+      }
+    merciless: {
+        m: "عديم الرحمة"
+        f: "عديمة الرحمة"
+      }
+    sharp: {
+        m: "حاد"
+        f: "حادة"
+      }
+    keen: {
+        m: "قاطع"
+        f: "قاطعة"
+      }
+    cruel: {
+        m: "قاس"
+        f: "قاسية"
+      }
+    wicked: {
+        m: "شرير"
+        f: "شريرة"
+      }
+    bronze: {
+        m: "برونزي"
+        f: "برونزية"
+      }
+    iron: {
+        m: "حديدي"
+        f: "حديدية"
+      }
+    steel: {
+        m: "فولاذي"
+        f: "فولاذية"
+      }
+    silver: {
+        m: "فضي"
+        f: "فضية"
+      }
+    gold: {
+        m: "ذهبي"
+        f: "ذهبية"
+      }
+    platinum: {
+        m: "بلاتيني"
+        f: "بلاتينية"
+      }
+    sturdy: {
+        m: "متين"
+        f: "متينة"
+      }
+    strong: {
+        m: "قوي"
+        f: "قوية"
+      }
+    glorious: {
+        m: "مجيد"
+        f: "مجيدة"
+      }
+    blessed: {
+        m: "مبارك"
+        f: "مباركة"
+      }
+    saintly: {
+        m: "قدسي"
+        f: "قدسية"
+      }
+    godly: {
+        m: "إلهي"
+        f: "إلهية"
+      }
+    fine: {
+        m: "متقن"
+        f: "متقنة"
+      }
+    warriors: {
+        m: "قتالي"
+        f: "قتالية"
+      }
+    soldiers: {
+        m: "عسكري"
+        f: "عسكرية"
+      }
+    knights: {
+        m: "فروسي"
+        f: "فروسية"
+      }
+    lords: {
+        m: "نبيل"
+        f: "نبيلة"
+      }
+    kings: {
+        m: "ملكي"
+        f: "ملكية"
+      }
+    lizards: {
+        m: "سحلي"
+        f: "سحلية"
+      }
+    snakes: {
+        m: "أفعواني"
+        f: "أفعوانية"
+      }
+    serpents: {
+        m: "ثعباني"
+        f: "ثعبانية"
+      }
+    drakes: {
+        m: "تنيني"
+        f: "تنينية"
+      }
+    dragons: {
+        m: "تنيني مهيب"
+        f: "تنينية مهيبة"
+      }
+    smoldering: {
+        m: "متقد"
+        f: "متقدة"
+      }
+    fiery: {
+        m: "ناري"
+        f: "نارية"
+      }
+    blazing: {
+        m: "ملتهب"
+        f: "ملتهبة"
+      }
+    infernal: {
+        m: "جهنمي"
+        f: "جهنمية"
+      }
+    hellfire: {
+        m: "جحيمي"
+        f: "جحيمية"
+      }
+    honed: {
+        m: "مشحوذ"
+        f: "مشحوذة"
+      }
+    precise: {
+        m: "دقيق"
+        f: "دقيقة"
+      }
+    lethal: {
+        m: "فتاك"
+        f: "فتاكة"
+      }
+    assassins: {
+        m: "غادر"
+        f: "غادرة"
+      }
+    humming: {
+        m: "طنان"
+        f: "طنانة"
+      }
+    resonant: {
+        m: "رنان"
+        f: "رنانة"
+      }
+    singing: {
+        m: "صادح"
+        f: "صادحة"
+      }
+  }
+  suffix: {
+    of_the_jackal: {
+        m: "ذو روح ابن آوى"
+        f: "ذات روح ابن آوى"
+      }
+    of_the_fox: {
+        m: "ذو روح الثعلب"
+        f: "ذات روح الثعلب"
+      }
+    of_the_wolf: {
+        m: "ذو روح الذئب"
+        f: "ذات روح الذئب"
+      }
+    of_the_tiger: {
+        m: "ذو روح النمر"
+        f: "ذات روح النمر"
+      }
+    of_the_mammoth: {
+        m: "ذو روح الماموث"
+        f: "ذات روح الماموث"
+      }
+    of_the_whale: {
+        m: "ذو روح الحوت"
+        f: "ذات روح الحوت"
+      }
+    of_strength: {
+        m: "ذو القوة"
+        f: "ذات القوة"
+      }
+    of_might: {
+        m: "ذو البأس"
+        f: "ذات البأس"
+      }
+    of_power: {
+        m: "ذو السطوة"
+        f: "ذات السطوة"
+      }
+    of_the_giant: {
+        m: "ذو بأس العملاق"
+        f: "ذات بأس العملاق"
+      }
+    of_the_titan: {
+        m: "ذو بأس الجبابرة"
+        f: "ذات بأس الجبابرة"
+      }
+    of_dexterity: {
+        m: "ذو البراعة"
+        f: "ذات البراعة"
+      }
+    of_skill: {
+        m: "ذو المهارة"
+        f: "ذات المهارة"
+      }
+    of_accuracy: {
+        m: "ذو الدقة"
+        f: "ذات الدقة"
+      }
+    of_precision: {
+        m: "ذو الإحكام"
+        f: "ذات الإحكام"
+      }
+    of_perfection: {
+        m: "ذو الكمال"
+        f: "ذات الكمال"
+      }
+    of_vigor: {
+        m: "ذو العنفوان"
+        f: "ذات العنفوان"
+      }
+    of_vitality: {
+        m: "ذو الحيوية"
+        f: "ذات الحيوية"
+      }
+    of_zest: {
+        m: "ذو الحماسة"
+        f: "ذات الحماسة"
+      }
+    of_life: {
+        m: "ذو الحياة"
+        f: "ذات الحياة"
+      }
+    of_the_mind: {
+        m: "ذو صفاء الذهن"
+        f: "ذات صفاء الذهن"
+      }
+    of_energy: {
+        m: "ذو الطاقة"
+        f: "ذات الطاقة"
+      }
+    of_brilliance: {
+        m: "ذو الألق"
+        f: "ذات الألق"
+      }
+    of_sorcery: {
+        m: "ذو السحر"
+        f: "ذات السحر"
+      }
+    of_wizardry: {
+        m: "ذو الطلاسم"
+        f: "ذات الطلاسم"
+      }
+    of_the_leech: {
+        m: "ذو عطش العلقة"
+        f: "ذات عطش العلقة"
+      }
+    of_the_bat: {
+        m: "ذو عطش الخفاش"
+        f: "ذات عطش الخفاش"
+      }
+    of_the_vampire: {
+        m: "ذو عطش مصاص الدماء"
+        f: "ذات عطش مصاص الدماء"
+      }
+    of_light: {
+        m: "ذو النور"
+        f: "ذات النور"
+      }
+    of_radiance: {
+        m: "ذو الإشراق"
+        f: "ذات الإشراق"
+      }
+    of_the_sun: {
+        m: "ذو نور الشمس"
+        f: "ذات نور الشمس"
+      }
+    of_regeneration: {
+        m: "ذو التجدد"
+        f: "ذات التجدد"
+      }
+    of_renewal: {
+        m: "ذو الانبعاث"
+        f: "ذات الانبعاث"
+      }
+    of_the_troll: {
+        m: "ذو دم الترول"
+        f: "ذات دم الترول"
+      }
+    of_fortune: {
+        m: "ذو الطالع"
+        f: "ذات الطالع"
+      }
+    of_luck: {
+        m: "ذو الحظ"
+        f: "ذات الحظ"
+      }
+    of_greed: {
+        m: "ذو الجشع"
+        f: "ذات الجشع"
+      }
+    of_thorns: {
+        m: "ذو الأشواك"
+        f: "ذات الأشواك"
+      }
+    of_spikes: {
+        m: "ذو الحسك"
+        f: "ذات الحسك"
+      }
+    of_retribution: {
+        m: "ذو القصاص"
+        f: "ذات القصاص"
+      }
+    of_the_sky: {
+        m: "ذو سر السماء"
+        f: "ذات سر السماء"
+      }
+    of_the_moon: {
+        m: "ذو سر القمر"
+        f: "ذات سر القمر"
+      }
+    of_the_stars: {
+        m: "ذو سر النجوم"
+        f: "ذات سر النجوم"
+      }
+    of_the_heavens: {
+        m: "ذو سر الأفلاك"
+        f: "ذات سر الأفلاك"
+      }
+    of_wealth: {
+        m: "ذو الثراء"
+        f: "ذات الثراء"
+      }
+    of_avarice: {
+        m: "ذو الطمع"
+        f: "ذات الطمع"
+      }
+  }
+  rare: {
+    first: {
+      grim: {
+          m: "قاتم"
+          f: "قاتمة"
+        }
+      doom: {
+          m: "الهلاك"
+          f: "الهلاك"
+        }
+      blood: {
+          m: "الدم"
+          f: "الدم"
+        }
+      storm: {
+          m: "العاصفة"
+          f: "العاصفة"
+        }
+      death: {
+          m: "الموت"
+          f: "الموت"
+        }
+      shadow: {
+          m: "الظل"
+          f: "الظل"
+        }
+      rune: {
+          m: "روني"
+          f: "رونية"
+        }
+      gloom: {
+          m: "العتمة"
+          f: "العتمة"
+        }
+      bone: {
+          m: "العظم"
+          f: "العظم"
+        }
+      ash: {
+          m: "الرماد"
+          f: "الرماد"
+        }
+      raven: {
+          m: "الغراب"
+          f: "الغراب"
+        }
+      soul: {
+          m: "الروح"
+          f: "الروح"
+        }
+      dread: {
+          m: "الرهبة"
+          f: "الرهبة"
+        }
+      havoc: {
+          m: "الخراب"
+          f: "الخراب"
+        }
+      wraith: {
+          m: "الطيف"
+          f: "الطيف"
+        }
+      corpse: {
+          m: "الجثة"
+          f: "الجثة"
+        }
+      ember: {
+          m: "الجمرة"
+          f: "الجمرة"
+        }
+      venom: {
+          m: "السم"
+          f: "السم"
+        }
+      night: {
+          m: "الليل"
+          f: "الليل"
+        }
+      hollow: {
+          m: "أجوف"
+          f: "جوفاء"
+        }
+      cinder: {
+          m: "الفحم"
+          f: "الفحم"
+        }
+      pale: {
+          m: "شاحب"
+          f: "شاحبة"
+        }
+    }
+    second: {
+      bite: { text: "عضة", gender: "f" }
+      edge: { text: "حد", gender: "m" }
+      fang: { text: "ناب", gender: "m" }
+      song: { text: "نشيد", gender: "m" }
+      reaver: { text: "ناهب", gender: "m" }
+      cleaver: { text: "ساطور", gender: "m" }
+      thirst: { text: "عطش", gender: "m" }
+      kiss: { text: "قبلة", gender: "f" }
+      needle: { text: "إبرة", gender: "f" }
+      ward: { text: "حرز", gender: "m" }
+      bulwark: { text: "حصن", gender: "m" }
+      aegis: { text: "مجن", gender: "m" }
+      guard: { text: "حارس", gender: "m" }
+      wall: { text: "سور", gender: "m" }
+      shell: { text: "صدفة", gender: "f" }
+      coat: { text: "معطف", gender: "m" }
+      hide: { text: "جلد", gender: "m" }
+      carapace: { text: "قشرة", gender: "f" }
+      mantle: { text: "عباءة", gender: "f" }
+      shroud: { text: "كفن", gender: "m" }
+      crown: { text: "تاج", gender: "m" }
+      visor: { text: "قناع", gender: "m" }
+      cowl: { text: "قلنسوة", gender: "f" }
+      brow: { text: "جبين", gender: "m" }
+      horn: { text: "قرن", gender: "m" }
+      grip: { text: "مسكة", gender: "f" }
+      fist: { text: "قبضة", gender: "f" }
+      hand: { text: "يد", gender: "f" }
+      claw: { text: "مخلب", gender: "m" }
+      knuckle: { text: "مفصل", gender: "m" }
+      stride: { text: "خطوة", gender: "f" }
+      track: { text: "أثر", gender: "m" }
+      trail: { text: "درب", gender: "m" }
+      spur: { text: "مهماز", gender: "m" }
+      tread: { text: "وطأة", gender: "f" }
+      loop: { text: "عروة", gender: "f" }
+      coil: { text: "لفة", gender: "f" }
+      band: { text: "طوق", gender: "m" }
+      circle: { text: "دائرة", gender: "f" }
+      spiral: { text: "دوامة", gender: "f" }
+      eye: { text: "عين", gender: "f" }
+      heart: { text: "قلب", gender: "m" }
+      charm: { text: "تعويذة", gender: "f" }
+      talisman: { text: "طلسم", gender: "m" }
+      star: { text: "نجمة", gender: "f" }
+    }
+  }
+  unique: {
+    last_wanderers_shroud: {
+      name: { text: "كفن الجوال الأخير", gender: "m" }
+      flavor: "ما زال دافئا. لم يكن لك قط، وها هو لك الآن."
+    }
+    wanderers_shroud: {
+      name: { text: "كفن الجوال", gender: "m" }
+      flavor: "ارتداه من لم يتوقف عن المسير قط."
+    }
+    shard_of_night: {
+      name: { text: "شظية الليل", gender: "f" }
+      flavor: "تشرب ضوء المشاعل."
+    }
+    hollow_crown: {
+      name: { text: "التاج الأجوف", gender: "m" }
+      flavor: "الملك الذي امتلكه لم يكن بحاجة إلى جمجمة."
+    }
+    emberbrand: {
+      name: { text: "نصل الجمرة", gender: "m" }
+      flavor: "حده لا يبرد أبدا."
+    }
+    the_last_lantern: {
+      name: { text: "الفانوس الأخير", gender: "m" }
+      flavor: "يشتعل حين يظلم كل ما سواه."
+    }
+    moonstride: {
+      name: { text: "خطو القمر", gender: "m" }
+      flavor: "خطى كالثلج المتساقط."
+    }
+    band_of_ashes: {
+      name: { text: "طوق الرماد", gender: "m" }
+      flavor: "دافئ عند اللمس، دائما."
+    }
+    gravewardens_coat: {
+      name: { text: "معطف حارس القبور", gender: "m" }
+      flavor: "مخيط من أكفان الموتى الذين لا يهدؤون."
+    }
+    eye_of_the_deep: {
+      name: { text: "عين الأعماق", gender: "f" }
+      flavor: "ترمش حين لا تنظر."
+    }
+    crown_of_the_drowned: {
+      name: { text: "تاج الغرقى", gender: "m" }
+      flavor: "ما زال الماء يقطر من حافته."
+    }
+    bloodfist: {
+      name: { text: "قبضة الدم", gender: "f" }
+      flavor: "لا تنظف أبدا. لا تجف أبدا."
+    }
+    kingsbane: {
+      name: { text: "حتف الملوك", gender: "m" }
+      flavor: "سبعة تيجان تدحرجت تحته."
+    }
+    starfall_plate: {
+      name: { text: "درع النجم الهاوي", gender: "f" }
+      flavor: "صيغت من نجم هوى؛ وما زالت تذكر السماء."
+    }
+  }
+  gamble: {
+    weapon: { text: "سلاح", gender: "m" }
+    shield: { text: "ترس", gender: "m" }
+    helm: { text: "خوذة", gender: "f" }
+    armor: { text: "درع", gender: "f" }
+    gloves: { text: "قفازات", gender: "f" }
+    boots: { text: "حذاء", gender: "m" }
+    ring: { text: "خاتم", gender: "m" }
+    amulet: { text: "تميمة", gender: "f" }
+  }
+  monster: {
+    rat: { text: "جرذ الطاعون", gender: "m" }
+    bat: { text: "خفاش الكهوف", gender: "m" }
+    fallen: { text: "الساقط", gender: "m" }
+    shaman: { text: "شامان الساقطين", gender: "m" }
+    zombie: { text: "الميت السائر", gender: "m" }
+    wolf: { text: "الذئب الرهيب", gender: "m" }
+    skel: { text: "الهيكل العظمي", gender: "m" }
+    archer: { text: "الهيكل الرامي", gender: "m" }
+    ghoul: { text: "الغول", gender: "m" }
+    cultist: { text: "تابع طائفة الجمرة", gender: "m" }
+    wraith: { text: "الطيف", gender: "m" }
+    wisp: { text: "الضوء التائه", gender: "m" }
+    drowned: { text: "الميت الغريق", gender: "m" }
+    horror: { text: "هول المستنقع", gender: "m" }
+    spider: { text: "عنكبوت الكهف", gender: "m" }
+    golem: { text: "عملاق البلور", gender: "m" }
+    imp: { text: "عفريت النار", gender: "m" }
+    hellspawn: { text: "نسل الجحيم", gender: "m" }
+    boneking: { text: "ملك العظام", gender: "m" }
+    oracle: { text: "العرافة الغريقة", gender: "f" }
+    wanderer: { text: "الجوال الأخير", gender: "m" }
+    smith: { text: "هادريك الحداد", gender: "m" }
+    alch: { text: "ميريلا العجوز", gender: "f" }
+    captain: { text: "القائد فوس", gender: "m" }
+    villager: { text: "القروي", gender: "m" }
+  }
+  unique_monster: {
+    name: "{first} {last}"
+    first: {
+      bloodmaw: { text: "فك الدم", gender: "m" }
+      grimtooth: { text: "الناب القاتم", gender: "m" }
+      ashfang: { text: "ناب الرماد", gender: "m" }
+      hollowgrin: { text: "البسمة الجوفاء", gender: "f" }
+      rotgut: { text: "الأحشاء العفنة", gender: "f" }
+      blackvein: { text: "العرق الأسود", gender: "m" }
+      skullcleave: { text: "شاق الجماجم", gender: "m" }
+      mournwind: { text: "ريح النواح", gender: "f" }
+      gravelurk: { text: "كامن القبور", gender: "m" }
+      emberskull: { text: "جمجمة الجمرة", gender: "f" }
+      frostmarrow: { text: "نخاع الصقيع", gender: "m" }
+      dreadhowl: { text: "عواء الرعب", gender: "m" }
+      cinderjaw: { text: "فك الفحم", gender: "m" }
+      wormheart: { text: "قلب الدود", gender: "m" }
+    }
+    last: {
+      the_hungry: {
+          m: "الجائع"
+          f: "الجائعة"
+        }
+      the_vile: {
+          m: "الخسيس"
+          f: "الخسيسة"
+        }
+      the_unburied: {
+          m: "غير المدفون"
+          f: "غير المدفونة"
+        }
+      the_defiler: {
+          m: "المدنس"
+          f: "المدنسة"
+        }
+      the_pale: {
+          m: "الشاحب"
+          f: "الشاحبة"
+        }
+      the_cruel: {
+          m: "القاسي"
+          f: "القاسية"
+        }
+      the_wretched: {
+          m: "البائس"
+          f: "البائسة"
+        }
+      the_weeping: {
+          m: "الباكي"
+          f: "الباكية"
+        }
+      the_gnawer: {
+          m: "القارض"
+          f: "القارضة"
+        }
+    }
+  }
+  mod: {
+    extra_strong: "قوي جدا"
+    swift: "سريع"
+    stone_skin: "جلد حجري"
+    fire_enchanted: "مسحور بالنار"
+    vampiric: "مصاص دماء"
+  }
+  hit: {
+    bites: {
+        m: "يعضك {who} بضرر {n}."
+        f: "تعضك {who} بضرر {n}."
+      }
+    stabs: {
+        m: "يطعنك {who} بضرر {n}."
+        f: "تطعنك {who} بضرر {n}."
+      }
+    hurls_fire_at: {
+        m: "يقذف {who} النار عليك بضرر {n}."
+        f: "تقذف {who} النار عليك بضرر {n}."
+      }
+    claws: {
+        m: "يخدشك {who} بضرر {n}."
+        f: "تخدشك {who} بضرر {n}."
+      }
+    mauls: {
+        m: "ينهشك {who} بضرر {n}."
+        f: "تنهشك {who} بضرر {n}."
+      }
+    slashes: {
+        m: "يمزقك {who} بضرر {n}."
+        f: "تمزقك {who} بضرر {n}."
+      }
+    shoots: {
+        m: "يرميك {who} بضرر {n}."
+        f: "ترميك {who} بضرر {n}."
+      }
+    rends: {
+        m: "يفري {who} لحمك بضرر {n}."
+        f: "تفري {who} لحمك بضرر {n}."
+      }
+    casts_fire_at: {
+        m: "يلقي {who} النار عليك بضرر {n}."
+        f: "تلقي {who} النار عليك بضرر {n}."
+      }
+    chills: {
+        m: "يلسعك {who} بالصقيع بضرر {n}."
+        f: "تلسعك {who} بالصقيع بضرر {n}."
+      }
+    shocks: {
+        m: "يصعقك {who} بضرر {n}."
+        f: "تصعقك {who} بضرر {n}."
+      }
+    grasps: {
+        m: "يقبض عليك {who} بضرر {n}."
+        f: "تقبض عليك {who} بضرر {n}."
+      }
+    crushes: {
+        m: "يسحقك {who} بضرر {n}."
+        f: "تسحقك {who} بضرر {n}."
+      }
+    pummels: {
+        m: "يدكك {who} بضرر {n}."
+        f: "تدكك {who} بضرر {n}."
+      }
+    spits_fire_at: {
+        m: "يبصق {who} النار عليك بضرر {n}."
+        f: "تبصق {who} النار عليك بضرر {n}."
+      }
+    cleaves: {
+        m: "يفلقك {who} بضرر {n}."
+        f: "تفلقك {who} بضرر {n}."
+      }
+    smites: {
+        m: "يبطش بك {who} بضرر {n}."
+        f: "تبطش بك {who} بضرر {n}."
+      }
+    drowns: {
+        m: "يغرقك {who} بضرر {n}."
+        f: "تغرقك {who} بضرر {n}."
+      }
+    cuts: {
+        m: "يجرحك {who} بضرر {n}."
+        f: "تجرحك {who} بضرر {n}."
+      }
+    hits: {
+        m: "يضربك {who} بضرر {n}."
+        f: "تضربك {who} بضرر {n}."
+      }
+    burn: "يحرقك {who} بضرر {n}."
+  }
+  tile: {
+    void: "فراغ"
+    stone_floor: "أرضية حجرية"
+    wall: "جدار"
+    door: "باب"
+    open_door: "باب مفتوح"
+    stairs_down: "درج نازل"
+    stairs_up: "درج صاعد"
+    grass: "عشب"
+    dirt: "تراب"
+    cobblestones: "حجارة مرصوفة"
+    wooden_floor: "أرضية خشبية"
+    tree: "شجرة"
+    dead_tree: "شجرة ميتة"
+    boulder: "صخرة"
+    shallow_water: "ماء ضحل"
+    deep_water: "ماء عميق"
+    bridge: "جسر"
+    lava: "حمم"
+    mud: "وحل"
+    reeds: "قصب"
+    cave_floor: "أرضية كهف"
+    cave_wall: "جدار كهف"
+    glowing_crystal: "بلورة متوهجة"
+    brazier: "مجمرة"
+    street_lamp: "مصباح شارع"
+    campfire: "نار مخيم"
+    fountain: "نافورة"
+    grave: "قبر"
+    pillar: "عمود"
+    chest: "صندوق"
+    open_chest: "صندوق مفتوح"
+    town_wall: "سور البلدة"
+    bones: "عظام"
+    rubble: "أنقاض"
+    path_onward: "درب ممتد"
+    carpet: "سجادة"
+    shelf: "رف"
+    blood_altar: "مذبح الدم"
+    cold_forge: "كور بارد"
+  }
+}

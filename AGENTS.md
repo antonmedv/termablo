@@ -11,3 +11,14 @@ loot, the economy or the bot (`bot.go`), follow `docs/balancing.md`:
 seeds → `balance/REPORT.md`. The knobs are the registry in `rules.go`
 (`make knobs`); the goals are `Goals` in `internal/balance/balance.go`.
 Do not change `DefaultRules` without a validated run and a ledger entry.
+
+## Text and translations
+
+Player-facing text lives in `locales/*.maml`, English (`en.maml`) the
+source; never write it into Go code. Log lines go through
+`g.say(col, "msg.key", args...)`, other text through `g.L.T(...)`, and
+names through `itemNoun`, `monsterNoun`, `theRef`, `areaName`
+(`i18n.go`). Measure text with `i18n.Width`, never `len` or rune counts.
+A new or changed English line makes the translations stale: follow
+`docs/translating.md` (`go run ./cmd/i18n status`, `prompt`, `merge`,
+`check`, or `/translate`). Terms are decided in `locales/glossary.maml`.

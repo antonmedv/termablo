@@ -1,0 +1,1165 @@
+# Termablo in Italian. Translated from en.maml; see docs/translating.md.
+# Plural forms: one, other. Genders: m, f, mp, fp, mv, fv.
+{
+  msg: {
+    welcome_goal: "Dai la caccia al Re delle Ossa nella cripta e alla Sibilla Annegata sotto la Palude Nera."
+    welcome_help: "Premi ? per l'aiuto. Il capitano Voss, vicino alla taverna, ha del lavoro per te."
+    enter: "Entri in {area}."
+    far_beyond: "Qualcosa, qui, è molto al di là delle tue forze."
+    fountain: "L'acqua fredda chiude le tue ferite."
+    portal_step: "Attraversi il portale."
+    portal_collapse: "Il portale si chiude alle tue spalle."
+    portal_open: "Si squarcia un portale blu e scintillante."
+    see_item: "Qui vedi {item}. (g per raccogliere)"
+    see_items: "Qui giacciono diversi oggetti. (g per raccogliere)"
+    pickup_gold: {
+        one: "Raccogli {n} moneta d'oro."
+        other: "Raccogli {n} monete d'oro."
+      }
+    pickup_potion: {
+        m: "Raccogli un {item}."
+        f: "Raccogli una {item}."
+      }
+    belt_no_room: {
+        m: "Nella cintura non c'è posto per un altro {item}."
+        f: "Nella cintura non c'è posto per un'altra {item}."
+      }
+    pickup_scroll: {
+        m: "Raccogli un {item}."
+        f: "Raccogli una {item}."
+      }
+    pickup_item: "Raccogli {item}."
+    pack_full: "Il tuo zaino è pieno."
+    pack_too_full: "Lo zaino è troppo pieno per lo scambio."
+    nothing_to_pick_up: "Qui non c'è niente da raccogliere."
+    notice_item: "Noti qualcosa a terra."
+    explored: "Qui non resta nulla da esplorare."
+    spot: "Scorgi {who}."
+    boss_destroyed: {
+        m: "{who} è stato distrutto!"
+        f: "{who} è stata distrutta!"
+      }
+    elite_slain: {
+        m: "{who} è stato abbattuto!"
+        f: "{who} è stata abbattuta!"
+      }
+    monster_dies: "{who} muore."
+    out_of_range: "{who} è fuori portata."
+    no_target: "Nessun bersaglio in vista."
+    no_mana: "Mana insufficiente."
+    level_up: "Hai raggiunto il livello {n}! (c per spendere 5 punti attributo)"
+    open_chest: "Apri il forziere."
+    altar_cold: "Ora l'altare è freddo."
+    altar_restore: "La luce di sangue ti avvolge. Le forze ti tornano."
+    altar_xp: "Una conoscenza proibita ti invade la mente. (+{n} PE)"
+    altar_gift: "L'altare offre un dono."
+    slain: "{who} ti ha ucciso."
+    no_healing_potions: "Non hai pozioni curative."
+    full_life: "La tua vita è già al massimo."
+    drink_healing: "Bevi una pozione curativa."
+    no_mana_potions: "Non hai pozioni di mana."
+    full_mana: "Il tuo mana è già al massimo."
+    drink_mana: "Bevi una pozione di mana."
+    already_in_town: "Sei già in città."
+    no_scrolls: "Non hai Pergamene del Portale cittadino."
+    boneking_raises: "Il Re delle Ossa risveglia i morti!"
+    boneking_greets: "Il Re delle Ossa: «Un'altra torcia da spegnere. Inginocchiati, e unisciti alla mia corte.»"
+    boneking_dead: "Le cripte tacciono. Torna dal capitano Voss."
+    oracle_reforms: "La Sibilla si dissolve in nebbia e si ricompone."
+    oracle_lights: "Luci fredde si raccolgono attorno alla Sibilla."
+    oracle_greets: "La Sibilla Annegata: «Ho visto la tua fine, piccola fiamma. È bagnata e fredda.»"
+    oracle_dead: "Il canto della Sibilla si spegne. Più in basso ancora, qualcosa brucia... Torna da Voss."
+    wanderer_greets: "L'Ultimo Viandante: «Un altro straniero. Mandano sempre uno straniero.»"
+    wanderer_portal: "L'Ultimo Viandante esce dal portale, che si chiude alle sue spalle."
+    wanderer_follows: "L'Ultimo Viandante ti segue."
+    wanderer_home: "L'Ultimo Viandante: «Mi hai mostrato la strada di casa.»"
+    wanderer_cuts: "L'Ultimo Viandante ferisce {who}."
+    wanderer_kills: "L'Ultimo Viandante abbatte {who}."
+    wanderer_taunt: "L'Ultimo Viandante: «Anche a me diedero una spada e un discorso da capitano.»"
+    town_empty: "A Emberhold non resta nessuno, tranne te."
+    forge_cold: "La forgia di Hadrik si raffredda."
+    wanderer_last_words: "L'Ultimo Viandante: «Continua a camminare.»"
+    wanderer_dead: "La luce rossa si spegne, e l'Oscurità lascia andare il fuoco."
+    unseal_here: "Dove lui attendeva, si apre una via verso il basso."
+    unseal_far: "Molto più in basso, nel Focolare, si apre una via verso il basso."
+    running: "{who} fugge per salvarsi la vita."
+    voss_reward: {
+        one: "Voss ti dà {n} moneta d'oro e {item}."
+        other: "Voss ti dà {n} monete d'oro e {item}."
+      }
+    cannot_afford: "Non puoi permettertelo."
+    belt_full: "La tua cintura è piena."
+    gamble: "Hadrik apre l'involto: {item}. {n}g, niente rimborsi."
+    reroll: "Hadrik tira fuori merce nuova per {n}g."
+    bought: "Hai comprato {item} per {n}g."
+    sold: "Hai venduto {item} per {n}g."
+    equip: "Indossi {item}."
+    unequip: "Ti togli {item}."
+    drop: "Lasci cadere {item}."
+    mirela_healthy: "Mirela ti squadra. «Sano come un pesce. Compra qualcosa, tesoro.»"
+    mirela_free: "Mirela cura le tue ferite. «Ai giovani non faccio pagare. Ora compra qualcosa, tesoro.»"
+    mirela_broke: "Mirela scuote la testa. «Le erbe costano, tesoro.»"
+    mirela_partial: "Mirela fa quel che i tuoi {n}g le permettono. «Torna con qualcosa in più, tesoro.»"
+    mirela_paid: "Mirela cura le tue ferite per {n}g. «Ecco. Ora compra qualcosa, tesoro.»"
+  }
+  ref: {
+    the: {
+        m: "il {name}"
+        f: "la {name}"
+        mv: "l'{name}"
+        fv: "l'{name}"
+        mp: "i {name}"
+        fp: "le {name}"
+      }
+    a: {
+        m: "un {name}"
+        f: "una {name}"
+        mv: "un {name}"
+        fv: "un'{name}"
+        mp: "dei {name}"
+        fp: "delle {name}"
+      }
+    death_flames: {
+        m: "la vampata mortale del {name}"
+        f: "la vampata mortale della {name}"
+        mv: "la vampata mortale dell'{name}"
+        fv: "la vampata mortale dell'{name}"
+        mp: "la vampata mortale dei {name}"
+        fp: "la vampata mortale delle {name}"
+      }
+  }
+  talk: {
+    hadrik: {
+      greet: "Hadrik: «Acciaio contro il buio. Dai un'occhiata.»"
+      after_oracle: "Hadrik: «L'ultimo che ho armato per scendere nel profondo non è mai tornato a farsi riparare niente.»"
+    }
+    voss: {
+      intro: "Viandante. Bene. Ci serve una lama che non tremi.\nLa Brace tiene fuori l'Oscurità. E l'Oscurità la rivuole.\nA est del cancello, oltre i Campi di Cenere, c'è la Cripta dei Caduti.\nQuattro piani più giù, il Re delle Ossa siede sul suo trono di costole. Distruggilo.\nE a nord, nella Palude Nera, la Sibilla Annegata chiama gli smarriti nell'acqua.\nCompra pozioni da Mirela. Tieni sempre una pergamena del portale. Torna vivo."
+      boneking_reward: "Il Re delle Ossa è polvere? Allora le campane della cripta potranno suonare di nuovo.\nPrendi questo: era di mio padre. E l'oro, naturalmente."
+      oracle_reward: "La Sibilla, messa a tacere... Non credevo che avrei mai dormito senza sentirla.\nSotto la sua pozza, la roccia brucia. Dicono che l'Abisso non abbia fondo. Fa' attenzione.\nUna volta ci ho mandato qualcuno. Ho smesso di contare i giorni."
+      after_boneking: "La cripta tace. Ora la Palude Nera, a nord dei campi.\nSegui le luci fredde giù nella grotta. Metti fine alla Sibilla."
+      after_oracle: "Hai fatto più di quanto chiunque di noi abbia mai osato.\nSe devi scendere ancora... l'Abisso attende sotto la pozza della Sibilla."
+      after_wanderer: "Le lanterne sono di nuovo accese. Chiunque fosse, un tempo era uno dei nostri.\nContinua a camminare, straniero. È per questo che ti paghiamo."
+    }
+  }
+  rumor: {
+    braziers: "Dicono che i bracieri della cripta si accendano da soli al tramonto. Nessuno li cura."
+    brother: "Mio fratello è andato nella Palude Nera dietro alle luci. È tornato fradicio. Non era più lui."
+    torch: "Tieni alta la torcia. Il buio laggiù non è vuoto: ha fame."
+    forge: "La forgia di Hadrik non si spegne da quarant'anni. Dice che il giorno in cui si spegnerà, dovremo fuggire."
+    glimmer: "Le cose rare luccicano nel buio. Una luce d'oro vuol dire qualcosa di antico, con un nome."
+    crystal: "Il cristallo di nonna Mirela viene dalla grotta. Canta quando la Sibilla sogna."
+    scroll: "Una pergamena del portale costa meno di un funerale."
+    stranger: "C'era uno straniero, prima di te. Comprò la stessa spada. Andò oltre la palude e non si fermò più."
+    edran: "Re Edran portò su la Brace a mani nude. Gli costò il volto."
+    uncle: "Mio zio si è unito al Culto della Brace. Diceva che al buio si doveva qualcosa. È sceso a pagare il debito."
+    holding: "Mirela dice che la Sibilla non dà la caccia a nessuno. Sta tenendo giù qualcosa."
+  }
+  area: {
+    town: "Emberhold"
+    fields: "Campi di Cenere"
+    marsh: "Palude Nera"
+    crypt: "Cripta dei Caduti {n}"
+    throne: "Trono del Re delle Ossa"
+    grotto: "Grotta Sommersa {n}"
+    oracle_pool: "Pozza della Sibilla"
+    abyss: "Abisso Ardente {n}"
+    hearth: "Focolare Profondo"
+  }
+  region: {
+    town: "Emberhold"
+    fields: "i Campi di Cenere"
+    marsh: "la Palude Nera"
+    crypt: "la Cripta dei Caduti"
+    grotto: "la Grotta Sommersa"
+    abyss: "l'Abisso Ardente"
+  }
+  lore: {
+    town: "Emberhold. L'ultima città illuminata prima del buio. Qui le lanterne ardono tutta la notte."
+    fields: "I Campi di Cenere. Luce di luna sulla cenere di una foresta bruciata."
+    marsh: "La Palude Nera. Luci fredde vagano sull'acqua. Non seguirle."
+    crypt: "{area}. Una tomba reale; l'aria sa di polvere."
+    grotto: "{area}. L'acqua fredda preme dall'alto; i cristalli ronzano."
+    abyss: "{area}. La roccia stessa sanguina."
+    hearth: "{area}. I bracieri si piegano lontano dal centro della sala."
+  }
+  shop: {
+    smith: "La Forgia di Hadrik"
+    alch: "I Rimedi di Mirela"
+  }
+  item: {
+    gold: {
+        one: "{n} moneta d'oro"
+        other: "{n} monete d'oro"
+      }
+    healing_potion: { text: "Pozione curativa", gender: "f" }
+    mana_potion: { text: "Pozione di mana", gender: "f" }
+    town_portal_scroll: { text: "Pergamena del Portale cittadino", gender: "f" }
+    unidentified: {
+        m: "{base} non identificato"
+        f: "{base} non identificata"
+        mp: "{base} non identificati"
+        fp: "{base} non identificate"
+      }
+    fresh_stock: { text: "Merce nuova", gender: "f" }
+    magic: "{base} {prefix} {suffix}"
+    rare: "{second} {first}"
+    desc: {
+      healing_potion: "Ripristina gran parte della vita"
+      mana_potion: "Ripristina gran parte del mana"
+      town_portal_scroll: "Apre un portale che riporta a Emberhold"
+      unidentified: "La scelta di Hadrik dalla profondità che hai raggiunto.\nPotrebbe essere qualsiasi cosa. Niente rimborsi."
+      fresh_stock: "Hadrik tira fuori merce nuova, e Mirela pure."
+    }
+  }
+  rarity: {
+    rare: {
+        m: "{base} raro"
+        f: "{base} rara"
+        mp: "{base} rari"
+        fp: "{base} rare"
+      }
+    unique: {
+        m: "{base} unico"
+        f: "{base} unica"
+        mp: "{base} unici"
+        fp: "{base} uniche"
+      }
+  }
+  slot: {
+    weapon: "Arma"
+    off_hand: "Seconda mano"
+    helm: "Elmo"
+    armor: "Armatura"
+    gloves: "Guanti"
+    boots: "Stivali"
+    ring: "Anello"
+    amulet: "Amuleto"
+  }
+  stat: {
+    str: "+{n} Forza"
+    dex: "+{n} Destrezza"
+    vit: "+{n} Vitalità"
+    ene: "+{n} Energia"
+    life: "+{n} Vita"
+    mana: "+{n} Mana"
+    dmg_pct: "+{n}% Danno aumentato"
+    flat_dmg: "+{n} Danno"
+    armor: "+{n} Armatura"
+    armor_pct: "+{n}% Armatura aumentata"
+    crit: "+{n}% Colpo critico"
+    life_steal: "{n}% Vita rubata per colpo"
+    light: "+{n} Raggio di luce"
+    spell_pct: "+{n}% Danno magico"
+    life_regen: "Rigenera {n} Vita"
+    mana_regen: "Rigenera {n} Mana"
+    mf: "+{n}% Scoperta magica"
+    thorns: {
+        one: "Gli aggressori subiscono {n} danno"
+        other: "Gli aggressori subiscono {n} danni"
+      }
+    to_hit: "+{n} Valore d'attacco"
+    all_attr: "+{n} a tutti gli attributi"
+    gold_find: "+{n}% Oro extra"
+  }
+  tile_note: {
+    door: "Camminaci contro per aprirla."
+    chest: "Camminaci contro per aprirlo."
+    fountain: "Camminaci contro per recuperare vita."
+    blood_altar: "Camminaci contro per fare un'offerta."
+    brazier: "Diffonde una calda luce di fuoco."
+    cold_forge: "La forgia di Hadrik. Si è spenta."
+    street_lamp: "Diffonde una calda luce di lampada."
+    campfire: "Un accampamento dei Caduti non è mai lontano."
+    glowing_crystal: "Brilla di una fredda luce azzurra."
+    lava: "Roccia fusa. Invalicabile, e luminosa."
+    deep_water: "Troppo profonda per guadarla."
+    shallow_water: "Abbastanza bassa da guadarla."
+    tree: "Blocca il passaggio e la vista."
+    open_chest: "Già saccheggiato."
+    grave: "Qui giace uno sfortunato."
+  }
+  help: {
+    key: {
+      move: "frecce hjkl yubn"
+      wait: ". o 5"
+      pickup: "g o ,"
+      firebolt: "f"
+      nova: "r"
+      target: "tab / shift+tab"
+      potions: "q / w"
+      portal: "t"
+      explore: "o"
+      inventory: "i"
+      character: "c"
+      map: "m"
+      quit: "Q / ctrl+c"
+    }
+    does: {
+      move: "muovi / attacca (funziona anche il tastierino)"
+      wait: "aspetta un turno"
+      pickup: "raccogli equipaggiamento (oro e pozioni sono automatici)"
+      firebolt: "Dardo di fuoco sul bersaglio (illumina il buio!)"
+      nova: "Nova di gelo: danno + breve congelamento attorno a te"
+      target: "bersaglio successivo / precedente (o cliccane uno)"
+      potions: "bevi pozione curativa / di mana (agisce in alcuni turni)"
+      portal: "leggi la Pergamena del Portale cittadino"
+      explore: "esplorazione automatica (si ferma se appaiono nemici)"
+      inventory: "inventario ed equipaggiamento"
+      character: "scheda del personaggio, spendi punti attributo"
+      map: "mappa dell'area esplorata"
+      quit: "esci"
+    }
+    tip: {
+      walk_into: "Cammina contro porte, forzieri, altari e fontane per usarli."
+      talk: "Parla con gli abitanti camminandoci contro."
+      darkness: "I mostri nell'oscurità sono invisibili finché la luce non li tocca."
+      names: "I nomi blu sono campioni; i nomi d'oro sono unici."
+      glow: "Gli oggetti che brillano sono rari o unici. Cerca la luce."
+      upgrade: "Gli oggetti con ▲ sono migliori di ciò che indossi."
+      hover: "Passa il mouse sulla mappa per vedere cosa c'è."
+      belt: "Clicca una riga della cintura per bere una pozione o leggere la pergamena."
+    }
+  }
+  ui: {
+    too_small: "Termablo richiede almeno 80x24."
+    too_small_now: "Attuale: {w}x{h}"
+    list_sep: ", "
+    esc_close: "esc per chiudere"
+    any_key: "premi un tasto"
+    currently_equipped: "Equipaggiato ora:"
+    more_above: {
+        one: "↑ altro {n}"
+        other: "↑ altri {n}"
+      }
+    more_below: {
+        one: "↓ altro {n}"
+        other: "↓ altri {n}"
+      }
+    log: {
+      repeat: " (x{n})"
+    }
+    title: {
+      subtitle: "una discesa nell'oscurità rischiarata"
+      begin: "premi un tasto per iniziare"
+      lang_keys: "tab: lingua"
+    }
+    panel: {
+      safe: "Rifugio sicuro"
+      area_level: "Livello dell'area {n}"
+      not_safe: "Zona pericolosa"
+      hero: "Viandante · Livello {n}"
+      life: "Vita"
+      mana: "Mana"
+      experience: "Esperienza"
+      gold: "Oro {n}"
+      belt_portal: "Port. {n}"
+      belt_heal: "Cura"
+      belt_mana: "Mana"
+      damage: "Danno {lo}-{hi}"
+      armor: "Armatura {n}"
+      crit: "Critico {n}%"
+      light: "Luce {r}"
+      skills: "Abilità"
+      firebolt: "Dardo di fuoco {lo}-{hi}"
+      nova: "Nova di gelo {lo}-{hi}"
+      mp: "{n}pm"
+      target_lvl: "Liv {n}"
+      frozen: "Congelato"
+      no_enemies: "Nessun nemico in vista"
+      quests: "Missioni"
+      keys: "? info  i inv  c pg  m mappa"
+    }
+    hover: {
+      darkness: "Oscurità"
+      unexplored: "Inesplorato, o oltre la tua luce."
+      remembered: "Ricordato — ora non in vista."
+      you: "Tu — il Viandante"
+      you_stats: "Livello {lvl} · Vita {hp}/{maxhp} · Mana {mp}/{maxmp}"
+      torch: "Raggio della torcia {r}"
+      townsfolk: "Abitante · camminaci contro per parlare"
+      rank: {
+        normal: "Livello {lvl} · PV {hp}/{maxhp}"
+        champion: "Campione · Livello {lvl} · PV {hp}/{maxhp}"
+        unique: "Unico · Livello {lvl} · PV {hp}/{maxhp}"
+        boss: "Boss · Livello {lvl} · PV {hp}/{maxhp}"
+      }
+      hits: "Colpisce per {lo}-{hi} · armatura {armor}"
+      state: {
+        frozen: "congelato"
+        unaware: "ignaro di te"
+        fleeing: "in fuga"
+        ranged: "a distanza"
+        glows: "emana luce"
+      }
+      replaces: "Sostituisce {item}"
+      pick_up: "Mettiti sopra e premi g per raccogliere"
+      portal: "Portale cittadino"
+      leads_back: "Riporta verso {place}"
+      leads_to: "Porta verso {place}"
+      decal: {
+        corpse: "un cadavere"
+        blood: "insanguinato"
+        scorch: "bruciacchiato"
+      }
+    }
+    item: {
+      damage: "Danno: {lo}-{hi}"
+      damage_2h: "Danno: {lo}-{hi} (a due mani)"
+      armor: "Armatura: {n}"
+      footer: "Livello oggetto {lvl}  ·  vale {n}g"
+    }
+    inv: {
+      title: "Inventario"
+      equipped: "Equipaggiato"
+      pack: "Zaino {n}/{max}"
+      empty: "Il tuo zaino è vuoto."
+      new: "new"
+      keys: "←→/tab cambia · ↑↓ scegli · invio indossa/togli · d getta · esc"
+    }
+    char: {
+      title: "Personaggio"
+      hero: "Viandante · Livello {lvl}"
+      experience: "Esperienza {xp} / {next}"
+      attr: {
+        str: "Forza"
+        dex: "Destrezza"
+        vit: "Vitalità"
+        ene: "Energia"
+      }
+      attr_desc: {
+        str: "+danno in mischia"
+        dex: "+mira, critico, schivata"
+        vit: "+vita"
+        ene: "+mana, danno magico"
+      }
+      points: {
+          one: "{n} punto da spendere — premi 1-4"
+          other: "{n} punti da spendere — premi 1-4"
+        }
+      stat: {
+        life: "Vita"
+        mana: "Mana"
+        damage: "Danno"
+        firebolt: "Dardo di fuoco"
+        armor: "Armatura"
+        attack: "Attacco"
+        crit: "Critico"
+        life_steal: "Furto di vita"
+        magic_find: "Scoperta magica"
+        kills: "Uccisioni"
+      }
+    }
+    shop: {
+      buy: "Compra"
+      sell: "Vendi"
+      gold: "Oro: {n}"
+      empty: "Qui non c'è niente."
+      keys: "tab compra/vendi · ↑↓ scegli · invio conferma · esc esci"
+    }
+    help: {
+      title: "Aiuto"
+      scroll: "↑↓ scorri"
+    }
+    dead: {
+      title: "SEI MORTO"
+      slain_by: "Ti ha ucciso {who}"
+      summary: "Livello {lvl} · Uccisioni {kills} · Oro {gold}"
+      where: "Luogo: {area}"
+      keys: "n: nuova partita   Q: esci"
+    }
+  }
+  base: {
+    dagger: { text: "Pugnale", gender: "m" }
+    short_sword: { text: "Spada corta", gender: "f" }
+    club: { text: "Clava", gender: "f" }
+    hand_axe: { text: "Accetta", gender: "fv" }
+    mace: { text: "Mazza", gender: "f" }
+    long_sword: { text: "Spada lunga", gender: "f" }
+    battle_axe: { text: "Ascia da battaglia", gender: "fv" }
+    war_hammer: { text: "Martello da guerra", gender: "m" }
+    great_sword: { text: "Spadone", gender: "m" }
+    runeblade: { text: "Lama runica", gender: "f" }
+    executioners_axe: { text: "Scure del boia", gender: "f" }
+    doom_flail: { text: "Flagello della rovina", gender: "m" }
+    buckler: { text: "Brocchiere", gender: "m" }
+    kite_shield: { text: "Scudo a goccia", gender: "m" }
+    tower_shield: { text: "Scudo a torre", gender: "m" }
+    bone_ward: { text: "Riparo d'osso", gender: "m" }
+    rags: { text: "Stracci", gender: "mp" }
+    leather_armor: { text: "Armatura di cuoio", gender: "fv" }
+    studded_leather: { text: "Cuoio borchiato", gender: "m" }
+    ring_mail: { text: "Maglia ad anelli", gender: "f" }
+    chain_mail: { text: "Cotta di maglia", gender: "f" }
+    scale_mail: { text: "Armatura a scaglie", gender: "fv" }
+    plate_mail: { text: "Armatura a piastre", gender: "fv" }
+    gothic_plate: { text: "Corazza gotica", gender: "f" }
+    cap: { text: "Berretto", gender: "m" }
+    skull_cap: { text: "Calotta", gender: "f" }
+    helm: { text: "Elmo", gender: "mv" }
+    great_helm: { text: "Grande elmo", gender: "m" }
+    grim_visage: { text: "Volto torvo", gender: "m" }
+    leather_gloves: { text: "Guanti di cuoio", gender: "mp" }
+    chain_gloves: { text: "Guanti di maglia", gender: "mp" }
+    gauntlets: { text: "Manopole", gender: "fp" }
+    boots: { text: "Stivali", gender: "mp" }
+    chain_boots: { text: "Stivali di maglia", gender: "mp" }
+    greaves: { text: "Schinieri", gender: "mp" }
+    ring: { text: "Anello", gender: "mv" }
+    amulet: { text: "Amuleto", gender: "mv" }
+  }
+  prefix: {
+    jagged: {
+        m: "dentellato"
+        f: "dentellata"
+        mp: "dentellati"
+        fp: "dentellate"
+      }
+    deadly: {
+        m: "mortale"
+        f: "mortale"
+        mp: "mortali"
+        fp: "mortali"
+      }
+    vicious: {
+        m: "feroce"
+        f: "feroce"
+        mp: "feroci"
+        fp: "feroci"
+      }
+    brutal: {
+        m: "brutale"
+        f: "brutale"
+        mp: "brutali"
+        fp: "brutali"
+      }
+    savage: {
+        m: "selvaggio"
+        f: "selvaggia"
+        mp: "selvaggi"
+        fp: "selvagge"
+      }
+    merciless: {
+        m: "spietato"
+        f: "spietata"
+        mp: "spietati"
+        fp: "spietate"
+      }
+    sharp: {
+        m: "affilato"
+        f: "affilata"
+        mp: "affilati"
+        fp: "affilate"
+      }
+    keen: {
+        m: "tagliente"
+        f: "tagliente"
+        mp: "taglienti"
+        fp: "taglienti"
+      }
+    cruel: {
+        m: "crudele"
+        f: "crudele"
+        mp: "crudeli"
+        fp: "crudeli"
+      }
+    wicked: {
+        m: "malvagio"
+        f: "malvagia"
+        mp: "malvagi"
+        fp: "malvagie"
+      }
+    bronze: "di bronzo"
+    iron: "di ferro"
+    steel: "d'acciaio"
+    silver: "d'argento"
+    gold: "d'oro"
+    platinum: "di platino"
+    sturdy: {
+        m: "robusto"
+        f: "robusta"
+        mp: "robusti"
+        fp: "robuste"
+      }
+    strong: {
+        m: "forte"
+        f: "forte"
+        mp: "forti"
+        fp: "forti"
+      }
+    glorious: {
+        m: "glorioso"
+        f: "gloriosa"
+        mp: "gloriosi"
+        fp: "gloriose"
+      }
+    blessed: {
+        m: "benedetto"
+        f: "benedetta"
+        mp: "benedetti"
+        fp: "benedette"
+      }
+    saintly: {
+        m: "santo"
+        f: "santa"
+        mp: "santi"
+        fp: "sante"
+      }
+    godly: {
+        m: "divino"
+        f: "divina"
+        mp: "divini"
+        fp: "divine"
+      }
+    fine: {
+        m: "raffinato"
+        f: "raffinata"
+        mp: "raffinati"
+        fp: "raffinate"
+      }
+    warriors: "da guerriero"
+    soldiers: "da soldato"
+    knights: "da cavaliere"
+    lords: "da signore"
+    kings: {
+        m: "regale"
+        f: "regale"
+        mp: "regali"
+        fp: "regali"
+      }
+    lizards: "di lucertola"
+    snakes: "di biscia"
+    serpents: "di serpente"
+    drakes: "di viverna"
+    dragons: "di drago"
+    smoldering: {
+        m: "fumante"
+        f: "fumante"
+        mp: "fumanti"
+        fp: "fumanti"
+      }
+    fiery: {
+        m: "infuocato"
+        f: "infuocata"
+        mp: "infuocati"
+        fp: "infuocate"
+      }
+    blazing: {
+        m: "ardente"
+        f: "ardente"
+        mp: "ardenti"
+        fp: "ardenti"
+      }
+    infernal: {
+        m: "infernale"
+        f: "infernale"
+        mp: "infernali"
+        fp: "infernali"
+      }
+    hellfire: "del fuoco infernale"
+    honed: {
+        m: "arrotato"
+        f: "arrotata"
+        mp: "arrotati"
+        fp: "arrotate"
+      }
+    precise: {
+        m: "preciso"
+        f: "precisa"
+        mp: "precisi"
+        fp: "precise"
+      }
+    lethal: {
+        m: "letale"
+        f: "letale"
+        mp: "letali"
+        fp: "letali"
+      }
+    assassins: "da sicario"
+    humming: {
+        m: "ronzante"
+        f: "ronzante"
+        mp: "ronzanti"
+        fp: "ronzanti"
+      }
+    resonant: {
+        m: "risonante"
+        f: "risonante"
+        mp: "risonanti"
+        fp: "risonanti"
+      }
+    singing: {
+        m: "canoro"
+        f: "canora"
+        mp: "canori"
+        fp: "canore"
+      }
+  }
+  suffix: {
+    of_the_jackal: "dello Sciacallo"
+    of_the_fox: "della Volpe"
+    of_the_wolf: "del Lupo"
+    of_the_tiger: "della Tigre"
+    of_the_mammoth: "del Mammut"
+    of_the_whale: "della Balena"
+    of_strength: "della Forza"
+    of_might: "della Potenza"
+    of_power: "del Potere"
+    of_the_giant: "del Gigante"
+    of_the_titan: "del Titano"
+    of_dexterity: "della Destrezza"
+    of_skill: "dell'Abilità"
+    of_accuracy: "della Mira"
+    of_precision: "della Precisione"
+    of_perfection: "della Perfezione"
+    of_vigor: "del Vigore"
+    of_vitality: "della Vitalità"
+    of_zest: "dell'Ardore"
+    of_life: "della Vita"
+    of_the_mind: "della Mente"
+    of_energy: "dell'Energia"
+    of_brilliance: "dello Splendore"
+    of_sorcery: "della Stregoneria"
+    of_wizardry: "della Magia"
+    of_the_leech: "della Sanguisuga"
+    of_the_bat: "del Pipistrello"
+    of_the_vampire: "del Vampiro"
+    of_light: "della Luce"
+    of_radiance: "del Fulgore"
+    of_the_sun: "del Sole"
+    of_regeneration: "della Rigenerazione"
+    of_renewal: "della Rinascita"
+    of_the_troll: "del Troll"
+    of_fortune: "della Fortuna"
+    of_luck: "della Sorte"
+    of_greed: "dell'Avidità"
+    of_thorns: "delle Spine"
+    of_spikes: "degli Aculei"
+    of_retribution: "del Castigo"
+    of_the_sky: "del Cielo"
+    of_the_moon: "della Luna"
+    of_the_stars: "delle Stelle"
+    of_the_heavens: "dei Cieli"
+    of_wealth: "della Ricchezza"
+    of_avarice: "dell'Avarizia"
+  }
+  rare: {
+    first: {
+      grim: {
+          m: "torvo"
+          f: "torva"
+          mp: "torvi"
+          fp: "torve"
+        }
+      doom: {
+          m: "fatale"
+          f: "fatale"
+          mp: "fatali"
+          fp: "fatali"
+        }
+      blood: "di sangue"
+      storm: "di tempesta"
+      death: {
+          m: "mortifero"
+          f: "mortifera"
+          mp: "mortiferi"
+          fp: "mortifere"
+        }
+      shadow: "d'ombra"
+      rune: {
+          m: "runico"
+          f: "runica"
+          mp: "runici"
+          fp: "runiche"
+        }
+      gloom: {
+          m: "tetro"
+          f: "tetra"
+          mp: "tetri"
+          fp: "tetre"
+        }
+      bone: "d'osso"
+      ash: "di cenere"
+      raven: "di corvo"
+      soul: "dell'anima"
+      dread: {
+          m: "terribile"
+          f: "terribile"
+          mp: "terribili"
+          fp: "terribili"
+        }
+      havoc: "di strage"
+      wraith: {
+          m: "spettrale"
+          f: "spettrale"
+          mp: "spettrali"
+          fp: "spettrali"
+        }
+      corpse: {
+          m: "cadaverico"
+          f: "cadaverica"
+          mp: "cadaverici"
+          fp: "cadaveriche"
+        }
+      ember: "di Brace"
+      venom: {
+          m: "velenoso"
+          f: "velenosa"
+          mp: "velenosi"
+          fp: "velenose"
+        }
+      night: {
+          m: "notturno"
+          f: "notturna"
+          mp: "notturni"
+          fp: "notturne"
+        }
+      hollow: {
+          m: "cavo"
+          f: "cava"
+          mp: "cavi"
+          fp: "cave"
+        }
+      cinder: "di fuliggine"
+      pale: {
+          m: "pallido"
+          f: "pallida"
+          mp: "pallidi"
+          fp: "pallide"
+        }
+    }
+    second: {
+      bite: { text: "Morso", gender: "m" }
+      edge: { text: "Filo", gender: "m" }
+      fang: { text: "Zanna", gender: "f" }
+      song: { text: "Canto", gender: "m" }
+      reaver: { text: "Predatore", gender: "m" }
+      cleaver: { text: "Mannaia", gender: "f" }
+      thirst: { text: "Sete", gender: "f" }
+      kiss: { text: "Bacio", gender: "m" }
+      needle: { text: "Ago", gender: "mv" }
+      ward: { text: "Difesa", gender: "f" }
+      bulwark: { text: "Baluardo", gender: "m" }
+      aegis: { text: "Egida", gender: "fv" }
+      guard: { text: "Guardia", gender: "f" }
+      wall: { text: "Muro", gender: "m" }
+      shell: { text: "Guscio", gender: "m" }
+      coat: { text: "Giubba", gender: "f" }
+      hide: { text: "Pelle", gender: "f" }
+      carapace: { text: "Carapace", gender: "m" }
+      mantle: { text: "Manto", gender: "m" }
+      shroud: { text: "Sudario", gender: "m" }
+      crown: { text: "Corona", gender: "f" }
+      visor: { text: "Visiera", gender: "f" }
+      cowl: { text: "Cappuccio", gender: "m" }
+      brow: { text: "Fronte", gender: "f" }
+      horn: { text: "Corno", gender: "m" }
+      grip: { text: "Presa", gender: "f" }
+      fist: { text: "Pugno", gender: "m" }
+      hand: { text: "Mano", gender: "f" }
+      claw: { text: "Artiglio", gender: "mv" }
+      knuckle: { text: "Nocca", gender: "f" }
+      stride: { text: "Passo", gender: "m" }
+      track: { text: "Orma", gender: "fv" }
+      trail: { text: "Traccia", gender: "f" }
+      spur: { text: "Sperone", gender: "m" }
+      tread: { text: "Andatura", gender: "fv" }
+      loop: { text: "Laccio", gender: "m" }
+      coil: { text: "Spira", gender: "f" }
+      band: { text: "Fascia", gender: "f" }
+      circle: { text: "Cerchio", gender: "m" }
+      spiral: { text: "Spirale", gender: "f" }
+      eye: { text: "Occhio", gender: "mv" }
+      heart: { text: "Cuore", gender: "m" }
+      charm: { text: "Ciondolo", gender: "m" }
+      talisman: { text: "Talismano", gender: "m" }
+      star: { text: "Stella", gender: "f" }
+    }
+  }
+  unique: {
+    last_wanderers_shroud: {
+      name: { text: "Sudario dell'Ultimo Viandante", gender: "m" }
+      flavor: "Ancora caldo. Non è mai stato tuo, e ora lo è."
+    }
+    wanderers_shroud: {
+      name: { text: "Sudario del Viandante", gender: "m" }
+      flavor: "Indossato da chi non smise mai di camminare."
+    }
+    shard_of_night: {
+      name: { text: "Scheggia della Notte", gender: "f" }
+      flavor: "Beve la luce delle torce."
+    }
+    hollow_crown: {
+      name: { text: "Corona Cava", gender: "f" }
+      flavor: "Al re che la portava non serviva un teschio."
+    }
+    emberbrand: {
+      name: { text: "Lama di Brace", gender: "f" }
+      flavor: "Il suo filo non si raffredda mai."
+    }
+    the_last_lantern: {
+      name: { text: "L'Ultima Lanterna", gender: "fv" }
+      flavor: "Arde quando tutto il resto è buio."
+    }
+    moonstride: {
+      name: { text: "Passo di Luna", gender: "m" }
+      flavor: "Passi come neve che cade."
+    }
+    band_of_ashes: {
+      name: { text: "Anello di Ceneri", gender: "mv" }
+      flavor: "Caldo al tatto, sempre."
+    }
+    gravewardens_coat: {
+      name: { text: "Manto del Custode delle Tombe", gender: "m" }
+      flavor: "Cucito con i sudari di chi non trova pace."
+    }
+    eye_of_the_deep: {
+      name: { text: "Occhio del Profondo", gender: "mv" }
+      flavor: "Sbatte le palpebre quando non guardi."
+    }
+    crown_of_the_drowned: {
+      name: { text: "Corona degli Annegati", gender: "f" }
+      flavor: "L'acqua gocciola ancora dal suo bordo."
+    }
+    bloodfist: {
+      name: { text: "Pugno di Sangue", gender: "m" }
+      flavor: "Mai pulito. Mai asciutto."
+    }
+    kingsbane: {
+      name: { text: "Flagello dei Re", gender: "m" }
+      flavor: "Sotto di lui sono rotolate sette corone."
+    }
+    starfall_plate: {
+      name: { text: "Corazza della Stella Caduta", gender: "f" }
+      flavor: "Forgiata da una stella caduta; ricorda il cielo."
+    }
+  }
+  gamble: {
+    weapon: { text: "Arma", gender: "fv" }
+    shield: { text: "Scudo", gender: "m" }
+    helm: { text: "Elmo", gender: "mv" }
+    armor: { text: "Armatura", gender: "fv" }
+    gloves: { text: "Guanti", gender: "mp" }
+    boots: { text: "Stivali", gender: "mp" }
+    ring: { text: "Anello", gender: "mv" }
+    amulet: { text: "Amuleto", gender: "mv" }
+  }
+  monster: {
+    rat: { text: "Ratto della peste", gender: "m" }
+    bat: { text: "Pipistrello delle caverne", gender: "m" }
+    fallen: { text: "Caduto", gender: "m" }
+    shaman: { text: "Caduto sciamano", gender: "m" }
+    zombie: { text: "Morto che cammina", gender: "m" }
+    wolf: { text: "Lupo feroce", gender: "m" }
+    skel: { text: "Guerriero scheletro", gender: "m" }
+    archer: { text: "Arciere scheletro", gender: "mv" }
+    ghoul: { text: "Ghoul", gender: "m" }
+    cultist: { text: "Cultista della Brace", gender: "m" }
+    wraith: { text: "Fantasma", gender: "m" }
+    wisp: { text: "Fuoco fatuo", gender: "m" }
+    drowned: { text: "Annegato", gender: "mv" }
+    horror: { text: "Orrore della palude", gender: "mv" }
+    spider: { text: "Ragno della grotta", gender: "m" }
+    golem: { text: "Golem di cristallo", gender: "m" }
+    imp: { text: "Diavoletto di fuoco", gender: "m" }
+    hellspawn: { text: "Progenie infernale", gender: "f" }
+    boneking: { text: "Il Re delle Ossa", gender: "m" }
+    oracle: { text: "La Sibilla Annegata", gender: "f" }
+    wanderer: { text: "L'Ultimo Viandante", gender: "mv" }
+    smith: { text: "Hadrik il Fabbro", gender: "m" }
+    alch: { text: "Nonna Mirela", gender: "f" }
+    captain: { text: "Capitano Voss", gender: "m" }
+    villager: { text: "Paesano", gender: "m" }
+  }
+  unique_monster: {
+    name: "{first} {last}"
+    first: {
+      bloodmaw: { text: "Boccarossa", gender: "f" }
+      grimtooth: { text: "Dentecupo", gender: "m" }
+      ashfang: { text: "Zannacenere", gender: "f" }
+      hollowgrin: { text: "Ghignovuoto", gender: "m" }
+      rotgut: { text: "Budellomarcio", gender: "m" }
+      blackvein: { text: "Venanera", gender: "f" }
+      skullcleave: { text: "Spaccateschi", gender: "m" }
+      mournwind: { text: "Ventolugubre", gender: "m" }
+      gravelurk: { text: "Covatombe", gender: "m" }
+      emberskull: { text: "Teschiobrace", gender: "m" }
+      frostmarrow: { text: "Midollogelo", gender: "m" }
+      dreadhowl: { text: "Urlotetro", gender: "m" }
+      cinderjaw: { text: "Mascellarsa", gender: "f" }
+      wormheart: { text: "Cuoreverme", gender: "m" }
+    }
+    last: {
+      the_hungry: {
+          m: "il Famelico"
+          f: "la Famelica"
+        }
+      the_vile: {
+          m: "il Vile"
+          f: "la Vile"
+        }
+      the_unburied: {
+          m: "l'Insepolto"
+          f: "l'Insepolta"
+        }
+      the_defiler: {
+          m: "il Profanatore"
+          f: "la Profanatrice"
+        }
+      the_pale: {
+          m: "il Pallido"
+          f: "la Pallida"
+        }
+      the_cruel: {
+          m: "il Crudele"
+          f: "la Crudele"
+        }
+      the_wretched: {
+          m: "il Reietto"
+          f: "la Reietta"
+        }
+      the_weeping: {
+          m: "il Piangente"
+          f: "la Piangente"
+        }
+      the_gnawer: {
+          m: "il Roditore"
+          f: "la Roditrice"
+        }
+    }
+  }
+  mod: {
+    extra_strong: "Extra forte"
+    swift: "Veloce"
+    stone_skin: "Pelle di sasso"
+    fire_enchanted: "Fiammeggiante"
+    vampiric: "Succhiasangue"
+  }
+  hit: {
+    bites: {
+        one: "{who} ti morde: {n} danno."
+        other: "{who} ti morde: {n} danni."
+      }
+    stabs: {
+        one: "{who} ti pugnala: {n} danno."
+        other: "{who} ti pugnala: {n} danni."
+      }
+    hurls_fire_at: {
+        one: "{who} ti scaglia contro del fuoco: {n} danno."
+        other: "{who} ti scaglia contro del fuoco: {n} danni."
+      }
+    claws: {
+        one: "{who} ti artiglia: {n} danno."
+        other: "{who} ti artiglia: {n} danni."
+      }
+    mauls: {
+        one: "{who} ti dilania: {n} danno."
+        other: "{who} ti dilania: {n} danni."
+      }
+    slashes: {
+        one: "{who} ti squarcia: {n} danno."
+        other: "{who} ti squarcia: {n} danni."
+      }
+    shoots: {
+        one: "{who} ti trafigge con una freccia: {n} danno."
+        other: "{who} ti trafigge con una freccia: {n} danni."
+      }
+    rends: {
+        one: "{who} ti lacera: {n} danno."
+        other: "{who} ti lacera: {n} danni."
+      }
+    casts_fire_at: {
+        one: "{who} ti lancia contro del fuoco: {n} danno."
+        other: "{who} ti lancia contro del fuoco: {n} danni."
+      }
+    chills: {
+        one: "{who} ti gela: {n} danno."
+        other: "{who} ti gela: {n} danni."
+      }
+    shocks: {
+        one: "{who} ti folgora: {n} danno."
+        other: "{who} ti folgora: {n} danni."
+      }
+    grasps: {
+        one: "{who} ti afferra: {n} danno."
+        other: "{who} ti afferra: {n} danni."
+      }
+    crushes: {
+        one: "{who} ti schiaccia: {n} danno."
+        other: "{who} ti schiaccia: {n} danni."
+      }
+    pummels: {
+        one: "{who} ti tempesta di colpi: {n} danno."
+        other: "{who} ti tempesta di colpi: {n} danni."
+      }
+    spits_fire_at: {
+        one: "{who} ti sputa fuoco addosso: {n} danno."
+        other: "{who} ti sputa fuoco addosso: {n} danni."
+      }
+    cleaves: {
+        one: "{who} ti fende: {n} danno."
+        other: "{who} ti fende: {n} danni."
+      }
+    smites: {
+        one: "{who} ti percuote: {n} danno."
+        other: "{who} ti percuote: {n} danni."
+      }
+    drowns: {
+        one: "{who} ti trascina sott'acqua: {n} danno."
+        other: "{who} ti trascina sott'acqua: {n} danni."
+      }
+    cuts: {
+        one: "{who} ti taglia: {n} danno."
+        other: "{who} ti taglia: {n} danni."
+      }
+    hits: {
+        one: "{who} ti colpisce: {n} danno."
+        other: "{who} ti colpisce: {n} danni."
+      }
+    burn: {
+        one: "{who} ti brucia: {n} danno."
+        other: "{who} ti brucia: {n} danni."
+      }
+  }
+  tile: {
+    void: "vuoto"
+    stone_floor: "pavimento di pietra"
+    wall: "muro"
+    door: "porta"
+    open_door: "porta aperta"
+    stairs_down: "scale verso il basso"
+    stairs_up: "scale verso l'alto"
+    grass: "erba"
+    dirt: "terra battuta"
+    cobblestones: "acciottolato"
+    wooden_floor: "pavimento di legno"
+    tree: "albero"
+    dead_tree: "albero morto"
+    boulder: "macigno"
+    shallow_water: "acqua bassa"
+    deep_water: "acqua profonda"
+    bridge: "ponte"
+    lava: "lava"
+    mud: "fango"
+    reeds: "canneto"
+    cave_floor: "suolo della caverna"
+    cave_wall: "parete della caverna"
+    glowing_crystal: "cristallo luminoso"
+    brazier: "braciere"
+    street_lamp: "lampione"
+    campfire: "falò"
+    fountain: "fontana"
+    grave: "tomba"
+    pillar: "pilastro"
+    chest: "forziere"
+    open_chest: "forziere aperto"
+    town_wall: "mura cittadine"
+    bones: "ossa"
+    rubble: "macerie"
+    path_onward: "sentiero che prosegue"
+    carpet: "tappeto"
+    shelf: "scaffale"
+    blood_altar: "altare di sangue"
+    cold_forge: "forgia fredda"
+  }
+}

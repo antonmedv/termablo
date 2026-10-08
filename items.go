@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"sync"
+
+	"github.com/antonmedv/termablo/internal/i18n"
 )
 
 type Slot int
@@ -360,6 +363,9 @@ type Item struct {
 	Amount int
 	Src    GoldSrc // gold only: where it came from
 	Flavor string
+	// The English words the name was rolled from, for itemNoun: a Magic
+	// item's prefix and suffix, a Rare's first and second word.
+	Pre, Suf string
 }
 
 type FloorItem struct {
@@ -460,8 +466,8 @@ func (it *Item) Value() int {
 	return v
 }
 
-// Lines describes the item for tooltips.
-func (it *Item) Lines(r *Rules) []struct {
+// Lines describes the item for tooltips, in the language of L.
+func (it *Item) Lines(loc *i18n.Catalog, r *Rules) []struct {
 	S string
 	C RGB
 } {
@@ -470,47 +476,48 @@ func (it *Item) Lines(r *Rules) []struct {
 		C RGB
 	}
 	var out []ln
-	out = append(out, ln{it.DisplayName(), it.Color()})
+	out = append(out, ln{iname(loc, it), it.Color()})
 	if it.Kind != IKEquip {
-		switch it.Kind {
-		case IKHealth:
-			out = append(out, ln{"Restores a large portion of life", colGray})
-		case IKMana:
-			out = append(out, ln{"Restores a large portion of mana", colGray})
-		case IKScroll:
-			out = append(out, ln{"Opens a portal back to Emberhold", colGray})
-		case IKGamble:
-			out = append(out, ln{"Hadrik's pick from the depth you have reached.", colGray}, ln{"Could be anything. No refunds.", colGray})
-		case IKReroll:
-			out = append(out, ln{"Hadrik hauls out new stock, and Mirela does too.", colGray})
+		if k, ok := itemDescKey[it.Kind]; ok {
+			for _, s := range strings.Split(loc.T(k), "\n") {
+				out = append(out, ln{s, colGray})
+			}
 		}
 		return out
 	}
-	kind := it.Base.Name
-	if it.Rarity != RNormal {
-		kind = rarityName[it.Rarity] + " " + it.Base.Name
-	}
+	base := loc.Noun("base." + slug(it.Base.Name))
 	if it.Rarity == RRare || it.Rarity == RUnique {
+		kind := loc.T("rarity."+slug(rarityName[it.Rarity]), "base", base)
 		out = append(out, ln{kind, it.Color().Scale(.75)})
 	}
 	if it.Base.Slot == SlotWeapon {
-		h := ""
+		key := "ui.item.damage"
 		if it.Base.TwoHanded {
-			h = " (two-handed)"
+			key = "ui.item.damage_2h"
 		}
-		out = append(out, ln{fmt.Sprintf("Damage: %d-%d%s", it.MinD, it.MaxD, h), colWhite})
+		out = append(out, ln{loc.T(key, "lo", it.MinD, "hi", it.MaxD), colWhite})
 	}
 	if it.Armor > 0 {
-		out = append(out, ln{fmt.Sprintf("Armor: %d", it.Armor), colWhite})
+		out = append(out, ln{loc.T("ui.item.armor", "n", it.Armor), colWhite})
 	}
 	for _, a := range it.Aff {
-		out = append(out, ln{fmt.Sprintf(statFmt[a.S], a.V), C(.5, .65, 1)})
+		out = append(out, ln{statLine(loc, a), C(.5, .65, 1)})
 	}
 	if it.Flavor != "" {
-		out = append(out, ln{it.Flavor, C(.75, .6, .35)})
+		flavor := it.Flavor
+		if k := "unique." + slug(it.Name) + ".flavor"; loc.Has(k) {
+			flavor = loc.T(k)
+		}
+		out = append(out, ln{flavor, C(.75, .6, .35)})
 	}
-	out = append(out, ln{fmt.Sprintf("Item level %d  ·  worth %dg", it.ILvl, sellPrice(it, r)), colDim})
+	out = append(out, ln{loc.T("ui.item.footer", "lvl", it.ILvl, "n", sellPrice(it, r)), colDim})
 	return out
+}
+
+// itemDescKey is what a potion, scroll or service says of itself.
+var itemDescKey = map[ItemKind]string{
+	IKHealth: "item.desc.healing_potion", IKMana: "item.desc.mana_potion", IKScroll: "item.desc.town_portal_scroll",
+	IKGamble: "item.desc.unidentified", IKReroll: "item.desc.fresh_stock",
 }
 
 func rollBase(rng *rand.Rand, ilvl int, slot Slot) *Base {
@@ -625,13 +632,13 @@ func rollItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Ite
 		if hasPre {
 			if a, n, ok := pick(pre); ok {
 				it.Aff = append(it.Aff, a)
-				pn = n + " "
+				pn, it.Pre = n+" ", n
 			}
 		}
 		if hasSuf {
 			if a, n, ok := pick(suf); ok {
 				it.Aff = append(it.Aff, a)
-				sn = " " + n
+				sn, it.Suf = " "+n, n
 			}
 		}
 		it.Name = pn + b.Name + sn
@@ -649,7 +656,9 @@ func rollItem(rng *rand.Rand, ilvl int, rarity Rarity, slot Slot, r *Rules) *Ite
 			}
 		}
 		sec := rareSecond[b.Slot]
-		it.Name = rareFirst[rng.Intn(len(rareFirst))] + " " + sec[rng.Intn(len(sec))]
+		it.Pre = rareFirst[rng.Intn(len(rareFirst))]
+		it.Suf = sec[rng.Intn(len(sec))]
+		it.Name = it.Pre + " " + it.Suf
 	}
 	return it
 }

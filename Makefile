@@ -1,4 +1,4 @@
-.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones report eval hearth knobs
+.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones report eval hearth knobs i18n
 
 GOBIN := $(shell go env GOPATH)/bin
 
@@ -62,6 +62,10 @@ eval:
 # make hearth [SEEDS=48 FIRST=1 RULES=x.json]
 hearth:
 	BOTHEARTH=$(SEEDS) BOTHEARTHFIRST=$(FIRST) BOTRULES=$(RULES) go test -count=1 -v -run 'HearthTrial$$' . | grep -E "won|stuck:"
+
+# the translations: coverage, errors and warnings (docs/translating.md)
+i18n:
+	go run ./cmd/i18n check
 
 # the knob registry: every tunable with its range, step and meaning
 knobs:

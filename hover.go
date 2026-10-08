@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"strings"
-	"unicode/utf8"
+
+	"github.com/antonmedv/termablo/internal/i18n"
 )
 
 // Mouse hover: describe whatever is under the cursor on the map.
@@ -11,6 +12,8 @@ import (
 type hoverLine struct {
 	S string
 	C RGB
+	// Detail lines stay out of the one-line summary.
+	Detail bool
 }
 
 // SetHover records the mouse position in screen cells.
@@ -49,45 +52,28 @@ func (g *Game) Click(x, y, w, h int) {
 	g.targetAt(camX+x, camY+y)
 }
 
+// levelName is where a link or portal leads: the level's own name once
+// it exists, else its region's.
 func (g *Game) levelName(id string) string {
-	if l, ok := g.Levels[id]; ok {
-		return l.Name
+	if _, ok := g.Levels[id]; ok {
+		return areaName(g.L, id)
 	}
-	switch {
-	case id == "town":
-		return "Emberhold"
-	case id == "fields":
-		return "the Ashen Fields"
-	case id == "marsh":
-		return "Blackmarsh"
-	case strings.HasPrefix(id, "crypt"):
-		return "the Crypt of the Fallen"
-	case strings.HasPrefix(id, "grotto"):
-		return "the Sunken Grotto"
-	case strings.HasPrefix(id, "abyss"):
-		return "the Burning Abyss"
-	}
-	return id
+	return regionName(g.L, id)
 }
 
-var tileNotes = map[Tile]string{
-	TDoor:        "Walk into it to open.",
-	TChest:       "Walk into it to open.",
-	TFountain:    "Walk into it to restore life.",
-	TAltar:       "Walk into it to make an offering.",
-	TBrazier:     "Casts warm firelight.",
-	TColdBrazier: "Hadrik's forge. It has gone out.",
-	TLamp:        "Casts warm lamplight.",
-	TCampfire:    "A camp of the Fallen is never far.",
-	TCrystal:     "Glows with cold blue light.",
-	TLava:        "Molten rock. Impassable, and bright.",
-	TDeepWater:   "Too deep to wade.",
-	TWater:       "Shallow enough to wade.",
-	TTree:        "Blocks movement and sight.",
-	TChestOpen:   "Already looted.",
-	TGrave:       "Here lies someone unlucky.",
-	TStairsDown:  "",
-	TStairsUp:    "",
+// tileNotes are the tiles with a hover note, tile_note.<slug> in the
+// catalog.
+var tileNotes = map[Tile]bool{
+	TDoor: true, TChest: true, TFountain: true, TAltar: true, TBrazier: true, TColdBrazier: true,
+	TLamp: true, TCampfire: true, TCrystal: true, TLava: true, TDeepWater: true, TWater: true,
+	TTree: true, TChestOpen: true, TGrave: true,
+}
+
+func (g *Game) tileNote(t Tile) string {
+	if !tileNotes[t] {
+		return ""
+	}
+	return g.L.T("tile_note." + slug(tdefs[t].Name))
 }
 
 // hoverInfo returns tooltip lines for a map cell, or nil when nothing is known.
@@ -99,54 +85,55 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 	i := l.Idx(mx, my)
 	lit, _ := g.litAt(i)
 	var out []hoverLine
-	add := func(s string, c RGB) { out = append(out, hoverLine{s, c}) }
+	L := g.L
+	add := func(s string, c RGB) { out = append(out, hoverLine{S: s, C: c}) }
 
 	if !lit {
 		if !l.Seen[i] {
-			return []hoverLine{{"Darkness", colDim}, {"Unexplored, or beyond your light.", colDim}}
+			return []hoverLine{{S: L.T("ui.hover.darkness"), C: colDim}, {S: L.T("ui.hover.unexplored"), C: colDim}}
 		}
-		add(titleWord(tdefs[l.T[i]].Name), colGray)
-		add("Remembered — not currently in sight.", colDim)
+		add(capFirst(tileName(L, l.T[i])), colGray)
+		add(L.T("ui.hover.remembered"), colDim)
 		return out
 	}
 
 	if mx == p.X && my == p.Y {
-		add("You — the Wanderer", colWhite)
-		add(fmt.Sprintf("Level %d · Life %d/%d · Mana %d/%d", p.Lvl, int(p.HP), p.MaxHP(), int(p.MP), p.MaxMP()), colGray)
-		add(fmt.Sprintf("Torch radius %.1f", p.Torch.Radius), C(1, .7, .4))
+		add(L.T("ui.hover.you"), colWhite)
+		add(L.T("ui.hover.you_stats", "lvl", p.Lvl, "hp", int(p.HP), "maxhp", p.MaxHP(), "mp", int(p.MP), "maxmp", p.MaxMP()), colGray)
+		add(L.T("ui.hover.torch", "r", fmt.Sprintf("%.1f", p.Torch.Radius)), C(1, .7, .4))
 	}
 	if m := l.MonsterAt(mx, my); m != nil {
 		if len(out) > 0 {
 			add("", colDim)
 		}
-		add(m.Name, m.Color())
+		add(monsterNoun(L, m).Text, m.Color())
 		if m.Friendly {
-			add("Townsfolk · walk into them to talk", colGray)
+			add(L.T("ui.hover.townsfolk"), colGray)
 		} else {
-			kind := [...]string{"", "Champion · ", "Unique · ", "Boss · "}[mini(m.Rank, 3)]
-			add(fmt.Sprintf("%sLevel %d · HP %d/%d", kind, m.Level, maxi(0, m.HP), m.MaxHP), colGray)
-			add(fmt.Sprintf("Hits for %d-%d · armor %d", m.MinD, m.MaxD, m.Armor), colGray)
-			if d := m.Describe(); d != "" {
-				add(d, C(.45, .6, 1))
+			kind := [...]string{"normal", "champion", "unique", "boss"}[mini(m.Rank, 3)]
+			add(L.T("ui.hover.rank."+kind, "lvl", m.Level, "hp", maxi(0, m.HP), "maxhp", m.MaxHP), colGray)
+			add(L.T("ui.hover.hits", "lo", m.MinD, "hi", m.MaxD, "armor", m.Armor), colGray)
+			if len(m.Mods) > 0 {
+				add(modsText(L, m), C(.45, .6, 1))
 			}
 			var st []string
 			if m.Frozen > 0 {
-				st = append(st, "frozen")
+				st = append(st, L.T("ui.hover.state.frozen"))
 			}
 			if !m.Awake {
-				st = append(st, "unaware of you")
+				st = append(st, L.T("ui.hover.state.unaware"))
 			}
 			if m.Flee > 0 {
-				st = append(st, "fleeing")
+				st = append(st, L.T("ui.hover.state.fleeing"))
 			}
 			if m.T.AI == AIRanged || m.T.AI == AIOracle || m.T.AI == AIWanderer {
-				st = append(st, "ranged")
+				st = append(st, L.T("ui.hover.state.ranged"))
 			}
 			if m.Light != nil {
-				st = append(st, "glows")
+				st = append(st, L.T("ui.hover.state.glows"))
 			}
 			if len(st) > 0 {
-				add(titleWord(strings.Join(st, ", ")), colCyan)
+				add(capFirst(strings.Join(st, L.T("ui.list_sep"))), colCyan)
 			}
 		}
 	}
@@ -154,46 +141,49 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 		if len(out) > 0 {
 			add("", colDim)
 		}
-		lines := fi.It.Lines(g.Rules)
+		lines := fi.It.Lines(L, g.Rules)
 		for k, ln := range lines {
 			if k >= 8 {
 				add("…", colDim)
 				break
 			}
 			add(ln.S, ln.C)
+			if k == len(lines)-1 && fi.It.Kind == IKEquip {
+				out[len(out)-1].Detail = true // the item level and worth
+			}
 		}
 		if fi.It.Kind == IKEquip {
 			if cur := g.equippedFor(fi.It); cur != nil {
-				add("Replaces "+cur.Name, colDim)
+				add(L.T("ui.hover.replaces", "item", itemNoun(L, cur)), colDim)
 			}
-			add("Step on it and press g to pick up", colDim)
+			out = append(out, hoverLine{S: L.T("ui.hover.pick_up"), C: colDim, Detail: true})
 		}
 	}
 	if g.portalAt(mx, my) {
 		if len(out) > 0 {
 			add("", colDim)
 		}
-		add("Town Portal", colBlue)
+		add(L.T("ui.hover.portal"), colBlue)
 		if l.Kind == KTown {
-			add("Leads back to "+g.levelName(g.Portal.Level), colGray)
+			add(L.T("ui.hover.leads_back", "place", g.levelName(g.Portal.Level)), colGray)
 		} else {
-			add("Leads to Emberhold", colGray)
+			add(L.T("ui.hover.leads_to", "place", areaName(L, "town")), colGray)
 		}
 	}
 	// the ground itself
-	if len(out) == 0 || l.LinkAt(mx, my) != nil || tileNotes[l.T[i]] != "" {
+	if len(out) == 0 || l.LinkAt(mx, my) != nil || tileNotes[l.T[i]] {
 		if len(out) > 0 {
 			add("", colDim)
 		}
 		t := l.T[i]
-		name := titleWord(tdefs[t].Name)
+		name := capFirst(tileName(L, t))
 		switch l.Decal[i] {
 		case DecalCorpse:
-			name += " · a corpse"
+			name += " · " + L.T("ui.hover.decal.corpse")
 		case DecalBlood:
-			name += " · bloodstained"
+			name += " · " + L.T("ui.hover.decal.blood")
 		case DecalScorch:
-			name += " · scorched"
+			name += " · " + L.T("ui.hover.decal.scorch")
 		}
 		col := tdefs[t].Albedo.Scale(1.3)
 		if tdefs[t].Emit {
@@ -201,20 +191,12 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 		}
 		add(name, col)
 		if lk := l.LinkAt(mx, my); lk != nil {
-			add("Leads to "+g.levelName(lk.To), colGray)
-		} else if n := tileNotes[t]; n != "" {
+			add(L.T("ui.hover.leads_to", "place", g.levelName(lk.To)), colGray)
+		} else if n := g.tileNote(t); n != "" {
 			add(n, colGray)
 		}
 	}
 	return out
-}
-
-func titleWord(s string) string {
-	if s == "" {
-		return s
-	}
-	r, n := utf8.DecodeRuneInString(s)
-	return strings.ToUpper(string(r)) + s[n:]
 }
 
 // currentHover returns info for the hovered map cell, or nil.
@@ -235,10 +217,10 @@ func hoverSummary(lines []hoverLine, w int) []hoverLine {
 	var out []hoverLine
 	used := 0
 	for _, ln := range lines {
-		if ln.S == "" || strings.HasPrefix(ln.S, "Step on it") || strings.HasPrefix(ln.S, "Item level") {
+		if ln.S == "" || ln.Detail {
 			continue
 		}
-		n := utf8.RuneCountInString(ln.S) + 3
+		n := i18n.Width(ln.S) + 3
 		if used+n > w {
 			break
 		}

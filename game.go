@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/antonmedv/termablo/internal/i18n"
 )
 
 type Mode int
@@ -93,7 +95,7 @@ type Game struct {
 	cur, pane, tab int
 	helpOff        int // help screen scroll
 	talkName       string
-	talkLines      []string
+	talkText       []string
 	talkCol        RGB
 
 	hoverX, hoverY int
@@ -108,6 +110,9 @@ type Game struct {
 
 	Stats Stats
 	Rules *Rules
+	L     *i18n.Catalog // the player's language
+	// the killing blow's source as the player read it, for the death screen
+	killer string
 }
 
 func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
@@ -115,7 +120,7 @@ func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
 // NewGameWith starts a game under a set of rules, which it shares with
 // its player, levels and monsters.
 func NewGameWith(seed int64, r *Rules) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1}
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
@@ -127,13 +132,21 @@ func NewGameWith(seed int64, r *Rules) *Game {
 	g.P.Eq[EqArmor] = ar
 	g.P.recalc()
 	g.changeLevel("town", "", nil)
-	g.msg(colOrange, "Hunt the Bone King in the crypt and the Drowned Oracle beneath Blackmarsh.")
-	g.msg(colGray, "Press ? for help. Captain Voss by the tavern has work for you.")
+	g.welcome()
 	return g
 }
 
-func (g *Game) msg(col RGB, f string, a ...any) {
-	s := fmt.Sprintf(f, a...)
+// welcome is the log of a new game: the town's lore and the first goal.
+func (g *Game) welcome() {
+	if len(g.Log) == 0 {
+		g.say(colLore, loreKey(g.Lv.ID), "area", areaName(g.L, g.Lv.ID))
+	}
+	g.say(colOrange, "msg.welcome_goal")
+	g.say(colGray, "msg.welcome_help")
+}
+
+// msg logs a line as written; say logs one from the catalog.
+func (g *Game) msg(col RGB, s string) {
 	if n := len(g.Log); n > 0 && g.Log[n-1].Text == s {
 		g.Log[n-1].N++
 		g.Log[n-1].Turn = g.Turn
@@ -253,14 +266,12 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 	g.auto = false
 	if !l.visited {
 		l.visited = true
-		if l.Lore != "" {
-			g.msg(colLore, "%s", l.Lore)
-		}
+		g.say(colLore, loreKey(l.ID), "area", areaName(g.L, l.ID))
 	} else {
-		g.msg(colGray, "You enter %s.", l.Name)
+		g.say(colGray, "msg.enter", "area", areaName(g.L, l.ID))
 	}
 	if l.Kind != KTown && l.Depth > p.Lvl+2 {
-		g.msg(colLore, "Something here is far beyond you.")
+		g.say(colLore, "msg.far_beyond")
 	}
 	if l.Kind != KTown && l.Depth > g.Deepest {
 		g.Deepest = l.Depth
@@ -593,7 +604,7 @@ func (g *Game) move(dx, dy int) {
 	case TFountain:
 		// Life only: mana comes from Mirela or potions.
 		p.HP = float64(p.MaxHP())
-		g.msg(colCyan, "The cold water closes your wounds.")
+		g.say(colCyan, "msg.fountain")
 		g.endTurn()
 		return
 	case TAltar:
@@ -616,7 +627,7 @@ func (g *Game) move(dx, dy int) {
 	}
 	if g.Portal != nil {
 		if g.Portal.Level == l.ID && nx == g.Portal.X && ny == g.Portal.Y {
-			g.msg(colBlue, "You step through the portal.")
+			g.say(colBlue, "msg.portal_step")
 			g.changeLevel("town", "", &Pos{l2(g).PortalAt.X, l2(g).PortalAt.Y + 1})
 			g.byPortal = true
 			return
@@ -624,16 +635,16 @@ func (g *Game) move(dx, dy int) {
 		if l.Kind == KTown && nx == l.PortalAt.X && ny == l.PortalAt.Y {
 			dest := g.Portal
 			g.Portal = nil
-			g.msg(colBlue, "The portal collapses behind you.")
+			g.say(colBlue, "msg.portal_collapse")
 			g.changeLevel(dest.Level, "", &Pos{dest.X, dest.Y})
 			return
 		}
 	}
 	if items := l.ItemsAt(nx, ny); len(items) > 0 && !g.auto {
 		if len(items) == 1 {
-			g.msg(colGray, "You see %s here. (g to pick up)", items[0].It.DisplayName())
+			g.say(colGray, "msg.see_item", "item", itemNoun(g.L, items[0].It))
 		} else {
-			g.msg(colGray, "Several items lie here. (g to pick up)")
+			g.say(colGray, "msg.see_items")
 		}
 	}
 	g.endTurn()
@@ -667,22 +678,22 @@ func (g *Game) autoPickup() {
 		case IKGold:
 			p.Gold += it.Amount
 			g.Stats.In[it.Src] += it.Amount
-			g.msg(colGold, "You pick up %d gold.", it.Amount)
+			g.say(colGold, "msg.pickup_gold", "n", it.Amount)
 		case IKHealth, IKMana:
-			n, name, col := &p.HPot, "Healing", C(1, .4, .4)
+			n, col := &p.HPot, C(1, .4, .4)
 			if it.Kind == IKMana {
-				n, name, col = &p.MPot, "Mana", C(.45, .6, 1)
+				n, col = &p.MPot, C(.45, .6, 1)
 			}
 			if !g.canTake(it) {
-				g.msg(colDim, "Your belt has no room for another %s Potion.", name)
+				g.say(colDim, "msg.belt_no_room", "item", itemNoun(g.L, it))
 				keep = append(keep, fi)
 				continue
 			}
 			*n++
-			g.msg(col, "You pick up a %s Potion.", name)
+			g.say(col, "msg.pickup_potion", "item", itemNoun(g.L, it))
 		case IKScroll:
 			p.Scrolls++
-			g.msg(C(.85, .8, .65), "You pick up a Scroll of Town Portal.")
+			g.say(C(.85, .8, .65), "msg.pickup_scroll", "item", itemNoun(g.L, it))
 		default:
 			keep = append(keep, fi)
 		}
@@ -711,14 +722,14 @@ func (g *Game) pickup() {
 		if fi.X == p.X && fi.Y == p.Y && fi.It.Kind == IKEquip {
 			if len(p.Inv) >= invMax {
 				if !full {
-					g.msg(colRed, "Your pack is full.")
+					g.say(colRed, "msg.pack_full")
 				}
 				full = true
 				keep = append(keep, fi)
 				continue
 			}
 			p.Inv = append(p.Inv, fi.It)
-			g.msg(fi.It.Color(), "You pick up %s.", fi.It.Name)
+			g.say(fi.It.Color(), "msg.pickup_item", "item", itemNoun(g.L, fi.It))
 			got = true
 			continue
 		}
@@ -728,7 +739,7 @@ func (g *Game) pickup() {
 	if got {
 		g.endTurn()
 	} else if !full {
-		g.msg(colDim, "There is nothing here to pick up.")
+		g.say(colDim, "msg.nothing_to_pick_up")
 	}
 }
 
@@ -815,32 +826,32 @@ func (g *Game) killMonster(m *Monster) {
 	}
 	switch m.Rank {
 	case RankBoss:
-		g.msg(colGold, "%s has been destroyed!", m.Name)
+		g.say(colGold, "msg.boss_destroyed", "who", theRef(g.L, m))
 		g.novaFx(m.X, m.Y, C(1, .8, .4), 6)
 	case RankUnique, RankChampion:
-		g.msg(m.Color(), "%s is slain!", m.Name)
+		g.say(m.Color(), "msg.elite_slain", "who", theRef(g.L, m))
 	default:
-		g.msg(C(.6, .55, .5), "The %s dies.", m.Name)
+		g.say(C(.6, .55, .5), "msg.monster_dies", "who", theRef(g.L, m))
 	}
 	if m.HasMod(ModFire) {
 		g.novaFx(m.X, m.Y, colOrange, 2)
 		if cheb(m.X, m.Y, p.X, p.Y) <= 1 {
 			g.hitter = nil
-			g.hurtPlayer(m.Level*2+3, m.Name+"'s death flames", "burn")
+			g.hurt(m.Level*2+3, m.Name+"'s death flames", g.L.Noun("ref.death_flames", "name", monsterNoun(g.L, m)), "burn")
 		}
 	}
 	switch m.T.ID {
 	case "boneking":
 		g.Quests[0] = maxi(g.Quests[0], 1)
-		g.msg(colOrange, "The crypts fall silent. Return to Captain Voss.")
+		g.say(colOrange, "msg.boneking_dead")
 	case "oracle":
 		g.Quests[1] = maxi(g.Quests[1], 1)
-		g.msg(colOrange, "The Oracle's song ends. Deeper still, something burns... Return to Voss.")
+		g.say(colOrange, "msg.oracle_dead")
 	case "wanderer":
 		g.relight()
 		g.Quests[2] = 1
-		g.msg(m.T.Color, "The Last Wanderer: \"Keep walking.\"")
-		g.msg(colLore, "The red light goes out, and the dark lets go of the fire.")
+		g.say(m.T.Color, "msg.wanderer_last_words")
+		g.say(colLore, "msg.wanderer_dead")
 		g.unseal(l)
 	}
 	if m.T.ID == "fallen" || m.T.ID == "shaman" {
@@ -864,7 +875,7 @@ func (g *Game) gainXP(xp int) {
 		p.Points += 5
 		p.recalc()
 		p.HP, p.MP = float64(p.MaxHP()), float64(p.MaxMP())
-		g.msg(colGold, "You have reached level %d! (c to spend 5 attribute points)", p.Lvl)
+		g.say(colGold, "msg.level_up", "n", p.Lvl)
 		g.novaFx(p.X, p.Y, colGold, 4)
 	}
 }
@@ -927,7 +938,7 @@ func (g *Game) dropLoot(m *Monster) {
 func (g *Game) openChest(x, y int) {
 	l := g.Lv
 	l.Set(x, y, TChestOpen)
-	g.msg(C(.9, .7, .35), "You open the chest.")
+	g.say(C(.9, .7, .35), "msg.open_chest")
 	lvl := maxi(1, l.Depth)
 	n := 1 + g.rng.Intn(2)
 	for range n {
@@ -946,7 +957,7 @@ func (g *Game) openChest(x, y int) {
 func (g *Game) useAltar(x, y int) {
 	key := fmt.Sprintf("%s:%d:%d", g.Lv.ID, x, y)
 	if g.usedAltars[key] {
-		g.msg(colDim, "The altar is cold now.")
+		g.say(colDim, "msg.altar_cold")
 		return
 	}
 	g.usedAltars[key] = true
@@ -955,20 +966,25 @@ func (g *Game) useAltar(x, y int) {
 	case 0:
 		p.MP = float64(p.MaxMP())
 		p.HP = float64(p.MaxHP())
-		g.msg(colPurple, "Blood-light washes over you. You are restored.")
+		g.say(colPurple, "msg.altar_restore")
 	case 1:
 		xp := g.Rules.xpNext(p.Lvl) / 4
-		g.msg(colPurple, "Forbidden knowledge floods your mind. (+%d XP)", xp)
+		g.say(colPurple, "msg.altar_xp", "n", xp)
 		g.gainXP(xp)
 	default:
-		g.msg(colPurple, "The altar offers up a gift.")
+		g.say(colPurple, "msg.altar_gift")
 		g.dropItem(x, y+1, GenItem(g.rng, g.Lv.Depth+1, RRare, SlotNone, g.Rules))
 	}
 	g.novaFx(x, y, colPurple, 3)
 }
 
-// hurtPlayer applies damage and logs "<By> <verb> you for N." (by doubles as the killer's name).
-func (g *Game) hurtPlayer(dmg int, by, verb string) {
+// hurtPlayer applies damage from a source named in English.
+func (g *Game) hurtPlayer(dmg int, by, verb string) { g.hurt(dmg, by, i18n.Noun{Text: by}, verb) }
+
+// hurt applies damage and logs "<who> <verb> you for N." from the
+// hit.<verb> line. by is the English name the killer goes on record as,
+// who the same as the player reads it.
+func (g *Game) hurt(dmg int, by string, who i18n.Noun, verb string) {
 	p := g.P
 	if g.Mode == ModeDead {
 		return // the blow that killed is the one on record
@@ -979,7 +995,7 @@ func (g *Game) hurtPlayer(dmg int, by, verb string) {
 	if verb == "" {
 		verb = "hits"
 	}
-	g.msg(C(.9, .45, .4), "%s %s you for %d.", titleWord(by), verb, dmg)
+	g.say(C(.9, .45, .4), "hit."+slug(verb), "who", who, "n", dmg)
 	p.HP -= float64(dmg)
 	g.Stats.DmgTaken += dmg
 	p.Flash = g.time
@@ -987,9 +1003,9 @@ func (g *Game) hurtPlayer(dmg int, by, verb string) {
 	g.textFx(p.X, p.Y, strconv.Itoa(dmg), colRed)
 	if p.HP <= 0 {
 		p.HP = 0
-		p.KilledBy = by
+		p.KilledBy, g.killer = by, who.Text
 		g.Mode = ModeDead
-		g.msg(colRed, "You have been slain by %s.", by)
+		g.say(colRed, "msg.slain", "who", who)
 		g.recordDeath()
 	}
 }
@@ -1014,11 +1030,11 @@ func (g *Game) recordDeath() {
 func (g *Game) drinkHealth() {
 	p := g.P
 	if p.HPot <= 0 {
-		g.msg(colDim, "You have no healing potions.")
+		g.say(colDim, "msg.no_healing_potions")
 		return
 	}
 	if p.HP+p.HealPool >= float64(p.MaxHP()) {
-		g.msg(colDim, "You are already at full life.")
+		g.say(colDim, "msg.full_life")
 		return
 	}
 	p.HPot--
@@ -1026,35 +1042,35 @@ func (g *Game) drinkHealth() {
 	amt := p.HealAmt()
 	p.HealPool += amt
 	g.textFx(p.X, p.Y, "+"+strconv.Itoa(int(amt)), colGreen)
-	g.msg(C(1, .45, .45), "You drink a healing potion.")
+	g.say(C(1, .45, .45), "msg.drink_healing")
 	g.endTurn()
 }
 
 func (g *Game) drinkMana() {
 	p := g.P
 	if p.MPot <= 0 {
-		g.msg(colDim, "You have no mana potions.")
+		g.say(colDim, "msg.no_mana_potions")
 		return
 	}
 	if p.MP+p.ManaPool >= float64(p.MaxMP()) {
-		g.msg(colDim, "Your mana is already full.")
+		g.say(colDim, "msg.full_mana")
 		return
 	}
 	p.MPot--
 	g.Stats.MPots++
 	p.ManaPool += p.ManaAmt()
-	g.msg(C(.45, .6, 1), "You drink a mana potion.")
+	g.say(C(.45, .6, 1), "msg.drink_mana")
 	g.endTurn()
 }
 
 func (g *Game) readPortal() {
 	l, p := g.Lv, g.P
 	if l.Kind == KTown {
-		g.msg(colDim, "You are already in town.")
+		g.say(colDim, "msg.already_in_town")
 		return
 	}
 	if p.Scrolls <= 0 {
-		g.msg(colDim, "You have no Scrolls of Town Portal.")
+		g.say(colDim, "msg.no_scrolls")
 		return
 	}
 	p.Scrolls--
@@ -1063,7 +1079,7 @@ func (g *Game) readPortal() {
 	x, y := l.FreeNear(p.X, p.Y, p.X, p.Y)
 	g.Portal = &Portal{l.ID, x, y}
 	g.portalLight.ver = -1
-	g.msg(colBlue, "A shimmering blue portal tears open.")
+	g.say(colBlue, "msg.portal_open")
 	g.novaFx(x, y, colBlue, 3)
 	g.endTurn()
 }
@@ -1139,15 +1155,15 @@ func (g *Game) castFirebolt() {
 	p := g.P
 	t := g.validTarget()
 	if t == nil {
-		g.msg(colDim, "No target in sight.")
+		g.say(colDim, "msg.no_target")
 		return
 	}
 	if cheb(p.X, p.Y, t.X, t.Y) > fireboltRange {
-		g.msg(colDim, "The %s is out of range.", t.Name)
+		g.say(colDim, "msg.out_of_range", "who", theRef(g.L, t))
 		return
 	}
 	if p.MP < float64(p.FireboltCost()) {
-		g.msg(C(.45, .6, 1), "Not enough mana.")
+		g.say(C(.45, .6, 1), "msg.no_mana")
 		return
 	}
 	p.MP -= float64(p.FireboltCost())
@@ -1174,7 +1190,7 @@ func (g *Game) castFirebolt() {
 func (g *Game) castNova() {
 	p, l := g.P, g.Lv
 	if p.MP < float64(p.NovaCost()) {
-		g.msg(C(.45, .6, 1), "Not enough mana.")
+		g.say(C(.45, .6, 1), "msg.no_mana")
 		return
 	}
 	p.MP -= float64(p.NovaCost())
@@ -1287,7 +1303,7 @@ func (g *Game) monsterTurn(m *Monster) {
 	switch m.T.AI {
 	case AIBoneKing:
 		if sees && m.Timer%6 == 0 && g.countMinions() < 10 {
-			g.msg(C(.75, 1, .6), "The Bone King raises the dead!")
+			g.say(C(.75, 1, .6), "msg.boneking_raises")
 			for range 2 {
 				s := placeMonsterAvoid(l, "skel", m.X, m.Y, m.Level, RankNormal, p.X, p.Y)
 				s.Awake, s.Minion = true, true
@@ -1316,13 +1332,13 @@ func (g *Game) monsterTurn(m *Monster) {
 				if l.Walkable(nx, ny) && l.MonsterAt(nx, ny) == nil && cheb(nx, ny, p.X, p.Y) >= 3 && g.fov[l.Idx(nx, ny)] == g.fovGen {
 					g.novaFx(m.X, m.Y, colCyan, 2)
 					m.X, m.Y = nx, ny
-					g.msg(colCyan, "The Oracle dissolves into mist and reforms.")
+					g.say(colCyan, "msg.oracle_reforms")
 					return
 				}
 			}
 		}
 		if sees && m.Timer%13 == 0 && g.countMinions() < 8 {
-			g.msg(colCyan, "Cold lights gather around the Oracle.")
+			g.say(colCyan, "msg.oracle_lights")
 			for range 2 {
 				w := placeMonsterAvoid(l, "wisp", m.X, m.Y, m.Level-1, RankNormal, p.X, p.Y)
 				w.Awake, w.Minion = true, true
@@ -1361,11 +1377,11 @@ func (g *Game) countMinions() int {
 func (g *Game) bossTaunt(m *Monster) {
 	switch m.T.ID {
 	case "boneking":
-		g.msg(C(.8, 1, .6), "The Bone King: \"Another torch to snuff. Kneel, and join my court.\"")
+		g.say(C(.8, 1, .6), "msg.boneking_greets")
 	case "oracle":
-		g.msg(colCyan, "The Drowned Oracle: \"I have seen your ending, little flame. It is wet and cold.\"")
+		g.say(colCyan, "msg.oracle_greets")
 	case "wanderer":
-		g.msg(m.T.Color, "The Last Wanderer: \"Another stranger. They always send a stranger.\"")
+		g.say(m.T.Color, "msg.wanderer_greets")
 	}
 }
 
@@ -1489,12 +1505,8 @@ func (g *Game) monsterMelee(m *Monster) {
 	if m.HasMod(ModVampiric) {
 		m.HP = mini(m.MaxHP, m.HP+dmg/2+1)
 	}
-	name := "the " + m.Name
-	if m.Rank >= RankUnique {
-		name = m.Name
-	}
 	g.hitter = m
-	g.hurtPlayer(dmg, name, m.T.Verb)
+	g.hurt(dmg, englishRef(m), theRef(g.L, m), m.T.Verb)
 	if th := p.S(StThorns); th > 0 && !m.Dead {
 		g.damageMonster(m, th, false, C(.8, .6, .4))
 	}
@@ -1510,12 +1522,16 @@ func (g *Game) monsterShoot(m *Monster) {
 	if g.rng.Intn(100) >= g.monsterHitChance(m)+5 {
 		return
 	}
-	name := "the " + m.Name
-	if m.Rank >= RankUnique {
-		name = m.Name
-	}
 	g.hitter = m
-	g.hurtPlayer(g.monsterDamage(m)*4/5+1, name, m.T.Verb)
+	g.hurt(g.monsterDamage(m)*4/5+1, englishRef(m), theRef(g.L, m), m.T.Verb)
+}
+
+// englishRef is how the monster goes on record as a killer.
+func englishRef(m *Monster) string {
+	if named(m) {
+		return m.Name
+	}
+	return "the " + m.Name
 }
 
 // ------------------------------------------------------------ auto-explore
@@ -1525,23 +1541,13 @@ const (
 	autoStopAware = 18 // ...as does one this close that has noticed you
 )
 
-func monsterRef(m *Monster) string {
-	if m.Rank >= RankUnique {
-		return m.Name
-	}
-	if strings.ContainsRune("AEIOU", rune(m.Name[0])) {
-		return "an " + m.Name
-	}
-	return "a " + m.Name
-}
-
 func (g *Game) autoStep() bool {
 	l, p := g.Lv, g.P
 	// Distant, unaware enemies (common on the open fields) don't interrupt.
 	for _, m := range g.visibleHostiles() {
 		d := cheb(m.X, m.Y, p.X, p.Y)
 		if d <= autoStopNear || (m.Awake && d <= autoStopAware) {
-			g.msg(colOrange, "You spot %s.", monsterRef(m))
+			g.say(colOrange, "msg.spot", "who", aRef(g.L, m))
 			return false
 		}
 	}
@@ -1553,7 +1559,7 @@ func (g *Game) autoStep() bool {
 	}
 	if nItems > g.autoItems {
 		g.autoItems = nItems
-		g.msg(colGray, "You notice something on the ground.")
+		g.say(colGray, "msg.notice_item")
 		return false
 	}
 	g.autoItems = nItems
@@ -1608,7 +1614,7 @@ func (g *Game) autoStep() bool {
 		}
 	}
 	if target < 0 {
-		g.msg(colGray, "Nothing left to explore here.")
+		g.say(colGray, "msg.explored")
 		return false
 	}
 	c := target
@@ -1668,39 +1674,32 @@ const hearthFloor = 3
 // questDepth is where each quest's boss sits: crypt4 and grotto3.
 var questDepth = [2]int{5, 9}
 
-var villagerLines = []string{
-	"They say the braziers in the crypt light themselves at dusk. Nobody tends them.",
-	"My brother went into Blackmarsh after the lights. He came back wet. He came back wrong.",
-	"Keep your torch high. The dark down there isn't empty — it's hungry.",
-	"Hadrik's forge hasn't gone out in forty years. He says the day it does, we run.",
-	"Rare things glimmer in the dark. Gold-light means something old and named.",
-	"Old Mirela's crystal was dug out of the grotto. It sings when the Oracle dreams.",
-	"A portal scroll is cheaper than a funeral.",
-	"There was a stranger before you. Bought the same sword. Went past the marsh and kept going.",
-	"King Edran carried the Ember up in his bare hands. It cost him his face.",
-	"My uncle joined the Ember Cult. Said the dark was owed. He went down to pay it.",
-	"Mirela says the Oracle isn't hunting anyone. She's holding something down.",
-}
+// villagerLines are the rumors a villager tells, rumor.<key> in the
+// catalog, one picked at random.
+var villagerLines = []string{"braziers", "brother", "torch", "forge", "glimmer", "crystal", "scroll", "stranger", "edran", "uncle", "holding"}
+
+// talkLines is a dialog from the catalog, one paragraph a line.
+func (g *Game) talkLines(key string) []string { return strings.Split(g.L.T(key), "\n") }
 
 func (g *Game) talkTo(m *Monster) {
 	p := g.P
 	if g.townHunted() {
-		who := m.Name
+		who := monsterNoun(g.L, m)
 		if m.T.ID == "villager" {
-			who = "The villager"
+			who = i18n.Noun{Text: g.L.T("ref.the", "name", who), Gender: who.Gender}
 		}
-		g.msg(m.T.Color, "%s is running for their life.", who)
+		g.say(m.T.Color, "msg.running", "who", who)
 		return
 	}
 	switch m.T.ID {
 	case "smith":
 		g.shop = g.shops[0]
 		g.Mode, g.cur, g.tab = ModeShop, 0, 0
-		line := "Steel for the dark. Take a look."
+		line := "talk.hadrik.greet"
 		if g.Quests[1] > 0 {
-			line = "Last one I armed for the deep never came back for repairs."
+			line = "talk.hadrik.after_oracle"
 		}
-		g.msg(C(1, .6, .3), "Hadrik: \"%s\"", line)
+		g.say(C(1, .6, .3), line)
 	case "alch":
 		g.mirelaHeal()
 		g.shop = g.shops[1]
@@ -1711,30 +1710,23 @@ func (g *Game) talkTo(m *Monster) {
 		if g.Quests[0] == 1 {
 			g.Quests[0] = 2
 			rewards = append(rewards, 0)
-			lines = append(lines, "The Bone King is dust? Then the crypt bells may ring again.", "Take this — it was my father's. And the gold, of course.")
+			lines = append(lines, g.talkLines("talk.voss.boneking_reward")...)
 		}
 		if g.Quests[1] == 1 {
 			g.Quests[1] = 2
 			rewards = append(rewards, 1)
-			lines = append(lines, "The Oracle, silenced... I never thought I'd sleep without hearing her.", "Beneath her pool, the rock burns. The Abyss has no floor, they say. Be careful.", "I sent someone down there once. I stopped counting the days.")
+			lines = append(lines, g.talkLines("talk.voss.oracle_reward")...)
 		}
 		if len(rewards) == 0 {
 			switch {
 			case g.Quests[0] == 0:
-				lines = []string{
-					"Wanderer. Good. We need a blade that doesn't shake.",
-					"The Ember keeps the dark out. The dark wants it back.",
-					"East of the gate, past the Ashen Fields, lies the Crypt of the Fallen.",
-					"Four floors down, the Bone King sits his throne of ribs. Destroy him.",
-					"And north, in Blackmarsh, the Drowned Oracle calls the lost into the water.",
-					"Buy potions from Mirela. Keep a portal scroll. Come back alive.",
-				}
+				lines = g.talkLines("talk.voss.intro")
 			case g.Quests[1] == 0:
-				lines = []string{"The crypt is quiet. Now: Blackmarsh, north of the fields.", "Follow the cold lights down into the grotto. End the Oracle."}
+				lines = g.talkLines("talk.voss.after_boneking")
 			case g.Quests[2] > 0:
-				lines = []string{"The lanterns are lit again. Whoever he was, he was one of ours once.", "Keep walking, stranger. It is what we hire you for."}
+				lines = g.talkLines("talk.voss.after_wanderer")
 			default:
-				lines = []string{"You've done more than any of us dared.", "If you must go deeper... the Abyss waits below the Oracle's pool."}
+				lines = g.talkLines("talk.voss.after_oracle")
 			}
 		}
 		for _, q := range rewards {
@@ -1744,12 +1736,12 @@ func (g *Game) talkTo(m *Monster) {
 			g.Stats.In[GoldQuest] += gold
 			it := GenItem(g.rng, questDepth[q]+2, RUnique, SlotNone, g.Rules)
 			g.dropItem(p.X, p.Y, it)
-			g.msg(colGold, "Voss gives you %d gold and %s.", gold, it.Name)
+			g.say(colGold, "msg.voss_reward", "n", gold, "item", itemNoun(g.L, it))
 		}
-		g.talkName, g.talkLines, g.talkCol, g.Mode = m.Name, lines, m.T.Color, ModeTalk
+		g.talkName, g.talkText, g.talkCol, g.Mode = monsterNoun(g.L, m).Text, lines, m.T.Color, ModeTalk
 	default:
-		g.talkName = m.Name
-		g.talkLines = []string{villagerLines[g.rng.Intn(len(villagerLines))]}
+		g.talkName = monsterNoun(g.L, m).Text
+		g.talkText = []string{g.L.T("rumor." + villagerLines[g.rng.Intn(len(villagerLines))])}
 		g.talkCol = m.T.Color
 		g.Mode = ModeTalk
 	}
@@ -1759,7 +1751,7 @@ func (g *Game) buy(it *Item) {
 	p := g.P
 	price := g.buyPrice(it)
 	if p.Gold < price {
-		g.msg(colRed, "You cannot afford that.")
+		g.say(colRed, "msg.cannot_afford")
 		return
 	}
 	switch it.Kind {
@@ -1769,7 +1761,7 @@ func (g *Game) buy(it *Item) {
 			n = &p.MPot
 		}
 		if *n >= beltMax {
-			g.msg(colRed, "Your belt is full.")
+			g.say(colRed, "msg.belt_full")
 			return
 		}
 		*n++
@@ -1777,7 +1769,7 @@ func (g *Game) buy(it *Item) {
 		p.Scrolls++
 	case IKGamble:
 		if len(p.Inv) >= invMax {
-			g.msg(colRed, "Your pack is full.")
+			g.say(colRed, "msg.pack_full")
 			return
 		}
 		r := g.Rules
@@ -1785,18 +1777,18 @@ func (g *Game) buy(it *Item) {
 		p.Inv = append(p.Inv, got)
 		p.Gold -= price
 		g.Stats.Out[SinkGamble] += price
-		g.msg(got.Color(), "Hadrik unwraps %s. %dg, no refunds.", got.Name, price)
+		g.say(got.Color(), "msg.gamble", "item", itemNoun(g.L, got), "n", price)
 		return
 	case IKReroll:
 		p.Gold -= price
 		g.Stats.Out[SinkReroll] += price
 		g.restock()
 		g.shop = g.shops[0]
-		g.msg(colGold, "Hadrik hauls out fresh stock for %dg.", price)
+		g.say(colGold, "msg.reroll", "n", price)
 		return
 	default:
 		if len(p.Inv) >= invMax {
-			g.msg(colRed, "Your pack is full.")
+			g.say(colRed, "msg.pack_full")
 			return
 		}
 		p.Inv = append(p.Inv, it)
@@ -1806,7 +1798,7 @@ func (g *Game) buy(it *Item) {
 	}
 	p.Gold -= price
 	g.Stats.Out[sinkOf(it)] += price
-	g.msg(colGold, "Bought %s for %dg.", it.DisplayName(), price)
+	g.say(colGold, "msg.bought", "item", itemNoun(g.L, it), "n", price)
 }
 
 // Mirela heals for free until the hero is past freeHealLvl.
@@ -1818,17 +1810,17 @@ func (g *Game) mirelaHeal() {
 	p, healCost := g.P, g.Rules.HealCost
 	need := float64(p.MaxHP()) - p.HP + float64(p.MaxMP()) - p.MP
 	if need < 1 {
-		g.msg(colCyan, "Mirela looks you over. \"Hale as an ox. Buy something, dear.\"")
+		g.say(colCyan, "msg.mirela_healthy")
 		return
 	}
 	if p.Lvl <= freeHealLvl {
 		p.HP, p.MP = float64(p.MaxHP()), float64(p.MaxMP())
-		g.msg(colCyan, "Mirela tends your wounds. \"No charge for the young. Now buy something, dear.\"")
+		g.say(colCyan, "msg.mirela_free")
 		return
 	}
 	pts := math.Min(need, float64(p.Gold)/healCost)
 	if pts < 1 {
-		g.msg(colCyan, "Mirela shakes her head. \"Herbs cost coin, dear.\"")
+		g.say(colCyan, "msg.mirela_broke")
 		return
 	}
 	cost := int(math.Ceil(pts * healCost))
@@ -1838,10 +1830,10 @@ func (g *Game) mirelaHeal() {
 	p.HP += hp
 	p.MP = math.Min(float64(p.MaxMP()), p.MP+pts-hp)
 	if pts < need {
-		g.msg(colCyan, "Mirela does what your %dg allows. \"Come back with more, dear.\"", cost)
+		g.say(colCyan, "msg.mirela_partial", "n", cost)
 		return
 	}
-	g.msg(colCyan, "Mirela tends your wounds for %dg. \"There. Now buy something, dear.\"", cost)
+	g.say(colCyan, "msg.mirela_paid", "n", cost)
 }
 
 // buyPrice: remedies cost more as the hero grows, so a stack of potions
@@ -1883,7 +1875,7 @@ func (g *Game) sell(idx int) {
 	if g.shop != nil && g.shop.Kind == 0 {
 		g.shop.Items = append(g.shop.Items, it)
 	}
-	g.msg(colGold, "Sold %s for %dg.", it.Name, price)
+	g.say(colGold, "msg.sold", "item", itemNoun(g.L, it), "n", price)
 }
 
 // spendPoint puts one attribute point into Str, Dex, Vit or Ene (0-3).
@@ -1952,7 +1944,7 @@ func (g *Game) equip(idx int) {
 		returning++
 	}
 	if len(p.Inv)-1+returning > invMax {
-		g.msg(colRed, "Your pack is too full to swap that.")
+		g.say(colRed, "msg.pack_too_full")
 		return
 	}
 	p.Inv = append(p.Inv[:idx], p.Inv[idx+1:]...)
@@ -1971,7 +1963,7 @@ func (g *Game) equip(idx int) {
 	}
 	p.recalc()
 	g.Stats.Equips++
-	g.msg(it.Color(), "You equip %s.", it.Name)
+	g.say(it.Color(), "msg.equip", "item", itemNoun(g.L, it))
 }
 
 func (g *Game) unequip(slot int) {
@@ -1980,11 +1972,11 @@ func (g *Game) unequip(slot int) {
 		return
 	}
 	if len(p.Inv) >= invMax {
-		g.msg(colRed, "Your pack is full.")
+		g.say(colRed, "msg.pack_full")
 		return
 	}
 	p.Inv = append(p.Inv, p.Eq[slot])
-	g.msg(colGray, "You remove %s.", p.Eq[slot].Name)
+	g.say(colGray, "msg.unequip", "item", itemNoun(g.L, p.Eq[slot]))
 	p.Eq[slot] = nil
 	p.recalc()
 }
@@ -1997,7 +1989,7 @@ func (g *Game) dropInv(idx int) {
 	it := p.Inv[idx]
 	p.Inv = append(p.Inv[:idx], p.Inv[idx+1:]...)
 	g.dropItem(p.X, p.Y, it)
-	g.msg(colGray, "You drop %s.", it.Name)
+	g.say(colGray, "msg.drop", "item", itemNoun(g.L, it))
 }
 
 // equippedFor returns what the item would replace (for comparisons).
@@ -2060,13 +2052,13 @@ func (g *Game) stalkerArrives() {
 	g.novaFx(m.X, m.Y, C(1, .15, .1), 3)
 	if viaPortal {
 		g.Portal = nil
-		g.msg(colRed, "The Last Wanderer steps out of the portal. It collapses behind him.")
+		g.say(colRed, "msg.wanderer_portal")
 	} else {
-		g.msg(colRed, "The Last Wanderer follows you.")
+		g.say(colRed, "msg.wanderer_follows")
 	}
 	if l.Kind == KTown && !g.homeYet {
 		g.homeYet = true
-		g.msg(m.T.Color, "The Last Wanderer: \"You showed me the way home.\"")
+		g.say(m.T.Color, "msg.wanderer_home")
 	}
 }
 
@@ -2082,9 +2074,9 @@ func (g *Game) unseal(here *Level) {
 		l.Links = append(l.Links, Link{x, y, x, y, l.SealedDown, -1, -1})
 		l.SealedDown = ""
 		if l == here {
-			g.msg(colGray, "Where he waited, a way down opens.")
+			g.say(colGray, "msg.unseal_here")
 		} else {
-			g.msg(colGray, "Far below, in the Hearth, a way down opens.")
+			g.say(colGray, "msg.unseal_far")
 		}
 	}
 }
@@ -2131,7 +2123,7 @@ func (g *Game) huntStep(w, prey *Monster) {
 		if prey.HP <= 0 {
 			g.townspersonDies(prey)
 		} else {
-			g.msg(colRed, "The Last Wanderer cuts %s.", townName(prey))
+			g.say(colRed, "msg.wanderer_cuts", "who", townRef(g.L, prey))
 		}
 		return
 	}
@@ -2148,11 +2140,14 @@ func (g *Game) huntStep(w, prey *Monster) {
 	g.stepToward(w) // walled off from them: come for the hero instead
 }
 
-func townName(m *Monster) string {
+// townRef is a townsperson as the object of the Wanderer's blade:
+// "a villager", "Old Mirela".
+func townRef(loc *i18n.Catalog, m *Monster) i18n.Noun {
+	n := monsterNoun(loc, m)
 	if m.T.ID == "villager" {
-		return "a villager"
+		return i18n.Noun{Text: loc.T("ref.a", "name", n), Gender: n.Gender}
 	}
-	return m.Name
+	return n
 }
 
 // townspersonDies is a townsperson killed by the Last Wanderer. With
@@ -2161,9 +2156,9 @@ func (g *Game) townspersonDies(m *Monster) {
 	l := g.Lv
 	m.Dead = true
 	l.Decal[l.Idx(m.X, m.Y)] = DecalCorpse
-	g.msg(colRed, "The Last Wanderer cuts down %s.", townName(m))
+	g.say(colRed, "msg.wanderer_kills", "who", townRef(g.L, m))
 	if len(g.Fallen) == 0 {
-		g.msg(C(1, .32, .26), "The Last Wanderer: \"They gave me a sword and a captain's speech too.\"")
+		g.say(C(1, .32, .26), "msg.wanderer_taunt")
 	}
 	g.Fallen = append(g.Fallen, m.T.ID)
 	if m.T.ID == "smith" {
@@ -2174,7 +2169,7 @@ func (g *Game) townspersonDies(m *Monster) {
 			return
 		}
 	}
-	g.msg(colLore, "No one is left in Emberhold but you.")
+	g.say(colLore, "msg.town_empty")
 }
 
 // forgeOut puts out Hadrik's forge, the Ember's hearth, for good.
@@ -2189,7 +2184,7 @@ func (g *Game) forgeOut(l *Level) {
 		}
 	}
 	l.Lights = keep
-	g.msg(colLore, "Hadrik's forge goes cold.")
+	g.say(colLore, "msg.forge_cold")
 }
 
 // snuffAround puts out the town's lights within his reach. In Emberhold

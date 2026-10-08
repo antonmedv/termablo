@@ -98,6 +98,7 @@ func TestOverviewAboveLog(t *testing.T) {
 func TestInventoryNarrow(t *testing.T) {
 	g := newTestGame(t)
 	it := GenItem(g.rng, 3, RNormal, SlotGloves, g.Rules)
+	it.Rarity, it.Pre, it.Suf = RMagic, "Sturdy", "of Testing"
 	it.Name = "Sturdy Leather Gloves of Testing"
 	g.P.Inv = append(g.P.Inv, it)
 	g.Mode, g.pane, g.cur = ModeInv, 1, 0

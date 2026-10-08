@@ -1,0 +1,444 @@
+# The shared terminology of Termablo's translations: every name and game
+# concept that must read the same everywhere, and each language's style.
+# The translation and review prompts carry all of it; `i18n check` warns
+# where a translated line drops a term its English uses.
+#
+# A term lists, per language, the forms that count as using it, the
+# dictionary form first; list inflected forms too where the language
+# declines (Russian: "Уголь", "Угля"...). "-" keeps the English word.
+# The world bible is docs/lore.md (docs/lore.ru.md in Russian).
+{
+  style: {
+    all: """
+- Tone: spare, grave, a little weary. Dark fantasy in the line of Diablo. Short sentences. No modern idioms, no jokes the English does not make, no extra exclamation marks.
+- The player is addressed directly, as one person ("you").
+- Proper names (people, places, bosses, unique items) are capitalized as names in your language.
+- Numbers stay as digits. Keyboard keys (g, tab, esc, ctrl+c, hjkl, Q) stay as they are.
+- Item names: bases are nouns with a gender; magic prefixes, rare first words and articles agree with them through gender forms.
+- Two lights: Ember-light is warm (torches, braziers, the forge, fire) and came from below; cold light is the Oracle's (marsh lights, crystals, wisps). Keep "warm" and "cold" in the words for them.
+"""
+    de: """
+- Address the player with "du" (informal), as German RPGs do. Capitalize "du" only at the start of a sentence.
+- Use German quotation marks „…“ for speech.
+- Item bases as German compound nouns where natural (Kettenhemd, Kriegshammer). Genders: m, f, n, pl.
+- Articles agree: write ref.the and ref.a with gender forms (der/die/das, ein/eine/ein).
+"""
+    fr: """
+- Address the player with "vous".
+- Use French guillemets « … » for speech, with a space inside them, and a space before ! ? : ;.
+- Adjectives usually follow the noun: write item.magic as "{base} {prefix} {suffix}" and agree prefixes with the base: genders m, f, mp, fp; mv and fv for nouns that elide the article (l'arme).
+- Articles agree: write ref.the as { m: "le {name}", f: "la {name}", mv: "l'{name}", fv: "l'{name}", mp: "les {name}", fp: "les {name}" }.
+"""
+    it: """
+- Address the player with "tu" (informal).
+- Use Italian guillemets «…» for speech.
+- Adjectives usually follow the noun: write item.magic as "{base} {prefix} {suffix}" and agree prefixes with the base: genders m, f, mp, fp; mv and fv for nouns that elide the article (l'arma).
+- Articles agree: il/lo/la/l'/i/gli/le. Pick lo for masculine nouns starting with s+consonant or z by giving them gender m with a lo- article in their own variant if needed, or phrase around it.
+"""
+    ru: """
+- Address the player with "вы" (lowercase).
+- Use «ёлочки» for speech, „лапки“ inside them. Write ё.
+- Russian has no articles: write ref.the and ref.a as "{name}". Monster names are nouns with gender m, f, n or pl.
+- Item names: prefixes agree with the base in gender (Зазубренный кинжал, Зазубренная булава, Зазубренные сапоги). Suffixes "of the Wolf" become genitive phrases (волка) or adjectives, whichever reads like a Diablo item.
+- The Russian lore (docs/lore.ru.md) set the names; follow it.
+"""
+    ar: """
+- Modern Standard Arabic. Address the player in the masculine singular, as Arabic games do.
+- No diacritics (harakat): the terminal drops them. Use Western digits (0-9).
+- Use «…» for speech.
+- The game lays the text out right to left; write it in logical order as usual. Keep Latin text out of sentences except keyboard keys.
+- Adjectives follow the noun and agree in gender (m, f). Non-human plurals agree as feminine singular. Write item.magic as "{base} {prefix} {suffix}".
+- Arabic has a definite article but no indefinite one: ref.the is "{name}" when names carry ال already, ref.a is "{name}".
+"""
+    zh: """
+- Simplified Chinese. Use full-width punctuation (，。！？：；“”) and no spaces between Chinese words; numbers stay half-width digits.
+- A Chinese character takes two terminal cells: keep the short UI labels short (# max counts cells).
+- No articles, no gender: ref.the and ref.a are "{name}"; nouns are plain strings.
+- Item names read like Chinese ARPG loot: write item.magic in the order that reads naturally, for example "{suffix}{prefix}{base}" with suffixes like "之狼" or "狼之".
+- Follow the conventions of Chinese Diablo localizations: 精英 for champion, 暗金 for unique items, 稀有 rare, 魔法 magic.
+"""
+  }
+
+  terms: [
+    {
+      en: "Emberhold"
+      note: "The last lit town, built on the hill where King Edran set down the Ember. A name: transliterate or keep."
+      de: "Emberhold"
+      fr: "Emberhold"
+      it: "Emberhold"
+      ru: ["Эмберхолд", "Эмберхолда", "Эмберхолде", "Эмберхолду", "Эмберхолдом"]
+      ar: "إمبرهولد"
+      zh: "余烬堡"
+    }
+    {
+      en: "Ember"
+      note: "The coal Edran stole from the Abyss; the town's light. A proper noun, capitalized. Also in Ember Cult, Emberbrand."
+      de: ["Glut"]
+      fr: ["Braise"]
+      it: ["Brace"]
+      ru: ["Уголь", "Угля", "Углю", "Углём", "Угле"]
+      ar: ["الجمرة", "جمرة"]
+      zh: ["余烬"]
+    }
+    {
+      en: "Ember Cult"
+      note: "Townsfolk who went down to give the Dark its coal back; the fire remade them. Its members are Ember Cultists."
+      de: ["Glutkult"]
+      fr: ["Culte de la Braise"]
+      it: ["Culto della Brace"]
+      ru: ["Культ Угля", "Культа Угля", "Культу Угля", "Культе Угля"]
+      ar: ["طائفة الجمرة"]
+      zh: ["余烬教团"]
+    }
+    {
+      en: "the Dark"
+      note: "The thing that lives below, pressing on the town; not just darkness. Capitalize it where the English does."
+      de: ["Dunkel", "Dunkelheit"]
+      fr: ["Ténèbres"]
+      it: ["Oscurità"]
+      ru: ["Тьма", "Тьмы", "Тьме", "Тьму", "Тьмой"]
+      ar: ["الظلام"]
+      zh: ["黑暗"]
+    }
+    {
+      en: "Wanderer"
+      note: "The player character, a stranger from outside; never named. Always singular."
+      de: ["Wanderer"]
+      fr: ["Vagabond"]
+      it: ["Viandante"]
+      ru: ["Странник", "Странника", "Страннику", "Странником", "Страннике"]
+      ar: ["الجوّال", "الجوال"]
+      zh: ["流浪者"]
+    }
+    {
+      en: "Last Wanderer"
+      note: "The final boss: the stranger hired before you, come back carrying the Abyss's fire. Male. A name."
+      de: ["Letzte Wanderer", "Letzten Wanderer"]
+      fr: ["Dernier Vagabond"]
+      it: ["Ultimo Viandante"]
+      ru: ["Последний Странник", "Последнего Странника", "Последнему Страннику"]
+      ar: ["الجوّال الأخير", "الجوال الأخير"]
+      zh: ["最后的流浪者"]
+    }
+    {
+      en: "Bone King"
+      note: "King Edran, dead in his crypt, still ruling his court of skeletons. A boss's name."
+      de: ["Knochenkönig"]
+      fr: ["Roi des Os"]
+      it: ["Re delle Ossa"]
+      ru: ["Костяной Король", "Костяного Короля", "Костяному Королю", "Костяным Королём"]
+      ar: ["ملك العظام"]
+      zh: ["骸骨之王"]
+    }
+    {
+      en: "Drowned Oracle"
+      note: "Edran's seer, who drowned herself in the grotto's pool to hold the fire down. Female. A boss's name."
+      de: ["Ertrunkene Seherin", "Ertrunkenen Seherin"]
+      fr: ["Sibylle Noyée", "Sibylle noyée"]
+      it: ["Sibilla Annegata"]
+      ru: ["Утопшая Провидица", "Утопшей Провидицы", "Утопшую Провидицу"]
+      ar: ["العرّافة الغريقة", "العرافة الغريقة"]
+      zh: ["溺亡先知"]
+    }
+    {
+      en: "Oracle"
+      note: "The Drowned Oracle, short. She."
+      de: ["Seherin"]
+      fr: ["Sibylle"]
+      it: ["Sibilla"]
+      ru: ["Провидица", "Провидицы", "Провидице", "Провидицу", "Провидицей"]
+      ar: ["العرّافة", "العرافة"]
+      zh: ["先知"]
+    }
+    {
+      en: "Edran"
+      note: "King Edran, who carried the Ember up. A name."
+      de: "Edran"
+      fr: "Edran"
+      it: "Edran"
+      ru: ["Эдран", "Эдрана", "Эдрану"]
+      ar: "إدران"
+      zh: "埃德兰"
+    }
+    {
+      en: "Hadrik"
+      note: "Hadrik the Smith, keeper of the forge and so of the Ember. Gruff. A name."
+      de: "Hadrik"
+      fr: "Hadrik"
+      it: "Hadrik"
+      ru: ["Хадрик", "Хадрика", "Хадрику"]
+      ar: "هادريك"
+      zh: "哈德里克"
+    }
+    {
+      en: "Mirela"
+      note: "Old Mirela, alchemist and healer; calls the hero \"dear\". A name."
+      de: "Mirela"
+      fr: "Mirela"
+      it: "Mirela"
+      ru: ["Мирела", "Мирелы", "Миреле", "Мирелу"]
+      ar: "ميريلا"
+      zh: "米蕾拉"
+    }
+    {
+      en: "Voss"
+      note: "Captain Voss of the town guard, who hires the hero. A name."
+      de: "Voss"
+      fr: "Voss"
+      it: "Voss"
+      ru: ["Восс", "Восса", "Воссу"]
+      ar: "فوس"
+      zh: "沃斯"
+    }
+    {
+      en: "Ashen Fields"
+      note: "The burned forest east of town; moonlight on ash. A place name."
+      de: ["Aschefelder", "Aschefeldern"]
+      fr: ["Champs de Cendres"]
+      it: ["Campi di Cenere"]
+      ru: ["Пепельные Поля", "Пепельных Полей", "Пепельных Полях", "Пепельным Полям"]
+      ar: ["حقول الرماد"]
+      zh: ["灰烬原野"]
+    }
+    {
+      en: "Blackmarsh"
+      note: "The marsh north of the fields, where cold lights lure the lost. A place name."
+      de: ["Schwarzmoor"]
+      fr: ["Marais-Noir"]
+      it: ["Palude Nera"]
+      ru: ["Чёрная Топь", "Чёрной Топи", "Чёрную Топь"]
+      ar: ["المستنقع الأسود"]
+      zh: ["黑沼"]
+    }
+    {
+      en: "Crypt of the Fallen"
+      note: "Emberhold's royal crypt, four floors, the Bone King on the last. \"Fallen\" once meant the honored dead."
+      de: ["Gruft der Gefallenen"]
+      fr: ["Crypte des Déchus"]
+      it: ["Cripta dei Caduti"]
+      ru: ["Склеп Павших", "Склепа Павших", "Склепе Павших"]
+      ar: ["سرداب الساقطين"]
+      zh: ["堕落者墓穴"]
+    }
+    {
+      en: "Fallen"
+      note: "Small red demons, the first things up through the cracks; Fallen One, Fallen Shaman. Also the crypt's name."
+      de: ["Gefallene"]
+      fr: ["Déchu"]
+      it: ["Caduto", "Caduti"]
+      ru: ["Павш"]
+      ar: ["ساقط", "الساقطين", "الساقطون"]
+      zh: ["堕落"]
+    }
+    {
+      en: "Sunken Grotto"
+      note: "The caves below Blackmarsh, the Oracle's pool, three floors of crystal."
+      de: ["Versunkene Grotte", "Versunkenen Grotte"]
+      fr: ["Grotte Engloutie"]
+      it: ["Grotta Sommersa"]
+      ru: ["Затонувший Грот", "Затонувшего Грота", "Затонувшем Гроте"]
+      ar: ["الكهف الغارق"]
+      zh: ["沉没洞窟"]
+    }
+    {
+      en: "Burning Abyss"
+      note: "Beneath the Oracle's pool: the wound the Ember was cut from, still hot."
+      de: ["Brennende Abgrund", "Brennenden Abgrund", "Brennender Abgrund"]
+      fr: ["Abîme Ardent"]
+      it: ["Abisso Ardente"]
+      ru: ["Пылающая Бездна", "Пылающей Бездны", "Пылающую Бездну"]
+      ar: ["الهاوية المشتعلة"]
+      zh: ["燃烧深渊"]
+    }
+    {
+      en: "Abyss"
+      note: "The Burning Abyss, short."
+      de: ["Abgrund"]
+      fr: ["Abîme"]
+      it: ["Abisso"]
+      ru: ["Бездна", "Бездны", "Бездне", "Бездну"]
+      ar: ["الهاوية"]
+      zh: ["深渊"]
+    }
+    {
+      en: "Hearth"
+      note: "The Hearth Below: the Abyss floor where the Last Wanderer waits. Also the forge as the Ember's hearth."
+      de: ["Herd"]
+      fr: ["Âtre"]
+      it: ["Focolare"]
+      ru: ["Очаг", "Очага", "Очаге"]
+      ar: ["الموقد"]
+      zh: ["炉心"]
+    }
+    {
+      en: "Town Portal"
+      note: "The blue portal a scroll opens back to Emberhold's fountain square. Scroll of Town Portal is its scroll."
+      de: ["Stadtportal"]
+      fr: ["Portail de ville", "portail de ville"]
+      it: ["Portale cittadino", "portale cittadino"]
+      ru: ["Городской портал", "городского портала", "городской портал"]
+      ar: ["بوابة البلدة"]
+      zh: ["回城"]
+    }
+    {
+      en: "portal"
+      note: "Any portal, mostly the town portal."
+      de: ["Portal"]
+      fr: ["portail"]
+      it: ["portale"]
+      ru: ["портал"]
+      ar: ["بوابة", "البوابة"]
+      zh: ["传送门"]
+    }
+    {
+      en: "Firebolt"
+      note: "The hero's fire spell, key f. A skill name."
+      de: ["Feuerblitz"]
+      fr: ["Trait de feu"]
+      it: ["Dardo di fuoco"]
+      ru: ["Огненная стрела", "Огненной стрелы", "Огненную стрелу", "Огн. стрела"]
+      ar: ["سهم النار"]
+      zh: ["火焰箭"]
+    }
+    {
+      en: "Frost Nova"
+      note: "The hero's cold spell, key r: damage and a brief freeze around them. A skill name."
+      de: ["Frostnova"]
+      fr: ["Nova de givre"]
+      it: ["Nova di gelo"]
+      ru: ["Ледяная нова", "Ледяной новы", "Ледяную нову"]
+      ar: ["موجة الصقيع"]
+      zh: ["冰霜新星"]
+    }
+    {
+      en: "Life"
+      note: "Hit points, the red bar. Capitalized as a stat."
+      de: ["Leben"]
+      fr: ["Vie", "vie"]
+      it: ["Vita", "vita"]
+      ru: ["Здоровь", "здоровь"]
+      ar: ["الحياة", "حياة"]
+      zh: ["生命"]
+    }
+    {
+      en: "Mana"
+      note: "Spell points, the blue bar."
+      de: ["Mana"]
+      fr: ["mana", "Mana"]
+      it: ["mana", "Mana"]
+      ru: ["Ман", "ман"]
+      ar: ["المانا", "مانا"]
+      zh: ["法力"]
+    }
+    {
+      en: "Healing Potion"
+      note: "Red potion, key q; heals over a few turns."
+      de: ["Heiltrank"]
+      fr: ["Potion de soins"]
+      it: ["Pozione curativa"]
+      ru: ["Зелье лечения"]
+      ar: ["جرعة شفاء"]
+      zh: ["治疗药剂"]
+    }
+    {
+      en: "Mana Potion"
+      note: "Blue potion, key w."
+      de: ["Manatrank"]
+      fr: ["Potion de mana"]
+      it: ["Pozione di mana"]
+      ru: ["Зелье маны"]
+      ar: ["جرعة مانا"]
+      zh: ["法力药剂"]
+    }
+    {
+      en: "Champion"
+      note: "A stronger monster with a modifier; blue name."
+      de: ["Champion"]
+      fr: ["Champion"]
+      it: ["Campione"]
+      ru: ["Чемпион"]
+      ar: ["بطل"]
+      zh: ["精英"]
+    }
+    {
+      en: "Unique"
+      note: "Unique items (gold names) and unique monsters with names."
+      de: ["Einzigartig"]
+      fr: ["Unique", "unique"]
+      it: ["Unic"]
+      ru: ["Уникальн", "уникальн"]
+      ar: ["فريد"]
+      zh: ["暗金"]
+    }
+    {
+      en: "Rare"
+      note: "Rare items, yellow, with two-word names."
+      de: ["Selten"]
+      fr: ["Rare", "rare"]
+      it: ["Rar", "rar"]
+      ru: ["Редк", "редк"]
+      ar: ["نادر"]
+      zh: ["稀有"]
+    }
+    {
+      en: "Strength"
+      note: "Attribute; melee damage."
+      de: ["Stärke"]
+      fr: ["Force"]
+      it: ["Forza"]
+      ru: ["Сила", "Силы", "Силе"]
+      ar: ["القوة"]
+      zh: ["力量"]
+    }
+    {
+      en: "Dexterity"
+      note: "Attribute; to-hit, crit, dodge."
+      de: ["Geschick"]
+      fr: ["Dextérité"]
+      it: ["Destrezza"]
+      ru: ["Ловкость", "Ловкости"]
+      ar: ["البراعة"]
+      zh: ["敏捷"]
+    }
+    {
+      en: "Vitality"
+      note: "Attribute; life."
+      de: ["Vitalität"]
+      fr: ["Vitalité"]
+      it: ["Vitalità"]
+      ru: ["Живучесть", "Живучести"]
+      ar: ["الحيوية"]
+      zh: ["体力"]
+    }
+    {
+      en: "Energy"
+      note: "Attribute; mana and spell damage."
+      de: ["Energie"]
+      fr: ["Énergie"]
+      it: ["Energia"]
+      ru: ["Энергия", "Энергии"]
+      ar: ["الطاقة"]
+      zh: ["精力"]
+    }
+    {
+      en: "altar"
+      note: "Edran's blood altars: walk into one for blood-light, XP or a gift, once."
+      de: ["Altar"]
+      fr: ["autel"]
+      it: ["altare"]
+      ru: ["алтар"]
+      ar: ["مذبح", "المذبح"]
+      zh: ["祭坛"]
+    }
+    {
+      en: "gold"
+      note: "The currency; prices read \"{n}g\", keep the g."
+      de: ["Gold"]
+      fr: ["or", "pièce"]
+      it: ["oro"]
+      ru: ["золот"]
+      ar: ["ذهب", "الذهب"]
+      zh: ["金币", "金"]
+    }
+  ]
+}

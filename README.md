@@ -22,6 +22,11 @@ go run github.com/antonmedv/termablo@latest
 
 Add `-seed 42` and the world is the same every time. Share the seed, race a friend.
 
+In English, Deutsch, Français, Italiano, Русский, العربية or 简体中文:
+`-lang de`, your `LANG`, `ssh -t medv.io -p 2222 de`, or tab on the
+title screen. The translations are made and kept up to date by an LLM
+from one shared glossary; see [`docs/translating.md`](docs/translating.md).
+
 <p align="center"><img src="demo/zones.png" width="854" alt="Emberhold, the Ashen Fields, the Throne of the Bone King, Blackmarsh, the Sunken Grotto and the Burning Abyss"></p>
 
 A king once carried a coal up out of the Abyss and built a town around it.

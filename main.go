@@ -8,6 +8,8 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/antonmedv/termablo/internal/i18n"
 )
 
 type tickMsg time.Time
@@ -109,7 +111,14 @@ func (m *model) key(k string) bool {
 	g := m.g
 	switch g.Mode {
 	case ModeTitle:
-		g.Mode = ModePlay
+		switch k {
+		case "tab", "right", "l":
+			g.SetLang(nextLang(g.L.Lang.Code, 1))
+		case "shift+tab", "left", "h":
+			g.SetLang(nextLang(g.L.Lang.Code, -1))
+		default:
+			g.Mode = ModePlay
+		}
 	case ModeDead:
 		switch k {
 		case "n":
@@ -153,6 +162,7 @@ func (m *model) key(k string) bool {
 func (m *model) restart() {
 	m.seed = time.Now().UnixNano()
 	ng := NewGame(m.seed)
+	ng.SetLang(m.g.L.Lang.Code)
 	ng.Mode = ModePlay
 	ng.time = m.g.time
 	m.g = ng
@@ -358,8 +368,8 @@ func (m *model) drawBot() {
 	if !m.botRun {
 		speed = "paused"
 	}
-	lines := []hoverLine{{"bot " + b.Policy(), colBot}, {b.State().String(), colWhite}, {b.Why(), colGray},
-		{fmt.Sprintf("turn %d", g.Turn), colGray}, {speed, colGold}}
+	lines := []hoverLine{{S: "bot " + b.Policy(), C: colBot}, {S: b.State().String(), C: colWhite}, {S: b.Why(), C: colGray},
+		{S: fmt.Sprintf("turn %d", g.Turn), C: colGray}, {S: speed, C: colGold}}
 	w := s.W - panelW - 2
 	used := 0
 	for _, ln := range lines {
@@ -371,7 +381,7 @@ func (m *model) drawBot() {
 		used -= len(why) - cut - 1
 	}
 	if hint := "space run/pause · enter step · +/- speed"; used+len(hint)+3 <= w {
-		lines = append(lines, hoverLine{hint, colDim})
+		lines = append(lines, hoverLine{S: hint, C: colDim})
 	}
 	drawStatus(s, 0, s.W-panelW, lines)
 }
@@ -408,7 +418,15 @@ func main() {
 	maxSessions := flag.Int("max-sessions", 50, "SSH: most games at once (0 = no limit)")
 	idle := flag.Duration("idle", 15*time.Minute, "SSH: disconnect after this long without input")
 	connectEvery := flag.Duration("connect-every", 10*time.Second, "SSH: one new game per address this often, 3 at once (0 = no limit)")
+	lang := flag.String("lang", "", "language: "+langCodes()+" (default from $LANG)")
 	flag.Parse()
+	code := i18n.FromEnv(os.Getenv)
+	if *lang != "" {
+		if code = i18n.Match(*lang); code == "" {
+			fmt.Fprintf(os.Stderr, "-lang %q: want one of %s\n", *lang, langCodes())
+			os.Exit(2)
+		}
+	}
 	if *addr != "" {
 		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *area, maxSessions: *maxSessions, idle: *idle, connectEvery: *connectEvery})
 		if err != nil {
@@ -418,6 +436,7 @@ func main() {
 		return
 	}
 	m := newModel(*seed, *area)
+	m.g.SetLang(code)
 	if *lvl > 0 {
 		if err := m.g.Ready(*lvl, *build); err != nil {
 			fmt.Fprintf(os.Stderr, "-level: %v\n", err)
