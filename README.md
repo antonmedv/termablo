@@ -22,22 +22,17 @@ go run github.com/antonmedv/termablo@latest
 
 Add `-seed 42` and the world is the same every time. Share the seed, race a friend.
 
-In English, Deutsch, Français, Italiano, Русский, العربية or 简体中文:
-`-lang de`, your `LANG`, `ssh -t medv.io -p 2222 de`, or ← → on the
-title screen. The translations are made and kept up to date by an LLM
-from one shared glossary; see [`docs/translating.md`](docs/translating.md).
+## Latest update
+
+**2026-10-08:** Termablo now speaks seven languages, and the Ashen
+Fields and Blackmarsh are bigger. See [`UPDATES.md`](UPDATES.md) for
+everything new.
 
 <p align="center"><img src="demo/zones.png" width="854" alt="Emberhold, the Ashen Fields, the Throne of the Bone King, Blackmarsh, the Sunken Grotto and the Burning Abyss"></p>
 
 A king once carried a coal up out of the Abyss and built a town around it.
 The dark cannot cross light taken from it, so it climbs toward the town
 instead. You are the stranger they hire to go down and meet it.
-
-## Latest update
-
-**2026-10-08:** Termablo now speaks seven languages, and the Ashen
-Fields and Blackmarsh are bigger. See [`UPDATES.md`](UPDATES.md) for
-everything new.
 
 ## Host your own
 
