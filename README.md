@@ -25,8 +25,11 @@ Add `-seed 42` and the world is the same every time. Share the seed, race a frie
 ## Latest update
 
 **2026-10-08:** Termablo now speaks seven languages, and the Ashen
-Fields and Blackmarsh are bigger. See [`UPDATES.md`](UPDATES.md) for
-everything new.
+Fields and Blackmarsh are bigger. 
+
+See [`UPDATES.md`](UPDATES.md) for more.
+
+## Screenshots
 
 <p align="center"><img src="demo/zones.png" width="854" alt="Emberhold, the Ashen Fields, the Throne of the Bone King, Blackmarsh, the Sunken Grotto and the Burning Abyss"></p>
 
