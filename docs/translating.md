@@ -14,7 +14,8 @@ ssh -t medv.io -p 2222 ru         # over SSH: the language as the command,
                                   # or the LANG your ssh client sends
 ```
 
-On the title screen, tab and shift+tab switch languages. `ch`,
+The title screen lists every language by its own name: ← → (or a
+click) picks one, the screen switching to it as you go; enter begins. `ch`,
 `cn` and `zh_CN` are accepted for Chinese.
 
 ## The files

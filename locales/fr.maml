@@ -366,8 +366,7 @@
     }
     title: {
       subtitle: "une descente dans les ténèbres éclairées"
-      begin: "appuyez sur une touche pour commencer"
-      lang_keys: "tab : langue"
+      begin: "←→ langue · Entrée pour commencer"
     }
     fx: {
       cut: "taillé"

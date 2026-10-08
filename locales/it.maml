@@ -341,8 +341,7 @@
     }
     title: {
       subtitle: "una discesa nell'oscurità rischiarata"
-      begin: "premi un tasto per iniziare"
-      lang_keys: "tab: lingua"
+      begin: "←→ lingua · Invio per iniziare"
     }
     fx: {
       cut: "colpito"

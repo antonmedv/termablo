@@ -272,8 +272,7 @@
     }
     title: {
       subtitle: "深入被点亮的黑暗"
-      begin: "按任意键开始"
-      lang_keys: "tab：语言"
+      begin: "←→ 语言 · 按 Enter 开始"
     }
     fx: {
       cut: "斩"

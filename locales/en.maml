@@ -370,9 +370,8 @@ Could be anything. No refunds."""
 
     title: {
       subtitle: "a descent into lit darkness"
-      begin: "press any key to begin"
-      # after the language name on the title screen; tab switches it
-      lang_keys: "tab: language"
+      # under the row of languages; ←→ pick one
+      begin: "←→ language · enter to begin"
     }
 
     # floats over a townsperson the Last Wanderer strikes; a word or two

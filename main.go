@@ -112,11 +112,12 @@ func (m *model) key(k string) bool {
 	switch g.Mode {
 	case ModeTitle:
 		switch k {
-		case "tab":
+		case "right", "l", "tab":
 			g.SetLang(nextLang(g.L.Lang.Code, 1))
-		case "shift+tab":
+		case "left", "h", "shift+tab":
 			g.SetLang(nextLang(g.L.Lang.Code, -1))
-		default:
+		case "up", "down", "k", "j":
+		default: // enter, space, or any other key
 			g.Mode = ModePlay
 		}
 	case ModeDead:

@@ -225,8 +225,7 @@ ui.more_above 7412041a
 ui.more_below d043a62d
 ui.log.repeat 4ba8562d
 ui.title.subtitle dca81732
-ui.title.begin cc095260
-ui.title.lang_keys 05e9217b
+ui.title.begin a28209ff
 ui.fx.cut 2570eed4
 ui.panel.safe ef839bae
 ui.panel.area_level 63266ce3

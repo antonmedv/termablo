@@ -1026,9 +1026,36 @@ func (g *Game) drawTitle(s *Screen) {
 	}
 	sub := g.L.T("ui.title.subtitle")
 	s.Text(cx-i18n.Width(sub)/2, cy+4, sub, C(.6, .5, .4).C8())
+	g.drawLangs(s, s.H-5)
 	pr := g.L.T("ui.title.begin")
 	f := float32(0.55 + 0.45*math.Sin(t*3))
+	s.Fill(cx-i18n.Width(pr)/2-2, s.H-3, i18n.Width(pr)+4, 1, colBlack)
 	s.Text(cx-i18n.Width(pr)/2, s.H-3, pr, C(1, .7, .4).Scale(f).C8())
-	lang := "◂ " + g.L.Lang.Native + " ▸  " + g.L.T("ui.title.lang_keys")
-	s.Text(cx-i18n.Width(lang)/2, s.H-2, lang, C(.5, .45, .4).C8())
+}
+
+// drawLangs lays every language out on row y by its own name, the
+// current one bold and underlined, and records where each one is for
+// clicks. The row reads left to right whatever the language.
+func (g *Game) drawLangs(s *Screen, y int) {
+	const gap = 2
+	w := -gap
+	for _, l := range i18n.Langs {
+		w += i18n.Width(l.Native) + gap
+	}
+	x := (s.W - w) / 2
+	s.Fill(x-2, y, w+4, 2, colBlack) // a quiet band, out of the firelight
+	g.langHit = g.langHit[:0]
+	for _, l := range i18n.Langs {
+		nw := i18n.Width(l.Native)
+		if l.Code == g.L.Lang.Code {
+			s.TextBold(x, y, l.Native, C(1, .8, .5).C8())
+			for i := range nw {
+				s.Put(x+i, y+1, '▔', C(1, .55, .2).C8())
+			}
+		} else {
+			s.Text(x, y, l.Native, C(.5, .45, .4).C8())
+		}
+		g.langHit = append(g.langHit, hitBox{x, x + nw - 1, y})
+		x += nw + gap
+	}
 }

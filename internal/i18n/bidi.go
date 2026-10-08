@@ -146,7 +146,10 @@ func HasRTL(s string) bool {
 	return false
 }
 
-var mirror = map[rune]rune{'(': ')', ')': '(', '[': ']', ']': '[', '{': '}', '}': '{', '<': '>', '>': '<', '«': '»', '»': '«', '‹': '›', '›': '‹'}
+// mirror swaps paired characters in right-to-left runs so they still
+// face the right way. Arrows are mirrored too: in this game they name
+// keys, and "←→" must still read left, right.
+var mirror = map[rune]rune{'(': ')', ')': '(', '[': ']', ']': '[', '{': '}', '}': '{', '<': '>', '>': '<', '«': '»', '»': '«', '‹': '›', '›': '‹', '←': '→', '→': '←', '◂': '▸', '▸': '◂'}
 
 // Visual is a line of text in display order with Arabic shaped. rtl is
 // the paragraph direction: true for a right-to-left language's text,

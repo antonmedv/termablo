@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -248,5 +249,39 @@ func TestSetLangKeepsLog(t *testing.T) {
 	}
 	if want := capFirst(g.L.T("lore.grotto", "area", areaName(g.L, g.Lv))); g.Log[n-2].Text != want {
 		t.Errorf("lore line %q, want %q", g.Log[n-2].Text, want)
+	}
+}
+
+// TestTitleLanguages: on the title screen the arrows walk the row of
+// languages and wrap, enter begins, and a click picks a language and a
+// second click on it begins.
+func TestTitleLanguages(t *testing.T) {
+	m := newModel(1, "")
+	g := m.g
+	m.key("right")
+	if g.L.Lang.Code != i18n.Langs[1].Code || g.Mode != ModeTitle {
+		t.Fatalf("right: %s, mode %v", g.L.Lang.Code, g.Mode)
+	}
+	m.key("left")
+	m.key("left")
+	if g.L.Lang.Code != i18n.Langs[len(i18n.Langs)-1].Code {
+		t.Fatalf("left from the first should wrap to the last, got %s", g.L.Lang.Code)
+	}
+	s := NewScreen(80, 24)
+	g.Draw(s)
+	ru := slices.IndexFunc(i18n.Langs, func(l i18n.Lang) bool { return l.Code == "ru" })
+	b := g.langHit[ru]
+	g.Click(b.X0, b.Y, s.W, s.H)
+	if g.L.Lang.Code != "ru" || g.Mode != ModeTitle {
+		t.Fatalf("click on Русский: %s, mode %v", g.L.Lang.Code, g.Mode)
+	}
+	g.Click(b.X1, b.Y, s.W, s.H)
+	if g.Mode != ModePlay {
+		t.Fatalf("a second click should begin, mode %v", g.Mode)
+	}
+	m2 := newModel(1, "")
+	m2.key("enter")
+	if m2.g.Mode != ModePlay {
+		t.Errorf("enter should begin")
 	}
 }

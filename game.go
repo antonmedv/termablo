@@ -106,6 +106,7 @@ type Game struct {
 	hoverOn        bool
 	hoverLines     []hoverLine // this frame's hover info (nil = nothing hovered)
 	beltHit        [3]hitBox   // this frame's belt rows: heal, mana, portal
+	langHit        []hitBox    // the title screen's languages, in i18n.Langs order
 
 	auto       bool
 	autoNext   float64

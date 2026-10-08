@@ -323,8 +323,7 @@
     }
     title: {
       subtitle: "ein Abstieg in erleuchtete Dunkelheit"
-      begin: "beliebige Taste zum Beginnen"
-      lang_keys: "tab: Sprache"
+      begin: "←→ Sprache · Enter zum Beginnen"
     }
     fx: {
       cut: "Hieb"

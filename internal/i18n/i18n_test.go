@@ -199,6 +199,10 @@ func TestVisual(t *testing.T) {
 	if w, d := Width("السلام"), len([]rune(Visual("السلام", true))); w != d {
 		t.Errorf("width %d, drawn %d cells", w, d)
 	}
+	// arrows keep pointing the way they name
+	if got := Visual("←→ اللغة", true); !strings.HasSuffix(got, "←→") {
+		t.Errorf("arrows in rtl: %q", got)
+	}
 	// a number keeps its order and sign inside Arabic
 	got := []rune(Visual("ذهب +12%", true))
 	if string(got[:4]) != "+12%" {

@@ -334,8 +334,7 @@
     }
     title: {
       subtitle: "نزول إلى عتمة مضاءة"
-      begin: "اضغط أي مفتاح للبدء"
-      lang_keys: "tab: اللغة"
+      begin: "←→ اللغة · Enter للبدء"
     }
     fx: {
       cut: "ضربة"
