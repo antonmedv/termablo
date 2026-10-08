@@ -32,6 +32,7 @@ type serveOpts struct {
 	addr, hostKey string
 	seed          int64 // 0 gives every player a fresh world
 	level         string
+	lang          string        // for players who ask for no language; "" = English
 	maxSessions   int           // 0 = no limit
 	idle          time.Duration // 0 = never
 	connectEvery  time.Duration // per address; 0 = no limit
@@ -45,7 +46,7 @@ func serve(o serveOpts) error {
 	mw := []wish.Middleware{
 		bm.MiddlewareWithColorProfile(func(sess ssh.Session) (tea.Model, []tea.ProgramOption) {
 			m := newModel(o.seed, o.level)
-			m.g.SetLang(sessionLang(sess))
+			m.g.SetLang(sessionLang(sess, o.lang))
 			m.frame, m.idle = time.Second/sshFPS, o.idle
 			sess.Context().SetValue(modelKey{}, m)
 			return m, []tea.ProgramOption{tea.WithAltScreen(), tea.WithMouseAllMotion(), tea.WithFPS(sshFPS)}
@@ -84,8 +85,9 @@ func serve(o serveOpts) error {
 }
 
 // sessionLang is the language a player asked for: the command, as in
-// "ssh -t host -p 2222 de", or else the LANG their client sent.
-func sessionLang(sess ssh.Session) string {
+// "ssh -t host -p 2222 de", or else the LANG their client sent, or else
+// the server's default.
+func sessionLang(sess ssh.Session, def string) string {
 	if cmd := sess.Command(); len(cmd) > 0 {
 		if code := i18n.Match(cmd[0]); code != "" {
 			return code
@@ -97,7 +99,10 @@ func sessionLang(sess ssh.Session) string {
 			env[k] = v
 		}
 	}
-	return i18n.FromEnv(func(k string) string { return env[k] })
+	if code := i18n.FromEnv(func(k string) string { return env[k] }); code != "" {
+		return code
+	}
+	return def
 }
 
 // idleNotice tells a player who was dropped for idling why.

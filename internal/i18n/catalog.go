@@ -187,7 +187,7 @@ func (c *Catalog) T(key string, args ...any) string {
 	if m == nil {
 		return key
 	}
-	return Format(owner.Lang.Code, owner.pick(m, args), args...)
+	return Format(owner.Lang.Code, owner.pick(m, args).Text, args...)
 }
 
 // Noun is the entry for key as a noun to agree with.
@@ -196,18 +196,16 @@ func (c *Catalog) Noun(key string, args ...any) Noun {
 	if m == nil {
 		return Noun{Text: key}
 	}
-	if m.Vars != nil {
-		return Noun{Text: Format(owner.Lang.Code, owner.pick(m, args), args...)}
-	}
-	return Noun{Text: Format(owner.Lang.Code, m.Text, args...), Gender: m.Gender}
+	leaf := owner.pick(m, args) // a variant may be a noun of its own
+	return Noun{Text: Format(owner.Lang.Code, leaf.Text, args...), Gender: leaf.Gender}
 }
 
-// pick walks variants down to a text.
-func (c *Catalog) pick(m *Msg, args []any) string {
+// pick walks variants down to the entry they choose.
+func (c *Catalog) pick(m *Msg, args []any) *Msg {
 	for m.Vars != nil {
 		m = m.Vars[c.choose(m, args)]
 	}
-	return m.Text
+	return m
 }
 
 // choose is the variant key for the arguments: the gender of the first

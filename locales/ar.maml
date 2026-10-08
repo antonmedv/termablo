@@ -337,6 +337,9 @@
       begin: "اضغط أي مفتاح للبدء"
       lang_keys: "tab: اللغة"
     }
+    fx: {
+      cut: "ضربة"
+    }
     panel: {
       safe: "ملاذ آمن"
       area_level: "مستوى المنطقة {n}"

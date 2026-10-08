@@ -369,6 +369,9 @@
       begin: "appuyez sur une touche pour commencer"
       lang_keys: "tab : langue"
     }
+    fx: {
+      cut: "taillé"
+    }
     panel: {
       safe: "Havre de paix"
       area_level: "Niveau de zone {n}"

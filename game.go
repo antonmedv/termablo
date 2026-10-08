@@ -33,6 +33,10 @@ type LogMsg struct {
 	Col  RGB
 	Turn int
 	N    int
+	// the catalog line it was written from, to write it again in
+	// another language; "" for a line logged as is
+	Key  string
+	Args []any
 }
 
 type Portal struct {
@@ -132,17 +136,9 @@ func NewGameWith(seed int64, r *Rules) *Game {
 	g.P.Eq[EqArmor] = ar
 	g.P.recalc()
 	g.changeLevel("town", "", nil)
-	g.welcome()
-	return g
-}
-
-// welcome is the log of a new game: the town's lore and the first goal.
-func (g *Game) welcome() {
-	if len(g.Log) == 0 {
-		g.say(colLore, loreKey(g.Lv.ID), "area", areaName(g.L, g.Lv.ID))
-	}
 	g.say(colOrange, "msg.welcome_goal")
 	g.say(colGray, "msg.welcome_help")
+	return g
 }
 
 // msg logs a line as written; say logs one from the catalog.
@@ -152,7 +148,7 @@ func (g *Game) msg(col RGB, s string) {
 		g.Log[n-1].Turn = g.Turn
 		return
 	}
-	g.Log = append(g.Log, LogMsg{s, col, g.Turn, 1})
+	g.Log = append(g.Log, LogMsg{Text: s, Col: col, Turn: g.Turn, N: 1})
 	g.logN++
 	if len(g.Log) > 200 {
 		g.Log = g.Log[len(g.Log)-200:]
@@ -180,7 +176,7 @@ func (g *Game) getLevel(id string) *Level {
 		l = genMarsh(seed, g.Rules)
 	case strings.HasPrefix(id, "crypt"):
 		n := num("crypt")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Crypt of the Fallen %d", n), Depth: 1 + n, Style: 0, SpawnTable: "crypt", Rules: g.Rules}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Crypt of the Fallen %d", n), NameKey: "crypt", NameN: n, Depth: 1 + n, Style: 0, SpawnTable: "crypt", Rules: g.Rules}
 		s.Up = "fields"
 		if n > 1 {
 			s.Up = fmt.Sprintf("crypt%d", n-1)
@@ -189,12 +185,12 @@ func (g *Game) getLevel(id string) *Level {
 			s.Down = fmt.Sprintf("crypt%d", n+1)
 		} else {
 			s.Boss = "boneking"
-			s.Name = "Throne of the Bone King"
+			s.Name, s.NameKey = "Throne of the Bone King", "throne"
 		}
 		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "grotto"):
 		n := num("grotto")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Sunken Grotto %d", n), Depth: 6 + n, Style: 1, SpawnTable: "grotto", Rules: g.Rules}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Sunken Grotto %d", n), NameKey: "grotto", NameN: n, Depth: 6 + n, Style: 1, SpawnTable: "grotto", Rules: g.Rules}
 		s.Up = "marsh"
 		if n > 1 {
 			s.Up = fmt.Sprintf("grotto%d", n-1)
@@ -204,19 +200,19 @@ func (g *Game) getLevel(id string) *Level {
 		} else {
 			s.Down = "abyss1"
 			s.Boss = "oracle"
-			s.Name = "The Oracle's Pool"
+			s.Name, s.NameKey = "The Oracle's Pool", "oracle_pool"
 		}
 		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "abyss"):
 		n := num("abyss")
-		s := DungeonSpec{ID: id, Name: fmt.Sprintf("The Burning Abyss %d", n), Depth: 9 + n, Style: 2, SpawnTable: "abyss", Rules: g.Rules}
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("The Burning Abyss %d", n), NameKey: "abyss", NameN: n, Depth: 9 + n, Style: 2, SpawnTable: "abyss", Rules: g.Rules}
 		s.Up = "grotto3"
 		if n > 1 {
 			s.Up = fmt.Sprintf("abyss%d", n-1)
 		}
 		s.Down = fmt.Sprintf("abyss%d", n+1)
 		if n == hearthFloor {
-			s.Name, s.Boss = "The Hearth Below", "wanderer"
+			s.Name, s.NameKey, s.Boss = "The Hearth Below", "hearth", "wanderer"
 			s.SealedDown, s.Down = s.Down, ""
 		}
 		l = genDungeon(s, seed)
@@ -266,9 +262,9 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 	g.auto = false
 	if !l.visited {
 		l.visited = true
-		g.say(colLore, loreKey(l.ID), "area", areaName(g.L, l.ID))
+		g.say(colLore, "lore."+l.LoreKey, "area", areaArg{l})
 	} else {
-		g.say(colGray, "msg.enter", "area", areaName(g.L, l.ID))
+		g.say(colGray, "msg.enter", "area", areaArg{l})
 	}
 	if l.Kind != KTown && l.Depth > p.Lvl+2 {
 		g.say(colLore, "msg.far_beyond")
@@ -2119,7 +2115,7 @@ func (g *Game) huntStep(w, prey *Monster) {
 	if cheb(w.X, w.Y, prey.X, prey.Y) <= 1 {
 		prey.HP -= prey.MaxHP/3 + 1
 		prey.Flash = g.time
-		g.textFx(prey.X, prey.Y, "cut", colRed)
+		g.textFx(prey.X, prey.Y, g.L.T("ui.fx.cut"), colRed)
 		if prey.HP <= 0 {
 			g.townspersonDies(prey)
 		} else {

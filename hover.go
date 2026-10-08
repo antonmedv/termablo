@@ -55,8 +55,8 @@ func (g *Game) Click(x, y, w, h int) {
 // levelName is where a link or portal leads: the level's own name once
 // it exists, else its region's.
 func (g *Game) levelName(id string) string {
-	if _, ok := g.Levels[id]; ok {
-		return areaName(g.L, id)
+	if l, ok := g.Levels[id]; ok {
+		return areaName(g.L, l)
 	}
 	return regionName(g.L, id)
 }
@@ -167,7 +167,7 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 		if l.Kind == KTown {
 			add(L.T("ui.hover.leads_back", "place", g.levelName(g.Portal.Level)), colGray)
 		} else {
-			add(L.T("ui.hover.leads_to", "place", areaName(L, "town")), colGray)
+			add(L.T("ui.hover.leads_to", "place", regionName(L, "town")), colGray)
 		}
 	}
 	// the ground itself

@@ -29,6 +29,7 @@ const deSrc = `{
     imp: { text: "Feuerkobold", gender: "m" }
     rat: { text: "Pestratte", gender: "f" }
   }
+  flames: { m: { text: "die Flammen des {name}", gender: "pl" }, f: { text: "die Flammen der {name}", gender: "pl" } }
 }`
 
 const ruSrc = `{
@@ -69,6 +70,14 @@ func TestLookup(t *testing.T) {
 		if c.got != c.want {
 			t.Errorf("%d: got %q, want %q", i, c.got, c.want)
 		}
+	}
+}
+
+func TestVariantNounKeepsGender(t *testing.T) {
+	de := bundle(t).Get("de")
+	n := de.Noun("flames", "name", de.Noun("monster.rat"))
+	if n.Text != "die Flammen der Pestratte" || n.Gender != "pl" {
+		t.Errorf("got %+v", n)
 	}
 }
 
@@ -185,6 +194,10 @@ func TestVisual(t *testing.T) {
 	}
 	if got := Visual("plain text", false); got != "plain text" {
 		t.Errorf("ltr untouched: %q", got)
+	}
+	// a lam-alef pair is measured as the one cell it is drawn as
+	if w, d := Width("السلام"), len([]rune(Visual("السلام", true))); w != d {
+		t.Errorf("width %d, drawn %d cells", w, d)
 	}
 	// a number keeps its order and sign inside Arabic
 	got := []rune(Visual("ذهب +12%", true))

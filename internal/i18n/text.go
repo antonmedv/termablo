@@ -17,24 +17,37 @@ var cells = &runewidth.Condition{EastAsianWidth: false, StrictEmojiNeutral: true
 // (CJK) characters.
 func RuneWidth(r rune) int { return cells.RuneWidth(r) }
 
-// Width is how many terminal cells a string takes.
+// cellWidth is the cells r takes after prev, as drawn: an alef after a
+// lam joins it in one ligature cell (see shape).
+func cellWidth(prev, r rune) int {
+	if prev == 0x0644 {
+		if _, ok := lamAlef[r]; ok {
+			return 0
+		}
+	}
+	return RuneWidth(r)
+}
+
+// Width is how many terminal cells a string takes once drawn.
 func Width(s string) int {
-	w := 0
+	w, prev := 0, rune(0)
 	for _, r := range s {
-		w += RuneWidth(r)
+		w += cellWidth(prev, r)
+		prev = r
 	}
 	return w
 }
 
 // Truncate cuts s to at most w cells, never splitting a wide rune.
 func Truncate(s string, w int) string {
-	n := 0
+	n, prev := 0, rune(0)
 	for i, r := range s {
-		rw := RuneWidth(r)
+		rw := cellWidth(prev, r)
 		if n+rw > w {
 			return s[:i]
 		}
 		n += rw
+		prev = r
 	}
 	return s
 }

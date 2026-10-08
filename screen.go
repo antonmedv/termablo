@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/antonmedv/termablo/internal/i18n"
@@ -100,7 +101,11 @@ func (s *Screen) TextStart(x, y, w int, str string, fg Col8) {
 
 func (s *Screen) text(x, y int, str string, fg Col8, bold bool) int {
 	if s.RTL || i18n.HasRTL(str) {
-		str = i18n.Visual(str, s.RTL)
+		// padding is layout, not text: it stays on its side
+		core := strings.TrimLeft(str, " ")
+		lead := str[:len(str)-len(core)]
+		trimmed := strings.TrimRight(core, " ")
+		str = lead + i18n.Visual(trimmed, s.RTL) + core[len(trimmed):]
 	}
 	n := 0
 	for _, r := range str {

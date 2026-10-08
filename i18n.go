@@ -2,7 +2,6 @@ package main
 
 import (
 	"embed"
-	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -27,15 +26,21 @@ var locales = func() *i18n.Bundle {
 	return b
 }()
 
-// SetLang switches the game's language. Before the first turn the log
-// is only the welcome, so it is written again in the new language.
+// SetLang switches the game's language and writes the log again in it.
+// Names already in a line's arguments stay as they were; the language
+// changes on the title screen, before there are any.
 func (g *Game) SetLang(code string) {
 	g.L = locales.Get(code)
-	if g.Turn == 0 {
-		g.Log, g.logN = nil, 0
-		g.welcome()
+	for i := range g.Log {
+		if m := &g.Log[i]; m.Key != "" {
+			m.Text = g.line(m.Key, m.Args)
+		}
 	}
 }
+
+// areaArg is a level as a message argument, named in the language the
+// line is written in.
+type areaArg struct{ l *Level }
 
 // nextLang is the language after code in i18n.Langs, dir 1 or -1.
 func nextLang(code string, dir int) string {
@@ -58,7 +63,20 @@ func langCodes() string {
 
 // say logs a message from the catalog, its first letter capitalized.
 func (g *Game) say(col RGB, key string, args ...any) {
-	g.msg(col, capFirst(g.L.T(key, args...)))
+	g.msg(col, g.line(key, args))
+	m := &g.Log[len(g.Log)-1]
+	m.Key, m.Args = key, args
+}
+
+func (g *Game) line(key string, args []any) string {
+	resolved := make([]any, len(args))
+	for i, a := range args {
+		if aa, ok := a.(areaArg); ok {
+			a = areaName(g.L, aa.l)
+		}
+		resolved[i] = a
+	}
+	return capFirst(g.L.T(key, resolved...))
 }
 
 func capFirst(s string) string {
@@ -197,43 +215,11 @@ func statLine(loc *i18n.Catalog, a Affix) string { return loc.T("stat."+statKeys
 // ------------------------------------------------------------ places
 
 // areaName is a level's name, as the panel and the log show it.
-func areaName(loc *i18n.Catalog, id string) string {
-	num := func(prefix string) int { n, _ := strconv.Atoi(strings.TrimPrefix(id, prefix)); return n }
-	switch {
-	case id == "town", id == "fields", id == "marsh":
-		return loc.T("area." + id)
-	case strings.HasPrefix(id, "crypt"):
-		if n := num("crypt"); n < 4 {
-			return loc.T("area.crypt", "n", n)
-		}
-		return loc.T("area.throne")
-	case strings.HasPrefix(id, "grotto"):
-		if n := num("grotto"); n < 3 {
-			return loc.T("area.grotto", "n", n)
-		}
-		return loc.T("area.oracle_pool")
-	case strings.HasPrefix(id, "abyss"):
-		if n := num("abyss"); n != hearthFloor {
-			return loc.T("area.abyss", "n", n)
-		}
-		return loc.T("area.hearth")
+func areaName(loc *i18n.Catalog, l *Level) string {
+	if l.NameKey == "" {
+		return l.Name
 	}
-	return id
-}
-
-// loreKey is the line logged on first entering a level.
-func loreKey(id string) string {
-	switch {
-	case id == "town", id == "fields", id == "marsh":
-		return "lore." + id
-	case strings.HasPrefix(id, "crypt"):
-		return "lore.crypt"
-	case strings.HasPrefix(id, "grotto"):
-		return "lore.grotto"
-	case id == "abyss"+strconv.Itoa(hearthFloor):
-		return "lore.hearth"
-	}
-	return "lore.abyss"
+	return loc.T("area."+l.NameKey, "n", l.NameN)
 }
 
 // regionName is where a link leads, as hover text: "the Ashen Fields".

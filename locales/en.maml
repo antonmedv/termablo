@@ -371,8 +371,14 @@ Could be anything. No refunds."""
     title: {
       subtitle: "a descent into lit darkness"
       begin: "press any key to begin"
-      # after the language name on the title screen; tab and the arrows switch
+      # after the language name on the title screen; tab switches it
       lang_keys: "tab: language"
+    }
+
+    # floats over a townsperson the Last Wanderer strikes; a word or two
+    fx: {
+      # max: 8
+      cut: "cut"
     }
 
     # The side panel is 28 cells wide.
@@ -395,11 +401,11 @@ Could be anything. No refunds."""
       # max: 13
       gold: "Gold {n}"
       # the belt: hotkey, slot wells, then these right-aligned labels
-      # max: 8 n=1
+      # max: 9
       belt_portal: "Portal {n}"
-      # max: 8
+      # max: 7
       belt_heal: "Heal"
-      # max: 8
+      # max: 7
       belt_mana: "Mana"
       # max: 14
       damage: "Damage {lo}-{hi}"

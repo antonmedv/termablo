@@ -326,6 +326,9 @@
       begin: "beliebige Taste zum Beginnen"
       lang_keys: "tab: Sprache"
     }
+    fx: {
+      cut: "Hieb"
+    }
     panel: {
       safe: "Sicherer Ort"
       area_level: "Gebietsstufe {n}"

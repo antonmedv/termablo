@@ -271,19 +271,14 @@ func (g *Game) drawMap(s *Screen, x0, y0, w, h int) {
 			}
 		case EffText:
 			pr := e.progress(t)
-			sx := e.X - camX - len(e.Text)/2 // numbers: one byte a cell
+			txt := fit(e.Text, w)
+			tw := i18n.Width(txt)
+			sx := clampi(e.X-camX-tw/2, 0, w-tw) // kept on the map
 			sy := e.Y - camY - 1 - int(pr*1.8) - e.Row
 			if sy < 0 || sy >= h {
 				continue
 			}
-			col := e.Col.Scale(float32(1.1 - pr*0.7)).C8()
-			for k, r := range e.Text {
-				xx := sx + k
-				if xx >= 0 && xx < w {
-					c := &s.C[(y0+sy)*s.W+x0+xx]
-					c.Ch, c.FG, c.Bold = r, col, true
-				}
-			}
+			s.TextBold(x0+sx, y0+sy, txt, e.Col.Scale(float32(1.1-pr*0.7)).C8())
 		}
 	}
 }
@@ -334,7 +329,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 		s.TextBold(cx+i, row, string(r), C(1, .55, .2).Scale(f).C8())
 	}
 	row += 2
-	s.TextBold(cx, row, fit(areaName(L, l.ID), bw), colGold.C8())
+	s.TextBold(cx, row, fit(areaName(L, l), bw), colGold.C8())
 	row++
 	area, areaCol := L.T("ui.panel.safe"), colDim
 	if l.Kind != KTown {
@@ -469,7 +464,7 @@ func (g *Game) beltRow(s *Screen, x, y, w int, key string, glyph rune, n, slots 
 		}
 		s.SetBold(wx+1, y, ch, fg.C8(), bg.C8(), i < n)
 	}
-	label = fit(label, w-2-slots*4)
+	label = fit(label, w-1-slots*4) // the cells after the last well
 	s.TextRight(x, y, w, label, labCol.C8())
 	return hitBox{x, x + w - 1, y}
 }
@@ -884,7 +879,7 @@ func (g *Game) drawDead(s *Screen, mapW, mapH int) {
 	lines := []string{
 		L.T("ui.dead.slain_by", "who", killer),
 		L.T("ui.dead.summary", "lvl", p.Lvl, "kills", p.Kills, "gold", p.Gold),
-		L.T("ui.dead.where", "area", areaName(L, g.Lv.ID)),
+		L.T("ui.dead.where", "area", areaName(L, g.Lv)),
 	}
 	for i, l := range lines {
 		center(y+4+i, l, colGray.C8(), false)
@@ -902,7 +897,7 @@ func (g *Game) drawOverview(s *Screen, mapW, mapH int) {
 		sc = 1
 	}
 	w, h := (l.W+sc-1)/sc+4, (l.H+sc-1)/sc+3
-	x, y := centerBox(s, mapW, mapH, w, h, areaName(g.L, l.ID))
+	x, y := centerBox(s, mapW, mapH, w, h, areaName(g.L, l))
 	for my := 0; my < l.H; my += sc {
 		for mx := 0; mx < l.W; mx += sc {
 			var best Tile

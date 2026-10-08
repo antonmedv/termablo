@@ -201,3 +201,52 @@ func screenText(s *Screen) string {
 	}
 	return b.String()
 }
+
+// TestBeltLabelsFit: every language's belt labels fit the cells the
+// panel leaves them (beltRow), a two-digit scroll count included.
+func TestBeltLabelsFit(t *testing.T) {
+	bw := panelW - 4
+	rows := []struct {
+		key      string
+		w, slots int
+	}{{"ui.panel.belt_portal", bw - 14, 1}, {"ui.panel.belt_heal", bw, beltMax}, {"ui.panel.belt_mana", bw, beltMax}}
+	for _, l := range i18n.Langs {
+		loc := locales.Get(l.Code)
+		for _, r := range rows {
+			if s := loc.T(r.key, "n", 10); i18n.Width(s) > r.w-1-r.slots*4 {
+				t.Errorf("%s %s: %q is %d cells, %d fit", l.Code, r.key, s, i18n.Width(s), r.w-1-r.slots*4)
+			}
+		}
+	}
+}
+
+// TestAreaNames: every level, named from its catalog keys in English,
+// is called what the generator called it.
+func TestAreaNames(t *testing.T) {
+	g := newTestGame(t)
+	en := locales.Get(i18n.Source)
+	for _, id := range []string{"town", "fields", "marsh", "crypt1", "crypt3", "crypt4", "grotto1", "grotto3", "abyss1", "abyss3", "abyss4"} {
+		l := g.getLevel(id)
+		if got := areaName(en, l); got != l.Name {
+			t.Errorf("%s is %q, named %q", id, l.Name, got)
+		}
+	}
+}
+
+// TestSetLangKeepsLog: switching language writes every line of the log
+// again, none lost.
+func TestSetLangKeepsLog(t *testing.T) {
+	g := NewGame(1)
+	g.changeLevel("grotto1", "", nil) // the too-deep warning, before any turn
+	n := len(g.Log)
+	g.SetLang("de")
+	if len(g.Log) != n {
+		t.Fatalf("%d lines became %d", n, len(g.Log))
+	}
+	if want := g.L.T("msg.far_beyond"); g.Log[n-1].Text != want {
+		t.Errorf("last line %q, want %q", g.Log[n-1].Text, want)
+	}
+	if want := capFirst(g.L.T("lore.grotto", "area", areaName(g.L, g.Lv))); g.Log[n-2].Text != want {
+		t.Errorf("lore line %q, want %q", g.Log[n-2].Text, want)
+	}
+}

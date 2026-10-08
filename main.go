@@ -112,9 +112,9 @@ func (m *model) key(k string) bool {
 	switch g.Mode {
 	case ModeTitle:
 		switch k {
-		case "tab", "right", "l":
+		case "tab":
 			g.SetLang(nextLang(g.L.Lang.Code, 1))
-		case "shift+tab", "left", "h":
+		case "shift+tab":
 			g.SetLang(nextLang(g.L.Lang.Code, -1))
 		default:
 			g.Mode = ModePlay
@@ -418,9 +418,9 @@ func main() {
 	maxSessions := flag.Int("max-sessions", 50, "SSH: most games at once (0 = no limit)")
 	idle := flag.Duration("idle", 15*time.Minute, "SSH: disconnect after this long without input")
 	connectEvery := flag.Duration("connect-every", 10*time.Second, "SSH: one new game per address this often, 3 at once (0 = no limit)")
-	lang := flag.String("lang", "", "language: "+langCodes()+" (default from $LANG)")
+	lang := flag.String("lang", "", "language: "+langCodes()+" (default from $LANG; with -ssh, for players whose client sends none)")
 	flag.Parse()
-	code := i18n.FromEnv(os.Getenv)
+	code := ""
 	if *lang != "" {
 		if code = i18n.Match(*lang); code == "" {
 			fmt.Fprintf(os.Stderr, "-lang %q: want one of %s\n", *lang, langCodes())
@@ -428,12 +428,16 @@ func main() {
 		}
 	}
 	if *addr != "" {
-		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *area, maxSessions: *maxSessions, idle: *idle, connectEvery: *connectEvery})
+		// -lang is the default for players whose client asks for none
+		err := serve(serveOpts{addr: *addr, hostKey: *hostKey, seed: *seed, level: *area, lang: code, maxSessions: *maxSessions, idle: *idle, connectEvery: *connectEvery})
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
 		return
+	}
+	if code == "" {
+		code = i18n.FromEnv(os.Getenv)
 	}
 	m := newModel(*seed, *area)
 	m.g.SetLang(code)

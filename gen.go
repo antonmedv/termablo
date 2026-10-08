@@ -78,7 +78,7 @@ func genTown(seed int64, r *Rules) *Level {
 	W, H := 84, 46
 	l := newLevel("town", "Emberhold", KTown, W, H, 0, seed, r)
 	l.Ambient = C(.07, .075, .12)
-	l.Lore = "Emberhold. The last lit town before the dark. Lanterns burn all night here."
+	l.NameKey, l.LoreKey = "town", "town"
 	nz := Noise{uint32(seed)}
 	for y := range H {
 		for x := range W {
@@ -217,7 +217,7 @@ func genFields(seed int64, r *Rules) *Level {
 	W, H := 180, 108
 	l := newLevel("fields", "Ashen Fields", KSurface, W, H, 1, seed, r)
 	l.Ambient = C(.05, .06, .12)
-	l.Lore = "The Ashen Fields. Moonlight on the ash of a burned forest."
+	l.NameKey, l.LoreKey = "fields", "fields"
 	nz := Noise{uint32(seed) + 7}
 	nz2 := Noise{uint32(seed) + 99}
 	for y := range H {
@@ -360,7 +360,7 @@ func genMarsh(seed int64, r *Rules) *Level {
 	W, H := 156, 96
 	l := newLevel("marsh", "Blackmarsh", KSurface, W, H, 6, seed, r)
 	l.Ambient = C(.04, .07, .09)
-	l.Lore = "Blackmarsh. Cold lights drift over the water. Do not follow them."
+	l.NameKey, l.LoreKey = "marsh", "marsh"
 	nz := Noise{uint32(seed) + 3}
 	nz2 := Noise{uint32(seed) + 71}
 	for y := range H {
@@ -462,6 +462,8 @@ func (r Room) Center() Pos { return Pos{(r.X0 + r.X1) / 2, (r.Y0 + r.Y1) / 2} }
 
 type DungeonSpec struct {
 	ID, Name   string
+	NameKey    string // area.<NameKey> with {n} = NameN, the name the player reads
+	NameN      int
 	Depth      int
 	Style      int // 0 crypt, 1 grotto, 2 abyss
 	Up, Down   string
@@ -481,6 +483,7 @@ func genDungeon(s DungeonSpec, seed int64) *Level {
 func genCrypt(s DungeonSpec, seed int64) *Level {
 	W, H := 92, 56
 	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed, s.Rules)
+	l.NameKey, l.NameN = s.NameKey, s.NameN
 	l.Ambient = C(0, 0, 0)
 	l.Fill(0, 0, W-1, H-1, TWall)
 	var rooms []Room
@@ -620,7 +623,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 			placeMonster(l, "skel", c.X+l.rng.Intn(5)-2, c.Y+l.rng.Intn(3)-1, s.Depth, RankNormal)
 		}
 	}
-	l.Lore = s.Name + ". A royal tomb; the air tastes of dust."
+	l.LoreKey = "crypt"
 	populate(l, s.SpawnTable, 14+s.Depth*2, []Pos{up})
 	l.finalize()
 	return l
@@ -629,6 +632,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 func genCave(s DungeonSpec, seed int64) *Level {
 	W, H := 96, 60
 	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed, s.Rules)
+	l.NameKey, l.NameN = s.NameKey, s.NameN
 	l.Ambient = C(0, 0, 0)
 	wall, floor := TCaveWall, TCaveFloor
 	grid := make([]bool, W*H)
@@ -818,11 +822,11 @@ func genCave(s DungeonSpec, seed int64) *Level {
 	}
 	switch {
 	case s.Boss == "wanderer":
-		l.Lore = s.Name + ". The braziers lean away from the middle of the room."
+		l.LoreKey = "hearth"
 	case s.Style == 1:
-		l.Lore = s.Name + ". Cold water presses down; the crystals hum."
+		l.LoreKey = "grotto"
 	default:
-		l.Lore = s.Name + ". The rock itself is bleeding."
+		l.LoreKey = "abyss"
 	}
 	populate(l, s.SpawnTable, 16+s.Depth, safe)
 	l.finalize()

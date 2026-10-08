@@ -275,6 +275,9 @@
       begin: "按任意键开始"
       lang_keys: "tab：语言"
     }
+    fx: {
+      cut: "斩"
+    }
     panel: {
       safe: "安全之地"
       area_level: "区域等级 {n}"

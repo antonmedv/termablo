@@ -344,6 +344,9 @@
       begin: "premi un tasto per iniziare"
       lang_keys: "tab: lingua"
     }
+    fx: {
+      cut: "colpito"
+    }
     panel: {
       safe: "Rifugio sicuro"
       area_level: "Livello dell'area {n}"

@@ -40,7 +40,11 @@ type Level struct {
 	PortalAt Pos // town only: where the town portal appears
 	Forge    Pos // town only: Hadrik's forge, lit from the Ember
 	LightVer int
-	Lore     string
+	// What the player reads: the name is area.<NameKey> with {n} =
+	// NameN, the line logged on first entry lore.<LoreKey>.
+	NameKey string
+	NameN   int
+	LoreKey string
 	// SealedDown is a down link that opens where the boss stood once it
 	// dies: the Hearth Below has no way on until the Last Wanderer falls.
 	SealedDown string

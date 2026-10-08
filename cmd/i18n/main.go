@@ -96,7 +96,7 @@ func printCoverage(r *i18n.Report) {
 				}
 			}
 		}
-		fmt.Printf("%-4s %-22s %5.0f%% %8d %6d %6d %6d\n", c.Lang, l.Name, 100*float64(c.Done)/float64(c.Total), c.Missing, c.Stale, e, w)
+		fmt.Printf("%-4s %-22s %5d%% %8d %6d %6d %6d\n", c.Lang, l.Name, 100*c.Done/c.Total, c.Missing, c.Stale, e, w) // rounded down: 100% is all
 	}
 }
 
