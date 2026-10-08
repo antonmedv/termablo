@@ -33,6 +33,12 @@ A king once carried a coal up out of the Abyss and built a town around it.
 The dark cannot cross light taken from it, so it climbs toward the town
 instead. You are the stranger they hire to go down and meet it.
 
+## Latest update
+
+**2026-10-08:** Termablo now speaks seven languages, and the Ashen
+Fields and Blackmarsh are bigger. See [`UPDATES.md`](UPDATES.md) for
+everything new.
+
 ## Host your own
 
 ```sh
