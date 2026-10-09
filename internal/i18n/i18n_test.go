@@ -233,6 +233,10 @@ func TestParseLinks(t *testing.T) {
 	if len(links) != 2 || plain[links[1].Start:links[1].End] != "the dark" || links[0].Topic != "ember" {
 		t.Errorf("links %+v", links)
 	}
+	plain, links = ParseLinks("Press [esc] to flee, or ask of [the Ember](ember). [")
+	if plain != "Press [esc] to flee, or ask of the Ember. [" || len(links) != 1 || plain[links[0].Start:links[0].End] != "the Ember" {
+		t.Errorf("a bracket that is not a link: %q %+v", plain, links)
+	}
 	if got := Links("[a](x) [b](y) [c](x)"); len(got) != 2 || got[0] != "x" || got[1] != "y" {
 		t.Errorf("Links %q", got)
 	}

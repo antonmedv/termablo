@@ -147,7 +147,7 @@ func TestClickLink(t *testing.T) {
 	s := NewScreen(120, 36)
 	g.Draw(s)
 	for _, h := range g.talk.hits {
-		if h.row < 0 && h.topic == "crypt" {
+		if h.link && h.topic == "crypt" {
 			g.Click(h.X0, h.Y, s.W, s.H)
 			if last := g.talk.Log[len(g.talk.Log)-1]; last.Text != g.L.T("talk.voss.crypt") {
 				t.Errorf("clicked the crypt, heard %q", last.Text)
@@ -178,5 +178,37 @@ func TestTopicCatalog(t *testing.T) {
 		if id != "rumors" && !en.Has("talk.any."+id) {
 			t.Errorf("talk.any.%s is missing", id)
 		}
+	}
+}
+
+// Topics are learned from the English links, whatever a translation kept.
+func TestLearnedWhateverTheLanguage(t *testing.T) {
+	g := NewGame(1)
+	cat, err := i18n.Parse("de", []byte(`{ talk: { voss: { intro: "Geht zur Seherin." } } }`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	g.L = cat
+	g.talk = &Talk{Who: "voss"}
+	g.hear("", "talk.voss.intro")
+	if !g.Known["oracle"] || g.talk.Log[0].Text != "Geht zur Seherin." {
+		t.Errorf("known %v, heard %q", g.Known, g.talk.Log[0].Text)
+	}
+}
+
+// Right to left, a link whose words were also said plain earlier in the
+// row is found where the link is, not at the first match.
+func TestRTLLinkSaidTwice(t *testing.T) {
+	g := NewGame(1)
+	g.talk = &Talk{}
+	s := NewScreen(40, 3)
+	s.RTL = true
+	g.drawSpans(s, 0, 1, 40, []talkSpan{{"باب ", ""}, {"باب", "door"}}, colWhite)
+	if len(g.talk.hits) != 1 {
+		t.Fatalf("hits %+v", g.talk.hits)
+	}
+	// the plain word reads first, so it is the right one; the link is left
+	if h := g.talk.hits[0]; h.X0 != 40-7 {
+		t.Errorf("link at %d..%d, want it at %d", h.X0, h.X1, 40-7)
 	}
 }

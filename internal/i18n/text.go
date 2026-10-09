@@ -167,19 +167,23 @@ func ParseLinks(s string) (string, []Link) {
 		if i < 0 {
 			break
 		}
-		j := strings.Index(s[i:], "](")
+		// the words end at the first bracket after the [, and only a
+		// ](topic) right there makes them a link; a [ alone is text
+		j := strings.IndexAny(s[i+1:], "[]") + i + 1
 		k := -1
-		if j > 0 {
-			k = strings.IndexByte(s[i+j:], ')')
+		if j > i && s[j] == ']' && strings.HasPrefix(s[j:], "](") {
+			k = strings.IndexByte(s[j:], ')')
 		}
 		if k < 0 {
-			break
+			b.WriteString(s[:i+1])
+			s = s[i+1:]
+			continue
 		}
-		words, topic := s[i+1:i+j], s[i+j+2:i+j+k]
+		words, topic := s[i+1:j], s[j+2:j+k]
 		b.WriteString(s[:i])
 		links = append(links, Link{Start: b.Len(), End: b.Len() + len(words), Topic: topic})
 		b.WriteString(words)
-		s = s[i+j+k+1:]
+		s = s[j+k+1:]
 	}
 	b.WriteString(s)
 	return b.String(), links

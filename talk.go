@@ -3,6 +3,7 @@ package main
 import (
 	"slices"
 	"strings"
+	"unicode"
 
 	"github.com/antonmedv/termablo/internal/i18n"
 )
@@ -32,8 +33,8 @@ type talkEntry struct{ Head, Text string }
 // talkHit is a place to click: a row of the topic list, or a link.
 type talkHit struct {
 	hitBox
-	row   int // the list row, or -1 for a link
 	topic string
+	link  bool
 }
 
 // topics are every topic there is, topic.<id> in the catalog. An answer
@@ -83,12 +84,14 @@ func (g *Game) answer(who, id string) string {
 	return ""
 }
 
-// hear adds a line to the conversation and learns the topics it links.
+// hear adds a line to the conversation and learns the topics it links:
+// the English links, so that what the hero knows does not hang on a
+// translation keeping every one.
 func (g *Game) hear(head, key string) {
 	t := g.talk
 	g.asked[key] = true
 	text := g.L.T(key)
-	for _, id := range i18n.Links(text) {
+	for _, id := range i18n.Links(locales.Get(i18n.Source).T(key)) {
 		g.Known[id] = true
 	}
 	t.Log = append(t.Log, talkEntry{head, text})
@@ -190,18 +193,12 @@ func (t *Talk) scroll(n int) { t.off, t.follow = maxi(0, t.off+n), false }
 
 // clickTalk asks the topic or link under the mouse.
 func (g *Game) clickTalk(x, y int) {
-	opts := g.talk.options(g)
+	// by id, not row: the list may have changed since it was drawn
 	for _, h := range g.talk.hits {
-		if !h.in(x, y) {
-			continue
-		}
-		if h.row >= 0 && h.row < len(opts) {
-			g.talk.Cur = h.row
-			g.ask(opts[h.row].id)
-		} else if h.row < 0 {
+		if h.in(x, y) {
 			g.ask(h.topic)
+			return
 		}
-		return
 	}
 }
 
@@ -236,11 +233,11 @@ func wrapLinks(text string, w int) [][]talkSpan {
 		var row []talkSpan
 		for _, r := range line {
 			topic := ""
-			if r == ' ' {
-				if j < len(rs) && rs[j] == ' ' {
+			if r == ' ' { // any space of the text, folded
+				if j < len(rs) && unicode.IsSpace(rs[j]) {
 					topic = of[j]
 				}
-				for j < len(rs) && rs[j] == ' ' {
+				for j < len(rs) && unicode.IsSpace(rs[j]) {
 					j++
 				}
 			} else {
@@ -294,8 +291,6 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 	opts := t.options(g)
 	w, h := mini(76, mapW-2), mini(s.H-2, 26)
 	x, y := centerBox(s, mapW, mapH, w, h, "")
-	w = mini(w, mapW-2)
-	h = mini(h, s.H-2)
 	t.hits = t.hits[:0]
 
 	// the topic list takes what its longest name needs, up to two fifths
@@ -356,7 +351,7 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 			s.Fill(lx, yy, lw, 1, colTalkPick.Scale(.6).C8())
 		}
 		s.TextStart(lx+1, yy, lw-2, i18n.Truncate(o.label, lw-2), c.C8())
-		t.hits = append(t.hits, talkHit{hb, i, o.id})
+		t.hits = append(t.hits, talkHit{hb, o.id, false})
 	}
 	// In the border, at the start of the history: how much was said above
 	// and below what is shown. The keys go at its far end, or across the
@@ -407,12 +402,21 @@ func (g *Game) drawSpans(s *Screen, x, y, w int, spans []talkSpan, col RGB) {
 		s.TextStart(x, y, w, line.String(), col.C8())
 		vis := i18n.Visual(line.String(), true)
 		x0 := x + w - i18n.Width(line.String())
+		// The row reads from the right: each span, plain ones too, is the
+		// nearest match left of the one before, so a word said twice is
+		// found where it was said.
+		end := len(vis)
 		for _, sp := range spans {
 			word := strings.TrimSpace(sp.text)
-			if sp.topic == "" || word == "" {
+			if word == "" {
 				continue
 			}
-			if i := strings.Index(vis, i18n.Visual(word, true)); i >= 0 {
+			i := strings.LastIndex(vis[:end], i18n.Visual(word, true))
+			if i < 0 {
+				continue
+			}
+			end = i
+			if sp.topic != "" {
 				g.linkCells(s, x0+i18n.Width(vis[:i]), y, i18n.Width(word), sp.topic)
 			}
 		}
@@ -442,5 +446,5 @@ func (g *Game) linkCells(s *Screen, x, y, w int, topic string) {
 			c.BG = colTalkPick.C8()
 		}
 	}
-	g.talk.hits = append(g.talk.hits, talkHit{hb, -1, topic})
+	g.talk.hits = append(g.talk.hits, talkHit{hb, topic, true})
 }
