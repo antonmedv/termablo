@@ -2,7 +2,6 @@
 # Plural forms: one, other. Genders: m, f, mp, fp, mv, fv.
 {
   msg: {
-    welcome_goal: "Dai la caccia al Re delle Ossa nella cripta e alla Sibilla Annegata sotto la Palude Nera."
     welcome_help: "Premi ? per l'aiuto. Il capitano Voss, vicino alla taverna, ha del lavoro per te."
     enter: "Entri in {area}."
     far_beyond: "Qualcosa, qui, è molto al di là delle tue forze."
@@ -83,10 +82,12 @@
     unseal_here: "Dove lui attendeva, si apre una via verso il basso."
     unseal_far: "Molto più in basso, nel Focolare, si apre una via verso il basso."
     running: "{who} fugge per salvarsi la vita."
-    voss_reward: {
-        one: "Voss ti dà {n} moneta d'oro e {item}."
-        other: "Voss ti dà {n} monete d'oro e {item}."
+    quest_reward: {
+        one: "{who} ti dà {n} moneta d'oro e {item}."
+        other: "{who} ti dà {n} monete d'oro e {item}."
       }
+    quest_new: "Nuova missione: {name}."
+    topic_new: "In città potresti chiedere di: {topic}."
     cannot_afford: "Non puoi permettertelo."
     belt_full: "La tua cintura è piena."
     gamble: "Hadrik apre l'involto: {item}. {n}g, niente rimborsi."
@@ -135,6 +136,12 @@
       greet_boneking: "Stamattina ho sentito le campane della cripta. Credevo di essere uscito di senno. Opera tua? Allora ti sei guadagnato l'acciaio buono."
       greet_oracle: "L'ultimo [straniero](stranger) che ho armato per scendere nel profondo non è mai tornato a farsi riparare niente."
       greet_wanderer: "Quando lui è caduto, la forgia ha dato una vampata bianca, poi si è calmata. Quarant'anni, e non gliel'avevo mai visto fare. A questa incudine sei il benvenuto."
+      greet_hurt: "Stai sanguinando sulla mia incudine. Prima Mirela. Poi l'acciaio."
+      greet_broke: "Guardare è gratis. Il resto no."
+      greet_kingsbane: "Flagello dei Re. L'ultimo filo a quell'ascia gliel'ho dato io, per il [padre](father) del capitano. Mostrala a Voss. O no."
+      greet_kingsbane_again: "Tieni oliato quel filo. Se l'è guadagnato."
+      greet_crown: "Togliti quella corona nella mia forgia. Rende nervoso il fuoco."
+      greet_crown_again: "Corona. Giù."
       forge: "Quarant'anni che la tengo. La custodia passa di mano in mano, da fabbro a fabbro. Quel che le brucia in pancia è la [Brace](ember) stessa. Il giorno che si spegne, scappiamo. Non è un modo di dire."
       ember: "La gente crede che stia in piazza, su un piedistallo. Vive nella mia forgia. Ogni lanterna della città si accende da qui. Io non ne parlo, e nemmeno tu."
       ember_again: "Ho detto che di quello non parlo."
@@ -149,6 +156,10 @@
       greet_boneking: "Stamattina mi hanno svegliata le campane della cripta. Ho pianto, tesoro, e non so perché. Siediti; stai sanguinando sul mio pavimento."
       greet_oracle: "C'è così tanto silenzio, figliolo. Il mio cristallo non ha più fatto un suono da quando sei risalito. Continuo a tenerlo accanto all'orecchio."
       greet_wanderer: "Sei tornato. Lui no, non davvero. Siediti, tesoro, e lasciami curare quelle ustioni."
+      greet_hurt: "Oh, figliolo, guardati. Siediti prima di cadere."
+      greet_nopots: "Nemmeno una fiala alla cintura? Laggiù? Siediti, tesoro. Ci pensiamo noi."
+      greet_crown: "Togliti quella corona alla mia tavola, tesoro. Sussurra, e io sono troppo vecchia per ascoltare."
+      greet_crown_again: "La corona, tesoro. Giù."
       oracle: "Il mio cristallo viene dalla sua grotta. Quando lei sogna, canta. Non dà la caccia a nessuno, figliolo. Tiene giù qualcosa, sotto l'acqua. Non so cosa. So che è caldo."
       oracle_after: "Il mio cristallo ha smesso di cantare. Ora tutta la città dorme tranquilla. Io no. Qualunque cosa lei tenesse giù, sta risalendo dall'[Abisso](abyss)."
       blackmarsh: "Le luci fredde sull'acqua sono sue. Non seguirle. Tutti le seguono. Le pietre ritte le ha innalzate lei stessa, mentre scendeva."
@@ -157,7 +168,7 @@
       portals: "Cenere della forgia nella carta; Hadrik la spazza, io la piego. Leggine una e la [Brace](ember) ti richiama a casa, alla fontana. Costa meno di un funerale."
     }
     voss: {
-      greet: "Viandante. Bene. Ci serve una lama che non tremi.\nLa [Brace](ember) tiene fuori l'Oscurità. E l'Oscurità la rivuole.\nA est del cancello, oltre i Campi di Cenere, c'è la [Cripta dei Caduti](crypt).\nQuattro piani più giù, il [Re delle Ossa](boneking) siede sul suo trono di costole. Distruggilo.\nE a nord, nella [Palude Nera](blackmarsh), la [Sibilla Annegata](oracle) chiama gli smarriti nell'acqua.\nCompra pozioni da Mirela. Tieni sempre una [pergamena del portale](portals). Torna vivo."
+      greet: "Viandante. Bene. Ci serve una lama che non tremi.\nQuattro piani sotto la [cripta](crypt), a est oltre i campi, il [Re delle Ossa](boneking) siede sul suo trono di costole. Distruggilo.\nTieni sempre con te una [pergamena del portale](portals). Torna vivo."
       greet_again: "Respiri ancora. Bene. Il [Re delle Ossa](boneking) è quattro piani sotto la [cripta](crypt). Portami la sua polvere."
       boneking_reward: "Il Re delle Ossa è polvere? Allora le campane della cripta potranno suonare di nuovo.\nPrendi questo: era di [mio padre](father). E l'oro, naturalmente."
       oracle_reward: "La Sibilla, messa a tacere... Non credevo che avrei mai dormito senza sentirla.\nSotto la sua pozza, la roccia brucia. Dicono che [l'Abisso](abyss) non abbia fondo. Fa' attenzione.\nUna volta ci ho mandato [qualcuno](stranger). Ho smesso di contare i giorni."
@@ -167,6 +178,11 @@
       greet_oracle_again: "Qualunque cosa attenda nell'[Abisso](abyss), è oltre le mie mappe. Va' con prudenza, o non andare."
       greet_wanderer: "Le lanterne sono di nuovo accese. Chiunque fosse, un tempo era uno dei nostri.\nContinua a camminare, straniero. È per questo che ti paghiamo."
       greet_wanderer_again: "La guardia torna a dormire a turni. È merito tuo. Non farne un discorso."
+      greet_hurt: "Stai sanguinando sul mio cancello. Va' da Mirela, poi da me."
+      greet_kingsbane: "Quell'ascia. Flagello dei Re. L'ha portata giù mio [padre](father). Tienila. Lui la preferirebbe in pugno che arrugginita."
+      greet_kingsbane_again: "La porti ancora. Bene."
+      greet_crown: "Quella è la corona del [Re delle Ossa](boneking)? Non indossarla in piazza. La gente ricorda."
+      greet_crown_again: "La corona, straniero. Non nella mia piazza."
       crypt: "La cripta reale, a est oltre i Campi di Cenere. Quattro piani, freddi e polverosi. I bracieri si accendono da soli. Non starci vicino."
       boneking: "Quattro piani sotto la cappella, su un trono di costole. Mio [padre](father) è sceso a cercarlo con un'ascia. Portami la sua polvere."
       boneking_after: "Polvere, dici. Bene. Ci crederò quando sentirò le campane."
@@ -198,6 +214,22 @@
       stranger_after: "Le lanterne sono di nuovo accese. Nessuno pronuncia il suo nome. Nessuno lo conosceva."
     }
   }
+  journal: {
+    boneking: {
+      taken: "Il capitano Voss vuole che il Re delle Ossa sia distrutto. Siede sul suo trono di costole quattro piani sotto la Cripta dei Caduti, a est della porta, oltre i Campi di Cenere. Il padre di Voss scese a cercarlo con un'ascia e non tornò più."
+      done: "Il Re delle Ossa è polvere, e le cripte tacciono. Voss vorrà sentirlo da te."
+      rewarded: "Voss ti ha pagato in oro, e ti ha dato qualcosa che era di suo padre. Le campane della cripta potranno suonare di nuovo."
+    }
+    oracle: {
+      taken: "Voss vuole che si metta fine alla Sibilla Annegata. Entrò nell'acqua sotto la Palude Nera, a nord dei campi, e chiama gli smarriti a seguirla giù. Segui le luci fredde fin dentro la Grotta Sommersa."
+      done: "Il canto della Sibilla è finito. Più in basso ancora, qualcosa brucia. Voss dovrebbe saperlo."
+      rewarded: "Voss ti ha pagato, e ti ha avvertito: sotto la sua pozza la roccia brucia, e l'Abisso Ardente non ha fondo."
+    }
+    wanderer: {
+      taken: "Quando la Sibilla è caduta, qualcosa è risalito dall'Abisso. Ogni luce si spegne al suo passaggio, e ti somiglia: è lo straniero che Emberhold assoldò prima di te. Ferma l'Ultimo Viandante prima che raggiunga la forgia."
+      done: "L'Ultimo Viandante è caduto. L'Oscurità ha lasciato andare il fuoco, e le lanterne di Emberhold ardono di nuovo."
+    }
+  }
   topic: {
     rumors: "Ultime voci"
     ember: "Brace"
@@ -226,6 +258,11 @@
     edran: "[Re Edran](edran) portò su la [Brace](ember) a mani nude. Gli costò il volto."
     uncle: "Mio zio si è unito al [Culto della Brace](cult). Diceva che al buio si doveva qualcosa. È sceso a pagare il debito."
     holding: "Mirela dice che la [Sibilla](oracle) non dà la caccia a nessuno. Sta tenendo giù qualcosa."
+    bells: "Stamattina hanno suonato le campane della cripta. Nessuno tira quelle corde da trent'anni."
+    face: "Dicono che un tempo il Re delle Ossa avesse il volto di [Re Edran](edran). O quel che il buio ne ha lasciato."
+    lights: "Le luci fredde sopra la [Palude Nera](blackmarsh) si sono spente. Mio fratello ha dormito tutta la notte."
+    wind: "Ora dai pozzi della palude sale un vento caldo. Sa di fucina. Di [Abisso](abyss), dice Mirela."
+    lanterns: "Da quando sei risalito, le lanterne ardono più ferme. Nessuno dice perché. Non serve."
   }
   area: {
     town: "Emberhold"
@@ -365,6 +402,7 @@
       inventory: "i"
       character: "c"
       map: "m"
+      quests: "J"
       quit: "Q / ctrl+c"
     }
     does: {
@@ -380,6 +418,7 @@
       inventory: "inventario ed equipaggiamento"
       character: "scheda del personaggio, spendi punti attributo"
       map: "mappa dell'area esplorata"
+      quests: "diario delle missioni (o clicca le missioni nel pannello)"
       quit: "esci"
     }
     tip: {
@@ -402,6 +441,20 @@
       barter: "Commercia"
       goodbye: "Addio"
       keys: "↑↓ argomento · invio chiedi · esc addio"
+    }
+    journal: {
+      title: "Missioni"
+      keys: "↑↓ missione · esc chiudi"
+      none: "Nessuno ti ha ancora chiesto nulla. Parla con gli abitanti di Emberhold."
+      goal: {
+          m: "{name} deve essere distrutto."
+          f: "{name} deve essere distrutta."
+        }
+      return: "{who} ti aspetta per la ricompensa."
+      over: "Completata."
+      giver: "Affidata da {who}"
+      where: "Dove: {area}"
+      reward: "Ricompensa: oro e un oggetto unico"
     }
     currently_equipped: "Equipaggiato ora:"
     more_above: {

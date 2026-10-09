@@ -84,8 +84,8 @@ func TestCatalogCoversData(t *testing.T) {
 	for _, n := range eqNames {
 		want("slot."+slug(n), n)
 	}
-	for _, k := range rumors {
-		want("rumor."+k, "")
+	for _, r := range rumors {
+		want("rumor."+r.Key, "")
 	}
 	for _, k := range topics {
 		want("topic."+k, "")
@@ -169,7 +169,7 @@ func TestLocalesValid(t *testing.T) {
 // TestDrawEveryLanguage draws every screen in every language: nothing
 // panics and no key shows through where a line is missing.
 func TestDrawEveryLanguage(t *testing.T) {
-	key := regexp.MustCompile(`\b(msg|ui|help|talk|item|ref|stat|tile|area|lore)\.[a-z_]+`)
+	key := regexp.MustCompile(`\b(msg|ui|help|talk|item|ref|stat|tile|area|lore|journal)\.[a-z_]+`)
 	for _, l := range i18n.Langs {
 		g := newTestGame(t)
 		g.SetLang(l.Code)
@@ -178,9 +178,12 @@ func TestDrawEveryLanguage(t *testing.T) {
 			g.P.Inv = append(g.P.Inv, GenItem(rng, 9, rar, SlotNone, g.Rules))
 		}
 		g.restock()
+		for _, q := range quests {
+			g.Quests[q.ID] = QuestTaken
+		}
 		for _, sz := range [][2]int{{80, 24}, {140, 44}} {
 			s := NewScreen(sz[0], sz[1])
-			for _, mode := range []Mode{ModeTitle, ModePlay, ModeInv, ModeChar, ModeShop, ModeHelp, ModeMap, ModeTalk, ModeDead} {
+			for _, mode := range []Mode{ModeTitle, ModePlay, ModeInv, ModeChar, ModeShop, ModeHelp, ModeMap, ModeTalk, ModeQuests, ModeDead} {
 				g.Mode = mode
 				g.shop = g.shops[0]
 				g.talk = &Talk{Who: "voss", Name: "Voss", Barter: true}
@@ -252,7 +255,10 @@ func TestSetLangKeepsLog(t *testing.T) {
 	if want := g.L.T("msg.far_beyond"); g.Log[n-1].Text != want {
 		t.Errorf("last line %q, want %q", g.Log[n-1].Text, want)
 	}
-	if want := capFirst(g.L.T("lore.grotto", "area", areaName(g.L, g.Lv))); g.Log[n-2].Text != want {
+	if want := g.L.T("msg.topic_new", "topic", g.L.T("topic.oracle")); g.Log[n-2].Text != want {
+		t.Errorf("topic line %q, want %q", g.Log[n-2].Text, want)
+	}
+	if want := capFirst(g.L.T("lore.grotto", "area", areaName(g.L, g.Lv))); g.Log[n-3].Text != want {
 		t.Errorf("lore line %q, want %q", g.Log[n-2].Text, want)
 	}
 }

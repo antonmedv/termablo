@@ -253,15 +253,15 @@ func TestBossQuestReward(t *testing.T) {
 		t.Fatal("no Bone King in crypt4")
 	}
 	g.killMonster(king)
-	if g.Quests[0] != 1 {
-		t.Fatalf("quest state %d after the kill", g.Quests[0])
+	if !g.Slain["boneking"] || !g.owed(questByID("boneking")) {
+		t.Fatal("the Bone King's bounty is not owed after the kill")
 	}
 	g.changeLevel("town", "", nil)
 	gold := g.P.Gold
 	voss := npc(t, g, "captain")
 	walkInto(g, voss.X, voss.Y)
-	if g.Quests[0] != 2 || g.P.Gold != gold+int(g.Rules.QuestGoldPerLvl*float64(g.P.Lvl)) || g.Mode != ModeTalk {
-		t.Fatalf("quest %d, gold %d->%d, mode %v", g.Quests[0], gold, g.P.Gold, g.Mode)
+	if g.Quests["boneking"] != QuestRewarded || g.P.Gold != gold+int(g.Rules.QuestGoldPerLvl*float64(g.P.Lvl)) || g.Mode != ModeTalk {
+		t.Fatalf("quest %d, gold %d->%d, mode %v", g.Quests["boneking"], gold, g.P.Gold, g.Mode)
 	}
 	press(newTestModel(g), "x")
 	gold = g.P.Gold

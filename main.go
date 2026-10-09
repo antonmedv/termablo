@@ -136,6 +136,8 @@ func (m *model) key(k string) bool {
 		}
 	case ModeTalk:
 		g.talkKey(k)
+	case ModeQuests:
+		g.journalKey(k)
 	case ModeHelp, ModeMap:
 		switch k {
 		case "esc", "?", "m", "q", "enter", " ":
@@ -217,6 +219,8 @@ func (m *model) playKey(k string) bool {
 		g.Mode = ModeChar
 	case "m":
 		g.Mode = ModeMap
+	case "J":
+		g.openJournal()
 	case "?":
 		g.Mode, g.helpOff = ModeHelp, 0
 	case "Q":

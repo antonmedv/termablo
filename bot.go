@@ -739,7 +739,7 @@ func (b *Bot) wantsTown() (want, urgent bool, why string) {
 		return true, true, "belt empty"
 	case b.pol.caster && p.MP+p.ManaPool < float64(p.FireboltCost()) && p.MPot == 0 && !broke:
 		return true, true, "mana dry"
-	case g.Quests[0] == 1 || g.Quests[1] == 1:
+	case g.bountyDue() != nil:
 		return true, false, "bounty to collect"
 	case len(p.Inv) >= invMax-2:
 		return true, false, "pack full"
@@ -774,8 +774,8 @@ func (b *Bot) runErrand() bool {
 	if p.HP < float64(p.MaxHP()) && b.fountain() {
 		return true
 	}
-	if g.Quests[0] == 1 || g.Quests[1] == 1 {
-		if acted, _ := b.visit("captain", func() { b.say("collect the bounty") }); acted {
+	if q := g.bountyDue(); q != nil {
+		if acted, _ := b.visit(q.Giver, func() { b.say("collect the bounty") }); acted {
 			return true
 		}
 	}
@@ -1063,11 +1063,11 @@ func (b *Bot) next(id string) string {
 	case id == "town":
 		return "fields"
 	case id == "fields":
-		if b.g.Quests[0] == 0 {
+		if !b.g.Slain["boneking"] {
 			return "crypt1"
 		}
 		return "marsh"
-	case prefix == "crypt" && b.g.Quests[0] > 0: // the crypt is done: back up and on to the marsh
+	case prefix == "crypt" && b.g.Slain["boneking"]: // the crypt is done: back up and on to the marsh
 		return botHome(id)
 	case id == "crypt4":
 		return ""

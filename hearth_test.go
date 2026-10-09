@@ -54,7 +54,7 @@ func hearthTrial(r *Rules, pol *botPolicy, seed int64, duel bool) (res hearthRes
 	wear(hero, parKit(rng, r, pol, cp))
 	hero.HPot, hero.MPot, hero.Scrolls, hero.Gold = beltMax, pol.mana, 2, 400
 	g.P = hero
-	g.Quests = [3]int{2, 2, 0}
+	settle(g, "boneking", "oracle")
 	g.Deepest = 11
 	g.changeLevel("abyss3", "", nil)
 	var boss *Monster
@@ -67,10 +67,10 @@ func hearthTrial(r *Rules, pol *botPolicy, seed int64, duel bool) (res hearthRes
 	}
 	g.cleanup()
 	b := NewBot(g, pol)
-	for calls := 0; g.Turn < hearthTurnCap && calls < 2*hearthTurnCap && g.Mode != ModeDead && g.Quests[2] == 0 && b.State() != BotStuck; calls++ {
+	for calls := 0; g.Turn < hearthTurnCap && calls < 2*hearthTurnCap && g.Mode != ModeDead && !g.Slain["wanderer"] && b.State() != BotStuck; calls++ {
 		b.turn()
 	}
-	res.won, res.dead = g.Quests[2] > 0, g.Mode == ModeDead
+	res.won, res.dead = g.Slain["wanderer"], g.Mode == ModeDead
 	res.stuck = !res.won && !res.dead && g.Turn < hearthTurnCap
 	res.where, res.turns = g.Lv.ID, g.Turn
 	res.pots, res.fallen, res.followed = g.Stats.HPots, len(g.Fallen), g.homeYet

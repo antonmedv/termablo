@@ -142,6 +142,7 @@ func TestTalkStaysInBox(t *testing.T) {
 	for _, sz := range [][2]int{{80, 24}, {110, 34}} {
 		g := NewGame(1)
 		g.Mode = ModePlay
+		g.takeQuest(questByID("boneking")) // as Voss will: the panel lists it
 		play := NewScreen(sz[0], sz[1])
 		g.Draw(play)
 		for _, m := range g.Lv.Monsters {

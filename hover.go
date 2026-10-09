@@ -54,6 +54,10 @@ func (g *Game) Click(x, y, w, h int) {
 		g.clickTalk(x, y)
 		return
 	}
+	if g.Mode == ModeQuests {
+		g.clickJournal(x, y)
+		return
+	}
 	if g.Mode != ModePlay || x < 0 || y < 0 {
 		return
 	}
@@ -66,6 +70,11 @@ func (g *Game) Click(x, y, w, h int) {
 			g.drinkMana()
 		case g.beltHit[2].in(x, y):
 			g.readPortal()
+		}
+		for _, h := range g.questsHit {
+			if h.in(x, y) {
+				g.openJournal()
+			}
 		}
 		return
 	}

@@ -12,6 +12,22 @@
 - **The town remembers.** Townsfolk greet you differently once they've
   met you, react once to each boss you kill, and say so when you ask
   them the same thing twice.
+- **Quests are given, not known.** You start with none. Captain Voss
+  asks for the Bone King when you meet him, and for the Drowned Oracle
+  once he has paid for the king, or sooner if you ask him about her.
+  The Oracle's death sets you on the Last Wanderer. Kill a boss before
+  anyone asks and you are still paid.
+- **A quest journal.** Press `J`, or click the quests in the side
+  panel: every quest you've been given, what to do next, who gave it,
+  where the boss waits, and a journal entry for each step along the way.
+- **The world teaches you what to ask.** Entering the crypt, bleeding
+  on an altar, reading a portal scroll or killing your first cultist
+  gives you a topic to bring back to town. Voss's first briefing is
+  shorter: the rest is yours to find.
+- **Townsfolk see you.** Come back bleeding, broke, with an empty belt,
+  or wearing something they know, and they say so. Villagers tell you
+  rumors you haven't heard first, and their talk changes as the bosses
+  fall.
 
 ## 2026-10-08
 

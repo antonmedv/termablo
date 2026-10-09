@@ -26,7 +26,9 @@ Add `-seed 42` and the world is the same every time. Share the seed, race a frie
 
 **2026-10-09:** Conversations, the Morrowind way: walk into anyone in
 Emberhold, ask about the topics you've heard of, and the townsfolk
-remember what they told you and what you've done.
+remember what they told you and what you've done, and notice how you
+look. Quests are given by the townsfolk, and the world teaches you what
+to ask them about.
 
 See [`UPDATES.md`](UPDATES.md) for more.
 

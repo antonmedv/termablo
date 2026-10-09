@@ -2,7 +2,6 @@
 # Plural forms: one, other. Genders: m, f, mp, fp, mv, fv.
 {
   msg: {
-    welcome_goal: "Traquez le Roi des Os dans la crypte, et la Sibylle Noyée sous le Marais-Noir."
     welcome_help: "Appuyez sur ? pour l'aide. Le capitaine Voss, près de la taverne, a du travail pour vous."
     enter: "Vous entrez dans : {area}."
     far_beyond: "Quelque chose ici vous dépasse de loin."
@@ -94,15 +93,17 @@
     unseal_here: "Là où il attendait, un passage s'ouvre vers les profondeurs."
     unseal_far: "Loin en contrebas, dans l'Âtre, un passage s'ouvre vers les profondeurs."
     running: "{who} fuit pour sauver sa vie."
-    voss_reward: {
-        m: "Voss vous remet {n} pièces d'or et le {item}."
-        f: "Voss vous remet {n} pièces d'or et la {item}."
-        mv: "Voss vous remet {n} pièces d'or et l'{item}."
-        fv: "Voss vous remet {n} pièces d'or et l'{item}."
-        mp: "Voss vous remet {n} pièces d'or et les {item}."
-        fp: "Voss vous remet {n} pièces d'or et les {item}."
-        other: "Voss vous remet {n} pièces d'or et {item}."
+    quest_reward: {
+        m: "{who} vous remet {n} pièces d'or et le {item}."
+        f: "{who} vous remet {n} pièces d'or et la {item}."
+        mv: "{who} vous remet {n} pièces d'or et l'{item}."
+        fv: "{who} vous remet {n} pièces d'or et l'{item}."
+        mp: "{who} vous remet {n} pièces d'or et les {item}."
+        fp: "{who} vous remet {n} pièces d'or et les {item}."
+        other: "{who} vous remet {n} pièces d'or et {item}."
       }
+    quest_new: "Nouvelle quête : {name}."
+    topic_new: "En ville, vous pourriez vous renseigner sur : {topic}."
     cannot_afford: "Vous n'en avez pas les moyens."
     belt_full: "Votre ceinture est pleine."
     gamble: {
@@ -179,6 +180,12 @@
       greet_boneking: "J'ai entendu les cloches de la crypte ce matin. J'ai cru que je devenais gâteux. C'est vous ? Alors vous avez mérité le bon acier."
       greet_oracle: "Le dernier [étranger](stranger) que j'ai équipé pour les profondeurs n'est jamais revenu pour une réparation."
       greet_wanderer: "La forge a jeté une flamme blanche quand il est tombé, puis elle s'est apaisée. Quarante ans, jamais je ne l'ai vue faire ça. Vous êtes le bienvenu à cette enclume."
+      greet_hurt: "Vous saignez sur mon enclume. Mirela d'abord. L'acier ensuite."
+      greet_broke: "Regarder ne coûte rien. Le reste, si."
+      greet_kingsbane: "Fléau-des-Rois. C'est moi qui ai donné à cette hache son dernier fil, pour le [père](father) du capitaine. Montrez-la à Voss. Ou pas."
+      greet_kingsbane_again: "Huilez ce fil. Il l'a mérité."
+      greet_crown: "Ôtez cette couronne dans ma forge. Elle rend le feu nerveux."
+      greet_crown_again: "La couronne. Enlevez-la."
       forge: "Quarante ans que je l'entretiens. La garde passe de main en main, de forgeron à forgeron. Ce qui brûle dans son ventre, c'est la [Braise](ember) elle-même. Le jour où elle s'éteint, on fuit. Ce n'est pas une façon de parler."
       ember: "Les gens la croient sur un socle, au milieu de la place. Elle vit dans ma forge. Chaque lanterne de la ville s'allume ici. Je n'en parle pas, et vous non plus."
       ember_again: "J'ai dit que je n'en parlais pas."
@@ -193,6 +200,10 @@
       greet_boneking: "Les cloches de la crypte m'ont réveillée ce matin. J'ai pleuré, mon petit, et je ne sais pas pourquoi. Asseyez-vous ; vous saignez sur mon plancher."
       greet_oracle: "Tout est si calme, mon enfant. Mon cristal n'a plus fait un bruit depuis que vous êtes remonté. Je n'arrête pas de le porter à mon oreille."
       greet_wanderer: "Vous êtes revenu. Lui n'est jamais revenu, pas vraiment. Asseyez-vous, mon petit, que je soigne ces brûlures."
+      greet_hurt: "Oh, mon enfant, regardez-vous. Asseyez-vous avant de tomber."
+      greet_nopots: "Pas une seule fiole à votre ceinture ? Là-dessous ? Asseyez-vous, mon petit. Nous allons arranger ça."
+      greet_crown: "Ôtez cette couronne à ma table, mon petit. Elle chuchote, et je suis trop vieille pour l'écouter."
+      greet_crown_again: "La couronne, mon petit. Enlevez-la."
       oracle: "Mon cristal vient de sa grotte. Quand elle rêve, il chante. Elle ne chasse personne, mon enfant. Elle retient quelque chose, sous l'eau. Je ne sais pas quoi. Je sais que c'est brûlant."
       oracle_after: "Mon cristal s'est tu. Toute la ville dort sur ses deux oreilles, à présent. Pas moi. Ce qu'elle retenait remonte par l'[Abîme](abyss)."
       blackmarsh: "Les lumières froides sur l'eau sont à elle. Ne les suivez pas. Tout le monde les suit. Les pierres levées, c'est elle qui les a dressées, en descendant."
@@ -201,7 +212,7 @@
       portals: "De la cendre de forge dans du papier ; Hadrik la balaie, je la plie. Lisez-le, et la [Braise](ember) vous ramène chez vous, à la fontaine. C'est moins cher qu'un enterrement."
     }
     voss: {
-      greet: "Vagabond. Bien. Il nous faut une lame qui ne tremble pas.\nLa [Braise](ember) tient les ténèbres à distance. Les ténèbres veulent la reprendre.\nÀ l'est de la porte, au-delà des Champs de Cendres, se trouve la [Crypte des Déchus](crypt).\nQuatre niveaux plus bas, le [Roi des Os](boneking) siège sur son trône de côtes. Détruisez-le.\nEt au nord, dans le [Marais-Noir](blackmarsh), la [Sibylle Noyée](oracle) attire les égarés dans l'eau.\nAchetez des potions à Mirela. Gardez un [parchemin de portail](portals). Revenez vivant."
+      greet: "Vagabond. Bien. Il nous faut une lame qui ne tremble pas.\nQuatre niveaux sous la [crypte](crypt), à l'est après les champs, le [Roi des Os](boneking) siège sur son trône de côtes. Détruisez-le.\nGardez un [parchemin de portail](portals) sur vous. Revenez vivant."
       greet_again: "Toujours en vie. Bien. Le [Roi des Os](boneking) se trouve quatre niveaux sous la [crypte](crypt). Rapportez-moi sa poussière."
       boneking_reward: "Le Roi des Os n'est plus que poussière ? Alors les cloches de la crypte pourront de nouveau sonner.\nPrenez ceci — c'était à [mon père](father). Et l'or, bien sûr."
       oracle_reward: "La Sibylle, réduite au silence... Je n'aurais jamais cru pouvoir dormir sans l'entendre.\nSous son bassin, la roche brûle. [L'Abîme](abyss) n'a pas de fond, dit-on. Soyez prudent.\nJ'ai envoyé [quelqu'un](stranger) là-dessous, une fois. J'ai cessé de compter les jours."
@@ -211,6 +222,11 @@
       greet_oracle_again: "Ce qui attend dans l'[Abîme](abyss) dépasse mes cartes. Allez-y prudemment, ou n'y allez pas."
       greet_wanderer: "Les lanternes brillent de nouveau. Qui qu'il fût, il a été des nôtres, autrefois.\nContinuez de marcher, étranger. C'est pour cela qu'on vous engage."
       greet_wanderer_again: "La garde dort de nouveau à tour de rôle. C'est votre œuvre. N'en faites pas un discours."
+      greet_hurt: "Vous saignez sur ma porte. Voyez Mirela, puis venez me voir."
+      greet_kingsbane: "Cette hache. Fléau-des-Rois. Mon [père](father) l'a portée là-dessous. Gardez-la. Il aurait préféré la voir frapper que rouiller."
+      greet_kingsbane_again: "Vous la portez toujours. Bien."
+      greet_crown: "C'est la couronne du [Roi des Os](boneking) ? Ne la portez pas sur la place. Les gens se souviennent."
+      greet_crown_again: "La couronne, étranger. Pas sur ma place."
       crypt: "La crypte royale, à l'est, après les Champs de Cendres. Quatre niveaux, froids et poussiéreux. Les braseros s'allument seuls. Ne restez pas près d'eux."
       boneking: "Quatre niveaux sous la chapelle, sur un trône de côtes. Mon [père](father) est descendu l'affronter avec une hache. Rapportez-moi sa poussière."
       boneking_after: "Poussière, dites-vous. Bien. J'y croirai quand j'entendrai les cloches."
@@ -242,6 +258,22 @@
       stranger_after: "Les lanternes brillent de nouveau. Personne ne prononce son nom. Personne ne le connaissait."
     }
   }
+  journal: {
+    boneking: {
+      taken: "Le capitaine Voss veut la destruction du Roi des Os. Il siège sur son trône de côtes, quatre niveaux sous la Crypte des Déchus, à l'est de la porte, au-delà des Champs de Cendres. Le père de Voss est descendu l'affronter avec une hache, et n'est jamais revenu."
+      done: "Le Roi des Os n'est plus que poussière, et les cryptes se sont tues. Voss voudra l'entendre de votre bouche."
+      rewarded: "Voss vous a payé en or, et vous a remis un objet qui appartenait à son père. Les cloches de la crypte pourront de nouveau sonner."
+    }
+    oracle: {
+      taken: "Voss veut qu'on en finisse avec la Sibylle Noyée. Elle s'est enfoncée dans les eaux sous le Marais-Noir, au nord des champs, et attire les égarés à sa suite. Suivez les lumières froides jusqu'au fond de la Grotte Engloutie."
+      done: "Le chant de la Sibylle s'est éteint. Plus bas encore, quelque chose brûle. Voss doit l'apprendre."
+      rewarded: "Voss vous a payé, et vous a mis en garde : sous son bassin, la roche brûle, et l'Abîme Ardent n'a pas de fond."
+    }
+    wanderer: {
+      taken: "Quelque chose est remonté de l'Abîme quand la Sibylle est tombée. Toute lumière s'éteint à son approche, et il vous ressemble : c'est l'étranger qu'Emberhold avait engagé avant vous. Arrêtez le Dernier Vagabond avant qu'il n'atteigne la forge."
+      done: "Le Dernier Vagabond est tombé. Les ténèbres ont lâché le feu, et les lanternes d'Emberhold brillent de nouveau."
+    }
+  }
   topic: {
     rumors: "Rumeurs récentes"
     ember: "Braise"
@@ -270,6 +302,11 @@
     edran: "[Le roi Edran](edran) a porté la [Braise](ember) jusqu'ici à mains nues. Il y a laissé son visage."
     uncle: "Mon oncle a rejoint le [Culte de la Braise](cult). Il disait qu'on avait une dette envers les ténèbres. Il est descendu la payer."
     holding: "Mirela dit que la [Sibylle](oracle) ne chasse personne. Elle retient quelque chose."
+    bells: "Les cloches de la crypte ont sonné ce matin. Personne n'a tiré ces cordes depuis trente ans."
+    face: "On dit que le Roi des Os portait autrefois le visage du [roi Edran](edran). Ou ce que les ténèbres en avaient laissé."
+    lights: "Les lumières froides du [Marais-Noir](blackmarsh) se sont éteintes. Mon frère a dormi d'une traite toute la nuit."
+    wind: "Un vent chaud monte maintenant des puits du marais. Il sent la forge. Il sent l'[Abîme](abyss), dit Mirela."
+    lanterns: "Les lanternes brûlent plus droit depuis que vous êtes remonté. Personne ne dit pourquoi. Personne n'en a besoin."
   }
   area: {
     town: "Emberhold"
@@ -396,6 +433,7 @@
       inventory: "i"
       character: "c"
       map: "m"
+      quests: "J"
       quit: "Q / ctrl+c"
     }
     does: {
@@ -411,6 +449,7 @@
       inventory: "inventaire et équipement"
       character: "fiche du personnage, répartir les points"
       map: "carte de la zone explorée"
+      quests: "journal des quêtes (ou cliquez sur les quêtes du panneau)"
       quit: "quitter"
     }
     tip: {
@@ -433,6 +472,22 @@
       barter: "Marchander"
       goodbye: "Au revoir"
       keys: "↑↓ sujet · entrée demander · esc partir"
+    }
+    journal: {
+      title: "Quêtes"
+      keys: "↑↓ quête · esc fermer"
+      none: "Personne ne vous a encore rien demandé. Parlez aux habitants d'Emberhold."
+      goal: {
+          m: "{name} doit être détruit."
+          f: "{name} doit être détruite."
+          mp: "{name} doivent être détruits."
+          fp: "{name} doivent être détruites."
+        }
+      return: "{who} vous attend pour votre récompense."
+      over: "Accomplie."
+      giver: "Commanditaire : {who}"
+      where: "Lieu : {area}"
+      reward: "Récompense : de l'or et un objet unique"
     }
     currently_equipped: "Actuellement équipé :"
     more_above: "↑ {n} de plus"

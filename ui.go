@@ -49,6 +49,8 @@ func (g *Game) Draw(s *Screen) {
 		g.drawOverview(s, mapW, mapH)
 	case ModeTalk:
 		g.drawTalk(s, mapW, mapH)
+	case ModeQuests:
+		g.drawJournal(s, mapW, mapH)
 	case ModeDead:
 		g.drawDead(s, mapW, mapH)
 	}
@@ -417,23 +419,19 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 			row++
 		}
 	}
-	// quests
+	// the quests taken, none until someone gives one; a click, or J,
+	// opens the journal
 	qrow := h - 6
-	if qrow > row {
-		s.Text(cx, qrow, fit(L.T("ui.panel.quests"), bw), colDim.C8())
-		qn := []string{L.T("monster.boneking"), L.T("monster.oracle")}
-		if g.Quests[1] > 0 || g.homeYet {
-			qn = append(qn, L.T("monster.wanderer"))
+	g.questsHit = g.questsHit[:0]
+	if shown := g.questsShown(3); qrow > row && len(shown) > 0 {
+		s.TextBold(cx, qrow, "J", colDim.C8())
+		s.Text(cx+2, qrow, fit(L.T("ui.panel.quests"), bw-2), colDim.C8())
+		for i, q := range shown {
+			mark, col := g.questMark(q)
+			s.Text(cx, qrow+1+i, fit(mark+" "+L.T("monster."+q.Boss), bw), col.C8())
 		}
-		for i, q := range qn {
-			mark, col := "○", colGray
-			switch {
-			case g.Quests[i] == 2 || i == 2 && g.Quests[i] == 1:
-				mark, col = "✓", colGreen
-			case g.Quests[i] == 1:
-				mark, col = "◉", colGold
-			}
-			s.Text(cx, qrow+1+i, fit(mark+" "+q, bw), col.C8())
+		for i := range len(shown) + 1 {
+			g.questsHit = append(g.questsHit, hitBox{cx, cx + bw - 1, qrow + i})
 		}
 	}
 	s.Text(cx, h-2, fit(L.T("ui.panel.keys"), bw), colDim.C8())
@@ -840,7 +838,7 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 
 // helpKeys and helpTips are the help screen's rows: help.key.<k> and
 // help.does.<k>, help.tip.<t>.
-var helpKeys = []string{"move", "wait", "pickup", "firebolt", "nova", "target", "potions", "portal", "explore", "inventory", "character", "map", "quit"}
+var helpKeys = []string{"move", "wait", "pickup", "firebolt", "nova", "target", "potions", "portal", "explore", "inventory", "character", "map", "quests", "quit"}
 var helpTips = []string{"walk_into", "talk", "darkness", "names", "glow", "upgrade", "hover", "belt"}
 
 func (g *Game) drawDead(s *Screen, mapW, mapH int) {

@@ -42,6 +42,10 @@ func (g *Game) SetLang(code string) {
 // line is written in.
 type areaArg struct{ l *Level }
 
+// keyArg is a name in the catalog as a message argument, named in the
+// language the line is written in.
+type keyArg string
+
 // nextLang is the language after code in i18n.Langs, dir 1 or -1.
 func nextLang(code string, dir int) string {
 	n := len(i18n.Langs)
@@ -73,6 +77,9 @@ func (g *Game) line(key string, args []any) string {
 	for i, a := range args {
 		if aa, ok := a.(areaArg); ok {
 			a = areaName(g.L, aa.l)
+		}
+		if k, ok := a.(keyArg); ok {
+			a = g.L.Noun(string(k))
 		}
 		resolved[i] = a
 	}

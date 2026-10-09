@@ -2,7 +2,6 @@
 # Plural forms: one, other. Genders: m, f, n, pl.
 {
   msg: {
-    welcome_goal: "Jage den Knochenkönig in der Gruft und die Ertrunkene Seherin unter dem Schwarzmoor."
     welcome_help: "Drücke ? für Hilfe. Hauptmann Voss bei der Taverne hat Arbeit für dich."
     enter: "Gebiet betreten: {area}."
     far_beyond: "Etwas hier ist dir weit überlegen."
@@ -86,7 +85,9 @@
         pl: "{who} rennen um ihr Leben."
         other: "{who} rennt um sein Leben."
       }
-    voss_reward: "Voss gibt dir {n} Gold und dazu: {item}."
+    quest_reward: "{who} gibt dir {n} Gold und dazu: {item}."
+    quest_new: "Neuer Auftrag: {name}."
+    topic_new: "In der Stadt könntest du nachfragen: {topic}."
     cannot_afford: "Das kannst du dir nicht leisten."
     belt_full: "Dein Gürtel ist voll."
     gamble: "Hadrik wickelt es aus: {item}. {n}g, kein Umtausch."
@@ -126,6 +127,12 @@
       greet_boneking: "Heut früh die Glocken der Gruft gehört. Dachte schon, ich werd wunderlich. Dein Werk? Dann hast du dir den guten Stahl verdient."
       greet_oracle: "Der letzte [Fremde](stranger), den ich für die Tiefe gerüstet hab, kam nie zur Reparatur zurück."
       greet_wanderer: "Die Esse loderte weiß auf, als er fiel, dann beruhigte sie sich. Vierzig Jahre, so was hab ich nie an ihr gesehen. An diesem Amboss bist du willkommen."
+      greet_hurt: "Du blutest mir auf den Amboss. Erst Mirela. Dann Stahl."
+      greet_broke: "Schauen kostet nichts. Der Rest schon."
+      greet_kingsbane: "Königstöter. Die letzte Schneide hab ich der Axt gegeben, für den [Vater](father) des Hauptmanns. Zeig sie Voss. Oder lass es."
+      greet_kingsbane_again: "Halt die Schneide geölt. Sie hat es sich verdient."
+      greet_crown: "In meiner Schmiede nimmst du die Krone ab. Sie macht das Feuer unruhig."
+      greet_crown_again: "Krone. Runter."
       forge: "Vierzig Jahre hüte ich sie. Das Hüten geht von Hand zu Hand, von Schmied zu Schmied. Was in ihrem Bauch brennt, ist die [Glut](ember) selbst. An dem Tag, an dem sie ausgeht, fliehen wir. Das ist keine Redensart."
       ember: "Die Leute glauben, sie steht auf einem Sockel am Platz. Sie lebt in meiner Esse. Jede Laterne der Stadt wird hier entzündet. Ich rede nicht darüber, und du wirst es auch nicht."
       ember_again: "Ich hab gesagt, ich rede nicht darüber."
@@ -140,6 +147,10 @@
       greet_boneking: "Die Glocken der Gruft haben mich heute früh geweckt. Ich habe geweint, Liebes, und weiß nicht, warum. Setz dich; du blutest mir den Boden voll."
       greet_oracle: "Es ist so still, Kind. Mein Kristall hat keinen Laut mehr gegeben, seit du heraufgekommen bist. Ich halte ihn mir immer wieder ans Ohr."
       greet_wanderer: "Du bist zurückgekommen. Er nie, nicht wirklich. Setz dich, Liebes, lass mich nach den Verbrennungen sehen."
+      greet_hurt: "Ach, Kind, sieh dich an. Setz dich, bevor du umfällst."
+      greet_nopots: "Nicht eine Flasche am Gürtel? Da unten? Setz dich, Liebes. Das richten wir."
+      greet_crown: "An meinem Tisch nimmst du die Krone ab, Liebes. Sie flüstert, und ich bin zu alt zum Zuhören."
+      greet_crown_again: "Die Krone, Liebes. Runter damit."
       oracle: "Mein Kristall stammt aus ihrer Grotte. Wenn sie träumt, singt er. Sie jagt niemanden, Kind. Sie hält etwas nieder, unter dem Wasser. Ich weiß nicht, was. Ich weiß nur, dass es heiß ist."
       oracle_after: "Mein Kristall singt nicht mehr. Die ganze Stadt schläft jetzt ruhig. Ich nicht. Was immer sie niedergehalten hat, steigt nun durch den [Abgrund](abyss) herauf."
       blackmarsh: "Die kalten Lichter über dem Wasser sind ihre. Folge ihnen nicht. Alle folgen ihnen. Die Menhire hat sie selbst aufgerichtet, auf ihrem Weg hinab."
@@ -148,7 +159,7 @@
       portals: "Asche aus der Esse, in Papier; Hadrik kehrt sie zusammen, ich falte sie. Lies eine, und die [Glut](ember) zieht dich heim zum Brunnen. Billiger als ein Begräbnis."
     }
     voss: {
-      greet: "Wanderer. Gut. Wir brauchen eine Klinge, die nicht zittert.\nDie [Glut](ember) hält das Dunkel fern. Das Dunkel will sie zurück.\nÖstlich des Tors, hinter den Aschefeldern, liegt die [Gruft der Gefallenen](crypt).\nVier Ebenen tief sitzt der [Knochenkönig](boneking) auf seinem Thron aus Rippen. Vernichte ihn.\nUnd im Norden, im [Schwarzmoor](blackmarsh), ruft die [Ertrunkene Seherin](oracle) die Verirrten ins Wasser.\nKauf Tränke bei Mirela. Halte eine [Portalrolle](portals) bereit. Komm lebend zurück."
+      greet: "Wanderer. Gut. Wir brauchen eine Klinge, die nicht zittert.\nÖstlich hinter den Feldern, vier Ebenen tief in der [Gruft](crypt), sitzt der [Knochenkönig](boneking) auf seinem Thron aus Rippen. Vernichte ihn.\nHalte eine [Portalrolle](portals) bereit. Komm lebend zurück."
       greet_again: "Du atmest noch. Gut. Der [Knochenkönig](boneking) sitzt vier Ebenen tief in der [Gruft](crypt). Bring mir seinen Staub."
       boneking_reward: "Der Knochenkönig ist Staub? Dann dürfen die Glocken der Gruft wieder läuten.\nNimm das — es gehörte [meinem Vater](father). Und das Gold, natürlich."
       oracle_reward: "Die Seherin, verstummt ... Ich hätte nie gedacht, dass ich schlafen könnte, ohne sie zu hören.\nUnter ihrem Teich brennt der Fels. [Der Abgrund](abyss) hat keinen Boden, sagt man. Sei vorsichtig.\nIch habe schon einmal [jemanden](stranger) hinuntergeschickt. Irgendwann habe ich aufgehört, die Tage zu zählen."
@@ -158,6 +169,11 @@
       greet_oracle_again: "Was im [Abgrund](abyss) wartet, steht auf keiner meiner Karten. Geh vorsichtig, oder geh gar nicht."
       greet_wanderer: "Die Laternen brennen wieder. Wer er auch war, einst war er einer von uns.\nGeh weiter, Fremder. Dafür heuern wir dich an."
       greet_wanderer_again: "Die Wache schläft wieder in Schichten. Das ist dein Werk. Mach keine Rede daraus."
+      greet_hurt: "Du blutest mir das Tor voll. Geh zu Mirela, dann zu mir."
+      greet_kingsbane: "Diese Axt. Königstöter. Mein [Vater](father) hat sie hinuntergetragen. Behalt sie. Er hätte lieber, dass sie schwingt, als dass sie rostet."
+      greet_kingsbane_again: "Du trägst sie noch. Gut."
+      greet_crown: "Ist das die Krone des [Knochenkönigs](boneking)? Trag sie nicht auf dem Platz. Die Leute erinnern sich."
+      greet_crown_again: "Die Krone, Fremder. Nicht auf meinem Platz."
       crypt: "Die königliche Gruft, östlich hinter den Aschefeldern. Vier Ebenen, kalt und staubig. Die Kohlenbecken entzünden sich von selbst. Bleib ihnen fern."
       boneking: "Vier Ebenen unter der Kapelle, auf einem Thron aus Rippen. Mein [Vater](father) ist ihm mit einer Axt nachgestiegen. Bring mir seinen Staub."
       boneking_after: "Staub, sagst du. Gut. Ich glaube es, wenn ich die Glocken höre."
@@ -189,6 +205,22 @@
       stranger_after: "Die Laternen brennen wieder. Niemand spricht seinen Namen aus. Niemand kannte ihn."
     }
   }
+  journal: {
+    boneking: {
+      taken: "Hauptmann Voss will den Knochenkönig vernichtet sehen. Er sitzt auf seinem Thron aus Rippen, vier Ebenen tief in der Gruft der Gefallenen, östlich des Tors hinter den Aschefeldern. Voss' Vater ist ihm mit einer Axt nachgestiegen und nicht zurückgekehrt."
+      done: "Der Knochenkönig ist Staub, und die Grüfte sind verstummt. Voss wird es von dir hören wollen."
+      rewarded: "Voss hat in Gold bezahlt und dir etwas gegeben, das seinem Vater gehörte. Die Glocken der Gruft dürfen wieder läuten."
+    }
+    oracle: {
+      taken: "Voss will, dass die Ertrunkene Seherin ein Ende findet. Sie ging ins Wasser unter dem Schwarzmoor, nördlich der Felder, und ruft die Verirrten zu sich hinab. Folge den kalten Lichtern hinab in die Versunkene Grotte."
+      done: "Der Gesang der Seherin ist verstummt. Noch tiefer brennt etwas. Voss sollte davon erfahren."
+      rewarded: "Voss hat bezahlt und dich gewarnt: Unter ihrem Teich brennt der Fels, und der Brennende Abgrund hat keinen Boden."
+    }
+    wanderer: {
+      taken: "Etwas ist aus dem Abgrund heraufgestiegen, als die Seherin fiel. Jedes Licht erlischt in seiner Nähe, und es sieht aus wie du: der Fremde, den Emberhold vor dir angeheuert hat. Halte den Letzten Wanderer auf, bevor er die Esse erreicht."
+      done: "Der Letzte Wanderer ist gefallen. Das Dunkel hat das Feuer losgelassen, und die Laternen von Emberhold brennen wieder."
+    }
+  }
   topic: {
     rumors: "Neueste Gerüchte"
     ember: "Glut"
@@ -217,6 +249,11 @@
     edran: "[König Edran](edran) trug die [Glut](ember) mit bloßen Händen herauf. Es kostete ihn sein Gesicht."
     uncle: "Mein Onkel ist dem [Glutkult](cult) beigetreten. Sagte, wir seien dem Dunkel etwas schuldig. Er ging hinab, um zu bezahlen."
     holding: "Mirela sagt, die [Seherin](oracle) jagt niemanden. Sie hält etwas nieder."
+    bells: "Heute früh haben die Glocken der Gruft geläutet. Seit dreißig Jahren hat niemand an diesen Seilen gezogen."
+    face: "Es heißt, der Knochenkönig trug einst das Gesicht von [König Edran](edran). Oder was das Dunkel davon übrig ließ."
+    lights: "Die kalten Lichter über dem [Schwarzmoor](blackmarsh) sind erloschen. Mein Bruder hat die ganze Nacht durchgeschlafen."
+    wind: "Aus den Brunnen im Moor steigt jetzt heißer Wind. Riecht nach Schmiede. Nach [dem Abgrund](abyss), sagt Mirela."
+    lanterns: "Die Laternen brennen ruhiger, seit du heraufgekommen bist. Niemand sagt, warum. Niemand muss es."
   }
   area: {
     town: "Emberhold"
@@ -353,6 +390,7 @@
       inventory: "i"
       character: "c"
       map: "m"
+      quests: "J"
       quit: "Q / ctrl+c"
     }
     does: {
@@ -368,6 +406,7 @@
       inventory: "Inventar & Ausrüstung"
       character: "Charakterbogen, Attributpunkte verteilen"
       map: "Karte des erkundeten Gebiets"
+      quests: "Auftragsbuch (oder Aufträge in der Leiste anklicken)"
       quit: "beenden"
     }
     tip: {
@@ -390,6 +429,17 @@
       barter: "Handeln"
       goodbye: "Lebwohl"
       keys: "↑↓ Thema · enter fragen · esc Lebwohl"
+    }
+    journal: {
+      title: "Aufträge"
+      keys: "↑↓ Auftrag · esc schließen"
+      none: "Noch hat niemand etwas von dir verlangt. Sprich mit den Leuten von Emberhold."
+      goal: "{name} muss vernichtet werden."
+      return: "{who} schuldet dir noch deinen Lohn. Kehre zurück."
+      over: "Abgeschlossen."
+      giver: "Auftraggeber: {who}"
+      where: "Ort: {area}"
+      reward: "Lohn: Gold und ein einzigartiger Gegenstand"
     }
     currently_equipped: "Derzeit angelegt:"
     more_above: "↑ {n} weitere"

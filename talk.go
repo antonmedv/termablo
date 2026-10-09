@@ -10,8 +10,9 @@ import (
 
 // Conversations, the way Morrowind holds them: what has been said runs
 // down the left, the topics the hero knows down the right. A topic is
-// learned by hearing it, a [words](topic) link in a line, and from then
-// on anyone can be asked about it.
+// learned by hearing it, a [words](topic) link in a line, or by coming
+// upon the thing itself (sights), and from then on anyone can be asked
+// about it.
 
 // Talk is an open conversation.
 type Talk struct {
@@ -24,6 +25,7 @@ type Talk struct {
 	off    int // the first history row shown
 	follow bool
 	rumor  string    // the last rumor told here
+	looks  []string  // how the hero looked as the talk opened
 	hits   []talkHit // this frame's topic rows and links
 }
 
@@ -46,30 +48,112 @@ func (h talkHit) in(x, y int) bool { return y == h.Y && x >= h.X0 && x <= h.X1 }
 // rumor.<key>.
 var topics = []string{"rumors", "ember", "edran", "altars", "forge", "portals", "crypt", "boneking", "father", "blackmarsh", "oracle", "abyss", "cult", "stranger"}
 
-// rumors are what a villager tells, rumor.<key>, one picked at random.
-var rumors = []string{"braziers", "brother", "torch", "forge", "glimmer", "crystal", "scroll", "stranger", "edran", "uncle", "holding"}
+// rumorDef is a rumor villagers tell, rumor.<Key>: from the start, or
+// once the fact After holds, and no more once Until does. A fact holds
+// once its quest is settled: the town hears from the giver, as they pay.
+type rumorDef struct{ Key, After, Until string }
 
-func (g *Game) rumor() string { return "rumor." + rumors[g.rng.Intn(len(rumors))] }
-
-// anotherRumor is a rumor other than the last one heard here.
-func (g *Game) anotherRumor() string {
-	i := g.rng.Intn(len(rumors) - 1)
-	if last := slices.Index(rumors, strings.TrimPrefix(g.talk.rumor, "rumor.")); last >= 0 && i >= last {
-		i++
-	}
-	return "rumor." + rumors[i]
+// rumors are what villagers tell: the town's talk follows the hero down.
+var rumors = []rumorDef{
+	{Key: "braziers"}, {Key: "brother", Until: "oracle"}, {Key: "torch"}, {Key: "forge"},
+	{Key: "glimmer"}, {Key: "crystal", Until: "oracle"}, {Key: "scroll"},
+	{Key: "stranger", Until: "wanderer"}, {Key: "edran"}, {Key: "uncle"}, {Key: "holding", Until: "oracle"},
+	{Key: "bells", After: "boneking"}, {Key: "face", After: "boneking"},
+	{Key: "lights", After: "oracle"}, {Key: "wind", After: "oracle"},
+	{Key: "lanterns", After: "wanderer"},
 }
 
-// facts are what the town remembers has happened, newest first. A line
-// may have a variant for each, <line>_<fact>, said instead while the
-// fact holds. The town hears of a quest's boss from Voss, as he pays.
-var facts = []struct {
-	id string
-	on func(*Game) bool
-}{
-	{"wanderer", func(g *Game) bool { return g.Quests[2] > 0 }},
-	{"oracle", func(g *Game) bool { return g.Quests[1] == 2 }},
-	{"boneking", func(g *Game) bool { return g.Quests[0] == 2 }},
+// rumor is a rumor told now, other than last: one the hero has not heard
+// from any villager while there are some, then any.
+func (g *Game) rumor(last string) string {
+	var fresh, old []string
+	for _, r := range rumors {
+		k := "rumor." + r.Key
+		if k == last || r.After != "" && !g.fact(r.After) || r.Until != "" && g.fact(r.Until) {
+			continue
+		}
+		if g.saidBy("villager", k) {
+			old = append(old, k)
+		} else {
+			fresh = append(fresh, k)
+		}
+	}
+	if len(fresh) == 0 {
+		fresh = old
+	}
+	return fresh[g.rng.Intn(len(fresh))]
+}
+
+// sights teach the hero a topic when they meet the thing itself: a place
+// entered, area.<lore key>; a monster killed, kill.<template>; a unique
+// picked up, item.<name>; an altar bled on; a portal opened.
+var sights = map[string]string{
+	"area.crypt": "crypt", "area.marsh": "blackmarsh", "area.grotto": "oracle", "area.abyss": "abyss",
+	"kill.cultist": "cult", "kill.boneking": "edran",
+	"item.Kingsbane": "father", "item.Hollow Crown": "edran",
+	"altar": "altars", "portal": "portals",
+}
+
+// see learns the topic a sight teaches, and says so: something to bring
+// back to town.
+func (g *Game) see(what string) {
+	id, ok := sights[what]
+	if !ok || g.Known[id] {
+		return
+	}
+	g.Known[id] = true
+	g.say(colLore, "msg.topic_new", "topic", keyArg("topic."+id))
+}
+
+// looks are what a speaker may see in the hero as they meet, in the
+// order they are remarked on. A line may have a variant for each,
+// <line>_<look>, said while it holds: hurt, wearing Kingsbane or the
+// Hollow Crown, no healing potion on the belt, or not the coin for one.
+var looks = []string{"hurt", "kingsbane", "crown", "nopots", "broke"}
+
+func (g *Game) looking(look string) bool {
+	p := g.P
+	wears := func(name string) bool {
+		return slices.ContainsFunc(p.Eq[:], func(it *Item) bool { return it != nil && it.Rarity == RUnique && it.Name == name })
+	}
+	switch look {
+	case "hurt":
+		return p.HP < float64(p.MaxHP())*.4
+	case "kingsbane":
+		return wears("Kingsbane")
+	case "crown":
+		return wears("Hollow Crown")
+	case "nopots":
+		return p.HPot == 0
+	case "broke":
+		return p.Gold < g.buyPrice(&Item{Kind: IKHealth})
+	}
+	return false
+}
+
+// looksNow are the looks that hold.
+func (g *Game) looksNow() []string {
+	var l []string
+	for _, id := range looks {
+		if g.looking(id) {
+			l = append(l, id)
+		}
+	}
+	return l
+}
+
+// facts are what the town remembers has happened, newest first: the
+// quests settled, later quests in the table newer. A line may have a
+// variant for each, <line>_<fact>, said instead while the fact holds.
+// The town hears of a quest's boss from its giver, as they pay.
+func (g *Game) facts() []string {
+	var ids []string
+	for i := len(quests) - 1; i >= 0; i-- {
+		if g.settled(&quests[i]) {
+			ids = append(ids, quests[i].ID)
+		}
+	}
+	return ids
 }
 
 // topicFact is the fact that settles a topic: its <id>_after is said
@@ -77,36 +161,53 @@ var facts = []struct {
 var topicFact = map[string]string{"boneking": "boneking", "father": "boneking", "oracle": "oracle", "abyss": "oracle", "stranger": "wanderer"}
 
 func (g *Game) fact(id string) bool {
-	for _, f := range facts {
-		if f.id == id {
-			return f.on(g)
-		}
-	}
-	return false
+	q := questByID(id)
+	return q != nil && g.settled(q)
 }
+
+// lineKind is what a variant of a line is: the plain line or its
+// _after, news of a fact, or a remark on how the hero looks.
+type lineKind uint8
+
+const (
+	linePlain lineKind = iota
+	lineNews
+	lineLook
+)
 
 // variants are the lines a speaker has on a topic, in the order tried:
 // their own before the town's, and for each the settled <id>_after, the
-// news of the newest fact they have a line for, <id>_<fact>, and the
-// plain <id>. Older news is passed over: it is old.
-func (g *Game) variants(who, id string) (keys []string, news []bool) {
-	add := func(k string, n bool) {
-		if g.L.Has(k) {
-			keys, news = append(keys, k), append(news, n)
+// news of the newest fact they have a line for, <id>_<fact>, the first
+// look they have a line for, <id>_<look>, and the plain <id>. Older
+// news is passed over: it is old.
+func (g *Game) variants(who, id string) (keys []string, kinds []lineKind) {
+	add := func(k string, kind lineKind) bool {
+		if !g.L.Has(k) {
+			return false
 		}
+		keys, kinds = append(keys, k), append(kinds, kind)
+		return true
+	}
+	var seen []string
+	if g.talk != nil {
+		seen = g.talk.looks
 	}
 	for _, w := range []string{who, "any"} {
 		base := "talk." + w + "." + id
 		if f, ok := topicFact[id]; ok && g.fact(f) {
-			add(base+"_after", false)
+			add(base+"_after", linePlain)
 		}
-		for _, f := range facts {
-			if f.on(g) && g.L.Has(base+"_"+f.id) {
-				add(base+"_"+f.id, true)
+		for _, f := range g.facts() {
+			if add(base+"_"+f, lineNews) {
 				break
 			}
 		}
-		add(base, false)
+		for _, l := range seen {
+			if add(base+"_"+l, lineLook) {
+				break
+			}
+		}
+		add(base, linePlain)
 	}
 	return
 }
@@ -131,30 +232,35 @@ func (g *Game) answer(who, id string) string {
 // what they remember saying. Before any news they say the line under
 // it: the hero is met before being told the news. A line said before
 // gives way to its <line>_again; without one, news is told once and
-// passed over, and anything else is said again.
+// passed over, and anything else is said again. How the hero looks is
+// remarked on over anything said before, news told and all.
 func (g *Game) says(who, id string) string {
 	if id == "rumors" {
 		return g.answer(who, id)
 	}
-	keys, news := g.variants(who, id)
+	keys, kinds := g.variants(who, id)
 	for i, k := range keys {
-		if !news[i] {
+		if kinds[i] == linePlain {
 			if !g.saidBy(who, k) {
 				return k
 			}
 			break
 		}
 	}
+	looked := slices.Contains(kinds, lineLook)
 	last := ""
 	for i, k := range keys {
-		if !g.saidBy(who, k) {
+		said := g.saidBy(who, k)
+		switch {
+		case kinds[i] == lineLook && said && g.L.Has(k+"_again"):
+			return k + "_again"
+		case kinds[i] == lineLook, !said:
 			return k
-		}
-		if g.L.Has(k + "_again") {
+		case g.L.Has(k+"_again") && (kinds[i] != lineNews || !looked):
 			return k + "_again"
 		}
 		last = k
-		if !news[i] {
+		if kinds[i] == linePlain {
 			return k
 		}
 	}
@@ -177,6 +283,7 @@ func (g *Game) saidBy(who, key string) bool { return g.heard[who+" "+key] }
 func (g *Game) hear(head, key string) {
 	t := g.talk
 	g.heard[t.Who+" "+key] = true
+	g.offered(key)
 	text := g.L.T(key)
 	for _, id := range i18n.Links(locales.Get(i18n.Source).T(key)) {
 		g.Known[id] = true
@@ -186,6 +293,17 @@ func (g *Game) hear(head, key string) {
 	}
 	t.Log = append(t.Log, talkEntry{head, text})
 	t.follow = true
+}
+
+// speakers are who the townsfolk are in the catalog, talk.<speaker>.*,
+// by template ID; anyone else is a villager.
+var speakers = map[string]string{"smith": "hadrik", "alch": "mirela", "captain": "voss"}
+
+func speaker(template string) string {
+	if s, ok := speakers[template]; ok {
+		return s
+	}
+	return "villager"
 }
 
 // talkOpt is a row of the topic list: Barter, a topic, or Goodbye.
@@ -244,7 +362,7 @@ func (g *Game) ask(id string) {
 			return // a link to a topic this speaker has nothing on
 		}
 		if k == "rumor" {
-			k = g.anotherRumor()
+			k = g.rumor(t.rumor)
 		}
 		g.hear(g.L.T("topic."+id), k)
 		if i := slices.IndexFunc(t.options(g), func(o talkOpt) bool { return o.id == id }); i >= 0 {

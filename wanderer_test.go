@@ -388,7 +388,7 @@ func TestWandererDeathDropsShroud(t *testing.T) {
 	if g.Mode != ModePlay {
 		t.Errorf("mode %v after his death, want play", g.Mode)
 	}
-	if g.Quests[2] != 1 {
+	if !g.settled(questByID("wanderer")) {
 		t.Error("the quest is not done")
 	}
 	found := false
@@ -406,7 +406,7 @@ func TestWandererDeathDropsShroud(t *testing.T) {
 func TestVossRewardsFit(t *testing.T) {
 	g := NewGame(1)
 	g.Mode = ModePlay
-	g.Quests = [3]int{1, 1, 0}
+	slay(g, "boneking", "oracle")
 	for _, m := range g.Lv.Monsters {
 		if m.T.ID == "captain" {
 			g.talkTo(m)
@@ -441,8 +441,8 @@ func TestReady(t *testing.T) {
 		if p.HPot != beltMax || p.Scrolls != 2 || p.HP != float64(p.MaxHP()) {
 			t.Errorf("%s: belt %d, scrolls %d, life %.0f/%d", build, p.HPot, p.Scrolls, p.HP, p.MaxHP())
 		}
-		if g.Quests != [3]int{2, 2, 0} {
-			t.Errorf("%s: quests %v", build, g.Quests)
+		if !g.settled(questByID("boneking")) || !g.settled(questByID("oracle")) || g.Slain["wanderer"] {
+			t.Errorf("%s: quests %v, slain %v", build, g.Quests, g.Slain)
 		}
 	}
 	if NewGame(3).Ready(5, "rogue") == nil {

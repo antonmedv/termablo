@@ -99,7 +99,7 @@ func runBotWith(r *Rules, seed int64, pol *botPolicy, maxTurns int) (run botRun)
 	}
 	p := g.P
 	res := botResult{policy: pol.name, seed: seed, turns: g.Turn, dead: g.Mode == ModeDead, by: p.KilledBy, where: g.Lv.ID,
-		stuck: b.State() == BotStuck || calls >= 2*maxTurns, king: g.Quests[0] > 0, oracle: g.Quests[1] > 0,
+		stuck: b.State() == BotStuck || calls >= 2*maxTurns, king: g.Slain["boneking"], oracle: g.Slain["oracle"],
 		lvl: p.Lvl, kills: p.Kills, deepest: b.Stats.Deepest, gold: p.Gold,
 		in: g.Stats.In, out: g.Stats.Out, potions: g.Stats.HPots, mpots: g.Stats.MPots, bolts: g.Stats.Bolts, novas: g.Stats.Novas, trips: b.Stats.Trips,
 		equips: g.Stats.Equips, levels: maxi(1, len(b.Snaps)-1)}

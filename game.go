@@ -24,6 +24,7 @@ const (
 	ModeMap
 	ModeDead
 	ModeTalk
+	ModeQuests
 )
 
 const visThresh = 0.035
@@ -90,9 +91,10 @@ type Game struct {
 	Target      *Monster
 	hitter      *Monster // the last monster to strike the hero, for Stats.Death
 
-	Quests  [3]int // 0 hunting, 1 slain, 2 rewarded; the third ends at 1
-	Deepest int    // deepest Depth entered: what the shops and Voss's rewards roll at
-	stocked int    // Deepest at the last restock
+	Quests  map[string]QuestState // by quest ID: how far the hero has come with each
+	Slain   map[string]bool       // the bosses dead, by template ID
+	Deepest int                   // deepest Depth entered: what the shops roll at
+	stocked int                   // Deepest at the last restock
 	shops   [2]*Shop
 	shop    *Shop
 
@@ -106,6 +108,8 @@ type Game struct {
 	hoverOn        bool
 	hoverLines     []hoverLine // this frame's hover info (nil = nothing hovered)
 	beltHit        [3]hitBox   // this frame's belt rows: heal, mana, portal
+	questsHit      []hitBox    // this frame's quest rows in the panel
+	journalHit     []hitBox    // this frame's rows of the journal's list
 	langHit        []hitBox    // the title screen's languages, in i18n.Langs order
 
 	auto       bool
@@ -125,7 +129,7 @@ func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
 // NewGameWith starts a game under a set of rules, which it shares with
 // its player, levels and monsters.
 func NewGameWith(seed int64, r *Rules) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Known: map[string]bool{"rumors": true}, heard: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Known: map[string]bool{"rumors": true}, heard: map[string]bool{}, Quests: map[string]QuestState{}, Slain: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
@@ -137,7 +141,6 @@ func NewGameWith(seed int64, r *Rules) *Game {
 	g.P.Eq[EqArmor] = ar
 	g.P.recalc()
 	g.changeLevel("town", "", nil)
-	g.say(colOrange, "msg.welcome_goal")
 	g.say(colGray, "msg.welcome_help")
 	return g
 }
@@ -264,6 +267,7 @@ func (g *Game) changeLevel(id, from string, arrive *Pos) {
 	if !l.visited {
 		l.visited = true
 		g.say(colLore, "lore."+l.LoreKey, "area", areaArg{l})
+		g.see("area." + l.LoreKey)
 	} else {
 		g.say(colGray, "msg.enter", "area", areaArg{l})
 	}
@@ -727,6 +731,7 @@ func (g *Game) pickup() {
 			}
 			p.Inv = append(p.Inv, fi.It)
 			g.say(fi.It.Color(), "msg.pickup_item", "item", itemNoun(g.L, fi.It))
+			g.gain(fi.It)
 			got = true
 			continue
 		}
@@ -737,6 +742,14 @@ func (g *Game) pickup() {
 		g.endTurn()
 	} else if !full {
 		g.say(colDim, "msg.nothing_to_pick_up")
+	}
+}
+
+// gain notes an item come into the pack, however it came: a unique may
+// teach a topic.
+func (g *Game) gain(it *Item) {
+	if it.Rarity == RUnique {
+		g.see("item." + it.Name)
 	}
 }
 
@@ -839,18 +852,19 @@ func (g *Game) killMonster(m *Monster) {
 	}
 	switch m.T.ID {
 	case "boneking":
-		g.Quests[0] = maxi(g.Quests[0], 1)
 		g.say(colOrange, "msg.boneking_dead")
 	case "oracle":
-		g.Quests[1] = maxi(g.Quests[1], 1)
 		g.say(colOrange, "msg.oracle_dead")
 	case "wanderer":
 		g.relight()
-		g.Quests[2] = 1
 		g.say(m.T.Color, "msg.wanderer_last_words")
 		g.say(colLore, "msg.wanderer_dead")
 		g.unseal(l)
 	}
+	if m.Rank == RankBoss {
+		g.slay(m.T.ID)
+	}
+	g.see("kill." + m.T.ID)
 	if m.T.ID == "fallen" || m.T.ID == "shaman" {
 		// the Fallen are cowards: seeing kin die sends them running
 		for _, o := range l.Monsters {
@@ -973,6 +987,7 @@ func (g *Game) useAltar(x, y int) {
 		g.dropItem(x, y+1, GenItem(g.rng, g.Lv.Depth+1, RRare, SlotNone, g.Rules))
 	}
 	g.novaFx(x, y, colPurple, 3)
+	g.see("altar")
 }
 
 // hurtPlayer applies damage from a source named in English.
@@ -1077,6 +1092,7 @@ func (g *Game) readPortal() {
 	g.Portal = &Portal{l.ID, x, y}
 	g.portalLight.ver = -1
 	g.say(colBlue, "msg.portal_open")
+	g.see("portal")
 	g.novaFx(x, y, colBlue, 3)
 	g.endTurn()
 }
@@ -1668,14 +1684,7 @@ func (g *Game) restock() {
 // hearthFloor is the Abyss floor where the Last Wanderer waits.
 const hearthFloor = 3
 
-// questDepth is where each quest's boss sits: crypt4 and grotto3.
-var questDepth = [2]int{5, 9}
-
-// questRewards are what Voss says as he pays for each quest.
-var questRewards = [2]string{"talk.voss.boneking_reward", "talk.voss.oracle_reward"}
-
 func (g *Game) talkTo(m *Monster) {
-	p := g.P
 	if g.townHunted() {
 		who := monsterNoun(g.L, m)
 		if m.T.ID == "villager" {
@@ -1684,37 +1693,27 @@ func (g *Game) talkTo(m *Monster) {
 		g.say(m.T.Color, "msg.running", "who", who)
 		return
 	}
-	t := &Talk{Name: monsterNoun(g.L, m).Text, Col: m.T.Color}
+	// how the hero looks as they walk in, before Mirela patches them up
+	t := &Talk{Name: monsterNoun(g.L, m).Text, Col: m.T.Color, looks: g.looksNow()}
 	var greet []string
+	t.Who = speaker(m.T.ID)
 	switch m.T.ID {
 	case "smith":
 		g.shop = g.shops[0]
-		t.Who, t.Barter = "hadrik", true
+		t.Barter = true
 	case "alch":
 		g.mirelaHeal()
 		g.shop = g.shops[1]
-		t.Who, t.Barter = "mirela", true
+		t.Barter = true
 	case "captain":
-		t.Who = "voss"
-		// A reward is its own greeting; what Voss has to say about the
-		// quest after waits for the next visit.
-		for q, key := range questRewards {
-			if g.Quests[q] != 1 {
-				continue
-			}
-			g.Quests[q] = 2
-			greet = append(greet, key)
-			// The unique follows the quest's depth, not the hero's level.
-			gold := int(g.Rules.QuestGoldPerLvl * float64(p.Lvl))
-			p.Gold += gold
-			g.Stats.In[GoldQuest] += gold
-			it := GenItem(g.rng, questDepth[q]+2, RUnique, SlotNone, g.Rules)
-			g.dropItem(p.X, p.Y, it)
-			g.say(colGold, "msg.voss_reward", "n", gold, "item", itemNoun(g.L, it))
-		}
 	default:
-		t.Who = "villager"
-		greet = []string{g.rumor()}
+		greet = []string{g.rumor("")}
+	}
+	// A reward is its own greeting; what the giver has to say about the
+	// quest after waits for the next visit.
+	if paid := g.payQuests(m); len(paid) > 0 {
+		greet = paid
+		g.briefed(t.Who)
 	}
 	g.talk, g.Mode = t, ModeTalk
 	if k := g.says(t.Who, "greet"); len(greet) == 0 && k != "" {
@@ -1757,6 +1756,7 @@ func (g *Game) buy(it *Item) {
 		p.Gold -= price
 		g.Stats.Out[SinkGamble] += price
 		g.say(got.Color(), "msg.gamble", "item", itemNoun(g.L, got), "n", price)
+		g.gain(got)
 		return
 	case IKReroll:
 		p.Gold -= price
@@ -1778,6 +1778,7 @@ func (g *Game) buy(it *Item) {
 	p.Gold -= price
 	g.Stats.Out[sinkOf(it)] += price
 	g.say(colGold, "msg.bought", "item", itemNoun(g.L, it), "n", price)
+	g.gain(it)
 }
 
 // Mirela heals for free until the hero is past freeHealLvl.
@@ -2038,6 +2039,7 @@ func (g *Game) stalkerArrives() {
 	if l.Kind == KTown && !g.homeYet {
 		g.homeYet = true
 		g.say(m.T.Color, "msg.wanderer_home")
+		g.takeQuest(questByID("wanderer"))
 	}
 }
 
@@ -2244,12 +2246,7 @@ func (g *Game) Ready(lvl int, build string) error {
 		p.Eq[slot] = best
 	}
 	p.HPot, p.MPot, p.Scrolls, p.Gold = beltMax, pol.mana, 2, 60*lvl
-	if depth > questDepth[0] {
-		g.Quests[0] = 2
-	}
-	if depth > questDepth[1] {
-		g.Quests[1] = 2
-	}
+	g.readyQuests(depth)
 	g.Deepest = maxi(g.Deepest, depth)
 	if g.Lv.Kind == KTown {
 		g.restock()
