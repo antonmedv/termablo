@@ -193,7 +193,7 @@ func (b *Bot) enter(st BotState, why string) {
 // leave is the esc key: out of a shop or a conversation.
 func (b *Bot) leave() {
 	if g := b.g; g.Mode == ModeShop || g.Mode == ModeTalk {
-		g.Mode = ModePlay
+		g.talk, g.Mode = nil, ModePlay
 	}
 }
 

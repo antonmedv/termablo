@@ -843,21 +843,6 @@ func (g *Game) drawHelp(s *Screen, mapW, mapH int) {
 var helpKeys = []string{"move", "wait", "pickup", "firebolt", "nova", "target", "potions", "portal", "explore", "inventory", "character", "map", "quit"}
 var helpTips = []string{"walk_into", "talk", "darkness", "names", "glow", "upgrade", "hover", "belt"}
 
-func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
-	// size the box first: centerBox narrows it on small screens
-	w := mini(64, mapW-2)
-	var wrapped []string
-	for _, ln := range g.talkText {
-		wrapped = append(wrapped, i18n.Wrap(ln, w-6)...)
-		wrapped = append(wrapped, "")
-	}
-	x, y := centerBox(s, mapW, mapH, w, len(wrapped)+4, g.talkName)
-	for i, ln := range wrapped {
-		s.TextStart(x+3, y+2+i, w-6, ln, g.talkCol.Lerp(colWhite, .5).C8())
-	}
-	s.TextStart(x+3, y+len(wrapped)+3, w-6, g.L.T("ui.any_key"), colDim.C8())
-}
-
 func (g *Game) drawDead(s *Screen, mapW, mapH int) {
 	const w = 50
 	x, y := centerBox(s, mapW, mapH, w, 11, "")

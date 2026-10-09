@@ -38,6 +38,10 @@ namespaces; a key is the dotted path, `msg.pickup_gold`.
 ## What an entry can be
 
 - **A string** with `{placeholders}`: `"You pick up {n} gold."`
+  Spoken lines (`talk.*`, `rumor.*`) may also link topics,
+  `[words](topic)`: the words are translated, the topic id is not. A
+  link to a topic the English does not name is an error; a lost link is
+  a warning, since it hides a topic the hero could learn there.
 - **Plural forms**, picked by the count `{n}` with the CLDR rules of
   the language (`internal/i18n/lang.go`):
   `{ one: "...", few: "...", many: "..." }`. English needs one form where
@@ -133,9 +137,9 @@ Errors (the translation is wrong and `merge` rejects it): a key the
 source does not have, a placeholder lost or invented, a variant that is
 neither a plural category nor a gender of the language, a gender the
 language does not have, an empty text, an English line over its
-`# max`.
+`# max`, a link to a topic the English does not link.
 
-Warnings: a stale or missing entry, a plural form missing, a noun
+Warnings: a stale or missing entry, a plural form missing, a link lost, a noun
 without a gender, a line over its `# max`, a glossary term the English
 uses and the translation does not.
 

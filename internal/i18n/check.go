@@ -399,6 +399,7 @@ func (p *Project) checkEntry(add addFunc, l Lang, key string, src, m *Msg) {
 			add(l.Code, key, true, "placeholder {%s} is missing", ph)
 		}
 	}
+	p.checkLinks(add, l, key, src, m)
 	p.checkVariants(add, l, key, m)
 	if m.Vars == nil && m.Gender != "" && !slices.Contains(l.Genders, m.Gender) {
 		add(l.Code, key, true, "gender %q is not one of %v", m.Gender, l.Genders)
@@ -412,6 +413,24 @@ func (p *Project) checkEntry(add addFunc, l Lang, key string, src, m *Msg) {
 			if t.Uses(strings.Join(src.Texts(), "\n")) && !t.Matches(l.Code, strings.Join(m.Texts(), "\n")) {
 				add(l.Code, key, false, "glossary: %q should be %q", t.En, t.Forms[l.Code][0])
 			}
+		}
+	}
+}
+
+// checkLinks: a dialog links the topics of its English. A link to a topic
+// the English does not name breaks the dialog; a lost one only hides a
+// topic the hero could have learned here.
+func (p *Project) checkLinks(add addFunc, l Lang, key string, src, m *Msg) {
+	want := Links(strings.Join(src.Texts(), "\n"))
+	got := Links(strings.Join(m.Texts(), "\n"))
+	for _, t := range got {
+		if !slices.Contains(want, t) {
+			add(l.Code, key, true, "unknown topic link (%s)", t)
+		}
+	}
+	for _, t := range want {
+		if !slices.Contains(got, t) {
+			add(l.Code, key, false, "topic link (%s) is missing", t)
 		}
 	}
 }

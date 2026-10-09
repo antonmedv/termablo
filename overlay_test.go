@@ -162,7 +162,7 @@ func TestTalkStaysInBox(t *testing.T) {
 				}
 			}
 		}
-		if !strings.Contains(screenRow(talk, y1), "press any key") {
+		if !strings.Contains(screenRow(talk, y1), "esc goodbye") {
 			t.Errorf("%dx%d: footer missing: %q", sz[0], sz[1], screenRow(talk, y1))
 		}
 		if !screenHas(talk, "alive.") {

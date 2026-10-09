@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"slices"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -145,5 +146,54 @@ func tokens(s string) []string {
 			i = j
 		}
 	}
+	return out
+}
+
+// Link is a span of dialog text that names a topic, written
+// [words](topic) in the catalog: Start and End are byte offsets into the
+// text with the markup taken out.
+type Link struct {
+	Start, End int
+	Topic      string
+}
+
+// ParseLinks takes the [words](topic) markup out of a text and reports
+// where each link's words are.
+func ParseLinks(s string) (string, []Link) {
+	var b strings.Builder
+	var links []Link
+	for {
+		i := strings.IndexByte(s, '[')
+		if i < 0 {
+			break
+		}
+		j := strings.Index(s[i:], "](")
+		k := -1
+		if j > 0 {
+			k = strings.IndexByte(s[i+j:], ')')
+		}
+		if k < 0 {
+			break
+		}
+		words, topic := s[i+1:i+j], s[i+j+2:i+j+k]
+		b.WriteString(s[:i])
+		links = append(links, Link{Start: b.Len(), End: b.Len() + len(words), Topic: topic})
+		b.WriteString(words)
+		s = s[i+j+k+1:]
+	}
+	b.WriteString(s)
+	return b.String(), links
+}
+
+// Links is the set of topics a text links to, sorted.
+func Links(s string) []string {
+	_, links := ParseLinks(s)
+	var out []string
+	for _, l := range links {
+		if !slices.Contains(out, l.Topic) {
+			out = append(out, l.Topic)
+		}
+	}
+	slices.Sort(out)
 	return out
 }

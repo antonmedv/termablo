@@ -72,6 +72,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.Action == tea.MouseActionPress && msg.Button == tea.MouseButtonLeft && !g.auto && m.bot == nil {
 			g.Click(msg.X, msg.Y, m.scr.W, m.scr.H)
 		}
+		if g.Mode == ModeTalk && msg.Action == tea.MouseActionPress {
+			switch msg.Button {
+			case tea.MouseButtonWheelUp:
+				g.talk.scroll(-2)
+			case tea.MouseButtonWheelDown:
+				g.talk.scroll(2)
+			}
+		}
 	case tickMsg:
 		if m.idle > 0 && time.Since(m.lastSeen) > m.idle {
 			m.idledOut = true
@@ -127,7 +135,7 @@ func (m *model) key(k string) bool {
 			return true
 		}
 	case ModeTalk:
-		g.Mode = ModePlay
+		g.talkKey(k)
 	case ModeHelp, ModeMap:
 		switch k {
 		case "esc", "?", "m", "q", "enter", " ":
@@ -260,6 +268,9 @@ func (m *model) shopKey(k string) {
 	switch k {
 	case "esc", "q":
 		g.Mode = ModePlay
+		if g.talk != nil {
+			g.Mode = ModeTalk // back to the conversation Barter came from
+		}
 	case "tab", "left", "right", "h", "l":
 		g.tab = 1 - g.tab
 		g.cur = 0

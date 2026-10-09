@@ -1,5 +1,13 @@
 # Updates
 
+## 2026-10-09
+
+- **Conversations, the Morrowind way.** Walk into anyone in Emberhold
+  and the talk opens in a window: what was said on the left, topics on
+  the right. Highlighted words in a line are topics; hear one and you
+  can ask anyone about it. Hadrik and Mirela open on Barter. ↑↓ and
+  enter, or click a topic or a highlighted word.
+
 ## 2026-10-08
 
 - **Seven languages.** English, Deutsch, Français, Italiano, Русский,

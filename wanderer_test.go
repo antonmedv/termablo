@@ -414,7 +414,7 @@ func TestVossRewardsFit(t *testing.T) {
 	}
 	s := NewScreen(80, 24)
 	g.Draw(s)
-	if !screenHas(s, "press any key") || !screenHas(s, "counting the days.") {
+	if !screenHas(s, "esc goodbye") || !screenHas(s, "the days.") {
 		t.Error("Voss's rewards run off the screen")
 	}
 }

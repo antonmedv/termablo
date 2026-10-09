@@ -50,6 +50,10 @@ func (g *Game) Click(x, y, w, h int) {
 		g.clickLang(x, y)
 		return
 	}
+	if g.Mode == ModeTalk {
+		g.clickTalk(x, y)
+		return
+	}
 	if g.Mode != ModePlay || x < 0 || y < 0 {
 		return
 	}

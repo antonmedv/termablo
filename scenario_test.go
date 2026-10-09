@@ -13,8 +13,12 @@ func TestBuyPotion(t *testing.T) {
 	g.Mode = ModePlay
 	alch := npc(t, g, "alch")
 	walkInto(g, alch.X, alch.Y)
-	if g.Mode != ModeShop || g.shop != g.shops[1] {
+	if g.Mode != ModeTalk {
 		t.Fatalf("mode %v after walking into Mirela", g.Mode)
+	}
+	press(m, "enter") // Barter, the first row
+	if g.Mode != ModeShop || g.shop != g.shops[1] {
+		t.Fatalf("mode %v after Barter", g.Mode)
 	}
 	gold, pots := g.P.Gold, g.P.HPot
 	price := g.buyPrice(g.shopList()[0])
@@ -28,8 +32,12 @@ func TestBuyPotion(t *testing.T) {
 		t.Errorf("bought with no gold: potions %d, log %q", g.P.HPot, lastLog(g))
 	}
 	press(m, "esc")
-	if g.Mode != ModePlay {
-		t.Errorf("esc left mode %v", g.Mode)
+	if g.Mode != ModeTalk {
+		t.Errorf("esc from the shop left mode %v, not the conversation", g.Mode)
+	}
+	press(m, "esc")
+	if g.Mode != ModePlay || g.talk != nil {
+		t.Errorf("goodbye left mode %v", g.Mode)
 	}
 }
 
@@ -39,6 +47,7 @@ func TestBuyAndSellGear(t *testing.T) {
 	g.Mode = ModePlay
 	smith := npc(t, g, "smith")
 	walkInto(g, smith.X, smith.Y)
+	press(m, "enter")
 	it := g.shop.Items[0]
 	g.P.Gold = it.Value()
 	stock := len(g.shop.Items)
@@ -282,6 +291,7 @@ func TestGambleAndReroll(t *testing.T) {
 	g.Stats.In[GoldChest] += 100000 // keep the wallet reconciled
 	smith := npc(t, g, "smith")
 	walkInto(g, smith.X, smith.Y)
+	g.talkKey("enter")
 	if g.Mode != ModeShop || len(g.shop.Services) != len(gambleBases)+1 {
 		t.Fatalf("mode %v, %d services", g.Mode, len(g.shop.Services))
 	}

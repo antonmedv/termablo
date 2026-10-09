@@ -84,8 +84,11 @@ func TestCatalogCoversData(t *testing.T) {
 	for _, n := range eqNames {
 		want("slot."+slug(n), n)
 	}
-	for _, k := range villagerLines {
+	for _, k := range rumors {
 		want("rumor."+k, "")
+	}
+	for _, k := range topics {
+		want("topic."+k, "")
 	}
 	for _, k := range helpKeys {
 		want("help.key."+k, "")
@@ -180,7 +183,9 @@ func TestDrawEveryLanguage(t *testing.T) {
 			for _, mode := range []Mode{ModeTitle, ModePlay, ModeInv, ModeChar, ModeShop, ModeHelp, ModeMap, ModeTalk, ModeDead} {
 				g.Mode = mode
 				g.shop = g.shops[0]
-				g.talkName, g.talkText = "Voss", g.talkLines("talk.voss.intro")
+				g.talk = &Talk{Who: "voss", Name: "Voss", Barter: true}
+				g.hear("", "talk.voss.intro")
+				g.ask("ember")
 				g.Draw(s)
 				if m := key.FindString(screenText(s)); m != "" {
 					t.Errorf("%s %v %dx%d: key %s on screen", l.Code, mode, sz[0], sz[1], m)

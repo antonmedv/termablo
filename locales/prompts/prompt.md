@@ -47,6 +47,12 @@ included ("the Plague Rat", "Bloodmaw the Hungry"): build sentences with
 {who} as the subject, so no other grammatical case is needed. `{item}` is
 an item's name without an article.
 
+Spoken lines may hold links, `[words](topic)`: the words show
+highlighted, and hearing them teaches the hero a topic to ask about.
+Translate the words, keep the `(topic)` exactly as it is, and keep every
+link of the English, around whichever words name the thing in
+{{.Lang.Name}}. Never add a link the English does not have.
+
 Comments above an entry are context: who speaks, what fills a
 placeholder, where the text appears. `# max: N` means the text must fit
 in N terminal cells (each placeholder counted as two cells, a two-digit number, unless the max line says e.g. `n=1`); keep it

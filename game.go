@@ -97,10 +97,10 @@ type Game struct {
 	shop    *Shop
 
 	cur, pane, tab int
-	helpOff        int // help screen scroll
-	talkName       string
-	talkText       []string
-	talkCol        RGB
+	helpOff        int             // help screen scroll
+	talk           *Talk           // the conversation open, or the one a shop returns to
+	Known          map[string]bool // dialog topics the hero has heard of
+	asked          map[string]bool // dialog lines already heard, by key
 
 	hoverX, hoverY int
 	hoverOn        bool
@@ -125,7 +125,7 @@ func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
 // NewGameWith starts a game under a set of rules, which it shares with
 // its player, levels and monsters.
 func NewGameWith(seed int64, r *Rules) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Known: map[string]bool{"rumors": true}, asked: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
@@ -1671,13 +1671,6 @@ const hearthFloor = 3
 // questDepth is where each quest's boss sits: crypt4 and grotto3.
 var questDepth = [2]int{5, 9}
 
-// villagerLines are the rumors a villager tells, rumor.<key> in the
-// catalog, one picked at random.
-var villagerLines = []string{"braziers", "brother", "torch", "forge", "glimmer", "crystal", "scroll", "stranger", "edran", "uncle", "holding"}
-
-// talkLines is a dialog from the catalog, one paragraph a line.
-func (g *Game) talkLines(key string) []string { return strings.Split(g.L.T(key), "\n") }
-
 func (g *Game) talkTo(m *Monster) {
 	p := g.P
 	if g.townHunted() {
@@ -1688,42 +1681,44 @@ func (g *Game) talkTo(m *Monster) {
 		g.say(m.T.Color, "msg.running", "who", who)
 		return
 	}
+	t := &Talk{Name: monsterNoun(g.L, m).Text, Col: m.T.Color}
+	var greet []string
 	switch m.T.ID {
 	case "smith":
 		g.shop = g.shops[0]
-		g.Mode, g.cur, g.tab = ModeShop, 0, 0
-		line := "talk.hadrik.greet"
+		t.Who, t.Barter = "hadrik", true
+		greet = []string{"talk.hadrik.greet"}
 		if g.Quests[1] > 0 {
-			line = "talk.hadrik.after_oracle"
+			greet = []string{"talk.hadrik.after_oracle"}
 		}
-		g.say(C(1, .6, .3), line)
 	case "alch":
 		g.mirelaHeal()
 		g.shop = g.shops[1]
-		g.Mode, g.cur, g.tab = ModeShop, 0, 0
+		t.Who, t.Barter = "mirela", true
+		greet = []string{"talk.mirela.greet"}
 	case "captain":
-		lines := []string{}
+		t.Who = "voss"
 		var rewards []int
 		if g.Quests[0] == 1 {
 			g.Quests[0] = 2
 			rewards = append(rewards, 0)
-			lines = append(lines, g.talkLines("talk.voss.boneking_reward")...)
+			greet = append(greet, "talk.voss.boneking_reward")
 		}
 		if g.Quests[1] == 1 {
 			g.Quests[1] = 2
 			rewards = append(rewards, 1)
-			lines = append(lines, g.talkLines("talk.voss.oracle_reward")...)
+			greet = append(greet, "talk.voss.oracle_reward")
 		}
 		if len(rewards) == 0 {
 			switch {
 			case g.Quests[0] == 0:
-				lines = g.talkLines("talk.voss.intro")
+				greet = []string{"talk.voss.intro"}
 			case g.Quests[1] == 0:
-				lines = g.talkLines("talk.voss.after_boneking")
+				greet = []string{"talk.voss.after_boneking"}
 			case g.Quests[2] > 0:
-				lines = g.talkLines("talk.voss.after_wanderer")
+				greet = []string{"talk.voss.after_wanderer"}
 			default:
-				lines = g.talkLines("talk.voss.after_oracle")
+				greet = []string{"talk.voss.after_oracle"}
 			}
 		}
 		for _, q := range rewards {
@@ -1735,13 +1730,15 @@ func (g *Game) talkTo(m *Monster) {
 			g.dropItem(p.X, p.Y, it)
 			g.say(colGold, "msg.voss_reward", "n", gold, "item", itemNoun(g.L, it))
 		}
-		g.talkName, g.talkText, g.talkCol, g.Mode = monsterNoun(g.L, m).Text, lines, m.T.Color, ModeTalk
 	default:
-		g.talkName = monsterNoun(g.L, m).Text
-		g.talkText = []string{g.L.T("rumor." + villagerLines[g.rng.Intn(len(villagerLines))])}
-		g.talkCol = m.T.Color
-		g.Mode = ModeTalk
+		t.Who = "villager"
+		greet = []string{g.rumor()}
 	}
+	g.talk, g.Mode = t, ModeTalk
+	for _, k := range greet {
+		g.hear("", k)
+	}
+	t.Cur = t.firstTopic(g)
 }
 
 func (g *Game) buy(it *Item) {

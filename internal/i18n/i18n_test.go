@@ -224,3 +224,16 @@ func TestVisual(t *testing.T) {
 		t.Errorf("number in rtl: %q", string(got))
 	}
 }
+
+func TestParseLinks(t *testing.T) {
+	plain, links := ParseLinks("The [Ember](ember) keeps [the dark](dark) out. [Not a link]")
+	if plain != "The Ember keeps the dark out. [Not a link]" {
+		t.Errorf("plain %q", plain)
+	}
+	if len(links) != 2 || plain[links[1].Start:links[1].End] != "the dark" || links[0].Topic != "ember" {
+		t.Errorf("links %+v", links)
+	}
+	if got := Links("[a](x) [b](y) [c](x)"); len(got) != 2 || got[0] != "x" || got[1] != "y" {
+		t.Errorf("Links %q", got)
+	}
+}
