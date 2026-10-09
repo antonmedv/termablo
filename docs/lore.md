@@ -277,21 +277,3 @@ in the game and should stay.
    come back.
 9. **Now.** Hadrik has kept the forge forty years. The Fallen camp in the
    fields. Voss has no one left to send. A Wanderer walks in from the west.
-
-## Open threads
-
-These are decisions not yet made. They do not block rebasing the
-existing text.
-
-- **What the Ember was cut from.** Decided on 2026-10-03: it wears the
-  Last Wanderer. See Bosses.
-- **The ending.** Open again. A choice over the Last Wanderer's body
-  (return the Ember, hold the dark, keep walking) was built on 2026-10-03
-  and taken out on 2026-10-05: for now his death opens the way down and
-  play goes on.
-- **The Cult's founder.** A name, a line for a villager, maybe a champion
-  Cultist in the Abyss.
-- **The Oracle's name.** Keep it withheld until something earns it.
-- **Daylight.** There is none in the game. The lore can say the Dark has
-  eaten the sun since the Theft, or simply never mention it. Leaning: never
-  mention it; "moonlight" on the Fields is enough.
