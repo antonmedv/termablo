@@ -129,14 +129,26 @@
   # dialogues, one paragraph a line. [words](topic) is a link: the words
   # are shown highlighted, and hearing them teaches the hero the topic
   # (topic.<id>). Translate the words, keep the (topic) as it is.
+  #
+  # talk.<who>.greet is what a speaker says on meeting the hero, and
+  # talk.<who>.<topic> what they say when asked. Speakers remember: a line
+  # they have said before gives way to its <line>_again. What the town
+  # remembers changes them too: <line>_boneking, _oracle and _wanderer
+  # are said once that boss is dead, the newest first; told once, unless
+  # they have an _again, and then the speaker goes back to what came
+  # before. <topic>_after is said for good once the topic's boss is dead.
   talk: {
     # Hadrik is gruff and few-worded. He keeps the forge, which keeps the
     # Ember, and knows it.
     hadrik: {
       greet: "Steel for the dark. Take a look. The [forge](forge) is hot; it always is."
-      after_oracle: "Last [stranger](stranger) I armed for the deep never came back for repairs."
+      greet_again: "Back. What needs mending?"
+      greet_boneking: "Heard the crypt bells this morning. Thought I'd gone soft in the head. Your doing? Then you've earned the good steel."
+      greet_oracle: "Last [stranger](stranger) I armed for the deep never came back for repairs."
+      greet_wanderer: "The forge flared white when he fell, then settled. Forty years, never seen her do that. You're welcome at this anvil."
       forge: "Forty years I've kept her. The keeping passes hand to hand, smith to smith. What burns in her belly is the [Ember](ember) itself. The day she goes out, we run. That's not a saying."
       ember: "Folk think it sits in the square on a pedestal. It lives in my forge. Every lantern in town is lit from here. I don't talk about that, and neither will you."
+      ember_again: "I said I don't talk about that."
       stranger: "Bought the same sword you did. Paid in old coin, didn't haggle. Went past the marsh and kept going. I still have his whetstone. He'll want it back."
       stranger_after: "So he came home after all. I'll put his whetstone in the fire tonight."
       cult: "They came to me first, the [Ember Cult](cult). Wanted me to let the fire go out and be done owing. I showed them the door with a hammer in my hand."
@@ -145,6 +157,10 @@
     # Old Mirela is warm and worried. Her crystal hears the Oracle.
     mirela: {
       greet: "Sit, sit. You smell of smoke and grave-dust. Let's see what's broken."
+      greet_again: "Back again, dear? Let me look at you."
+      greet_boneking: "The crypt bells woke me this morning. I cried, dear, and I don't know why. Sit; you're bleeding on my floor."
+      greet_oracle: "It's so quiet, child. My crystal hasn't made a sound since you came up. I keep holding it to my ear."
+      greet_wanderer: "You came back. He never did, not really. Sit, dear, and let me see to those burns."
       oracle: "My crystal came out of her grotto. When she dreams, it sings. She isn't hunting anyone, child. She is holding something down, under the water. I don't know what. I know it's hot."
       oracle_after: "My crystal has stopped singing. The whole town sleeps sound now. I don't. Whatever she held down is coming up through the [Abyss](abyss)."
       blackmarsh: "The cold lights over the water are hers. Don't follow them. Everyone follows them. The standing stones she raised herself, on her way down."
@@ -154,13 +170,14 @@
     }
     # Captain Voss is earnest and clipped. He believes the town's story.
     voss: {
-      intro: """
+      greet: """
 Wanderer. Good. We need a blade that doesn't shake.
 The [Ember](ember) keeps the dark out. The dark wants it back.
 East of the gate, past the Ashen Fields, lies the [Crypt of the Fallen](crypt).
 Four floors down, the [Bone King](boneking) sits his throne of ribs. Destroy him.
 And north, in [Blackmarsh](blackmarsh), the [Drowned Oracle](oracle) calls the lost into the water.
 Buy potions from Mirela. Keep a [portal scroll](portals). Come back alive."""
+      greet_again: "Still breathing. Good. The [Bone King](boneking) is four floors under the [crypt](crypt). Bring me his dust."
       boneking_reward: """
 The Bone King is dust? Then the crypt bells may ring again.
 Take this — it was [my father's](father). And the gold, of course."""
@@ -168,19 +185,23 @@ Take this — it was [my father's](father). And the gold, of course."""
 The Oracle, silenced... I never thought I'd sleep without hearing her.
 Beneath her pool, the rock burns. [The Abyss](abyss) has no floor, they say. Be careful.
 I sent [someone](stranger) down there once. I stopped counting the days."""
-      after_boneking: """
+      greet_boneking: """
 The crypt is quiet. Now: [Blackmarsh](blackmarsh), north of the fields.
 Follow the cold lights down into the grotto. End the [Oracle](oracle)."""
-      after_oracle: """
+      greet_boneking_again: "[Blackmarsh](blackmarsh), north of the fields. Follow the cold lights down. Don't let them follow you back."
+      greet_oracle: """
 You've done more than any of us dared.
 If you must go deeper... [the Abyss](abyss) waits below the Oracle's pool."""
-      after_wanderer: """
+      greet_oracle_again: "Whatever waits in [the Abyss](abyss) is past my maps. Go carefully, or don't go."
+      greet_wanderer: """
 The lanterns are lit again. Whoever he was, he was one of ours once.
 Keep walking, stranger. It is what we hire you for."""
+      greet_wanderer_again: "The watch sleeps in shifts again. That's your doing. Don't make a speech of it."
       crypt: "The royal crypt, east past the Ashen Fields. Four floors, cold and dusty. The braziers light themselves. Don't stand near them."
       boneking: "Four floors under the chapel, on a throne of ribs. My [father](father) went down after him with an axe. Bring me his dust."
       boneking_after: "Dust, you say. Good. I'll believe it when I hear the bells."
       father: "He took Kingsbane into the [crypt](crypt) and didn't come back. The guard chose me the next morning. There was no one else to choose."
+      father_again: "I told you what there is. Leave it."
       father_after: "You brought back what was his. That's more than the rest of us managed. Don't ask me more."
       oracle: "She drowned herself in the grotto under [Blackmarsh](blackmarsh), and now she calls the lost down after her. End it."
       oracle_after: "Silenced. I sleep now. Strange, how loud a quiet can be."

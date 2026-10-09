@@ -184,13 +184,13 @@ func TestTopicCatalog(t *testing.T) {
 // Topics are learned from the English links, whatever a translation kept.
 func TestLearnedWhateverTheLanguage(t *testing.T) {
 	g := NewGame(1)
-	cat, err := i18n.Parse("de", []byte(`{ talk: { voss: { intro: "Geht zur Seherin." } } }`))
+	cat, err := i18n.Parse("de", []byte(`{ talk: { voss: { greet: "Geht zur Seherin." } } }`))
 	if err != nil {
 		t.Fatal(err)
 	}
 	g.L = cat
 	g.talk = &Talk{Who: "voss"}
-	g.hear("", "talk.voss.intro")
+	g.hear("", "talk.voss.greet")
 	if !g.Known["oracle"] || g.talk.Log[0].Text != "Geht zur Seherin." {
 		t.Errorf("known %v, heard %q", g.Known, g.talk.Log[0].Text)
 	}
@@ -234,5 +234,120 @@ func TestOneCellLinkClicks(t *testing.T) {
 	g.clickTalk(5, 3)
 	if last := g.talk.Log[len(g.talk.Log)-1]; last.Text != g.L.T("talk.voss.crypt") {
 		t.Errorf("the click was lost: %q", last.Text)
+	}
+}
+
+// lastText is the last line said.
+func lastText(g *Game) string { return g.talk.Log[len(g.talk.Log)-1].Text }
+
+// A speaker remembers greeting the hero, and greets them shorter after.
+func TestGreetRemembered(t *testing.T) {
+	g := NewGame(1)
+	m := newTestModel(g)
+	talkWith(t, g, "captain")
+	if lastText(g) != g.L.T("talk.voss.greet") {
+		t.Fatalf("first meeting: %q", lastText(g))
+	}
+	press(m, "esc")
+	talkWith(t, g, "captain")
+	if lastText(g) != g.L.T("talk.voss.greet_again") {
+		t.Errorf("coming back: %q", lastText(g))
+	}
+}
+
+// What has happened is news: told once, and then the speaker goes back
+// to what they said before.
+func TestNewsToldOnce(t *testing.T) {
+	g := NewGame(1)
+	m := newTestModel(g)
+	talkWith(t, g, "smith")
+	press(m, "esc")
+	g.Quests[0] = 2
+	var said []string
+	for range 3 {
+		talkWith(t, g, "smith")
+		said = append(said, lastText(g))
+		press(m, "esc")
+	}
+	want := []string{g.L.T("talk.hadrik.greet_boneking"), g.L.T("talk.hadrik.greet_again"), g.L.T("talk.hadrik.greet_again")}
+	if !slices.Equal(said, want) {
+		t.Errorf("Hadrik after the Bone King: %q, want %q", said, want)
+	}
+	g.Quests[1] = 2
+	talkWith(t, g, "smith")
+	if lastText(g) != g.L.T("talk.hadrik.greet_oracle") {
+		t.Errorf("the newest news first: %q", lastText(g))
+	}
+}
+
+// Voss's reward is his greeting; what he says of the quest after waits
+// for the next visit, and keeps, shorter, after that.
+func TestVossAfterReward(t *testing.T) {
+	g := NewGame(1)
+	m := newTestModel(g)
+	g.Quests[0] = 1
+	var said []string
+	for range 3 {
+		talkWith(t, g, "captain")
+		said = append(said, lastText(g))
+		press(m, "esc")
+	}
+	want := []string{g.L.T("talk.voss.boneking_reward"), g.L.T("talk.voss.greet_boneking"), g.L.T("talk.voss.greet_boneking_again")}
+	if !slices.Equal(said, want) || g.Quests[0] != 2 {
+		t.Errorf("Voss after the Bone King: %q, want %q", said, want)
+	}
+}
+
+// Asked again, a speaker may say they have said it, and the topic shows
+// as asked of them, not of everyone.
+func TestTopicRemembered(t *testing.T) {
+	g := NewGame(1)
+	g.Known["boneking"] = true
+	talkWith(t, g, "smith")
+	g.ask("ember")
+	g.ask("ember")
+	if lastText(g) != g.L.T("talk.hadrik.ember_again") {
+		t.Errorf("asked again: %q", lastText(g))
+	}
+	g.ask("boneking")
+	g.talk, g.Mode = nil, ModePlay
+	talkWith(t, g, "villager")
+	for _, o := range g.talk.options(g) {
+		if o.id == "boneking" && o.asked {
+			t.Error("asking Hadrik about the Bone King counts as asking the villagers")
+		}
+	}
+}
+
+// Every talk line is a greeting, a topic or a reward, with known
+// variants: a misspelled fact would never be said.
+func TestTalkVariants(t *testing.T) {
+	en := locales.Get(i18n.Source)
+	var factIDs []string
+	for _, f := range facts {
+		factIDs = append(factIDs, f.id)
+	}
+	for _, k := range en.Keys() {
+		rest, ok := strings.CutPrefix(k, "talk.")
+		if !ok || slices.Contains(questRewards[:], k) {
+			continue
+		}
+		who, id, _ := strings.Cut(rest, ".")
+		if !slices.Contains([]string{"hadrik", "mirela", "voss", "any"}, who) {
+			t.Errorf("%s: no one is %q", k, who)
+		}
+		id = strings.TrimSuffix(id, "_again")
+		if base, f, ok := strings.Cut(id, "_"); ok {
+			switch {
+			case f == "after" && topicFact[base] != "":
+			case slices.Contains(factIDs, f):
+			default:
+				t.Errorf("%s: %q is not a fact", k, f)
+			}
+			id = base
+		}
+		if id != "greet" && (id == "rumors" || !slices.Contains(topics, id)) {
+			t.Errorf("%s: %q is not a topic", k, id)
+		}
 	}
 }

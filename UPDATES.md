@@ -7,6 +7,9 @@
   the right. Highlighted words in a line are topics; hear one and you
   can ask anyone about it. Hadrik and Mirela open on Barter. ↑↓ and
   enter, or click a topic or a highlighted word.
+- **The town remembers.** Townsfolk greet you differently once they've
+  met you, react once to each boss you kill, and say so when you ask
+  them the same thing twice.
 
 ## 2026-10-08
 

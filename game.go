@@ -100,7 +100,7 @@ type Game struct {
 	helpOff        int             // help screen scroll
 	talk           *Talk           // the conversation open, or the one a shop returns to
 	Known          map[string]bool // dialog topics the hero has heard of
-	asked          map[string]bool // dialog lines already heard, by key
+	heard          map[string]bool // dialog lines said to the hero, "<who> <key>"
 
 	hoverX, hoverY int
 	hoverOn        bool
@@ -125,7 +125,7 @@ func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
 // NewGameWith starts a game under a set of rules, which it shares with
 // its player, levels and monsters.
 func NewGameWith(seed int64, r *Rules) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Known: map[string]bool{"rumors": true}, asked: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Known: map[string]bool{"rumors": true}, heard: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
@@ -1671,6 +1671,9 @@ const hearthFloor = 3
 // questDepth is where each quest's boss sits: crypt4 and grotto3.
 var questDepth = [2]int{5, 9}
 
+// questRewards are what Voss says as he pays for each quest.
+var questRewards = [2]string{"talk.voss.boneking_reward", "talk.voss.oracle_reward"}
+
 func (g *Game) talkTo(m *Monster) {
 	p := g.P
 	if g.townHunted() {
@@ -1687,41 +1690,20 @@ func (g *Game) talkTo(m *Monster) {
 	case "smith":
 		g.shop = g.shops[0]
 		t.Who, t.Barter = "hadrik", true
-		greet = []string{"talk.hadrik.greet"}
-		if g.Quests[1] > 0 {
-			greet = []string{"talk.hadrik.after_oracle"}
-		}
 	case "alch":
 		g.mirelaHeal()
 		g.shop = g.shops[1]
 		t.Who, t.Barter = "mirela", true
-		greet = []string{"talk.mirela.greet"}
 	case "captain":
 		t.Who = "voss"
-		var rewards []int
-		if g.Quests[0] == 1 {
-			g.Quests[0] = 2
-			rewards = append(rewards, 0)
-			greet = append(greet, "talk.voss.boneking_reward")
-		}
-		if g.Quests[1] == 1 {
-			g.Quests[1] = 2
-			rewards = append(rewards, 1)
-			greet = append(greet, "talk.voss.oracle_reward")
-		}
-		if len(rewards) == 0 {
-			switch {
-			case g.Quests[0] == 0:
-				greet = []string{"talk.voss.intro"}
-			case g.Quests[1] == 0:
-				greet = []string{"talk.voss.after_boneking"}
-			case g.Quests[2] > 0:
-				greet = []string{"talk.voss.after_wanderer"}
-			default:
-				greet = []string{"talk.voss.after_oracle"}
+		// A reward is its own greeting; what Voss has to say about the
+		// quest after waits for the next visit.
+		for q, key := range questRewards {
+			if g.Quests[q] != 1 {
+				continue
 			}
-		}
-		for _, q := range rewards {
+			g.Quests[q] = 2
+			greet = append(greet, key)
 			// The unique follows the quest's depth, not the hero's level.
 			gold := int(g.Rules.QuestGoldPerLvl * float64(p.Lvl))
 			p.Gold += gold
@@ -1735,6 +1717,9 @@ func (g *Game) talkTo(m *Monster) {
 		greet = []string{g.rumor()}
 	}
 	g.talk, g.Mode = t, ModeTalk
+	if len(greet) == 0 {
+		greet = []string{g.says(t.Who, "greet")}
+	}
 	for _, k := range greet {
 		g.hear("", k)
 	}

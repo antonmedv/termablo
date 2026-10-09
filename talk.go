@@ -41,9 +41,9 @@ type talkHit struct {
 // in is hitBox.in that takes a box one cell wide: a link may be.
 func (h talkHit) in(x, y int) bool { return y == h.Y && x >= h.X0 && x <= h.X1 }
 
-// topics are every topic there is, topic.<id> in the catalog. An answer
-// is talk.<who>.<id>, else the town's talk.any.<id>; while topicDone,
-// <id>_after is asked first. Rumors are the villagers', rumor.<key>.
+// topics are every topic there is, topic.<id> in the catalog. What
+// a speaker says on one is found by says. Rumors are the villagers',
+// rumor.<key>.
 var topics = []string{"rumors", "ember", "edran", "altars", "forge", "portals", "crypt", "boneking", "father", "blackmarsh", "oracle", "abyss", "cult", "stranger"}
 
 // rumors are what a villager tells, rumor.<key>, one picked at random.
@@ -60,21 +60,53 @@ func (g *Game) anotherRumor() string {
 	return "rumor." + rumors[i]
 }
 
-// topicDone reports whether what a topic is about has been settled: its
-// boss is dead.
-func (g *Game) topicDone(id string) bool {
-	switch id {
-	case "boneking", "father":
-		return g.Quests[0] > 0
-	case "oracle", "abyss":
-		return g.Quests[1] > 0
-	case "stranger":
-		return g.Quests[2] > 0
+// facts are what the town remembers has happened, newest first. A line
+// may have a variant for each, <line>_<fact>, said instead while the
+// fact holds.
+var facts = []struct {
+	id string
+	on func(*Game) bool
+}{
+	{"wanderer", func(g *Game) bool { return g.Quests[2] > 0 }},
+	{"oracle", func(g *Game) bool { return g.Quests[1] > 0 }},
+	{"boneking", func(g *Game) bool { return g.Quests[0] > 0 }},
+}
+
+// topicFact is the fact that settles a topic: its <id>_after is said
+// instead once that boss is dead.
+var topicFact = map[string]string{"boneking": "boneking", "father": "boneking", "oracle": "oracle", "abyss": "oracle", "stranger": "wanderer"}
+
+func (g *Game) fact(id string) bool {
+	for _, f := range facts {
+		if f.id == id {
+			return f.on(g)
+		}
 	}
 	return false
 }
 
-// answer is the catalog key of what who says about a topic, or "".
+// variants are the keys a speaker may say on a topic, in the order
+// tried: their own lines before the town's, and for each the settled
+// <id>_after, then <id>_<fact> for what has happened, newest first, then
+// the plain <id>. A fact line is news; the rest is not.
+func (g *Game) variants(who, id string) (keys []string, news []bool) {
+	for _, w := range []string{who, "any"} {
+		base := "talk." + w + "." + id
+		if f, ok := topicFact[id]; ok && g.fact(f) {
+			keys, news = append(keys, base+"_after"), append(news, false)
+		}
+		for _, f := range facts {
+			if f.on(g) {
+				keys, news = append(keys, base+"_"+f.id), append(news, true)
+			}
+		}
+		keys, news = append(keys, base), append(news, false)
+	}
+	return
+}
+
+// answer is the catalog key of the first line a speaker has on a topic,
+// or "": whether they have one, and whether they have said it.
 func (g *Game) answer(who, id string) string {
 	if id == "rumors" {
 		if who == "villager" {
@@ -82,13 +114,7 @@ func (g *Game) answer(who, id string) string {
 		}
 		return ""
 	}
-	var keys []string
-	for _, w := range []string{who, "any"} {
-		if g.topicDone(id) {
-			keys = append(keys, "talk."+w+"."+id+"_after")
-		}
-		keys = append(keys, "talk."+w+"."+id)
-	}
+	keys, _ := g.variants(who, id)
 	for _, k := range keys {
 		if g.L.Has(k) {
 			return k
@@ -97,12 +123,42 @@ func (g *Game) answer(who, id string) string {
 	return ""
 }
 
-// hear adds a line to the conversation and learns the topics it links:
-// the English links, so that what the hero knows does not hang on a
-// translation keeping every one.
+// says is the catalog key of what a speaker says on a topic now, with
+// what they remember saying: a line said before gives way to its
+// <line>_again; without one, news is told once and passed over for the
+// line under it, and anything else is said again.
+func (g *Game) says(who, id string) string {
+	if id == "rumors" {
+		return g.answer(who, id)
+	}
+	keys, news := g.variants(who, id)
+	last := ""
+	for i, k := range keys {
+		if !g.L.Has(k) {
+			continue
+		}
+		if !g.saidBy(who, k) {
+			return k
+		}
+		if g.L.Has(k + "_again") {
+			return k + "_again"
+		}
+		if last = k; !news[i] {
+			return k
+		}
+	}
+	return last
+}
+
+// saidBy reports whether a speaker has said a line to the hero.
+func (g *Game) saidBy(who, key string) bool { return g.heard[who+" "+key] }
+
+// hear adds a line to the conversation, remembers who said it, and
+// learns the topics it links: the English links, so that what the hero
+// knows does not hang on a translation keeping every one.
 func (g *Game) hear(head, key string) {
 	t := g.talk
-	g.asked[key] = true
+	g.heard[t.Who+" "+key] = true
 	text := g.L.T(key)
 	for _, id := range i18n.Links(locales.Get(i18n.Source).T(key)) {
 		g.Known[id] = true
@@ -132,7 +188,7 @@ func (t *Talk) options(g *Game) []talkOpt {
 	var opts []talkOpt
 	for _, id := range topics {
 		if k := g.answer(t.Who, id); g.Known[id] && k != "" {
-			opts = append(opts, talkOpt{id: id, label: g.L.T("topic." + id), asked: k != "rumor" && g.asked[k]})
+			opts = append(opts, talkOpt{id: id, label: g.L.T("topic." + id), asked: k != "rumor" && g.saidBy(t.Who, k)})
 		}
 	}
 	slices.SortFunc(opts, func(a, b talkOpt) int { return strings.Compare(a.label, b.label) })
@@ -165,7 +221,7 @@ func (g *Game) ask(id string) {
 	case optGoodbye:
 		g.talk, g.Mode = nil, ModePlay
 	default:
-		k := g.answer(t.Who, id)
+		k := g.says(t.Who, id)
 		if k == "" {
 			return // a link to a topic this speaker has nothing on
 		}

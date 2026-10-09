@@ -184,7 +184,7 @@ func TestDrawEveryLanguage(t *testing.T) {
 				g.Mode = mode
 				g.shop = g.shops[0]
 				g.talk = &Talk{Who: "voss", Name: "Voss", Barter: true}
-				g.hear("", "talk.voss.intro")
+				g.hear("", "talk.voss.greet")
 				g.ask("ember")
 				g.Draw(s)
 				if m := key.FindString(screenText(s)); m != "" {
