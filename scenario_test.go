@@ -253,7 +253,7 @@ func TestBossQuestReward(t *testing.T) {
 		t.Fatal("no Bone King in crypt4")
 	}
 	g.killMonster(king)
-	if !g.Slain["boneking"] || !g.owed(questByID("boneking")) {
+	if !g.Slain["boneking"] || g.status(questByID("boneking")) != QuestOwed {
 		t.Fatal("the Bone King's bounty is not owed after the kill")
 	}
 	g.changeLevel("town", "", nil)

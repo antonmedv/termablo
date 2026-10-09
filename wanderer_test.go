@@ -388,7 +388,7 @@ func TestWandererDeathDropsShroud(t *testing.T) {
 	if g.Mode != ModePlay {
 		t.Errorf("mode %v after his death, want play", g.Mode)
 	}
-	if !g.settled(questByID("wanderer")) {
+	if g.status(questByID("wanderer")) != QuestOver {
 		t.Error("the quest is not done")
 	}
 	found := false
@@ -441,7 +441,7 @@ func TestReady(t *testing.T) {
 		if p.HPot != beltMax || p.Scrolls != 2 || p.HP != float64(p.MaxHP()) {
 			t.Errorf("%s: belt %d, scrolls %d, life %.0f/%d", build, p.HPot, p.Scrolls, p.HP, p.MaxHP())
 		}
-		if !g.settled(questByID("boneking")) || !g.settled(questByID("oracle")) || g.Slain["wanderer"] {
+		if g.status(questByID("boneking")) != QuestOver || g.status(questByID("oracle")) != QuestOver || g.Slain["wanderer"] {
 			t.Errorf("%s: quests %v, slain %v", build, g.Quests, g.Slain)
 		}
 	}

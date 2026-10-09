@@ -71,10 +71,8 @@ func (g *Game) Click(x, y, w, h int) {
 		case g.beltHit[2].in(x, y):
 			g.readPortal()
 		}
-		for _, h := range g.questsHit {
-			if h.in(x, y) {
-				g.openJournal()
-			}
+		if h := g.questsHit; y >= h.Y && y <= h.Y+g.questsRows && h.in(x, h.Y) {
+			g.openJournal()
 		}
 		return
 	}

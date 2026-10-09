@@ -143,7 +143,7 @@ func TestPaidUntaken(t *testing.T) {
 	slay(g, "boneking")
 	gold := g.P.Gold
 	got := greetings(t, g, "captain", 1)
-	if got[0] != g.L.T("talk.voss.boneking_reward") || g.P.Gold <= gold || !g.settled(questByID("boneking")) {
+	if got[0] != g.L.T("talk.voss.boneking_reward") || g.P.Gold <= gold || g.status(questByID("boneking")) != QuestOver {
 		t.Errorf("Voss on an untaken quest: %q, gold %d->%d", got, gold, g.P.Gold)
 	}
 }
@@ -159,11 +159,11 @@ func TestWandererQuest(t *testing.T) {
 			g.killMonster(m)
 		}
 	}
-	if g.Quests["wanderer"] != QuestTaken || g.settled(q) {
+	if g.Quests["wanderer"] != QuestTaken || g.status(q) == QuestOver {
 		t.Fatalf("after the Oracle: %v", g.Quests)
 	}
 	slay(g, "wanderer")
-	if !g.settled(q) || g.owed(q) {
+	if g.status(q) != QuestOver {
 		t.Error("the Last Wanderer's death does not end his quest")
 	}
 }
@@ -242,7 +242,7 @@ func TestJournal(t *testing.T) {
 	talkWith(t, g, "captain")
 	press(m, "esc")
 	g.Draw(s)
-	g.Click(g.questsHit[0].X0, g.questsHit[0].Y, s.W, s.H)
+	g.Click(g.questsHit.X0, g.questsHit.Y+1, s.W, s.H)
 	g.Draw(s)
 	if g.Mode != ModeQuests || !screenHas(s, "must be destroyed") || !screenHas(s, "Given by Captain Voss") ||
 		!screenHas(s, "Throne of the Bone King") || !screenHas(s, "Captain Voss wants") || screenHas(s, "is dust") {

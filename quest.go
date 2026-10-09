@@ -52,22 +52,33 @@ const (
 // done reports whether a quest's boss is dead.
 func (g *Game) done(q *Quest) bool { return g.Slain[q.Boss] }
 
-// settled reports whether a quest is over: paid for, or done when there
-// is nothing to pay.
-func (g *Game) settled(q *Quest) bool {
-	if q.Giver == "" {
-		return g.done(q)
-	}
-	return g.Quests[q.ID] == QuestRewarded
-}
+// QuestStatus is where a quest stands, read from the boss's death and
+// the giver's pay: still to do, done with its giver yet to pay, or over.
+// A boss killed before its quest is given is owed all the same.
+type QuestStatus uint8
 
-// owed reports whether a quest is done and its giver yet to pay.
-func (g *Game) owed(q *Quest) bool { return q.Giver != "" && g.done(q) && !g.settled(q) }
+const (
+	QuestOpen QuestStatus = iota
+	QuestOwed
+	QuestOver
+)
+
+// status is where a quest stands: over once paid for, or once done when
+// there is no one to pay.
+func (g *Game) status(q *Quest) QuestStatus {
+	switch {
+	case g.Quests[q.ID] == QuestRewarded, q.Giver == "" && g.done(q):
+		return QuestOver
+	case g.done(q):
+		return QuestOwed
+	}
+	return QuestOpen
+}
 
 // bountyDue is the first quest a giver owes for, or nil.
 func (g *Game) bountyDue() *Quest {
 	for i := range quests {
-		if g.owed(&quests[i]) {
+		if g.status(&quests[i]) == QuestOwed {
 			return &quests[i]
 		}
 	}
@@ -86,10 +97,8 @@ func (g *Game) takeQuest(q *Quest) {
 // offered takes the quests a line gives.
 func (g *Game) offered(key string) {
 	for i := range quests {
-		for _, k := range quests[i].Offers {
-			if k == key {
-				g.takeQuest(&quests[i])
-			}
+		if slices.Contains(quests[i].Offers, key) {
+			g.takeQuest(&quests[i])
 		}
 	}
 }
@@ -110,7 +119,7 @@ func (g *Game) slay(boss string) {
 func (g *Game) briefed(who string) {
 	k := "talk." + who + ".greet"
 	for i := range quests {
-		if slices.Contains(quests[i].Offers, k) && !g.settled(&quests[i]) {
+		if slices.Contains(quests[i].Offers, k) && g.status(&quests[i]) != QuestOver {
 			return
 		}
 	}
@@ -142,7 +151,7 @@ func (g *Game) payQuests(giver *Monster) []string {
 	p := g.P
 	for i := range quests {
 		q := &quests[i]
-		if q.Giver != giver.T.ID || !g.owed(q) {
+		if q.Giver != giver.T.ID || g.status(q) != QuestOwed {
 			continue
 		}
 		g.Quests[q.ID] = QuestRewarded

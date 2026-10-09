@@ -108,7 +108,8 @@ type Game struct {
 	hoverOn        bool
 	hoverLines     []hoverLine // this frame's hover info (nil = nothing hovered)
 	beltHit        [3]hitBox   // this frame's belt rows: heal, mana, portal
-	questsHit      []hitBox    // this frame's quest rows in the panel
+	questsHit      hitBox      // this frame's quests header in the panel
+	questsRows     int         // and the quest rows under it
 	journalHit     []hitBox    // this frame's rows of the journal's list
 	langHit        []hitBox    // the title screen's languages, in i18n.Langs order
 

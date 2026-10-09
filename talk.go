@@ -149,7 +149,7 @@ func (g *Game) looksNow() []string {
 func (g *Game) facts() []string {
 	var ids []string
 	for i := len(quests) - 1; i >= 0; i-- {
-		if g.settled(&quests[i]) {
+		if g.status(&quests[i]) == QuestOver {
 			ids = append(ids, quests[i].ID)
 		}
 	}
@@ -162,7 +162,7 @@ var topicFact = map[string]string{"boneking": "boneking", "father": "boneking", 
 
 func (g *Game) fact(id string) bool {
 	q := questByID(id)
-	return q != nil && g.settled(q)
+	return q != nil && g.status(q) == QuestOver
 }
 
 // lineKind is what a variant of a line is: the plain line or its
@@ -175,17 +175,24 @@ const (
 	lineLook
 )
 
+// variant is a line a speaker may say on a topic, and its kind.
+type variant struct {
+	key  string
+	kind lineKind
+}
+
 // variants are the lines a speaker has on a topic, in the order tried:
 // their own before the town's, and for each the settled <id>_after, the
 // news of the newest fact they have a line for, <id>_<fact>, the first
 // look they have a line for, <id>_<look>, and the plain <id>. Older
 // news is passed over: it is old.
-func (g *Game) variants(who, id string) (keys []string, kinds []lineKind) {
+func (g *Game) variants(who, id string) []variant {
+	var vs []variant
 	add := func(k string, kind lineKind) bool {
 		if !g.L.Has(k) {
 			return false
 		}
-		keys, kinds = append(keys, k), append(kinds, kind)
+		vs = append(vs, variant{k, kind})
 		return true
 	}
 	var seen []string
@@ -209,7 +216,7 @@ func (g *Game) variants(who, id string) (keys []string, kinds []lineKind) {
 		}
 		add(base, linePlain)
 	}
-	return
+	return vs
 }
 
 // answer is the catalog key of the first line a speaker has on a topic,
@@ -221,11 +228,11 @@ func (g *Game) answer(who, id string) string {
 		}
 		return ""
 	}
-	keys, _ := g.variants(who, id)
-	if len(keys) == 0 {
+	vs := g.variants(who, id)
+	if len(vs) == 0 {
 		return ""
 	}
-	return keys[0]
+	return vs[0].key
 }
 
 // says is the catalog key of what a speaker says on a topic now, with
@@ -238,31 +245,34 @@ func (g *Game) says(who, id string) string {
 	if id == "rumors" {
 		return g.answer(who, id)
 	}
-	keys, kinds := g.variants(who, id)
-	for i, k := range keys {
-		if kinds[i] == linePlain {
-			if !g.saidBy(who, k) {
-				return k
-			}
-			break
-		}
+	vs := g.variants(who, id)
+	// the hero is met before being told the news: the first plain line
+	// comes before anything, until it is said
+	if i := slices.IndexFunc(vs, func(v variant) bool { return v.kind == linePlain }); i >= 0 && !g.saidBy(who, vs[i].key) {
+		return vs[i].key
 	}
-	looked := slices.Contains(kinds, lineLook)
+	looked := slices.ContainsFunc(vs, func(v variant) bool { return v.kind == lineLook })
 	last := ""
-	for i, k := range keys {
-		said := g.saidBy(who, k)
+	for _, v := range vs {
+		said, again := g.saidBy(who, v.key), v.key+"_again"
 		switch {
-		case kinds[i] == lineLook && said && g.L.Has(k+"_again"):
-			return k + "_again"
-		case kinds[i] == lineLook, !said:
-			return k
-		case g.L.Has(k+"_again") && (kinds[i] != lineNews || !looked):
-			return k + "_again"
+		case v.kind == lineLook:
+			// how the hero looks is remarked on every time, the second
+			// time on in its _again when there is one
+			if said && g.L.Has(again) {
+				return again
+			}
+			return v.key
+		case !said:
+			return v.key
+		case v.kind == lineNews && looked:
+			// news told gives way to a look still to come
+		case g.L.Has(again):
+			return again
+		case v.kind == linePlain:
+			return v.key
 		}
-		last = k
-		if kinds[i] == linePlain {
-			return k
-		}
+		last = v.key
 	}
 	return last
 }

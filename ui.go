@@ -422,7 +422,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 	// the quests taken, none until someone gives one; a click, or J,
 	// opens the journal
 	qrow := h - 6
-	g.questsHit = g.questsHit[:0]
+	g.questsHit, g.questsRows = hitBox{}, 0
 	if shown := g.questsShown(3); qrow > row && len(shown) > 0 {
 		s.TextBold(cx, qrow, "J", colDim.C8())
 		s.Text(cx+2, qrow, fit(L.T("ui.panel.quests"), bw-2), colDim.C8())
@@ -430,9 +430,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 			mark, col := g.questMark(q)
 			s.Text(cx, qrow+1+i, fit(mark+" "+L.T("monster."+q.Boss), bw), col.C8())
 		}
-		for i := range len(shown) + 1 {
-			g.questsHit = append(g.questsHit, hitBox{cx, cx + bw - 1, qrow + i})
-		}
+		g.questsHit, g.questsRows = hitBox{cx, cx + bw - 1, qrow}, len(shown)
 	}
 	s.Text(cx, h-2, fit(L.T("ui.panel.keys"), bw), colDim.C8())
 }

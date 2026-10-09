@@ -17,7 +17,7 @@ func (g *Game) reached(q *Quest, stage string) bool {
 	case "taken":
 		return g.Quests[q.ID] != QuestUnknown
 	case "done":
-		return g.done(q)
+		return g.status(q) != QuestOpen
 	case "rewarded":
 		return g.Quests[q.ID] == QuestRewarded
 	}
@@ -32,7 +32,7 @@ func (g *Game) journal() []*Quest {
 		q := &quests[i]
 		switch {
 		case g.Quests[q.ID] == QuestUnknown:
-		case g.settled(q):
+		case g.status(q) == QuestOver:
 			over = append(over, q)
 		default:
 			open = append(open, q)
@@ -44,10 +44,10 @@ func (g *Game) journal() []*Quest {
 // questMark is a quest's mark and color in a list: over, done and owed,
 // or still to do.
 func (g *Game) questMark(q *Quest) (string, RGB) {
-	switch {
-	case g.settled(q):
+	switch g.status(q) {
+	case QuestOver:
 		return "✓", colGreen
-	case g.done(q):
+	case QuestOwed:
 		return "◉", colGold
 	}
 	return "○", colGray
@@ -140,7 +140,7 @@ func (g *Game) drawJournal(s *Screen, mapW, mapH int) {
 		switch {
 		case i == g.cur:
 			nc = colGold
-		case g.settled(q):
+		case g.status(q) == QuestOver:
 			nc = colGray
 		}
 		if s.RTL {
@@ -171,11 +171,12 @@ func (g *Game) drawJournal(s *Screen, mapW, mapH int) {
 	}
 	boss := L.Noun("monster." + q.Boss)
 	line(boss.Text, colGold, true)
+	st := g.status(q)
 	_, mc := g.questMark(q)
-	switch {
-	case g.settled(q):
+	switch st {
+	case QuestOver:
 		line(L.T("ui.journal.over"), mc, false)
-	case g.done(q):
+	case QuestOwed:
 		line(L.T("ui.journal.return", "who", L.Noun("monster."+q.Giver)), mc, false)
 	default:
 		line(L.T("ui.journal.goal", "name", boss), colWhite, false)
@@ -184,14 +185,14 @@ func (g *Game) drawJournal(s *Screen, mapW, mapH int) {
 	if q.Giver != "" {
 		line(L.T("ui.journal.giver", "who", L.Noun("monster."+q.Giver)), colDim, false)
 	}
-	if !g.done(q) && q.Area != "" {
+	if st == QuestOpen && q.Area != "" {
 		line(L.T("ui.journal.where", "area", L.T("area."+q.Area)), colDim, false)
 	}
-	if q.Giver != "" && !g.settled(q) {
+	if q.Giver != "" && st != QuestOver {
 		line(L.T("ui.journal.reward"), colDim, false)
 	}
-	for _, st := range journalStages {
-		if k := "journal." + q.ID + "." + st; g.reached(q, st) && L.Has(k) {
+	for _, stage := range journalStages {
+		if k := "journal." + q.ID + "." + stage; g.reached(q, stage) && L.Has(k) {
 			row++
 			line(L.T(k), colLore, false)
 		}
