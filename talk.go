@@ -62,14 +62,14 @@ func (g *Game) anotherRumor() string {
 
 // facts are what the town remembers has happened, newest first. A line
 // may have a variant for each, <line>_<fact>, said instead while the
-// fact holds.
+// fact holds. The town hears of a quest's boss from Voss, as he pays.
 var facts = []struct {
 	id string
 	on func(*Game) bool
 }{
 	{"wanderer", func(g *Game) bool { return g.Quests[2] > 0 }},
-	{"oracle", func(g *Game) bool { return g.Quests[1] > 0 }},
-	{"boneking", func(g *Game) bool { return g.Quests[0] > 0 }},
+	{"oracle", func(g *Game) bool { return g.Quests[1] == 2 }},
+	{"boneking", func(g *Game) bool { return g.Quests[0] == 2 }},
 }
 
 // topicFact is the fact that settles a topic: its <id>_after is said
@@ -85,28 +85,34 @@ func (g *Game) fact(id string) bool {
 	return false
 }
 
-// variants are the keys a speaker may say on a topic, in the order
-// tried: their own lines before the town's, and for each the settled
-// <id>_after, then <id>_<fact> for what has happened, newest first, then
-// the plain <id>. A fact line is news; the rest is not.
+// variants are the lines a speaker has on a topic, in the order tried:
+// their own before the town's, and for each the settled <id>_after, the
+// news of the newest fact they have a line for, <id>_<fact>, and the
+// plain <id>. Older news is passed over: it is old.
 func (g *Game) variants(who, id string) (keys []string, news []bool) {
+	add := func(k string, n bool) {
+		if g.L.Has(k) {
+			keys, news = append(keys, k), append(news, n)
+		}
+	}
 	for _, w := range []string{who, "any"} {
 		base := "talk." + w + "." + id
 		if f, ok := topicFact[id]; ok && g.fact(f) {
-			keys, news = append(keys, base+"_after"), append(news, false)
+			add(base+"_after", false)
 		}
 		for _, f := range facts {
-			if f.on(g) {
-				keys, news = append(keys, base+"_"+f.id), append(news, true)
+			if f.on(g) && g.L.Has(base+"_"+f.id) {
+				add(base+"_"+f.id, true)
+				break
 			}
 		}
-		keys, news = append(keys, base), append(news, false)
+		add(base, false)
 	}
 	return
 }
 
 // answer is the catalog key of the first line a speaker has on a topic,
-// or "": whether they have one, and whether they have said it.
+// or "" when they have none.
 func (g *Game) answer(who, id string) string {
 	if id == "rumors" {
 		if who == "villager" {
@@ -115,39 +121,51 @@ func (g *Game) answer(who, id string) string {
 		return ""
 	}
 	keys, _ := g.variants(who, id)
-	for _, k := range keys {
-		if g.L.Has(k) {
-			return k
-		}
+	if len(keys) == 0 {
+		return ""
 	}
-	return ""
+	return keys[0]
 }
 
 // says is the catalog key of what a speaker says on a topic now, with
-// what they remember saying: a line said before gives way to its
-// <line>_again; without one, news is told once and passed over for the
-// line under it, and anything else is said again.
+// what they remember saying. Before any news they say the line under
+// it: the hero is met before being told the news. A line said before
+// gives way to its <line>_again; without one, news is told once and
+// passed over, and anything else is said again.
 func (g *Game) says(who, id string) string {
 	if id == "rumors" {
 		return g.answer(who, id)
 	}
 	keys, news := g.variants(who, id)
+	for i, k := range keys {
+		if !news[i] {
+			if !g.saidBy(who, k) {
+				return k
+			}
+			break
+		}
+	}
 	last := ""
 	for i, k := range keys {
-		if !g.L.Has(k) {
-			continue
-		}
 		if !g.saidBy(who, k) {
 			return k
 		}
 		if g.L.Has(k + "_again") {
 			return k + "_again"
 		}
-		if last = k; !news[i] {
+		last = k
+		if !news[i] {
 			return k
 		}
 	}
 	return last
+}
+
+// fresh reports whether a speaker has something on a topic they have not
+// said.
+func (g *Game) fresh(who, id string) bool {
+	k := g.says(who, id)
+	return k != "" && !g.saidBy(who, k) && !strings.HasSuffix(k, "_again")
 }
 
 // saidBy reports whether a speaker has said a line to the hero.
@@ -188,7 +206,7 @@ func (t *Talk) options(g *Game) []talkOpt {
 	var opts []talkOpt
 	for _, id := range topics {
 		if k := g.answer(t.Who, id); g.Known[id] && k != "" {
-			opts = append(opts, talkOpt{id: id, label: g.L.T("topic." + id), asked: k != "rumor" && g.saidBy(t.Who, k)})
+			opts = append(opts, talkOpt{id: id, label: g.L.T("topic." + id), asked: k != "rumor" && !g.fresh(t.Who, id)})
 		}
 	}
 	slices.SortFunc(opts, func(a, b talkOpt) int { return strings.Compare(a.label, b.label) })

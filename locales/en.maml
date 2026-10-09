@@ -133,10 +133,11 @@
   # talk.<who>.greet is what a speaker says on meeting the hero, and
   # talk.<who>.<topic> what they say when asked. Speakers remember: a line
   # they have said before gives way to its <line>_again. What the town
-  # remembers changes them too: <line>_boneking, _oracle and _wanderer
-  # are said once that boss is dead, the newest first; told once, unless
-  # they have an _again, and then the speaker goes back to what came
-  # before. <topic>_after is said for good once the topic's boss is dead.
+  # knows changes them too: <line>_boneking, _oracle and _wanderer are
+  # news, said once that boss is dead (and, for the first two, Voss has
+  # paid for it). Only the newest news is told, after the plain line has
+  # been said once, and only once unless it has an _again. <topic>_after
+  # is said for good once the topic's boss is dead.
   talk: {
     # Hadrik is gruff and few-worded. He keeps the forge, which keeps the
     # Ember, and knows it.

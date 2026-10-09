@@ -1717,8 +1717,8 @@ func (g *Game) talkTo(m *Monster) {
 		greet = []string{g.rumor()}
 	}
 	g.talk, g.Mode = t, ModeTalk
-	if len(greet) == 0 {
-		greet = []string{g.says(t.Who, "greet")}
+	if k := g.says(t.Who, "greet"); len(greet) == 0 && k != "" {
+		greet = []string{k}
 	}
 	for _, k := range greet {
 		g.hear("", k)

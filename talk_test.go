@@ -285,6 +285,8 @@ func TestNewsToldOnce(t *testing.T) {
 func TestVossAfterReward(t *testing.T) {
 	g := NewGame(1)
 	m := newTestModel(g)
+	talkWith(t, g, "captain")
+	press(m, "esc")
 	g.Quests[0] = 1
 	var said []string
 	for range 3 {
@@ -348,6 +350,106 @@ func TestTalkVariants(t *testing.T) {
 		}
 		if id != "greet" && (id == "rumors" || !slices.Contains(topics, id)) {
 			t.Errorf("%s: %q is not a topic", k, id)
+		}
+	}
+}
+
+// greetings is what a speaker says on each of n visits.
+func greetings(t *testing.T, g *Game, id string, n int) []string {
+	t.Helper()
+	m := newTestModel(g)
+	var said []string
+	for range n {
+		talkWith(t, g, id)
+		said = append(said, lastText(g))
+		press(m, "esc")
+	}
+	return said
+}
+
+// Bosses killed between visits are one piece of news, the newest: the
+// older is old.
+func TestOnlyNewestNews(t *testing.T) {
+	g := NewGame(1)
+	greetings(t, g, "smith", 1)
+	g.Quests = [3]int{2, 2, 1}
+	got := greetings(t, g, "smith", 3)
+	want := []string{g.L.T("talk.hadrik.greet_wanderer"), g.L.T("talk.hadrik.greet_again"), g.L.T("talk.hadrik.greet_again")}
+	if !slices.Equal(got, want) {
+		t.Errorf("Hadrik after three bosses: %q, want %q", got, want)
+	}
+}
+
+// A speaker meets the hero before telling them the news.
+func TestMeetBeforeNews(t *testing.T) {
+	g := NewGame(1)
+	g.Quests[0] = 2
+	got := greetings(t, g, "alch", 3)
+	want := []string{g.L.T("talk.mirela.greet"), g.L.T("talk.mirela.greet_boneking"), g.L.T("talk.mirela.greet_again")}
+	if !slices.Equal(got, want) {
+		t.Errorf("Mirela met after the Bone King: %q, want %q", got, want)
+	}
+}
+
+// The Oracle first: Voss pays, then briefs the hero he has not met, so
+// the topics of his briefing are still learned.
+func TestOracleBeforeBoneKing(t *testing.T) {
+	g := NewGame(1)
+	g.Quests[1] = 1
+	got := greetings(t, g, "captain", 2)
+	want := []string{g.L.T("talk.voss.oracle_reward"), g.L.T("talk.voss.greet")}
+	if !slices.Equal(got, want) || !g.Known["crypt"] {
+		t.Errorf("Voss after the Oracle: %q, want %q", got, want)
+	}
+}
+
+// Both quests paid on one visit; the next brings only the newest news.
+func TestBothRewards(t *testing.T) {
+	g := NewGame(1)
+	greetings(t, g, "captain", 1)
+	g.Quests[0], g.Quests[1] = 1, 1
+	talkWith(t, g, "captain")
+	if n := len(g.talk.Log); n != 2 || g.Quests != [3]int{2, 2, 0} {
+		t.Fatalf("%d lines, quests %v", n, g.Quests)
+	}
+	g.talk, g.Mode = nil, ModePlay
+	if got := greetings(t, g, "captain", 1); got[0] != g.L.T("talk.voss.greet_oracle") {
+		t.Errorf("after both rewards: %q", got[0])
+	}
+}
+
+// A topic asked shows as asked until there is something new on it.
+func TestAskedUntilNews(t *testing.T) {
+	g := NewGame(1)
+	g.Known["boneking"] = true
+	talkWith(t, g, "captain")
+	g.ask("boneking")
+	asked := func() bool {
+		for _, o := range g.talk.options(g) {
+			if o.id == "boneking" {
+				return o.asked
+			}
+		}
+		t.Fatal("no Bone King topic")
+		return false
+	}
+	if !asked() {
+		t.Error("the Bone King not asked after asking")
+	}
+	g.Quests[0] = 2
+	if asked() {
+		t.Error("the Bone King's death is nothing new")
+	}
+}
+
+// Everyone with lines of their own greets the hero.
+func TestEveryoneGreets(t *testing.T) {
+	en := locales.Get(i18n.Source)
+	for _, k := range en.Keys() {
+		if rest, ok := strings.CutPrefix(k, "talk."); ok {
+			if who, _, _ := strings.Cut(rest, "."); who != "any" && !en.Has("talk."+who+".greet") {
+				t.Errorf("%s has no greet", who)
+			}
 		}
 	}
 }
