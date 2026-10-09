@@ -212,3 +212,27 @@ func TestRTLLinkSaidTwice(t *testing.T) {
 		t.Errorf("link at %d..%d, want it at %d", h.X0, h.X1, 40-7)
 	}
 }
+
+// Latest rumors never tells the rumor just told.
+func TestRumorNotRepeated(t *testing.T) {
+	g := NewGame(1)
+	talkWith(t, g, "villager")
+	for range 40 {
+		before := g.talk.rumor
+		g.ask("rumors")
+		if g.talk.rumor == before {
+			t.Fatalf("%s told twice running", before)
+		}
+	}
+}
+
+// A link one cell wide can still be clicked.
+func TestOneCellLinkClicks(t *testing.T) {
+	g := NewGame(1)
+	talkWith(t, g, "captain")
+	g.talk.hits = []talkHit{{hitBox{5, 5, 3}, "crypt", true}}
+	g.clickTalk(5, 3)
+	if last := g.talk.Log[len(g.talk.Log)-1]; last.Text != g.L.T("talk.voss.crypt") {
+		t.Errorf("the click was lost: %q", last.Text)
+	}
+}

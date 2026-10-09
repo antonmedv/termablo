@@ -23,6 +23,7 @@ type Talk struct {
 	Cur    int // the row picked in the topic list
 	off    int // the first history row shown
 	follow bool
+	rumor  string    // the last rumor told here
 	hits   []talkHit // this frame's topic rows and links
 }
 
@@ -37,6 +38,9 @@ type talkHit struct {
 	link  bool
 }
 
+// in is hitBox.in that takes a box one cell wide: a link may be.
+func (h talkHit) in(x, y int) bool { return y == h.Y && x >= h.X0 && x <= h.X1 }
+
 // topics are every topic there is, topic.<id> in the catalog. An answer
 // is talk.<who>.<id>, else the town's talk.any.<id>; while topicDone,
 // <id>_after is asked first. Rumors are the villagers', rumor.<key>.
@@ -46,6 +50,15 @@ var topics = []string{"rumors", "ember", "edran", "altars", "forge", "portals", 
 var rumors = []string{"braziers", "brother", "torch", "forge", "glimmer", "crystal", "scroll", "stranger", "edran", "uncle", "holding"}
 
 func (g *Game) rumor() string { return "rumor." + rumors[g.rng.Intn(len(rumors))] }
+
+// anotherRumor is a rumor other than the last one heard here.
+func (g *Game) anotherRumor() string {
+	i := g.rng.Intn(len(rumors) - 1)
+	if last := slices.Index(rumors, strings.TrimPrefix(g.talk.rumor, "rumor.")); last >= 0 && i >= last {
+		i++
+	}
+	return "rumor." + rumors[i]
+}
 
 // topicDone reports whether what a topic is about has been settled: its
 // boss is dead.
@@ -94,6 +107,9 @@ func (g *Game) hear(head, key string) {
 	for _, id := range i18n.Links(locales.Get(i18n.Source).T(key)) {
 		g.Known[id] = true
 	}
+	if strings.HasPrefix(key, "rumor.") {
+		t.rumor = key
+	}
 	t.Log = append(t.Log, talkEntry{head, text})
 	t.follow = true
 }
@@ -102,11 +118,12 @@ func (g *Game) hear(head, key string) {
 type talkOpt struct {
 	id, label string
 	asked     bool
+	special   bool // Barter or Goodbye, not a topic
 }
 
 const (
-	optBarter  = "\x00barter"
-	optGoodbye = "\x00goodbye"
+	optBarter  = "barter"
+	optGoodbye = "goodbye"
 )
 
 // options are the topic list: Barter for a trader, then every known topic
@@ -115,14 +132,14 @@ func (t *Talk) options(g *Game) []talkOpt {
 	var opts []talkOpt
 	for _, id := range topics {
 		if k := g.answer(t.Who, id); g.Known[id] && k != "" {
-			opts = append(opts, talkOpt{id, g.L.T("topic." + id), k != "rumor" && g.asked[k]})
+			opts = append(opts, talkOpt{id: id, label: g.L.T("topic." + id), asked: k != "rumor" && g.asked[k]})
 		}
 	}
 	slices.SortFunc(opts, func(a, b talkOpt) int { return strings.Compare(a.label, b.label) })
 	if t.Barter {
-		opts = append([]talkOpt{{id: optBarter, label: g.L.T("ui.talk.barter")}}, opts...)
+		opts = append([]talkOpt{{id: optBarter, label: g.L.T("ui.talk.barter"), special: true}}, opts...)
 	}
-	return append(opts, talkOpt{id: optGoodbye, label: g.L.T("ui.talk.goodbye")})
+	return append(opts, talkOpt{id: optGoodbye, label: g.L.T("ui.talk.goodbye"), special: true})
 }
 
 // firstTopic is the row the list opens on: Barter with a trader, else
@@ -132,7 +149,7 @@ func (t *Talk) firstTopic(g *Game) int {
 		return 0
 	}
 	for i, o := range t.options(g) {
-		if o.id[0] != 0 && !o.asked {
+		if !o.special && !o.asked {
 			return i
 		}
 	}
@@ -153,7 +170,7 @@ func (g *Game) ask(id string) {
 			return // a link to a topic this speaker has nothing on
 		}
 		if k == "rumor" {
-			k = g.rumor()
+			k = g.anotherRumor()
 		}
 		g.hear(g.L.T("topic."+id), k)
 		if i := slices.IndexFunc(t.options(g), func(o talkOpt) bool { return o.id == id }); i >= 0 {
@@ -294,11 +311,12 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 	t.hits = t.hits[:0]
 
 	// the topic list takes what its longest name needs, up to two fifths
+	// of the box, or 20 cells: the 18 of the longest name, and a margin
 	lw := 0
 	for _, o := range opts {
 		lw = maxi(lw, i18n.Width(o.label))
 	}
-	lw = clampi(lw+2, 12, w*2/5)
+	lw = clampi(lw+2, 12, maxi(20, w*2/5))
 	tw := w - lw - 5 // the history: │ text │ list │
 	sep := x + w - lw - 2
 	tx, lx := x+2, sep+1
@@ -324,8 +342,7 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 	for i, r := range rows[t.off:mini(len(rows), t.off+view)] {
 		yy := top + i
 		if r.head {
-			s.TextStart(tx, yy, tw, r.spans[0].text, colOrange.C8())
-			g.boldRow(s, tx, yy, tw)
+			textStartBold(s, tx, yy, tw, r.spans[0].text, colOrange.C8())
 			continue
 		}
 		g.drawSpans(s, tx, yy, tw, r.spans, text)
@@ -338,7 +355,7 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 		o, yy := opts[i], top+i-loff
 		c := colWhite
 		switch {
-		case o.id[0] == 0:
+		case o.special:
 			c = colLore
 		case o.asked:
 			c = colGray
@@ -358,8 +375,7 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 	// whole border when they do not fit there and nothing is below.
 	c := colDim.C8()
 	name := i18n.Truncate(" "+t.Name+" ", tw)
-	s.TextStart(tx, y, tw, name, colGold.C8())
-	g.boldRow(s, tx, y, tw) // the border is not bold, only what is written on it
+	textStartBold(s, tx, y, tw, name, colGold.C8())
 	if more := " " + L.T("ui.more_above", "n", above) + " "; above > 0 && i18n.Width(name)+i18n.Width(more) < tw {
 		if s.RTL {
 			s.Text(tx, y, more, c)
@@ -383,11 +399,12 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 	}
 }
 
-// boldRow sets the cells of a row bold.
-func (g *Game) boldRow(s *Screen, x, y, w int) {
-	for xx := x; xx < x+w && xx < s.W; xx++ {
-		s.C[y*s.W+xx].Bold = true
+// textStartBold is Screen.TextStart in bold.
+func textStartBold(s *Screen, x, y, w int, str string, fg Col8) {
+	if s.RTL {
+		x += max(0, w-i18n.Width(str))
 	}
+	s.TextBold(x, y, str, fg)
 }
 
 // drawSpans writes a history row, links in their own color, and marks

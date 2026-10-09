@@ -211,7 +211,7 @@ Keep walking, stranger. It is what we hire you for."""
 
   # The topics of conversation, as the list beside it shows them, sorted
   # by these names.
-  # max: 16
+  # max: 18
   topic: {
     rumors: "Latest rumors"
     ember: "Ember"
@@ -431,9 +431,9 @@ Could be anything. No refunds."""
     esc_close: "esc to close"
     # the conversation window
     talk: {
-      # max: 16
+      # max: 18
       barter: "Barter"
-      # max: 16
+      # max: 18
       goodbye: "Goodbye"
       # max: 40
       keys: "↑↓ topic · enter ask · esc goodbye"

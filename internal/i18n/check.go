@@ -9,6 +9,8 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/maml-dev/go-maml"
 	"github.com/maml-dev/go-maml/ast"
@@ -431,6 +433,20 @@ func (p *Project) checkLinks(add addFunc, l Lang, key string, src, m *Msg) {
 	for _, t := range want {
 		if !slices.Contains(got, t) {
 			add(l.Code, key, false, "topic link (%s) is missing", t)
+		}
+	}
+	// Right to left, a link is found again by its words shaped alone: a
+	// letter joined on outside the brackets changes their shape.
+	if l.RTL {
+		for _, t := range m.Texts() {
+			plain, links := ParseLinks(t)
+			for _, k := range links {
+				before, _ := utf8.DecodeLastRuneInString(plain[:k.Start])
+				after, _ := utf8.DecodeRuneInString(plain[k.End:])
+				if unicode.IsLetter(before) || unicode.IsLetter(after) {
+					add(l.Code, key, true, "a letter touches the link (%s): take it inside the brackets", k.Topic)
+				}
+			}
 		}
 	}
 }

@@ -241,3 +241,40 @@ func TestParseLinks(t *testing.T) {
 		t.Errorf("Links %q", got)
 	}
 }
+
+// Links: an unknown topic is an error, a lost one a warning, and right to
+// left a letter joined on outside the brackets is an error.
+func TestCheckLinks(t *testing.T) {
+	src, _ := Parse(Source, []byte(`{ a: "Go to the [Ember](ember) and [home](home)." }`))
+	cases := []struct {
+		lang, text  string
+		errs, warns int
+	}{
+		{"de", "Zur [Glut](ember) und [heim](home).", 0, 0},
+		{"de", "Zur [Glut](ember) und heim.", 0, 1},
+		{"de", "Zur [Glut](fire) und [heim](home).", 1, 1},
+		{"ar", "إلى [الجمرة](ember) و[البيت](home).", 1, 0},
+		{"ar", "إلى [الجمرة](ember) [والبيت](home).", 0, 0},
+	}
+	for _, c := range cases {
+		m, err := Parse(c.lang, []byte(`{ a: "`+strings.ReplaceAll(c.text, `"`, `\"`)+`" }`))
+		if err != nil {
+			t.Fatal(err)
+		}
+		l, _ := LangOf(c.lang)
+		errs, warns := 0, 0
+		add := func(_, _ string, isErr bool, _ string, _ ...any) {
+			if isErr {
+				errs++
+			} else {
+				warns++
+			}
+		}
+		sm, _ := src.Msg("a")
+		mm, _ := m.Msg("a")
+		(&Project{}).checkLinks(add, l, "a", sm, mm)
+		if errs != c.errs || warns != c.warns {
+			t.Errorf("%s %q: %d errors, %d warnings; want %d, %d", c.lang, c.text, errs, warns, c.errs, c.warns)
+		}
+	}
+}
