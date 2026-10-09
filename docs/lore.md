@@ -221,7 +221,7 @@ down past the Oracle's pool and came back up carrying the Abyss's fire:
 what the Ember was cut from, wearing a person. He looks like you, an `@`
 with a red glow, and every other light goes out near him. When you
 portal home, he follows, puts out Emberhold's lanterns and hunts its
-people on his way to the forge. Spec: `prompts/last-wanderer.md`.
+people on his way to the forge.
 
 ## Named things
 
@@ -295,34 +295,3 @@ existing text.
 - **Daylight.** There is none in the game. The lore can say the Dark has
   eaten the sun since the Theft, or simply never mention it. Leaning: never
   mention it; "moonlight" on the Fields is enough.
-
-## Rebase status
-
-The first pass of in-game text is done. Each item is a text edit only;
-none changes mechanics or the balance numbers.
-
-Done on 2026-10-02:
-
-- Voss's opening adds one line after "Wanderer": "The Ember keeps the
-  dark out. The dark wants it back."
-- Voss after the Oracle is unchanged on purpose. He does not know.
-- Three villager rumors join the seven: Edran carrying the Ember, an
-  uncle lost to the Ember Cult, and Mirela saying the Oracle is holding
-  something down.
-- Zone lore: the Ashen Fields are the ash of a burned forest, the Crypt
-  is a royal tomb, the Grotto's cold water presses down, and the Abyss
-  rock is bleeding with the fire left to the eye.
-- `README.md` carries the story in three lines under the zones image.
-
-Left as is:
-
-- Emberhold and Blackmarsh lore already agree with this file.
-- Braziers keep their plain hover name. They burn in the town and the
-  Fields as well as the crypt, so "vigil brazier" would be wrong for most
-  of them.
-- Unique flavor lines all stay. New uniques should draw from this file.
-
-Next:
-
-- The Abyss boss and the ending, from Open threads.
-- The Cult's founder, once there is a place to name them.
