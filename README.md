@@ -24,8 +24,9 @@ Add `-seed 42` and the world is the same every time. Share the seed, race a frie
 
 ## Latest update
 
-**2026-10-08:** Termablo now speaks seven languages, and the Ashen
-Fields and Blackmarsh are bigger. 
+**2026-10-09:** Conversations, the Morrowind way: walk into anyone in
+Emberhold, ask about the topics you've heard of, and the townsfolk
+remember what they told you and what you've done.
 
 See [`UPDATES.md`](UPDATES.md) for more.
 

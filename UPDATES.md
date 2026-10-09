@@ -1,5 +1,7 @@
 # Updates
 
+<!-- When adding an entry, also update "Latest update" in README.md. -->
+
 ## 2026-10-09
 
 - **Conversations, the Morrowind way.** Walk into anyone in Emberhold
