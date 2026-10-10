@@ -2,6 +2,20 @@
 
 <!-- When adding an entry, also update "Latest update" in README.md. -->
 
+## 2026-10-10
+
+- **Two new faces in Emberhold.** Brother Aldous, the Ember Cult's last,
+  sits among the graves and tells you what the town won't. Pell, the boy
+  who followed the marsh lights, sits by the fountain and listens to
+  the water. Villagers' rumors lead you to them.
+- **The town argues about the Oracle.** Voss sends you to end her;
+  Mirela begs you to listen first; Aldous calls her the only one who
+  ever paid. After she falls, each of them, and Pell, takes it their
+  own way.
+- **Ask the one who knows.** Each part of the story has an owner who
+  tells it best, and the rest of the town points you to them instead of
+  repeating it.
+
 ## 2026-10-09
 
 - **Conversations, the Morrowind way.** Walk into anyone in Emberhold

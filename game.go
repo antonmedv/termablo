@@ -1706,9 +1706,12 @@ func (g *Game) talkTo(m *Monster) {
 		g.mirelaHeal()
 		g.shop = g.shops[1]
 		t.Barter = true
-	case "captain":
-	default:
+	case "villager":
 		greet = []string{g.rumor("")}
+	}
+	// meeting someone with a name is learning it
+	if slices.Contains(topics, t.Who) {
+		g.Known[t.Who] = true
 	}
 	// A reward is its own greeting; what the giver has to say about the
 	// quest after waits for the next visit.

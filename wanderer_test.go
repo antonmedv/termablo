@@ -142,6 +142,8 @@ func hearthGame(t *testing.T) (*Game, *Monster) {
 			boss = m
 		}
 	}
+	// out of his reach: every turn caps life at the most there is
+	g.P.Vit = 5000
 	g.P.HP = 1e6
 	g.P.X, g.P.Y = g.Lv.FreeNear(boss.X-12, boss.Y, -1, -1)
 	boss.Awake = true

@@ -184,6 +184,8 @@ func genTown(seed int64, r *Rules) *Level {
 	npc("smith", 56, 20)
 	npc("alch", 32, 20)
 	npc("captain", 33, 26)
+	npc("exile", 70, 13) // among the graves
+	npc("boy", 44, 25)   // by the fountain
 	npc("villager", 60, 24)
 	npc("villager", 20, 22)
 	l.finalize()

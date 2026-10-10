@@ -46,7 +46,7 @@ func (h talkHit) in(x, y int) bool { return y == h.Y && x >= h.X0 && x <= h.X1 }
 // topics are every topic there is, topic.<id> in the catalog. What
 // a speaker says on one is found by says. Rumors are the villagers',
 // rumor.<key>.
-var topics = []string{"rumors", "ember", "edran", "altars", "forge", "portals", "crypt", "boneking", "father", "blackmarsh", "oracle", "abyss", "cult", "stranger"}
+var topics = []string{"rumors", "ember", "edran", "altars", "forge", "portals", "crypt", "boneking", "father", "blackmarsh", "oracle", "abyss", "cult", "stranger", "aldous", "pell"}
 
 // rumorDef is a rumor villagers tell, rumor.<Key>: from the start, or
 // once the fact After holds, and no more once Until does. A fact holds
@@ -199,7 +199,11 @@ func (g *Game) variants(who, id string) []variant {
 	if g.talk != nil {
 		seen = g.talk.looks
 	}
-	for _, w := range []string{who, "any"} {
+	voices := []string{who, "any"}
+	if slices.Contains(outsiders, who) {
+		voices = voices[:1]
+	}
+	for _, w := range voices {
 		base := "talk." + w + "." + id
 		if f, ok := topicFact[id]; ok && g.fact(f) {
 			add(base+"_after", linePlain)
@@ -307,7 +311,12 @@ func (g *Game) hear(head, key string) {
 
 // speakers are who the townsfolk are in the catalog, talk.<speaker>.*,
 // by template ID; anyone else is a villager.
-var speakers = map[string]string{"smith": "hadrik", "alch": "mirela", "captain": "voss"}
+var speakers = map[string]string{"smith": "hadrik", "alch": "mirela", "captain": "voss", "exile": "aldous", "boy": "pell"}
+
+// outsiders speak only for themselves: what the town says, talk.any, is
+// not theirs to repeat. Aldous came back from the Abyss; Pell from the
+// water.
+var outsiders = []string{"aldous", "pell"}
 
 func speaker(template string) string {
 	if s, ok := speakers[template]; ok {

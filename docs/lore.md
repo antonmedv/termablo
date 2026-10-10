@@ -168,6 +168,33 @@ quest is his father's, recovered or kept, it does not matter which.
 Voss believes the town's story completely. He is wrong about the Oracle
 and will never know.
 
+**Brother Aldous.** Of the Ember Cult, its last. He went down to the
+Abyss with the others to give the fire back; the fire remade the ones
+who stayed, and he ran. He came back last winter, burned down one side,
+and sits among the graves: the villagers' "uncle who joined the Cult".
+He is the only one in town who says the truth out loud: the Ember is a
+wound, the Dark is it closing, the Oracle is the dam. He passed the Last
+Wanderer below the pool, going down as he came up, and told him how far
+it went: all the way. Bitter, wry, unafraid. Voss lets him stay because
+the dead don't listen to him. "Brother" is the title of an order that
+no longer exists.
+
+**Pell.** A boy, the villagers' "brother who came back wrong". He
+followed the marsh lights and came back cold: the Oracle asked him to
+hold a little of her cold, and he said yes. She speaks through him, a
+little, so he sits by the fountain, fed by her water, and listens. When
+she dies he goes silent. When the Last Wanderer dies he is only a boy
+again, cold for the first time as himself.
+
+**Who tells what.** Each part of the story has an owner who tells it
+best, and the rest point the hero to them: Hadrik the forge and the
+Ember, Voss the crypt, his father and the hire, Mirela the marsh and
+the Oracle, Aldous the Cult and the Abyss. The villagers tell the legend
+as children learn it. The town's quarrel is over the Oracle: Voss sends
+the hero to end her, Mirela begs them to listen first, Aldous calls her
+the only one who ever paid. After her death Voss sleeps, Mirela is
+proved right without wanting to be, and the floor is warm.
+
 **The villagers.** Born under the Ember. They cannot imagine a town
 without it or a dark without hunger. Their lines are rumor, and most of
 the rumors are true.

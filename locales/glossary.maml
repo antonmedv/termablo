@@ -191,6 +191,26 @@
       zh: "沃斯"
     }
     {
+      en: "Brother Aldous"
+      note: "Once of the Ember Cult; went down to the Abyss with them and alone came back, burned. Lives among the graves. \"Brother\" is the title of a lay order that no longer exists: a monk's or friar's title, not a sibling. Bitter, wry. A name; \"Aldous\" alone when he is named twice."
+      de: "Bruder Aldous"
+      fr: "Frère Aldous"
+      it: "Fratello Aldous"
+      ru: ["брат Олдос", "брата Олдоса", "брату Олдосу"]
+      ar: "الأخ ألدوس"
+      zh: "奥尔德斯修士"
+    }
+    {
+      en: "Pell"
+      note: "A boy who followed the marsh lights and came back cold; the Oracle speaks through him, a little. A child's voice: short words, no fear. Lines in parentheses are what he does. A name."
+      de: "Pell"
+      fr: "Pell"
+      it: "Pell"
+      ru: ["Пелл", "Пелла", "Пеллу"]
+      ar: "بيل"
+      zh: "佩尔"
+    }
+    {
       en: "Ashen Fields"
       note: "The burned forest east of town; moonlight on ash. A place name."
       de: ["Aschefelder", "Aschefeldern"]

@@ -24,11 +24,10 @@ Add `-seed 42` and the world is the same every time. Share the seed, race a frie
 
 ## Latest update
 
-**2026-10-09:** Conversations, the Morrowind way: walk into anyone in
-Emberhold, ask about the topics you've heard of, and the townsfolk
-remember what they told you and what you've done, and notice how you
-look. Quests are given by the townsfolk, and the world teaches you what
-to ask them about.
+**2026-10-10:** Two new faces in Emberhold: Brother Aldous, the Ember
+Cult's last, and Pell, the boy who came back from the marsh. The town
+argues over the Oracle, and each part of the story has someone who
+tells it best.
 
 See [`UPDATES.md`](UPDATES.md) for more.
 

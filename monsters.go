@@ -67,6 +67,8 @@ var mtList = []*MTemplate{
 	{ID: "smith", Name: "Hadrik the Smith", Glyph: '@', Color: C(1, .6, .3), AI: AINPC, HP: 999, Speed: 100},
 	{ID: "alch", Name: "Old Mirela", Glyph: '@', Color: C(.55, .85, .95), AI: AINPC, HP: 999, Speed: 100},
 	{ID: "captain", Name: "Captain Voss", Glyph: '@', Color: C(.95, .9, .55), AI: AINPC, HP: 999, Speed: 100},
+	{ID: "exile", Name: "Brother Aldous", Glyph: '@', Color: C(.8, .45, .35), AI: AINPC, HP: 999, Speed: 100},
+	{ID: "boy", Name: "Pell", Glyph: '@', Color: C(.6, .75, .9), AI: AINPC, HP: 999, Speed: 100},
 	{ID: "villager", Name: "Villager", Glyph: '@', Color: C(.6, .55, .5), AI: AINPC, HP: 999, Speed: 100},
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"maps"
 	"slices"
 	"strings"
 	"testing"
@@ -339,7 +340,7 @@ func TestTalkVariants(t *testing.T) {
 			continue
 		}
 		who, id, _ := strings.Cut(rest, ".")
-		if !slices.Contains([]string{"hadrik", "mirela", "voss", "any"}, who) {
+		if who != "any" && !slices.Contains(slices.Collect(maps.Values(speakers)), who) {
 			t.Errorf("%s: no one is %q", k, who)
 		}
 		id = strings.TrimSuffix(id, "_again")
@@ -596,5 +597,68 @@ func TestLooksRemarked(t *testing.T) {
 	got = []string{visit(t, g, "captain", 1), visit(t, g, "captain", 1)}
 	if want := []string{L("talk.voss.greet_kingsbane"), L("talk.voss.greet_kingsbane_again")}; !slices.Equal(got, want) {
 		t.Errorf("Voss on Kingsbane: %q, want %q", got, want)
+	}
+}
+
+// Aldous and Pell speak only for themselves: the town's lines are not
+// theirs, so the list offers only what they have to say. Meeting them
+// teaches their names.
+func TestOutsidersSpeakForThemselves(t *testing.T) {
+	for _, c := range []struct{ id, who string }{{"exile", "aldous"}, {"boy", "pell"}} {
+		g := NewGame(1)
+		for _, id := range topics {
+			g.Known[id] = true
+		}
+		g.Known[c.who] = false
+		talkWith(t, g, c.id)
+		if !g.Known[c.who] {
+			t.Errorf("meeting %s does not teach the name", c.who)
+		}
+		for _, o := range g.talk.options(g) {
+			if !o.special && !g.L.Has("talk."+c.who+"."+o.id) {
+				t.Errorf("%s offers %s, a line not their own", c.who, o.id)
+			}
+		}
+	}
+}
+
+// Pell's arc is in his greetings: the Oracle speaks through him, falls
+// silent with her, and when the Last Wanderer dies he is a boy again.
+func TestPellsArc(t *testing.T) {
+	g := NewGame(1)
+	L := g.L.T
+	got := greetings(t, g, "boy", 2)
+	settle(g, "oracle")
+	got = append(got, greetings(t, g, "boy", 2)...)
+	settle(g, "wanderer")
+	got = append(got, greetings(t, g, "boy", 2)...)
+	want := []string{L("talk.pell.greet"), L("talk.pell.greet_again"),
+		L("talk.pell.greet_oracle"), L("talk.pell.greet_oracle_again"),
+		L("talk.pell.greet_wanderer"), L("talk.pell.greet_wanderer_again")}
+	if !slices.Equal(got, want) {
+		t.Errorf("Pell: %q, want %q", got, want)
+	}
+}
+
+// Mirela begs the hero to listen before the Oracle is ended, and asks to
+// be asked: her news teaches the topic. Once the Oracle is dead she has
+// been proved right.
+func TestMirelaOnTheOracle(t *testing.T) {
+	g := NewGame(1)
+	greetings(t, g, "alch", 1)
+	settle(g, "boneking")
+	greetings(t, g, "alch", 1)
+	if !g.Known["oracle"] {
+		t.Fatal("Mirela's news does not teach the Oracle")
+	}
+	talkWith(t, g, "alch")
+	g.ask("oracle")
+	g.ask("oracle")
+	if got, want := g.talk.Log[len(g.talk.Log)-2:], []string{"talk.mirela.oracle", "talk.mirela.oracle_again"}; got[0].Text != g.L.T(want[0]) || got[1].Text != g.L.T(want[1]) {
+		t.Errorf("Mirela on the Oracle: %+v", got)
+	}
+	settle(g, "oracle")
+	if k := g.says("mirela", "oracle"); k != "talk.mirela.oracle_after" {
+		t.Errorf("Mirela after the Oracle: %s", k)
 	}
 }

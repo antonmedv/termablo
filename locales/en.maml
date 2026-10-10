@@ -152,6 +152,11 @@
   # father's axe) or the Hollow Crown (the Bone King's), no healing
   # potion on the belt, or not the coin for one. Said whenever it holds,
   # over anything said before; news not yet told comes first.
+  #
+  # Each fact has one owner, who tells it best; the rest point the hero
+  # to them. talk.any is the town's voice, for anyone with no line of
+  # their own, but not Aldous or Pell: they came back from below and
+  # speak only for themselves.
   talk: {
     # Hadrik is gruff and few-worded. He keeps the forge, which keeps the
     # Ember, and knows it.
@@ -174,24 +179,37 @@
       stranger_after: "So he came home after all. I'll put his whetstone in the fire tonight."
       cult: "They came to me first, the [Ember Cult](cult). Wanted me to let the fire go out and be done owing. I showed them the door with a hammer in my hand."
       portals: "Forge ash, folded in paper. Every spark knows the way home to the hearth, so the ash does too. I sweep it, Mirela folds it."
+      aldous: "Aldous was one of them. Now he sits with the graves and tells anyone who stops that the [Ember](ember) is a wound. Maybe it is. A wound's better than a grave. Don't tell him I said maybe."
+      pell: "The boy by the fountain. Came to the forge once to get warm. Stood by the fire an hour and didn't thaw."
     }
     # Old Mirela is warm and worried. Her crystal hears the Oracle.
     mirela: {
       greet: "Sit, sit. You smell of smoke and grave-dust. Let's see what's broken."
       greet_again: "Back again, dear? Let me look at you."
-      greet_boneking: "The crypt bells woke me this morning. I cried, dear, and I don't know why. Sit; you're bleeding on my floor."
-      greet_oracle: "It's so quiet, child. My crystal hasn't made a sound since you came up. I keep holding it to my ear."
+      greet_boneking: """
+The crypt bells woke me this morning. I cried, dear, and I don't know why.
+Voss will send you after [her](oracle) next. Before you go, ask me about her. Please."""
+      greet_oracle: """
+It's so quiet, child. My crystal hasn't made a sound since you came up.
+I'm not angry, dear. You did what you were paid to do. But put your hand on the floor. It's warm."""
       greet_wanderer: "You came back. He never did, not really. Sit, dear, and let me see to those burns."
       greet_hurt: "Oh, child, look at you. Sit down before you fall down."
       greet_nopots: "Not one flask on your belt? Down there? Sit, dear. We'll fix that."
       greet_crown: "Take that crown off at my table, dear. It whispers, and I'm too old to listen."
       greet_crown_again: "The crown, dear. Off."
-      oracle: "My crystal came out of her grotto. When she dreams, it sings. She isn't hunting anyone, child. She is holding something down, under the water. I don't know what. I know it's hot."
+      oracle: """
+My crystal came out of her grotto. When she dreams, it sings. She isn't hunting anyone, child. She is holding something down, under the water. I don't know what. I know it's hot.
+Voss calls it ending her. I call it opening a door. Go down if you must, but listen before you lift your blade."""
+      oracle_again: "I've told you what my crystal tells me. Voss has a sword and I have a rock that sings. You choose which to believe."
       oracle_after: "My crystal has stopped singing. The whole town sleeps sound now. I don't. Whatever she held down is coming up through the [Abyss](abyss)."
-      blackmarsh: "The cold lights over the water are hers. Don't follow them. Everyone follows them. The standing stones she raised herself, on her way down."
+      blackmarsh: "The standing stones are hers. She raised them on her way into the water, the way Edran raised his altars. The lights aren't hunting, dear. They're asking. [Pell](pell) said yes."
       abyss: "Beneath her pool the rock burns. It's where the coal was cut from, if you believe the old songs. I've started to."
       ember: "Warm light came up from below. My kind, the cold kind, came from her. The town lives between the two and thinks it lives by one."
-      portals: "Forge ash in paper; Hadrik sweeps it, I fold it. Read one and the [Ember](ember) pulls you home to the fountain. Cheaper than a funeral."
+      pell: "Poor lamb. The water got into him. He hears her the way my crystal does, only he can't set her down on a shelf at night."
+      pell_oracle: "He hasn't said a word since my crystal went quiet. I sit with him in the evenings. He doesn't seem to mind."
+      pell_oracle_again: "Still not a word. I bring him soup. He doesn't eat it, but he holds the bowl."
+      pell_wanderer: "He talked this morning, dear! He asked for bread. Just bread. I cried again."
+      pell_wanderer_again: "He's cold, but he's eating. That's a start."
     }
     # Captain Voss is earnest and clipped. He believes the town's story.
     voss: {
@@ -213,7 +231,7 @@ Follow the cold lights down into the grotto. End the [Oracle](oracle)."""
       greet_boneking_again: "[Blackmarsh](blackmarsh), north of the fields. Follow the cold lights down. Don't let them follow you back."
       greet_oracle: """
 You've done more than any of us dared.
-If you must go deeper... [the Abyss](abyss) waits below the Oracle's pool."""
+Mirela says the wind smells of the forge now. Let her. If you must go deeper, [the Abyss](abyss) waits below the Oracle's pool."""
       greet_oracle_again: "Whatever waits in [the Abyss](abyss) is past my maps. Go carefully, or don't go."
       greet_wanderer: """
 The lanterns are lit again. Whoever he was, he was one of ours once.
@@ -230,29 +248,77 @@ Keep walking, stranger. It is what we hire you for."""
       father: "He took Kingsbane into the [crypt](crypt) and didn't come back. The guard chose me the next morning. There was no one else to choose."
       father_again: "I told you what there is. Leave it."
       father_after: "You brought back what was his. That's more than the rest of us managed. Don't ask me more."
-      oracle: "She drowned herself in the grotto under [Blackmarsh](blackmarsh), and now she calls the lost down after her. End it."
+      oracle: """
+She drowned herself in the grotto under [Blackmarsh](blackmarsh), and now she calls the lost down after her. End it.
+Mirela will tell you she's holding something down. Mirela listens to a rock. I bury the people that rock sings to."""
       oracle_after: "Silenced. I sleep now. Strange, how loud a quiet can be."
       stranger: "There was one before you. Good with a blade. I sent him past the Oracle's pool. I don't hire twice for the same job, as a rule."
       stranger_after: "Whoever he was, he was one of ours once. Leave it there."
       cult: "Traitors. A generation back they went down to give the fire back. Some of them are still down there, giving."
+      aldous: "The Cult's leftover. I let him sit with the graves because the dead don't listen to him. You shouldn't either."
+      pell: "The boy went after the marsh lights and came back cold. When she's gone, he'll warm up. That's what I tell his sister."
+      pell_oracle: "The boy hasn't said a word since you came up. Give him time. The cold takes a while to leave."
+      pell_oracle_again: "Give the boy time."
+    }
+    # Brother Aldous was of the Ember Cult, went down to the Abyss with
+    # them, and alone came back, burned. Bitter, wry, unafraid. He knows
+    # what the town will not: the Ember is a wound, the Oracle its dam.
+    aldous: {
+      greet: "Another of Voss's blades. Sit, if you like; the graves don't mind company. Ask me about the [Cult](cult). The town will tell you what we were. I'll tell you what we saw."
+      greet_again: "Still breathing. The fire hasn't made up its mind about you."
+      greet_boneking: "So Edran's lying down at last. You did him a kindness. He'd thank you, if the dark had left him a mouth."
+      greet_oracle: "Put your hand on the ground. Warm, isn't it? That's what she was holding. You've pulled out the stopper, Wanderer. Now we see what comes up."
+      greet_oracle_again: "Warmer today. Warmer still tomorrow."
+      greet_wanderer: "He was what the fire wants every one of us to become. You put him down. It will make another. It's patient. So am I."
+      greet_hurt: "Bleeding? Go and see Mirela. The fire likes the smell of it."
+      greet_crown: "Edran's crown. Can you hear it yet? You will."
+      cult: "We weren't traitors. We were the only ones who listened. The [Ember](ember) was never ours, so we went down to give it back. The fire was glad to see us. It remade the ones who stayed. I ran. That's the whole of my heresy."
+      ember: "The town says Edran carried it up. He cut it out. The dark isn't hungry, Wanderer. It's a wound trying to close, and Emberhold is the splinter. Ask Hadrik why he never sleeps."
+      edran: "A thief with a crown. His own [Oracle](oracle) begged him to put it back. He kept it, and the dark took his face for the fee."
+      abyss: "I've been where you're going. The rock bleeds there. It's where Edran cut the coal, and it never closed. Whatever it was cut from is down there, and it's awake."
+      abyss_after: "It's open now. Smell the wells. What comes up next won't be small, and it won't be stupid."
+      oracle: "She's the only one of us who paid properly. She lay down in the water to keep the fire off our backs, and she's held it for generations. Voss wants her dead. Of course he does. He's never once looked below his own boots."
+      oracle_after: "She held it for generations. You undid it in an afternoon. I'm not judging. I ran, remember."
+      stranger: "I passed him on my way up, below the pool. He asked how far down it went. I told him the truth: all the way. He thanked me. He was smiling."
+      stranger_after: "So that's what the fire makes of a man who walks all the way down to it. I'd hoped it was only angry with me."
+      pell: "The boy hears her. I hear the other one. Between us we make one bad night's sleep."
+      aldous: "Brother. There's no order left to be a brother of. Keep the title if you like; it's all I brought back."
+    }
+    # Pell followed the marsh lights and came back cold: the Oracle speaks
+    # through him, a little. A child, few words, no fear. When she dies he
+    # goes silent; when the Last Wanderer does, he is only a boy again.
+    # Lines in parentheses are what he does, not what he says.
+    pell: {
+      greet: "You're warm. Everyone up here is warm."
+      greet_again: "The water's talking again. Not to you."
+      greet_boneking: "The bells. She felt them, under the marsh. She's tired. Holding is hard when you're the only one."
+      greet_oracle: "(Pell watches the fountain and says nothing. The water is very still.)"
+      greet_oracle_again: "(Pell doesn't look up.)"
+      greet_wanderer: "I'm cold. I've never been cold before. Is this what it's like, being only me?"
+      greet_wanderer_again: "My sister says I can go to the marsh again. I don't think I want to."
+      oracle: "She's cold so we don't burn. She asked me to hold a little of it for her. I said yes. Now I'm cold too."
+      oracle_after: "(Pell shakes his head. He won't speak of her.)"
+      blackmarsh: "The lights didn't call. They asked. Most people say yes. I said yes."
     }
     # What anyone in town says when they have nothing of their own to say.
     any: {
       ember: "King [Edran](edran) carried the Ember up from below in his bare hands. Every lantern in Emberhold is lit from Hadrik's [forge](forge), and the forge from the Ember. The dark stops at the gate."
       edran: "The first king. He went down alone and came up with fire. The dark took his face for it, then his skull. He raised [altars](altars) on the way up; some still stand."
       altars: "Edran left a drop of his blood on each, to buy another hour of safe passage. Bleed on one yourself and the bargain pays out. Once."
-      forge: "Hadrik's forge hasn't gone out in forty years. Every lantern in town is lit from it."
-      portals: "Read a portal scroll and you're back at the fountain square. Every spark of the Ember knows the way home."
-      crypt: "The royal crypt, east of the gate past the Ashen Fields. King [Edran](edran) lies there with his court. Lies is a generous word."
+      forge: "Hadrik's forge hasn't gone out in forty years. Ask him about it, if you like being glared at."
+      portals: "Read a portal scroll and you're back at the fountain square. Hadrik sweeps the ash for them, Mirela folds it. Ask him why it works."
+      crypt: "The royal crypt, east of the gate past the Ashen Fields. King [Edran](edran) lies there with his court. Lies is a generous word. The captain knows it best."
       boneking: "He sits his throne of ribs four floors down, under a hollow crown. They say he isn't finished being king."
       boneking_after: "The Bone King is dust, they say. The crypt bells may ring again."
       father: "The captain's father took an old axe into the crypt. The captain doesn't talk about it. Neither should you."
-      blackmarsh: "North of the fields. Cold lights drift over the water. Don't follow them. Everyone follows them."
+      blackmarsh: "North of the fields. Cold lights drift over the water. Don't follow them. Everyone follows them. Mirela listens to that water; ask her."
       oracle: "The king's own Oracle. She told him not to take the coal. When he wouldn't listen she walked into the water under [Blackmarsh](blackmarsh) and never came up."
       oracle_after: "The marsh lights have gone out. People say it's over. Mirela doesn't say anything."
       abyss: "Under the Oracle's pool the rock burns. They say the Abyss has no floor. The [Ember Cult](cult) went that way."
-      cult: "A generation ago some folk decided the dark was owed its coal. They went down to pay. The fire remade them. Some still wear our faces."
-      stranger: "There was a stranger before you. Bought the same sword. Went past the marsh and kept going."
+      cult: "A generation ago some folk decided the dark was owed its coal. They went down to pay. The fire remade them. One came back: [Brother Aldous](aldous), by the graves. Don't get him started."
+      stranger: "Ask Hadrik. He sold him his sword, and kept something of his."
+      aldous: "Came back from the Abyss last winter, burned down one side. Calls himself Brother. Sits in the graveyard and talks to the stones."
+      pell: "The boy by the fountain. Went after the marsh lights and came back cold. His sister won't say his name after dark."
       stranger_after: "The lanterns are lit again. Nobody says his name. Nobody knew it."
     }
   }
@@ -297,6 +363,8 @@ Keep walking, stranger. It is what we hire you for."""
     abyss: "Burning Abyss"
     cult: "Ember Cult"
     stranger: "Stranger"
+    aldous: "Brother Aldous"
+    pell: "Pell"
   }
 
   # What villagers say, one picked at random, those not yet heard first.
@@ -305,7 +373,7 @@ Keep walking, stranger. It is what we hire you for."""
   # link, as in talk.
   rumor: {
     braziers: "They say the braziers in the [crypt](crypt) light themselves at dusk. Nobody tends them."
-    brother: "My brother went into [Blackmarsh](blackmarsh) after the lights. He came back wet. He came back wrong."
+    brother: "My brother [Pell](pell) went into [Blackmarsh](blackmarsh) after the lights. He came back wet. He came back wrong. Now he sits by the fountain and listens to it."
     torch: "Keep your torch high. The dark down there isn't empty — it's hungry."
     forge: "[Hadrik's forge](forge) hasn't gone out in forty years. He says the day it does, we run."
     glimmer: "Rare things glimmer in the dark. Gold-light means something old and named."
@@ -313,7 +381,7 @@ Keep walking, stranger. It is what we hire you for."""
     scroll: "A [portal scroll](portals) is cheaper than a funeral."
     stranger: "There was a [stranger](stranger) before you. Bought the same sword. Went past the marsh and kept going."
     edran: "[King Edran](edran) carried the [Ember](ember) up in his bare hands. It cost him his face."
-    uncle: "My uncle joined the [Ember Cult](cult). Said the dark was owed. He went down to pay it."
+    uncle: "My uncle joined the [Ember Cult](cult). Said the dark was owed. He went down to pay it, and came back last winter, what's left of him. [Brother Aldous](aldous), he calls himself now."
     holding: "Mirela says the [Oracle](oracle) isn't hunting anyone. She's holding something down."
     # once the Bone King is dead
     bells: "The crypt bells rang this morning. Nobody has pulled those ropes in thirty years."
@@ -1069,6 +1137,8 @@ Could be anything. No refunds."""
     smith: "Hadrik the Smith"
     alch: "Old Mirela"
     captain: "Captain Voss"
+    exile: "Brother Aldous"
+    boy: "Pell"
     villager: "Villager"
   }
 
