@@ -566,11 +566,18 @@ func (b *Bot) escape(why string) bool {
 		return false
 	}
 	if g.Portal != nil && g.Portal.Level == l.ID {
+		x, y := g.Portal.X, g.Portal.Y
+		// A monster standing on the portal blocks it, and so does a
+		// wall of them before it: walking there is fighting through.
+		// With a scroll in hand a fresh portal opens beside the hero,
+		// and that beats the fight; with none, there is nothing else.
+		m := l.MonsterAt(x, y)
+		blocked := m != nil && !m.Friendly
 		fresh := b.n-b.read < 3
-		if fresh || p.Scrolls == 0 || b.within(g.Portal.X, g.Portal.Y, 2) {
+		if p.Scrolls == 0 || !blocked && (fresh && b.within(x, y, 8) || b.within(x, y, 2)) {
 			b.enter(BotRetreat, why+", to the portal")
 			b.errand, b.urgent, b.reason = true, true, why
-			if b.walkTo(g.Portal.X, g.Portal.Y, true) {
+			if b.walkTo(x, y, true) {
 				return true
 			}
 		}

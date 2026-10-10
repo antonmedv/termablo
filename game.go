@@ -1642,7 +1642,7 @@ func (g *Game) monsterShoot(m *Monster) {
 		return
 	}
 	g.hitter = m
-	g.hurt(g.monsterDamage(m)*4/5+1, englishRef(m), theRef(g.L, m), m.T.Verb)
+	g.hurt(int(float64(g.monsterDamage(m))*g.Rules.ShotMul)+1, englishRef(m), theRef(g.L, m), m.T.Verb)
 }
 
 // englishRef is how the monster goes on record as a killer.

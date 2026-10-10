@@ -68,6 +68,14 @@ eval:
 hearth:
 	BOTHEARTH=$(SEEDS) BOTHEARTHFIRST=$(FIRST) BOTRULES=$(RULES) go test -count=1 -v -run 'HearthTrial$$' . | grep -E "won|stuck:"
 
+# the Cinder Prior's fight, and any floor, on its own: a par hero as the
+# bot arrives at the Kindling (lvl 22, the grotto3 kit), on the floor as
+# generated and in a duel. AT puts the same hero on another floor (the
+# win is then the way down), KIT dresses it from another checkpoint.
+# make kindling [SEEDS=48 FIRST=1 RULES=x.json AT=abyss1 KIT=abyss2 GOLD=3000]
+kindling:
+	BOTKINDLING=$(SEEDS) BOTKINDLINGFIRST=$(FIRST) BOTKINDLINGAT=$(AT) BOTKINDLINGKIT=$(KIT) BOTKINDLINGGOLD=$(GOLD) BOTRULES=$(RULES) go test -count=1 -v -run 'KindlingTrial$$' . | grep -E "won|stuck:"
+
 # the translations: coverage, errors and warnings (docs/translating.md)
 i18n:
 	go run ./cmd/i18n check

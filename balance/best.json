@@ -26,7 +26,7 @@
  "HpQuad": 0.05,
  "ManaPerEne": 1.7,
  "ManaPerLvl": 2,
- "ManaPotion": 0.4,
+ "ManaPotion": 0.5,
  "MonArmorK": 120,
  "MonArmorPerLvl": 2,
  "MonToHitPerLvl": 3,
@@ -42,9 +42,12 @@
  "ScrollPrice": 40,
  "ScrollPricePerLvl": 6,
  "SellDiv": 12,
+ "ShotMul": 0.8,
  "StrDiv": 45,
  "ToHitPerLvl": 0,
  "WakeRange": 10,
+ "WandererDmg": 1,
+ "WandererHp": 2.8,
  "XPBase": 35,
  "XPExp": 1.8
 }
