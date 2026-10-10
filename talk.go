@@ -30,8 +30,12 @@ type Talk struct {
 }
 
 // talkEntry is one answer: the topic asked, or none for a greeting, and
-// the text as the catalog has it, links and all.
-type talkEntry struct{ Head, Text string }
+// the text as the catalog has it, links and all. An aside is not said
+// but seen: how the speaker looks as the talk opens.
+type talkEntry struct {
+	Head, Text string
+	Aside      bool
+}
 
 // talkHit is a place to click: a row of the topic list, or a link.
 type talkHit struct {
@@ -305,8 +309,18 @@ func (g *Game) hear(head, key string) {
 	if strings.HasPrefix(key, "rumor.") {
 		t.rumor = key
 	}
-	t.Log = append(t.Log, talkEntry{head, text})
+	t.Log = append(t.Log, talkEntry{Head: head, Text: text})
 	t.follow = true
+}
+
+// describe opens a talk with how the speaker looks, talk.<who>.desc: in
+// full on meeting them, after in its _again, and changed by news as a
+// line is.
+func (g *Game) describe() {
+	if k := g.says(g.talk.Who, "desc"); k != "" {
+		g.hear("", k)
+		g.talk.Log[len(g.talk.Log)-1].Aside = true
+	}
 }
 
 // speakers are who the townsfolk are in the catalog, talk.<speaker>.*,
@@ -435,8 +449,8 @@ type talkSpan struct{ text, topic string }
 
 // talkRow is a row of the history: a topic's heading, or text.
 type talkRow struct {
-	head  bool
-	spans []talkSpan
+	head, aside bool
+	spans       []talkSpan
 }
 
 // wrapLinks wraps a line with links to w cells, keeping which words
@@ -489,19 +503,21 @@ func wrapLinks(text string, w int) [][]talkSpan {
 }
 
 // rows lays out the history w cells wide. start is where the last entry
-// begins.
+// begins, or the aside before it: the two are read together.
 func (t *Talk) rows(w int) (rows []talkRow, start int) {
 	for i, e := range t.Log {
 		if i > 0 {
 			rows = append(rows, talkRow{})
 		}
-		start = len(rows)
+		if i == 0 || !t.Log[i-1].Aside {
+			start = len(rows)
+		}
 		if e.Head != "" {
 			rows = append(rows, talkRow{head: true, spans: []talkSpan{{text: i18n.Truncate(e.Head, w)}}})
 		}
 		for _, para := range strings.Split(e.Text, "\n") {
 			for _, r := range wrapLinks(para, w) {
-				rows = append(rows, talkRow{spans: r})
+				rows = append(rows, talkRow{aside: e.Aside, spans: r})
 			}
 		}
 	}
@@ -556,7 +572,11 @@ func (g *Game) drawTalk(s *Screen, mapW, mapH int) {
 			textStartBold(s, tx, yy, tw, r.spans[0].text, colOrange.C8())
 			continue
 		}
-		g.drawSpans(s, tx, yy, tw, r.spans, text)
+		c := text
+		if r.aside {
+			c = colGray
+		}
+		g.drawSpans(s, tx, yy, tw, r.spans, c)
 	}
 	above, below := t.off, maxi(0, len(rows)-view-t.off)
 

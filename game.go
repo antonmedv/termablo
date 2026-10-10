@@ -1720,6 +1720,7 @@ func (g *Game) talkTo(m *Monster) {
 		g.briefed(t.Who)
 	}
 	g.talk, g.Mode = t, ModeTalk
+	g.describe()
 	if k := g.says(t.Who, "greet"); len(greet) == 0 && k != "" {
 		greet = []string{k}
 	}
@@ -2126,7 +2127,7 @@ func (g *Game) huntStep(w, prey *Monster) {
 }
 
 // townRef is a townsperson as the object of the Wanderer's blade:
-// "a villager", "Old Mirela".
+// "a villager", "Mirela the Alchemist".
 func townRef(loc *i18n.Catalog, m *Monster) i18n.Noun {
 	n := monsterNoun(loc, m)
 	if m.T.ID == "villager" {

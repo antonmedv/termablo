@@ -86,14 +86,14 @@ func TestTopicAfterTheBoss(t *testing.T) {
 func TestVillagerRumors(t *testing.T) {
 	g := NewGame(1)
 	talkWith(t, g, "villager")
-	if len(g.talk.Log) != 1 || g.talk.Log[0].Head != "" {
+	if l := g.talk.Log; len(l) != 2 || !l[0].Aside || l[1].Aside || l[1].Head != "" {
 		t.Fatalf("greeting %+v", g.talk.Log)
 	}
 	if !slices.Contains(optIDs(g), "rumors") {
 		t.Fatal("no Latest rumors")
 	}
 	g.ask("rumors")
-	if len(g.talk.Log) != 2 || g.talk.Log[1].Head != "Latest rumors" {
+	if len(g.talk.Log) != 3 || g.talk.Log[2].Head != "Latest rumors" {
 		t.Errorf("asked for rumors: %+v", g.talk.Log)
 	}
 }
@@ -340,7 +340,7 @@ func TestTalkVariants(t *testing.T) {
 			continue
 		}
 		who, id, _ := strings.Cut(rest, ".")
-		if who != "any" && !slices.Contains(slices.Collect(maps.Values(speakers)), who) {
+		if who != "any" && who != "villager" && !slices.Contains(slices.Collect(maps.Values(speakers)), who) {
 			t.Errorf("%s: no one is %q", k, who)
 		}
 		id = strings.TrimSuffix(id, "_again")
@@ -353,7 +353,7 @@ func TestTalkVariants(t *testing.T) {
 			}
 			id = base
 		}
-		if id != "greet" && (id == "rumors" || !slices.Contains(topics, id)) {
+		if id != "greet" && id != "desc" && (id == "rumors" || !slices.Contains(topics, id)) {
 			t.Errorf("%s: %q is not a topic", k, id)
 		}
 	}
@@ -414,7 +414,7 @@ func TestBothRewards(t *testing.T) {
 	greetings(t, g, "captain", 1)
 	slay(g, "boneking", "oracle")
 	talkWith(t, g, "captain")
-	if n := len(g.talk.Log); n != 2 || g.bountyDue() != nil {
+	if n := len(g.talk.Log); n != 3 || g.bountyDue() != nil {
 		t.Fatalf("%d lines, quests %v", n, g.Quests)
 	}
 	g.talk, g.Mode = nil, ModePlay
@@ -447,15 +447,54 @@ func TestAskedUntilNews(t *testing.T) {
 	}
 }
 
-// Everyone with lines of their own greets the hero.
+// Everyone with lines of their own greets the hero; villagers greet
+// with a rumor.
 func TestEveryoneGreets(t *testing.T) {
 	en := locales.Get(i18n.Source)
 	for _, k := range en.Keys() {
 		if rest, ok := strings.CutPrefix(k, "talk."); ok {
-			if who, _, _ := strings.Cut(rest, "."); who != "any" && !en.Has("talk."+who+".greet") {
+			if who, _, _ := strings.Cut(rest, "."); who != "any" && who != "villager" && !en.Has("talk."+who+".greet") {
 				t.Errorf("%s has no greet", who)
 			}
 		}
+	}
+}
+
+// Every talk opens with how the speaker looks, in full the first time
+// and at a glance after.
+func TestEveryoneDescribed(t *testing.T) {
+	g := NewGame(1)
+	m := newTestModel(g)
+	for _, id := range append(slices.Sorted(maps.Keys(speakers)), "villager") {
+		who := speaker(id)
+		for _, want := range []string{"desc", "desc_again"} {
+			talkWith(t, g, id)
+			k := "talk." + who + "." + want
+			if !g.L.Has(k) {
+				k = "talk." + who + ".desc"
+			}
+			if e := g.talk.Log[0]; !e.Aside || e.Text != g.L.T(k) {
+				t.Errorf("%s: opened with %+v, want %s", id, e, k)
+			}
+			press(m, "esc")
+		}
+	}
+}
+
+// What has changed in a speaker shows in how they look.
+func TestPellLooksChanged(t *testing.T) {
+	g := NewGame(1)
+	greetings(t, g, "boy", 1)
+	settle(g, "boneking", "oracle", "wanderer")
+	var got []string
+	m := newTestModel(g)
+	for range 2 {
+		talkWith(t, g, "boy")
+		got = append(got, g.talk.Log[0].Text)
+		press(m, "esc")
+	}
+	if want := []string{g.L.T("talk.pell.desc_wanderer"), g.L.T("talk.pell.desc_wanderer_again")}; !slices.Equal(got, want) {
+		t.Errorf("Pell after the Last Wanderer: %q", got)
 	}
 }
 

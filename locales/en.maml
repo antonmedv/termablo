@@ -77,7 +77,7 @@
     wanderer_portal: "The Last Wanderer steps out of the portal. It collapses behind him."
     wanderer_follows: "The Last Wanderer follows you."
     wanderer_home: "The Last Wanderer: \"You showed me the way home.\""
-    # {who}: a townsperson, the object: "a Villager", "Old Mirela"
+    # {who}: a townsperson, the object: "a Villager", "Mirela the Alchemist"
     wanderer_cuts: "The Last Wanderer cuts {who}."
     wanderer_kills: "The Last Wanderer cuts down {who}."
     wanderer_taunt: "The Last Wanderer: \"They gave me a sword and a captain's speech too.\""
@@ -153,6 +153,12 @@
   # potion on the belt, or not the coin for one. Said whenever it holds,
   # over anything said before; news not yet told comes first.
   #
+  # desc is not said but seen, in gray before the greeting: how the
+  # speaker looks to the hero, in the voice of the log, present tense:
+  # the person, never where they stand.
+  # Its _again is a glance on later visits; a fact's variant tells what
+  # has changed since.
+  #
   # Each fact has one owner, who tells it best; the rest point the hero
   # to them. talk.any is the town's voice, for anyone with no line of
   # their own, but not Aldous or Pell: they came back from below and
@@ -161,6 +167,10 @@
     # Hadrik is gruff and few-worded. He keeps the forge, which keeps the
     # Ember, and knows it.
     hadrik: {
+      desc: "A broad, bald man in a scorched leather apron, soot-black to the elbows. His forearms are pocked with small white burn scars, and he breathes slow and deep, like a bellows."
+      desc_again: "Hadrik, soot to the elbows, hammer in hand. He doesn't look up."
+      desc_wanderer: "There is a white-gold glow on Hadrik's face, and for once he looks rested. He's watching you, not the fire."
+      desc_wanderer_again: "Hadrik hums as he works. He looks rested."
       greet: "Steel for the dark. Take a look. The [forge](forge) is hot; it always is."
       greet_again: "Back. What needs mending?"
       greet_boneking: "Heard the crypt bells this morning. Thought I'd gone soft in the head. Your doing? Then you've earned the good steel."
@@ -182,8 +192,14 @@
       aldous: "Aldous was one of them. Now he sits with the graves and tells anyone who stops that the [Ember](ember) is a wound. Maybe it is. A wound's better than a grave. Don't tell him I said maybe."
       pell: "The boy by the fountain. Came to the forge once to get warm. Stood by the fire an hour and didn't thaw."
     }
-    # Old Mirela is warm and worried. Her crystal hears the Oracle.
+    # Mirela, in her late thirties, is a schoolmistress with a healer's
+    # hands: firm, never soft, and worried for the hero all the same.
+    # Her crystal hears the Oracle.
     mirela: {
+      desc: "A handsome woman in her late thirties, her full figure laced into a dark bodice, her hair pinned up without a strand out of place. A pale crystal hangs at her throat, humming faintly. She looks you over the way a schoolmistress looks over a torn copybook."
+      desc_again: "Mirela folds her arms beneath the crystal at her throat and waits for you to explain yourself."
+      desc_oracle: "Mirela turns the crystal at her throat over and over in her fingers. It is silent, and gray as river stone. For once her back is not quite straight."
+      desc_oracle_again: "The crystal at Mirela's throat is gray and silent. She doesn't touch it."
       greet: "Sit, sit. You smell of smoke and grave-dust. Let's see what's broken."
       greet_again: "Back again, dear? Let me look at you."
       greet_boneking: """
@@ -195,7 +211,7 @@ I'm not angry, dear. You did what you were paid to do. But put your hand on the 
       greet_wanderer: "You came back. He never did, not really. Sit, dear, and let me see to those burns."
       greet_hurt: "Oh, child, look at you. Sit down before you fall down."
       greet_nopots: "Not one flask on your belt? Down there? Sit, dear. We'll fix that."
-      greet_crown: "Take that crown off at my table, dear. It whispers, and I'm too old to listen."
+      greet_crown: "Take that crown off at my table, dear. It whispers, and I don't take lessons from jewelry."
       greet_crown_again: "The crown, dear. Off."
       oracle: """
 My crystal came out of her grotto. When she dreams, it sings. She isn't hunting anyone, child. She is holding something down, under the water. I don't know what. I know it's hot.
@@ -213,6 +229,10 @@ Voss calls it ending her. I call it opening a door. Go down if you must, but lis
     }
     # Captain Voss is earnest and clipped. He believes the town's story.
     voss: {
+      desc: "A lean man in a dented breastplate, a black band tied around one sleeve. He stands like a man who hasn't sat down in years."
+      desc_again: "Voss, one hand on his sword, the black band on his sleeve."
+      desc_boneking: "Voss stands a little easier. The black band is gone from his sleeve."
+      desc_boneking_again: "Voss, one hand on his sword. His sleeve is bare."
       greet: """
 Wanderer. Good. We need a blade that doesn't shake.
 Four floors under the [crypt](crypt), east past the fields, the [Bone King](boneking) sits his throne of ribs. Destroy him.
@@ -264,6 +284,10 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     # them, and alone came back, burned. Bitter, wry, unafraid. He knows
     # what the town will not: the Ember is a wound, the Oracle its dam.
     aldous: {
+      desc: "A gaunt man in a cultist's robe. One side of him is burned to a shine, the eye on that side milk-white. The other side smiles at you."
+      desc_again: "Aldous, the burned side of his face turned away from the light."
+      desc_oracle: "Aldous keeps one palm pressed flat to the earth, as if feeling for a heartbeat."
+      desc_oracle_again: "Aldous keeps one hand on the ground. He doesn't lift it to greet you."
       greet: "Another of Voss's blades. Sit, if you like; the graves don't mind company. Ask me about the [Cult](cult). The town will tell you what we were. I'll tell you what we saw."
       greet_again: "Still breathing. The fire hasn't made up its mind about you."
       greet_boneking: "So Edran's lying down at last. You did him a kindness. He'd thank you, if the dark had left him a mouth."
@@ -289,6 +313,12 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     # goes silent; when the Last Wanderer does, he is only a boy again.
     # Lines in parentheses are what he does, not what he says.
     pell: {
+      desc: "A thin boy of nine or ten. His hair is wet though it hasn't rained, his lips are faintly blue, and he doesn't shiver."
+      desc_again: "Pell, his hair still wet."
+      desc_oracle: "Pell hugs his knees and stares past you, as if something owes him an answer."
+      desc_oracle_again: "Pell, knees drawn up, staring past you."
+      desc_wanderer: "Pell is wrapped in a blanket too big for him, a heel of bread in his hands. He is shivering. His lips are pink."
+      desc_wanderer_again: "Pell in his blanket, shivering and chewing."
       greet: "You're warm. Everyone up here is warm."
       greet_again: "The water's talking again. Not to you."
       greet_boneking: "The bells. She felt them, under the marsh. She's tired. Holding is hard when you're the only one."
@@ -299,6 +329,10 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
       oracle: "She's cold so we don't burn. She asked me to hold a little of it for her. I said yes. Now I'm cold too."
       oracle_after: "(Pell shakes his head. He won't speak of her.)"
       blackmarsh: "The lights didn't call. They asked. Most people say yes. I said yes."
+    }
+    # Villagers only describe; what they say is a rumor.
+    villager: {
+      desc: "A townsperson in a soot-gray cloak, who keeps glancing at the nearest lantern."
     }
     # What anyone in town says when they have nothing of their own to say.
     any: {
@@ -377,7 +411,7 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     torch: "Keep your torch high. The dark down there isn't empty — it's hungry."
     forge: "[Hadrik's forge](forge) hasn't gone out in forty years. He says the day it does, we run."
     glimmer: "Rare things glimmer in the dark. Gold-light means something old and named."
-    crystal: "Old Mirela's crystal was dug out of the grotto. It sings when the [Oracle](oracle) dreams."
+    crystal: "Mirela's crystal was dug out of the grotto. It sings when the [Oracle](oracle) dreams."
     scroll: "A [portal scroll](portals) is cheaper than a funeral."
     stranger: "There was a [stranger](stranger) before you. Bought the same sword. Went past the marsh and kept going."
     edran: "[King Edran](edran) carried the [Ember](ember) up in his bare hands. It cost him his face."
@@ -1135,7 +1169,7 @@ Could be anything. No refunds."""
     oracle: "The Drowned Oracle"
     wanderer: "The Last Wanderer"
     smith: "Hadrik the Smith"
-    alch: "Old Mirela"
+    alch: "Mirela the Alchemist"
     captain: "Captain Voss"
     exile: "Brother Aldous"
     boy: "Pell"

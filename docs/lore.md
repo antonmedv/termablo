@@ -155,7 +155,8 @@ forty years. "The day it goes out, we run" is not a figure of speech.
 He sells steel because steel is what you can make with a fire that
 never cools, and because somebody should be armed.
 
-**Old Mirela.** Alchemist, healer. Her crystal was dug out of the Grotto
+**Mirela the Alchemist.** Healer, in her late thirties, full-figured,
+firm as a schoolmistress, worried for the hero and never soft about it. Her crystal was dug out of the Grotto
 and sings when the Oracle dreams, which makes her the one person in town
 in contact with the dam. She does not know what the Oracle is holding
 back but she knows the Oracle is holding something. Her potions are cut
@@ -194,6 +195,19 @@ as children learn it. The town's quarrel is over the Oracle: Voss sends
 the hero to end her, Mirela begs them to listen first, Aldous calls her
 the only one who ever paid. After her death Voss sleeps, Mirela is
 proved right without wanting to be, and the floor is warm.
+
+**How they look.** Hadrik: broad, bald, soot-black to the elbows,
+forearms pocked with burn scars; once the Last Wanderer falls a
+white-gold glow is on his face and he looks rested. Mirela: handsome,
+full-figured, laced into a dark bodice, hair pinned up, the crystal on a cord at her throat humming until
+the Oracle dies, then gray as river stone. Voss: lean, a dented
+breastplate, a black band for his father on one sleeve until the Bone
+King is dust. Aldous: a cultist's robe, one side burned to a shine, its
+eye milk-white; after the Oracle he keeps a palm on the warm ground.
+Pell: nine or ten, hair wet though it hasn't rained, lips blue; after
+the Oracle he stares past you, after the Last Wanderer he shivers in a
+blanket, eating bread. Descriptions are of the person, never the
+place.
 
 **The villagers.** Born under the Ember. They cannot imagine a town
 without it or a dark without hunger. Their lines are rumor, and most of

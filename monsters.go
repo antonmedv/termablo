@@ -65,7 +65,7 @@ var mtList = []*MTemplate{
 	{ID: "wanderer", Name: "The Last Wanderer", Glyph: '@', Color: C(1, .32, .26), HP: 210, MinD: 7, MaxD: 15, Armor: 22, Speed: 100, XP: 1800, AI: AIWanderer, Range: 7, ProjColor: C(1, .25, .12), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(1, .1, .06), drinkRadius + 1, 1.25, .12, .15}, Verb: "cuts"},
 
 	{ID: "smith", Name: "Hadrik the Smith", Glyph: '@', Color: C(1, .6, .3), AI: AINPC, HP: 999, Speed: 100},
-	{ID: "alch", Name: "Old Mirela", Glyph: '@', Color: C(.55, .85, .95), AI: AINPC, HP: 999, Speed: 100},
+	{ID: "alch", Name: "Mirela the Alchemist", Glyph: '@', Color: C(.55, .85, .95), AI: AINPC, HP: 999, Speed: 100},
 	{ID: "captain", Name: "Captain Voss", Glyph: '@', Color: C(.95, .9, .55), AI: AINPC, HP: 999, Speed: 100},
 	{ID: "exile", Name: "Brother Aldous", Glyph: '@', Color: C(.8, .45, .35), AI: AINPC, HP: 999, Speed: 100},
 	{ID: "boy", Name: "Pell", Glyph: '@', Color: C(.6, .75, .9), AI: AINPC, HP: 999, Speed: 100},

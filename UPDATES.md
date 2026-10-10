@@ -15,6 +15,10 @@
 - **Ask the one who knows.** Each part of the story has an owner who
   tells it best, and the rest of the town points you to them instead of
   repeating it.
+- **See who you're talking to.** Every conversation opens with a
+  glimpse of the person, in gray: Hadrik soot-black to the elbows,
+  Mirela's crystal humming at her throat. The full picture the first
+  time, a glance after, and what the story has changed in them since.
 
 ## 2026-10-09
 

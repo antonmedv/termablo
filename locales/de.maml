@@ -122,6 +122,10 @@
   }
   talk: {
     hadrik: {
+      desc: "Ein breiter, kahler Mann in versengter Lederschürze, rußschwarz bis zu den Ellbogen. Seine Unterarme sind übersät von kleinen weißen Brandnarben, und er atmet langsam und tief wie ein Blasebalg."
+      desc_again: "Hadrik, rußig bis zu den Ellbogen, den Hammer in der Hand. Er blickt nicht auf."
+      desc_wanderer: "Auf Hadriks Gesicht liegt ein weißgoldener Schein, und ausnahmsweise wirkt er ausgeruht. Er beobachtet dich, nicht das Feuer."
+      desc_wanderer_again: "Hadrik summt bei der Arbeit. Er wirkt ausgeruht."
       greet: "Stahl gegen das Dunkel. Sieh dich um. Die [Esse](forge) ist heiß; das ist sie immer."
       greet_again: "Wieder da. Was muss geflickt werden?"
       greet_boneking: "Heut früh die Glocken der Gruft gehört. Dachte schon, ich werd wunderlich. Dein Werk? Dann hast du dir den guten Stahl verdient."
@@ -144,6 +148,10 @@
       pell: "Der Junge am Brunnen. Kam einmal an die Esse, um sich zu wärmen. Stand eine Stunde am Feuer und taute nicht auf."
     }
     mirela: {
+      desc: "Eine schöne Frau Ende dreißig, ihre volle Gestalt in ein dunkles Mieder geschnürt, das Haar so streng hochgesteckt, dass keine Strähne entkommt. Am Hals hängt ein blasser Kristall und summt leise. Sie mustert dich, wie eine Lehrerin ein zerrissenes Schulheft mustert."
+      desc_again: "Mirela verschränkt die Arme unter dem Kristall an ihrem Hals und wartet, dass du dich erklärst."
+      desc_oracle: "Mirela dreht den Kristall an ihrem Hals zwischen den Fingern, wieder und wieder. Er ist stumm und grau wie ein Flusskiesel. Zum ersten Mal ist ihr Rücken nicht ganz gerade."
+      desc_oracle_again: "Der Kristall an Mirelas Hals ist grau und stumm. Sie rührt ihn nicht an."
       greet: "Setz dich, setz dich. Du riechst nach Rauch und Grabstaub. Zeig her, was gebrochen ist."
       greet_again: "Schon wieder da, Liebes? Lass dich ansehen."
       greet_boneking: "Die Glocken der Gruft haben mich heute früh geweckt. Ich habe geweint, Liebes, und weiß nicht, warum.\nVoss wird dich als Nächstes zu [ihr](oracle) schicken. Bevor du gehst, frag mich nach ihr. Bitte."
@@ -151,7 +159,7 @@
       greet_wanderer: "Du bist zurückgekommen. Er nie, nicht wirklich. Setz dich, Liebes, lass mich nach den Verbrennungen sehen."
       greet_hurt: "Ach, Kind, sieh dich an. Setz dich, bevor du umfällst."
       greet_nopots: "Nicht eine Flasche am Gürtel? Da unten? Setz dich, Liebes. Das richten wir."
-      greet_crown: "An meinem Tisch nimmst du die Krone ab, Liebes. Sie flüstert, und ich bin zu alt zum Zuhören."
+      greet_crown: "An meinem Tisch nimmst du die Krone ab, Liebes. Sie flüstert, und von Schmuck lasse ich mich nicht belehren."
       greet_crown_again: "Die Krone, Liebes. Runter damit."
       oracle: "Mein Kristall stammt aus ihrer Grotte. Wenn sie träumt, singt er. Sie jagt niemanden, Kind. Sie hält etwas nieder, unter dem Wasser. Ich weiß nicht, was. Ich weiß nur, dass es heiß ist.\nVoss nennt es, ihr ein Ende machen. Ich nenne es, eine Tür öffnen. Geh hinab, wenn du musst, aber hör zu, bevor du die Klinge hebst."
       oracle_again: "Ich habe dir gesagt, was mein Kristall mir sagt. Voss hat ein Schwert, und ich habe einen Stein, der singt. Du entscheidest, wem du glaubst."
@@ -166,6 +174,10 @@
       pell_wanderer_again: "Er ist kalt, aber er isst. Das ist ein Anfang."
     }
     voss: {
+      desc: "Ein sehniger Mann in einem verbeulten Brustpanzer, ein schwarzes Band um einen Ärmel gebunden. Er steht da wie einer, der sich seit Jahren nicht hingesetzt hat."
+      desc_again: "Voss, eine Hand am Schwert, das schwarze Band am Ärmel."
+      desc_boneking: "Voss steht etwas gelöster da. Das schwarze Band ist von seinem Ärmel verschwunden."
+      desc_boneking_again: "Voss, eine Hand am Schwert. Sein Ärmel ist bloß."
       greet: "Wanderer. Gut. Wir brauchen eine Klinge, die nicht zittert.\nÖstlich hinter den Feldern, vier Ebenen tief in der [Gruft](crypt), sitzt der [Knochenkönig](boneking) auf seinem Thron aus Rippen. Vernichte ihn.\nHalte eine [Portalrolle](portals) bereit. Komm lebend zurück."
       greet_again: "Du atmest noch. Gut. Der [Knochenkönig](boneking) sitzt vier Ebenen tief in der [Gruft](crypt). Bring mir seinen Staub."
       boneking_reward: "Der Knochenkönig ist Staub? Dann dürfen die Glocken der Gruft wieder läuten.\nNimm das — es gehörte [meinem Vater](father). Und das Gold, natürlich."
@@ -198,6 +210,10 @@
       pell_oracle_again: "Gib dem Jungen Zeit."
     }
     aldous: {
+      desc: "Ein hagerer Mann in einer Kultistenrobe. Eine Seite von ihm ist blank gebrannt, das Auge darin milchweiß. Die andere Seite lächelt dich an."
+      desc_again: "Aldous, die verbrannte Gesichtshälfte vom Licht abgewandt."
+      desc_oracle: "Aldous hält eine Handfläche flach auf die Erde gepresst, als taste er nach einem Herzschlag."
+      desc_oracle_again: "Aldous hält eine Hand am Boden. Zum Gruß hebt er sie nicht."
       greet: "Wieder eine von Voss' Klingen. Setz dich, wenn du magst; die Gräber haben nichts gegen Gesellschaft. Frag mich nach dem [Kult](cult). Die Stadt erzählt dir, was wir waren. Ich erzähle dir, was wir gesehen haben."
       greet_again: "Atmest noch. Das Feuer ist sich über dich noch nicht einig."
       greet_boneking: "Edran liegt also endlich still. Du hast ihm einen Gefallen getan. Er würde dir danken, hätte das Dunkel ihm einen Mund gelassen."
@@ -219,6 +235,12 @@
       aldous: "Bruder. Es gibt keinen Orden mehr, dessen Bruder man sein könnte. Behalte den Titel, wenn du magst; er ist alles, was ich mit heraufgebracht habe."
     }
     pell: {
+      desc: "Ein dünner Junge von neun oder zehn Jahren. Sein Haar ist nass, obwohl es nicht geregnet hat, seine Lippen sind leicht blau, und er zittert nicht."
+      desc_again: "Pell, das Haar noch immer nass."
+      desc_oracle: "Pell umschlingt seine Knie und starrt an dir vorbei, als schulde ihm etwas eine Antwort."
+      desc_oracle_again: "Pell, die Knie angezogen, den Blick an dir vorbei."
+      desc_wanderer: "Pell ist in eine Decke gewickelt, die ihm viel zu groß ist, einen Kanten Brot in den Händen. Er zittert. Seine Lippen sind rosig."
+      desc_wanderer_again: "Pell in seiner Decke, zitternd und kauend."
       greet: "Du bist warm. Hier oben sind alle warm."
       greet_again: "Das Wasser redet wieder. Nicht mit dir."
       greet_boneking: "Die Glocken. Sie hat sie gespürt, unter dem Moor. Sie ist müde. Festhalten ist schwer, wenn man allein ist."
@@ -229,6 +251,9 @@
       oracle: "Sie ist kalt, damit wir nicht brennen. Sie hat mich gefragt, ob ich ein bisschen davon für sie halte. Ich hab Ja gesagt. Jetzt bin ich auch kalt."
       oracle_after: "(Pell schüttelt den Kopf. Von ihr spricht er nicht.)"
       blackmarsh: "Die Lichter haben nicht gerufen. Sie haben gefragt. Die meisten sagen Ja. Ich hab Ja gesagt."
+    }
+    villager: {
+      desc: "Ein Bewohner der Stadt in rußgrauem Umhang, der immer wieder zur nächsten Laterne blickt."
     }
     any: {
       ember: "König [Edran](edran) trug die Glut mit bloßen Händen von unten herauf. Jede Laterne in Emberhold wird an Hadriks [Esse](forge) entzündet, und die Esse an der Glut. Das Dunkel macht am Tor halt."
@@ -291,7 +316,7 @@
     torch: "Halt deine Fackel hoch. Das Dunkel da unten ist nicht leer — es ist hungrig."
     forge: "[Hadriks Esse](forge) ist seit vierzig Jahren nicht ausgegangen. Er sagt, an dem Tag, an dem sie ausgeht, fliehen wir."
     glimmer: "Seltene Dinge schimmern im Dunkeln. Goldenes Licht heißt: etwas Altes, mit einem Namen."
-    crystal: "Der Kristall der alten Mirela wurde aus der Grotte gegraben. Er singt, wenn die [Seherin](oracle) träumt."
+    crystal: "Mirelas Kristall wurde aus der Grotte gegraben. Er singt, wenn die [Seherin](oracle) träumt."
     scroll: "Eine [Portalrolle](portals) ist billiger als ein Begräbnis."
     stranger: "Vor dir war schon ein [Fremder](stranger) hier. Kaufte dasselbe Schwert. Ging am Moor vorbei und immer weiter."
     edran: "[König Edran](edran) trug die [Glut](ember) mit bloßen Händen herauf. Es kostete ihn sein Gesicht."
@@ -1327,7 +1352,7 @@
     oracle: { text: "Die Ertrunkene Seherin", gender: "f" }
     wanderer: { text: "Der Letzte Wanderer", gender: "m" }
     smith: { text: "Hadrik der Schmied", gender: "m" }
-    alch: { text: "Die alte Mirela", gender: "f" }
+    alch: { text: "Mirela die Alchemistin", gender: "f" }
     captain: { text: "Hauptmann Voss", gender: "m" }
     exile: { text: "Bruder Aldous", gender: "m" }
     boy: { text: "Pell", gender: "m" }

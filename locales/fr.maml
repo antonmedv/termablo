@@ -175,6 +175,10 @@
   }
   talk: {
     hadrik: {
+      desc: "Un homme large et chauve, en tablier de cuir roussi, noir de suie jusqu'aux coudes. Ses avant-bras sont piqués de petites cicatrices blanches de brûlure, et il respire lentement, profondément, comme un soufflet."
+      desc_again: "Hadrik, noir de suie jusqu'aux coudes, le marteau à la main. Il ne lève pas les yeux."
+      desc_wanderer: "Une lueur d'or blanc éclaire le visage d'Hadrik, et pour une fois il a l'air reposé. C'est vous qu'il regarde, pas le feu."
+      desc_wanderer_again: "Hadrik fredonne en travaillant. Il a l'air reposé."
       greet: "De l'acier contre les ténèbres. Jetez un œil. La [forge](forge) est chaude ; elle l'est toujours."
       greet_again: "De retour. Qu'est-ce qu'il faut réparer ?"
       greet_boneking: "J'ai entendu les cloches de la crypte ce matin. J'ai cru que je devenais gâteux. C'est vous ? Alors vous avez mérité le bon acier."
@@ -197,6 +201,10 @@
       pell: "Le garçon de la fontaine. Il est venu à la forge une fois, pour se réchauffer. Il est resté une heure près du feu sans dégeler."
     }
     mirela: {
+      desc: "Une belle femme d'à peine moins de quarante ans, la silhouette pleine sanglée dans un corsage sombre, les cheveux relevés sans une mèche qui dépasse. Un cristal pâle pend à son cou et bourdonne doucement. Elle vous examine comme une institutrice examine un cahier déchiré."
+      desc_again: "Mirela croise les bras sous le cristal à son cou et attend que vous vous expliquiez."
+      desc_oracle: "Mirela tourne et retourne entre ses doigts le cristal à son cou. Il est muet, gris comme un galet de rivière. Pour une fois, son dos n'est pas tout à fait droit."
+      desc_oracle_again: "Le cristal, au cou de Mirela, est gris et muet. Elle n'y touche pas."
       greet: "Asseyez-vous, asseyez-vous. Vous sentez la fumée et la poussière de tombe. Voyons ce qui est cassé."
       greet_again: "Vous revoilà, mon petit ? Laissez-moi vous regarder."
       greet_boneking: "Les cloches de la crypte m'ont réveillée ce matin. J'ai pleuré, mon petit, et je ne sais pas pourquoi.\nVoss va vous envoyer après [elle](oracle). Avant de partir, interrogez-moi sur elle. Je vous en prie."
@@ -204,7 +212,7 @@
       greet_wanderer: "Vous êtes revenu. Lui n'est jamais revenu, pas vraiment. Asseyez-vous, mon petit, que je soigne ces brûlures."
       greet_hurt: "Oh, mon enfant, regardez-vous. Asseyez-vous avant de tomber."
       greet_nopots: "Pas une seule fiole à votre ceinture ? Là-dessous ? Asseyez-vous, mon petit. Nous allons arranger ça."
-      greet_crown: "Ôtez cette couronne à ma table, mon petit. Elle chuchote, et je suis trop vieille pour l'écouter."
+      greet_crown: "Ôtez cette couronne à ma table, mon petit. Elle chuchote, et je ne reçois pas de leçons d'un bijou."
       greet_crown_again: "La couronne, mon petit. Enlevez-la."
       oracle: "Mon cristal vient de sa grotte. Quand elle rêve, il chante. Elle ne chasse personne, mon enfant. Elle retient quelque chose, sous l'eau. Je ne sais pas quoi. Je sais que c'est brûlant.\nVoss appelle ça en finir avec elle. Moi, j'appelle ça ouvrir une porte. Descendez s'il le faut, mais écoutez avant de lever votre lame."
       oracle_again: "Je vous ai dit ce que me dit mon cristal. Voss a une épée, et moi une pierre qui chante. À vous de choisir qui croire."
@@ -219,6 +227,10 @@
       pell_wanderer_again: "Il a froid, mais il mange. C'est un début."
     }
     voss: {
+      desc: "Un homme sec dans une cuirasse cabossée, un brassard noir noué autour d'une manche. Il se tient comme un homme qui ne s'est pas assis depuis des années."
+      desc_again: "Voss, une main sur son épée, le brassard noir à la manche."
+      desc_boneking: "Voss se tient un peu moins raide. Le brassard noir a quitté sa manche."
+      desc_boneking_again: "Voss, une main sur son épée. Sa manche est nue."
       greet: "Vagabond. Bien. Il nous faut une lame qui ne tremble pas.\nQuatre niveaux sous la [crypte](crypt), à l'est après les champs, le [Roi des Os](boneking) siège sur son trône de côtes. Détruisez-le.\nGardez un [parchemin de portail](portals) sur vous. Revenez vivant."
       greet_again: "Toujours en vie. Bien. Le [Roi des Os](boneking) se trouve quatre niveaux sous la [crypte](crypt). Rapportez-moi sa poussière."
       boneking_reward: "Le Roi des Os n'est plus que poussière ? Alors les cloches de la crypte pourront de nouveau sonner.\nPrenez ceci — c'était à [mon père](father). Et l'or, bien sûr."
@@ -251,6 +263,10 @@
       pell_oracle_again: "Laissez du temps au garçon."
     }
     aldous: {
+      desc: "Un homme décharné en robe de cultiste. Tout un côté de lui est brûlé jusqu'à luire, l'œil de ce côté blanc comme du lait. L'autre côté vous sourit."
+      desc_again: "Aldous, le côté brûlé de son visage détourné de la lumière."
+      desc_oracle: "Aldous garde une paume pressée à plat contre la terre, comme s'il y cherchait un battement de cœur."
+      desc_oracle_again: "Aldous garde une main sur le sol. Il ne la lève pas pour vous saluer."
       greet: "Encore une des lames de Voss. Asseyez-vous, si vous voulez ; les tombes ne craignent pas la compagnie. Interrogez-moi sur le [Culte](cult). La ville vous dira ce que nous étions. Moi, je vous dirai ce que nous avons vu."
       greet_again: "Toujours vivant. Le feu ne s'est pas encore décidé à votre sujet."
       greet_boneking: "Ainsi Edran s'est enfin couché. Vous lui avez rendu service. Il vous remercierait, si les ténèbres lui avaient laissé une bouche."
@@ -272,6 +288,12 @@
       aldous: "Frère. Il ne reste plus d'ordre dont être le frère. Gardez le titre, si vous voulez ; c'est tout ce que j'ai rapporté."
     }
     pell: {
+      desc: "Un garçon maigre de neuf ou dix ans. Ses cheveux sont mouillés alors qu'il n'a pas plu, ses lèvres sont un peu bleues, et il ne frissonne pas."
+      desc_again: "Pell, les cheveux toujours mouillés."
+      desc_oracle: "Pell serre ses genoux contre lui et regarde au-delà de vous, comme si quelque chose lui devait une réponse."
+      desc_oracle_again: "Pell, les genoux ramenés contre lui, le regard perdu au-delà de vous."
+      desc_wanderer: "Pell est enveloppé dans une couverture trop grande pour lui, un quignon de pain entre les mains. Il frissonne. Ses lèvres sont roses."
+      desc_wanderer_again: "Pell dans sa couverture, frissonnant et mâchant."
       greet: "Tu sens la chaleur. Tout le monde sent la chaleur, ici en haut."
       greet_again: "L'eau parle encore. Pas à toi."
       greet_boneking: "Les cloches. Elle les a senties, sous le marais. Elle est fatiguée. Retenir, c'est dur quand on est toute seule."
@@ -282,6 +304,9 @@
       oracle: "Elle est froide pour qu'on ne brûle pas. Elle m'a demandé d'en garder un peu pour elle. J'ai dit oui. Maintenant, moi aussi, je suis froid."
       oracle_after: "(Pell secoue la tête. Il ne parlera pas d'elle.)"
       blackmarsh: "Les lumières n'ont pas appelé. Elles ont demandé. Presque tout le monde dit oui. Moi, j'ai dit oui."
+    }
+    villager: {
+      desc: "Un habitant en manteau gris de suie, qui ne cesse de jeter des coups d'œil vers la lanterne la plus proche."
     }
     any: {
       ember: "Le roi [Edran](edran) a remonté la Braise des profondeurs à mains nues. Chaque lanterne d'Emberhold est allumée à la [forge](forge) d'Hadrik, et la forge à la Braise. Les ténèbres s'arrêtent à la porte."
@@ -344,7 +369,7 @@
     torch: "Gardez votre torche haute. Là-dessous, les ténèbres ne sont pas vides — elles ont faim."
     forge: "[La forge d'Hadrik](forge) ne s'est pas éteinte depuis quarante ans. Il dit que le jour où elle s'éteindra, il faudra fuir."
     glimmer: "Les objets rares luisent dans le noir. Une lueur d'or, c'est une chose ancienne, et qui porte un nom."
-    crystal: "Le cristal de la vieille Mirela a été déterré dans la grotte. Il chante quand la [Sibylle](oracle) rêve."
+    crystal: "Le cristal de Mirela a été déterré dans la grotte. Il chante quand la [Sibylle](oracle) rêve."
     scroll: "Un [parchemin de portail](portals) coûte moins cher qu'un enterrement."
     stranger: "Il y a eu un [étranger](stranger) avant vous. Il a acheté la même épée. Il a passé le marais et il a continué."
     edran: "[Le roi Edran](edran) a porté la [Braise](ember) jusqu'ici à mains nues. Il y a laissé son visage."
@@ -1210,7 +1235,7 @@
     oracle: { text: "La Sibylle Noyée", gender: "f" }
     wanderer: { text: "Le Dernier Vagabond", gender: "m" }
     smith: { text: "Hadrik le Forgeron", gender: "m" }
-    alch: { text: "Mère Mirela", gender: "f" }
+    alch: { text: "Mirela l'Alchimiste", gender: "f" }
     captain: { text: "Capitaine Voss", gender: "m" }
     exile: { text: "Frère Aldous", gender: "m" }
     boy: { text: "Pell", gender: "m" }
