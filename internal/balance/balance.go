@@ -82,7 +82,7 @@ var (
 var (
 	Checkpoints    = []string{"crypt2", "crypt4", "grotto1", "grotto3"}
 	RefCheckpoints = []string{"crypt4", "grotto1"}
-	Areas          = []string{"fields", "crypt", "marsh", "grotto", "abyss"}
+	Areas          = []string{"fields", "crypt", "barrow", "marsh", "grotto", "abyss"}
 	Policies       = []string{"fighter", "caster"}
 )
 

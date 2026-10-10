@@ -22,3 +22,10 @@ names through `itemNoun`, `monsterNoun`, `theRef`, `areaName`
 A new or changed English line makes the translations stale: follow
 `docs/translating.md` (`go run ./cmd/i18n status`, `prompt`, `merge`,
 `check`, or `/translate`). Terms are decided in `locales/glossary.maml`.
+
+## World and quest line
+
+`docs/world.md`, `docs/world.png` and `docs/quests.md` are generated:
+run `make docs` after adding or relinking a level or changing a quest.
+The quest line is the `quests` table in `quest.go`, in order, each with
+its boss's `Level`; `route.go` walks it, and the bot follows it.

@@ -764,7 +764,7 @@ func (b *Bot) runErrand() bool {
 			g.readPortal()
 			return true
 		}
-		home := botHome(l.ID)
+		home := b.home(l.ID)
 		b.enter(BotErrand, b.reason+", walking home via "+home)
 		if x, y, ok := b.stairs(home); ok && b.walkTo(x, y, true) {
 			return true
@@ -795,7 +795,7 @@ func (b *Bot) runErrand() bool {
 		b.remedy = true
 	}
 	b.shopped = true
-	if g.Portal != nil && b.next(g.Portal.Level) != botHome(g.Portal.Level) {
+	if g.Portal != nil && b.next(g.Portal.Level) != b.home(g.Portal.Level) {
 		b.enter(BotErrand, "back through the portal")
 		return b.walkTo(l.PortalAt.X, l.PortalAt.Y, true)
 	}
@@ -1040,46 +1040,11 @@ func botDepth(id string) int {
 	return 0
 }
 
-// botHome is the way back up.
-func botHome(id string) string {
-	switch id {
-	case "fields":
-		return "town"
-	case "crypt1", "barrow1", "marsh":
-		return "fields"
-	case "grotto1":
-		return "marsh"
-	case "abyss1":
-		return "grotto3"
-	}
-	prefix, n := splitID(id)
-	return fmt.Sprintf("%s%d", prefix, n-1)
-}
+// home is the way back up to town.
+func (b *Bot) home(id string) string { return b.g.step(id, "town") }
 
-// next is where the route leads from a finished level: town, fields, the
-// crypt to the Bone King, Voss for the bounty, the marsh, the grotto, the
-// abyss.
-func (b *Bot) next(id string) string {
-	prefix, n := splitID(id)
-	switch {
-	case id == "town":
-		return "fields"
-	case id == "fields":
-		if !b.g.Slain["boneking"] {
-			return "crypt1"
-		}
-		return "marsh"
-	case prefix == "crypt" && b.g.Slain["boneking"]: // the crypt is done: back up and on to the marsh
-		return botHome(id)
-	case id == "crypt4":
-		return ""
-	case id == "marsh":
-		return "grotto1"
-	case id == "grotto3":
-		return "abyss1"
-	}
-	return fmt.Sprintf("%s%d", prefix, n+1)
-}
+// next is where the route leads from a level: the quest line (route.go).
+func (b *Bot) next(id string) string { return b.g.routeNext(id) }
 
 // stairs finds a seen cell of the link to a level.
 func (b *Bot) stairs(to string) (int, int, bool) {

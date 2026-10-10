@@ -1,4 +1,4 @@
-.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones world report eval hearth knobs i18n
+.PHONY: run build check fmt lint deadcode test test-short fuzz bench shots og zones docs report eval hearth knobs i18n
 
 GOBIN := $(shell go env GOPATH)/bin
 
@@ -44,9 +44,10 @@ og:
 zones:
 	SHOTDIR=$(CURDIR)/demo go test -count=1 -run ShotZones .
 
-# Surface map for docs/world.md, docs/world.png
-world:
-	SHOTDIR=$(CURDIR)/docs go test -count=1 -run ShotWorld .
+# Generated docs: the world map (docs/world.md, docs/world.png) and the
+# quest line the bot walks (docs/quests.md)
+docs:
+	SHOTDIR=$(CURDIR)/docs go test -count=1 -run 'ShotWorld|DocQuests' .
 
 # the bot report: both builds over SEEDS seeds, the reference heroes
 # table. RULES=file.json lays knobs over the defaults (rules.go).

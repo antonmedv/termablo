@@ -1,6 +1,9 @@
 package main
 
-import "slices"
+import (
+	"slices"
+	"strconv"
+)
 
 // Quests are given by the townsfolk, in conversation. A quest is taken
 // when the hero hears one of the lines that gives it, from whoever says
@@ -19,17 +22,19 @@ type Quest struct {
 	Reward string   // what the giver says as they pay
 	After  string   // the boss whose death gives it, for a quest no one gives
 	Area   string   // where the boss waits, area.<Area>, for the journal
+	Level  string   // the level the boss waits on: where the quest line leads
 }
 
-// quests are every quest, in the order they are listed and paid.
+// quests are every quest, in the order they are listed and paid: the
+// quest line, the order they are meant to be done in (route.go).
 var quests = []Quest{
-	{ID: "boneking", Boss: "boneking", Depth: 5, Area: "throne", Giver: "captain", Reward: "talk.voss.boneking_reward",
+	{ID: "boneking", Boss: "boneking", Depth: 5, Area: "throne", Level: "crypt4", Giver: "captain", Reward: "talk.voss.boneking_reward",
 		Offers: []string{"talk.voss.greet", "talk.voss.greet_again", "talk.voss.boneking"}},
-	{ID: "barrow", Boss: "buried", Depth: 7, Area: "buried_watch", Giver: "captain", Reward: "talk.voss.barrow_reward",
+	{ID: "barrow", Boss: "buried", Depth: 7, Area: "buried_watch", Level: "barrow2", Giver: "captain", Reward: "talk.voss.barrow_reward",
 		Offers: []string{"talk.voss.barrow"}},
-	{ID: "oracle", Boss: "oracle", Depth: 9, Area: "oracle_pool", Giver: "captain", Reward: "talk.voss.oracle_reward",
+	{ID: "oracle", Boss: "oracle", Depth: 9, Area: "oracle_pool", Level: "grotto3", Giver: "captain", Reward: "talk.voss.oracle_reward",
 		Offers: []string{"talk.voss.greet_boneking", "talk.voss.greet_boneking_again", "talk.voss.oracle"}},
-	{ID: "wanderer", Boss: "wanderer", Area: "hearth", After: "oracle"},
+	{ID: "wanderer", Boss: "wanderer", Area: "hearth", Level: "abyss" + strconv.Itoa(hearthFloor), After: "oracle"},
 }
 
 func questByID(id string) *Quest {
