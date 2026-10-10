@@ -18,7 +18,7 @@ func slay(g *Game, bosses ...string) {
 func settle(g *Game, ids ...string) {
 	for _, id := range ids {
 		q := questByID(id)
-		g.slay(q.Boss)
+		g.complete(q)
 		if q.Giver != "" {
 			g.Quests[id] = QuestRewarded
 		}
@@ -45,10 +45,15 @@ func TestQuestTable(t *testing.T) {
 			t.Errorf("%s: twice", q.ID)
 		}
 		seen[q.ID] = true
-		if mtemps[q.Boss] == nil {
+		switch {
+		case q.Boss != "" && q.Item != "":
+			t.Errorf("%s: a boss and a thing both", q.ID)
+		case q.Item != "" && q.Item != stolenCoal.Name:
+			t.Errorf("%s: no unique %q", q.ID, q.Item)
+		case q.Item == "" && mtemps[q.Boss] == nil:
 			t.Errorf("%s: no monster %q", q.ID, q.Boss)
 		}
-		if !en.Has("monster." + q.Boss) {
+		if !en.Has(q.nameKey()) {
 			t.Errorf("%s: no name for the list", q.ID)
 		}
 		if !en.Has("area." + q.Area) {
@@ -67,6 +72,9 @@ func TestQuestTable(t *testing.T) {
 		}
 		if mtemps[q.Giver] == nil {
 			t.Errorf("%s: no giver %q", q.ID, q.Giver)
+		}
+		if q.Alarm != "" && (q.Item == "" || !en.Has(q.Alarm)) {
+			t.Errorf("%s: an alarm %q with no thing to pick up, or no line", q.ID, q.Alarm)
 		}
 		for _, k := range append([]string{q.Reward}, q.Offers...) {
 			if !en.Has(k) {
@@ -200,9 +208,10 @@ func TestReadyQuests(t *testing.T) {
 		depth int
 		want  map[string]QuestState
 	}{
-		{3, map[string]QuestState{"boneking": QuestTaken, "barrow": QuestTaken, "oracle": QuestTaken}},
-		{7, map[string]QuestState{"boneking": QuestRewarded, "barrow": QuestTaken, "oracle": QuestTaken}},
-		{11, map[string]QuestState{"boneking": QuestRewarded, "barrow": QuestRewarded, "oracle": QuestRewarded, "wanderer": QuestTaken}},
+		{3, map[string]QuestState{"boneking": QuestTaken, "barrow": QuestTaken, "oracle": QuestTaken, "coal": QuestTaken, "prior": QuestTaken}},
+		{7, map[string]QuestState{"boneking": QuestRewarded, "barrow": QuestTaken, "oracle": QuestTaken, "coal": QuestTaken, "prior": QuestTaken}},
+		{11, map[string]QuestState{"boneking": QuestRewarded, "barrow": QuestRewarded, "oracle": QuestRewarded, "coal": QuestRewarded, "prior": QuestTaken, "wanderer": QuestTaken}},
+		{12, map[string]QuestState{"boneking": QuestRewarded, "barrow": QuestRewarded, "oracle": QuestRewarded, "coal": QuestRewarded, "prior": QuestRewarded, "wanderer": QuestTaken}},
 	} {
 		g := NewGame(1)
 		g.readyQuests(c.depth)
@@ -318,7 +327,187 @@ func TestBuriedCaptainRallies(t *testing.T) {
 			t.Fatalf("%s still sleeps after the rally", m.Name)
 		}
 	}
-	if !c.Rallied {
+	if !c.Spent {
 		t.Error("the rally is not remembered")
+	}
+}
+
+// coalOn finds the Stolen Coal on a level.
+func coalOn(t *testing.T, l *Level) *FloorItem {
+	t.Helper()
+	for _, fi := range l.Items {
+		if fi.It.Name == stolenCoal.Name {
+			return fi
+		}
+	}
+	t.Fatalf("no Stolen Coal on %s", l.ID)
+	return nil
+}
+
+// Hadrik gives the coal when asked about it; it lies in the Sanctum's
+// reliquary, taking it up wakes the floor, and Hadrik takes it back as he
+// pays, off the hero's neck if need be.
+func TestCoalQuest(t *testing.T) {
+	g := NewGame(1)
+	g.Known["coal"] = true
+	talkWith(t, g, "smith")
+	g.ask("coal")
+	if g.Quests["coal"] != QuestTaken {
+		t.Fatal("asking Hadrik about the coal does not give it")
+	}
+	g.Mode = ModePlay
+	g.changeLevel("sanctum1", "", nil)
+	fi := coalOn(t, g.Lv)
+	if fi.Light == nil {
+		t.Error("the coal does not glow")
+	}
+	g.P.X, g.P.Y = fi.X, fi.Y
+	g.computeVisibility()
+	g.computeDist()
+	asleep := 0
+	for _, m := range g.Lv.Monsters {
+		if !m.Awake && g.dist[g.Lv.Idx(m.X, m.Y)] >= 0 {
+			asleep++
+		}
+	}
+	if asleep == 0 {
+		t.Fatal("nothing to wake")
+	}
+	g.pickup()
+	if !g.Found[stolenCoal.Name] || g.status(questByID("coal")) != QuestOwed {
+		t.Fatalf("the coal picked up: found %v, quests %v", g.Found, g.Quests)
+	}
+	if taken := g.L.T("msg.coal_taken"); !slices.ContainsFunc(g.Log, func(l LogMsg) bool { return l.Text == taken }) {
+		t.Error("no word of the coal flaring")
+	}
+	for _, m := range g.Lv.Monsters {
+		if !m.Dead && !m.Awake && g.dist[g.Lv.Idx(m.X, m.Y)] >= 0 {
+			t.Fatalf("%s sleeps through the coal", m.Name)
+		}
+	}
+	// worn, it still goes back
+	for i, it := range g.P.Inv {
+		if it.Name == stolenCoal.Name {
+			g.equip(i)
+		}
+	}
+	if g.P.Eq[EqAmulet] == nil || g.P.Eq[EqAmulet].Name != stolenCoal.Name {
+		t.Fatal("the coal is not an amulet the hero can wear")
+	}
+	g.changeLevel("town", "", nil)
+	gold := g.P.Gold
+	got := greetings(t, g, "smith", 1)
+	if got[0] != g.L.T("talk.hadrik.coal_reward") || g.P.Gold <= gold {
+		t.Errorf("Hadrik on the coal: %q, gold %d->%d", got, gold, g.P.Gold)
+	}
+	if g.P.Eq[EqAmulet] != nil || slices.ContainsFunc(g.P.Inv, func(it *Item) bool { return it.Name == stolenCoal.Name }) {
+		t.Error("Hadrik left the hero the coal")
+	}
+	if g.status(questByID("coal")) != QuestOver {
+		t.Error("the coal quest is not over")
+	}
+}
+
+// Aldous gives the Prior when asked about him, and pays once he is ash
+// at the bottom of the Kindling.
+func TestPriorQuest(t *testing.T) {
+	g := NewGame(1)
+	g.Known["prior"] = true
+	talkWith(t, g, "exile")
+	g.ask("prior")
+	if g.Quests["prior"] != QuestTaken {
+		t.Fatal("asking Aldous about the Prior does not give him")
+	}
+	g.Mode = ModePlay
+	g.changeLevel("sanctum2", "", nil)
+	for _, m := range g.Lv.Monsters {
+		if m.T.ID == "prior" {
+			g.killMonster(m)
+		}
+	}
+	g.changeLevel("town", "", nil)
+	if g.status(questByID("prior")) != QuestOwed {
+		t.Fatalf("the Prior is not on sanctum2, or his death does not count: %v", g.Slain)
+	}
+	gold := g.P.Gold
+	if got := greetings(t, g, "exile", 1); got[0] != g.L.T("talk.aldous.prior_reward") || g.P.Gold <= gold {
+		t.Errorf("Aldous on the Prior: %q, gold %d->%d", got, gold, g.P.Gold)
+	}
+}
+
+// After the Oracle is paid for, Hadrik's and Aldous's news give their
+// quests.
+func TestSanctumQuestsGivenAfterOracle(t *testing.T) {
+	g := NewGame(1)
+	greetings(t, g, "smith", 1)
+	greetings(t, g, "exile", 1)
+	settle(g, "oracle")
+	greetings(t, g, "smith", 1)
+	greetings(t, g, "exile", 1)
+	if g.Quests["coal"] != QuestTaken || g.Quests["prior"] != QuestTaken {
+		t.Errorf("after the Oracle: %v", g.Quests)
+	}
+}
+
+// priorOn finds the Cinder Prior on the Kindling, the hero beside him.
+func priorOn(t *testing.T, g *Game) *Monster {
+	t.Helper()
+	g.changeLevel("sanctum2", "", nil)
+	for _, m := range g.Lv.Monsters {
+		if m.T.ID == "prior" {
+			g.P.X, g.P.Y = g.Lv.FreeNear(m.X+2, m.Y, -1, -1)
+			g.computeVisibility()
+			g.computeDist()
+			return m
+		}
+	}
+	t.Fatal("no Cinder Prior on sanctum2")
+	return nil
+}
+
+// Every tenth turn in sight of the hero, the Prior kindles the braziers
+// near them: Fire Imps climb out, his minions.
+func TestPriorKindles(t *testing.T) {
+	g := NewGame(1)
+	m := priorOn(t, g)
+	l, p := g.Lv, g.P
+	for _, d := range []Pos{{2, 1}, {-2, -1}, {3, -1}} {
+		x, y := l.FreeNear(p.X+d.X, p.Y+d.Y, p.X, p.Y)
+		l.Set(x, y, TBrazier)
+	}
+	g.computeVisibility()
+	m.Awake, m.Timer = true, 9
+	g.monsterTurn(m)
+	imps := 0
+	for _, o := range g.Lv.Monsters {
+		if o.T.ID == "imp" && o.Minion && o.Awake {
+			imps++
+		}
+	}
+	if imps != 2 || lastLog(g) != g.L.T("msg.prior_kindles") {
+		t.Errorf("%d imps kindled; last line %q", imps, lastLog(g))
+	}
+}
+
+// Hurt past half, the fire takes the Prior once: faster, burning, and
+// his flock awake.
+func TestPriorBurns(t *testing.T) {
+	g := NewGame(1)
+	m := priorOn(t, g)
+	speed := m.Speed
+	m.Awake, m.HP = true, m.MaxHP/3
+	g.monsterTurn(m)
+	if !m.Spent || m.Speed <= speed || !m.HasMod(ModFire) || lastLog(g) != g.L.T("msg.prior_burns") {
+		t.Errorf("the Prior at a third: spent %v, speed %d->%d, mods %v, last line %q", m.Spent, speed, m.Speed, m.Mods, lastLog(g))
+	}
+	for _, o := range g.Lv.Monsters {
+		if !o.Dead && !o.Awake && g.dist[g.Lv.Idx(o.X, o.Y)] >= 0 {
+			t.Fatalf("%s sleeps through the burning", o.Name)
+		}
+	}
+	m.Timer = 1
+	g.monsterTurn(m)
+	if m.HasMod(ModFire) && len(m.Mods) != 1 {
+		t.Error("the fire took him twice")
 	}
 }

@@ -7,6 +7,10 @@ flowchart TD
     town["<b>Emberhold</b><br/>lvl 0"]
     fields["<b>Ashen Fields</b><br/>lvl 1"]
     marsh["<b>Blackmarsh</b><br/>lvl 6"]
+    subgraph sanctum [The Cinder Sanctum]
+        sanctum1["<b>The Cinder Sanctum</b><br/>lvl 10"]
+        sanctum2["<b>The Kindling</b><br/>lvl 11<br/>boss: The Cinder Prior"]
+    end
     subgraph crypt [Crypt of the Fallen]
         crypt1["<b>Crypt of the Fallen 1</b><br/>lvl 2"]
         crypt2["<b>Crypt of the Fallen 2</b><br/>lvl 3"]
@@ -29,9 +33,11 @@ flowchart TD
         abyss4["<b>The Burning Abyss 4</b><br/>lvl 13"]
     end
     town --> fields
+    town --> sanctum1
     fields --> crypt1
     fields --> barrow1
     fields --> marsh
+    sanctum1 --> sanctum2
     crypt1 --> crypt2
     barrow1 --> barrow2
     marsh --> grotto1

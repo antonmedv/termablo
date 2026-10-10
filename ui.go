@@ -428,7 +428,7 @@ func (g *Game) drawPanel(s *Screen, x, y, w, h int) {
 		s.Text(cx+2, qrow, fit(L.T("ui.panel.quests"), bw-2), colDim.C8())
 		for i, q := range shown {
 			mark, col := g.questMark(q)
-			s.Text(cx, qrow+1+i, fit(mark+" "+L.T("monster."+q.Boss), bw), col.C8())
+			s.Text(cx, qrow+1+i, fit(mark+" "+L.T(q.nameKey()), bw), col.C8())
 		}
 		g.questsHit, g.questsRows = hitBox{cx, cx + bw - 1, qrow}, len(shown)
 	}

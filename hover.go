@@ -157,7 +157,7 @@ func (g *Game) hoverInfo(mx, my int) []hoverLine {
 			if m.Flee > 0 {
 				st = append(st, L.T("ui.hover.state.fleeing"))
 			}
-			if m.T.AI == AIRanged || m.T.AI == AIOracle || m.T.AI == AIWanderer {
+			if m.T.AI == AIRanged || m.T.AI == AIOracle || m.T.AI == AIPrior || m.T.AI == AIWanderer {
 				st = append(st, L.T("ui.hover.state.ranged"))
 			}
 			if m.Light != nil {

@@ -154,6 +154,15 @@ func genTown(seed int64, r *Rules) *Level {
 	l.Set(70, 16, TDeadTree)
 	l.Set(66, 11, TDeadTree)
 	l.Set(75, 5, TBrazier)
+	// The Cinder Sanctum: the Ember Cult's chapel is under the graveyard,
+	// its door a stair among the graves, the ground around it scorched
+	sx, sy := 70, 10
+	l.Fill(sx-1, sy-1, sx+1, sy+1, TDirt)
+	l.Set(sx, sy, TStairsDown)
+	l.Links = append(l.Links, Link{sx, sy, sx, sy, "sanctum1", -1, -1})
+	for _, d := range dirs8 {
+		l.Decal[l.Idx(sx+d.X, sy+d.Y)] = DecalScorch
+	}
 	// Street lamps
 	for x := 8; x < 78; x += 9 {
 		for _, y := range []int{cy - 2, cy + 2} {
@@ -489,19 +498,32 @@ type DungeonSpec struct {
 	NameKey    string // area.<NameKey> with {n} = NameN, the name the player reads
 	NameN      int
 	Depth      int
-	Style      int // 0 crypt, 1 grotto, 2 abyss, 3 barrow
+	Style      int // 0 crypt, 1 grotto, 2 abyss, 3 barrow, 4 sanctum, 5 kindling
 	Up, Down   string
 	SealedDown string // a down link that opens when the boss dies
 	Boss       string
+	Guard      string     // who stands with the boss, or over the relic; skeletons in a crypt by default
+	Relic      *UniqueDef // a unique laid in the last room, lit
 	SpawnTable string
 	Rules      *Rules
 }
 
+// built says whether a style is rooms and corridors (the crypt's) rather
+// than a cave.
+func (s DungeonSpec) built() bool { return s.Style == 0 || s.Style == 3 || s.Style == 4 }
+
 func genDungeon(s DungeonSpec, seed int64) *Level {
-	if s.Style == 0 || s.Style == 3 {
+	if s.built() {
 		return genCrypt(s, seed)
 	}
 	return genCave(s, seed)
+}
+
+// placeUnique lays a unique on the floor, lit as a dropped one is.
+func (l *Level) placeUnique(x, y int, it *Item) {
+	fi := &FloorItem{X: x, Y: y, It: it}
+	fi.Light = NewLight(x, y, lsUniqueDrop, l.rng.Float32()*10)
+	l.Items = append(l.Items, fi)
 }
 
 func genCrypt(s DungeonSpec, seed int64) *Level {
@@ -510,8 +532,9 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 	l.NameKey, l.NameN = s.NameKey, s.NameN
 	l.Ambient = C(0, 0, 0)
 	// a barrow is the crypt dug in earth: dirt between earthen walls, and
-	// no fire but the watch's own
-	barrow := s.Style == 3
+	// no fire but the watch's own; the sanctum is the crypt as a chapel,
+	// every brazier lit again, carpets down the aisles, the stone scorched
+	barrow, chapel := s.Style == 3, s.Style == 4
 	wall, floor := TWall, TFloor
 	if barrow {
 		wall, floor = TEarthWall, TDirt
@@ -608,7 +631,20 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 				}
 			}
 		}
-		if barrow {
+		if chapel {
+			l.Set(r.X0, r.Y0, TBrazier)
+			l.Set(r.X1, r.Y1, TBrazier)
+			if w >= 8 && h >= 4 {
+				c := r.Center()
+				l.Fill(r.X0+1, c.Y, r.X1-1, c.Y, TCarpet)
+			}
+			for range w * h / 8 {
+				x, y := r.X0+l.rng.Intn(w+1), r.Y0+l.rng.Intn(h+1)
+				if l.At(x, y) == floor {
+					l.Decal[l.Idx(x, y)] = DecalScorch
+				}
+			}
+		} else if barrow {
 			if i == len(rooms)-1 {
 				l.Set(r.X0, r.Y0, TBrazier)
 				l.Set(r.X1, r.Y1, TBrazier)
@@ -657,23 +693,41 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 		l.Set(d.X, d.Y, TStairsDown)
 		l.Links = append(l.Links, Link{d.X, d.Y, d.X, d.Y, s.Down, -1, -1})
 	}
-	if s.Boss != "" {
+	if s.Boss != "" || s.Relic != nil {
 		c := last.Center()
-		b := placeMonster(l, s.Boss, c.X-2, c.Y, s.Depth, RankBoss)
-		b.Awake = false
-		guard := "skel"
-		if barrow {
-			guard = "gravewarden"
+		guard := s.Guard
+		if guard == "" {
+			guard = "skel"
+		}
+		if s.Boss != "" {
+			b := placeMonster(l, s.Boss, c.X-2, c.Y, s.Depth, RankBoss)
+			b.Awake = false
+		}
+		if s.Relic != nil {
+			// the reliquary: the relic on the carpet beside the way down,
+			// its guard around it
+			x, y := l.FreeNear(c.X-3, c.Y, -1, -1)
+			l.placeUnique(x, y, uniqueItem(*s.Relic, s.Depth))
 		}
 		for range 4 {
 			placeMonster(l, guard, c.X+l.rng.Intn(5)-2, c.Y+l.rng.Intn(3)-1, s.Depth, RankNormal)
 		}
 	}
-	l.LoreKey = "crypt"
-	if barrow {
+	switch {
+	case barrow:
 		l.LoreKey = "barrow"
+	case chapel:
+		l.LoreKey = "sanctum"
+	default:
+		l.LoreKey = "crypt"
 	}
-	populate(l, s.SpawnTable, 14+s.Depth*2, []Pos{up})
+	// the chapel is deep for rooms and corridors: packed like a cave, not
+	// like a crypt floor that deep would be
+	packs := 14 + s.Depth*2
+	if chapel {
+		packs = 16 + s.Depth
+	}
+	populate(l, s.SpawnTable, packs, []Pos{up})
 	l.finalize()
 	return l
 }
@@ -683,7 +737,14 @@ func genCave(s DungeonSpec, seed int64) *Level {
 	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed, s.Rules)
 	l.NameKey, l.NameN = s.NameKey, s.NameN
 	l.Ambient = C(0, 0, 0)
+	// the kindling is dug, not grown: earth walls, and the fire seeping in
+	// through the floor as the abyss's does
+	dug := s.Style == 5
+	fiery := s.Style == 2 || dug
 	wall, floor := TCaveWall, TCaveFloor
+	if dug {
+		wall = TEarthWall
+	}
 	grid := make([]bool, W*H)
 	for i := range grid {
 		x, y := i%W, i/W
@@ -804,7 +865,7 @@ func genCave(s DungeonSpec, seed int64) *Level {
 						l.T[i] = TDeepWater
 					}
 				}
-				if s.Style == 2 && n > 0.66 {
+				if fiery && n > 0.66 {
 					l.T[i] = TLava
 				}
 				if l.T[i] == floor && l.rng.Intn(40) == 0 {
@@ -829,7 +890,7 @@ func genCave(s DungeonSpec, seed int64) *Level {
 			}
 		}
 	}
-	if s.Style == 2 {
+	if fiery {
 		for range 10 {
 			i := best[l.rng.Intn(len(best))]
 			if l.T[i] == floor && !protect[i] {
@@ -863,9 +924,38 @@ func genCave(s DungeonSpec, seed int64) *Level {
 	if s.Boss != "" {
 		b := placeMonster(l, s.Boss, fx, fy, s.Depth, RankBoss)
 		b.Awake = false
-		if s.Boss == "oracle" {
+		if s.Guard != "" {
 			for range 3 {
-				placeMonster(l, "wisp", fx+l.rng.Intn(5)-2, fy+l.rng.Intn(3)-1, s.Depth, RankNormal)
+				placeMonster(l, s.Guard, fx+l.rng.Intn(5)-2, fy+l.rng.Intn(3)-1, s.Depth, RankNormal)
+			}
+		}
+		if dug {
+			// the Prior's coals: four braziers in the open ground about him,
+			// apart from each other and off the way to the stairs, to kindle
+			// from
+			var open []Pos
+			for dy := -6; dy <= 6; dy++ {
+				for dx := -9; dx <= 9; dx++ {
+					x, y := fx+dx, fy+dy
+					if cheb(x, y, fx, fy) >= 3 && l.At(x, y) == floor && l.MonsterAt(x, y) == nil && !protect[y*W+x] {
+						open = append(open, Pos{x, y})
+					}
+				}
+			}
+			l.rng.Shuffle(len(open), func(i, j int) { open[i], open[j] = open[j], open[i] })
+			var coals []Pos
+			for _, c := range open {
+				if len(coals) == 4 {
+					break
+				}
+				apart := true
+				for _, o := range coals {
+					apart = apart && cheb(c.X, c.Y, o.X, o.Y) >= 4
+				}
+				if apart {
+					l.Set(c.X, c.Y, TBrazier)
+					coals = append(coals, c)
+				}
 			}
 		}
 	}
@@ -874,6 +964,8 @@ func genCave(s DungeonSpec, seed int64) *Level {
 		l.LoreKey = "hearth"
 	case s.Style == 1:
 		l.LoreKey = "grotto"
+	case dug:
+		l.LoreKey = "kindling"
 	default:
 		l.LoreKey = "abyss"
 	}

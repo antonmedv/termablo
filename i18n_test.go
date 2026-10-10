@@ -49,7 +49,7 @@ func TestCatalogCoversData(t *testing.T) {
 			want("rare.second."+slug(n), n)
 		}
 	}
-	for _, u := range append(uniques, lastShroud) {
+	for _, u := range append(uniques, lastShroud, stolenCoal) {
 		want("unique."+slug(u.Name)+".name", u.Name)
 		want("unique."+slug(u.Name)+".flavor", u.Flavor)
 	}

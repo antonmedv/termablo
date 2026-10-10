@@ -141,6 +141,16 @@
       zh: ["活葬统领"]
     }
     {
+      en: "Cinder Prior"
+      note: "Osric, the lamplighter who founded the Ember Cult, remade by the fire: the boss at the bottom of the Kindling, who throws fire and sings. \"Prior\" is a monastic title, the head of a priory; \"cinder\" the ash and embers of a fire. Male. A boss's name."
+      de: ["Aschenprior", "Aschenpriors"]
+      fr: ["Prieur des Cendres"]
+      it: ["Priore delle Ceneri", "Priore"]
+      ru: ["Пепельный Приор", "Пепельного Приора", "Пепельному Приору", "Пепельным Приором", "Пепельном Приоре"]
+      ar: ["كاهن الرماد"]
+      zh: ["灰烬院长"]
+    }
+    {
       en: "Gravewarden"
       note: "Edran's first guard, buried alive in their barrow, still standing watch: shielded, armored undead. A monster; plural Gravewardens. The barrow is named after them."
       de: ["Grabwächter"]
@@ -149,6 +159,16 @@
       ru: ["Могильный страж", "Могильного стража", "Могильные стражи", "Могильных Стражей", "Могильных стражей"]
       ar: ["حارس القبور", "حراس القبور", "حرّاس القبور"]
       zh: ["守墓卫士"]
+    }
+    {
+      en: "Ashen Penitent"
+      note: "An Ember Cultist who stayed in the fire longer: burned to the bone, still walking, warm to stand near. \"Penitent\" as in one doing penance. A monster; plural Ashen Penitents."
+      de: ["Aschenbüßer", "Aschenbüßers"]
+      fr: ["Pénitent de cendre", "Pénitents de cendre"]
+      it: ["Penitente di cenere", "Penitenti di cenere"]
+      ru: ["Пепельный кающийся", "Пепельного кающегося", "Пепельному кающемуся", "Пепельным кающимся", "Пепельные кающиеся", "Пепельных кающихся"]
+      ar: ["التائب الرمادي", "التائبون الرماديون", "التائبين الرماديين"]
+      zh: ["灰烬苦修者"]
     }
     {
       en: "Drowned Oracle"
@@ -221,6 +241,16 @@
       zh: "奥尔德斯修士"
     }
     {
+      en: "Osric"
+      note: "The lamplighter who founded the Ember Cult and led it down; now the Cinder Prior. A name."
+      de: "Osric"
+      fr: "Osric"
+      it: "Osric"
+      ru: ["Осрик", "Осрика", "Осрику", "Осриком", "Осрике"]
+      ar: "أوسريك"
+      zh: "奥斯里克"
+    }
+    {
       en: "Pell"
       note: "A boy who followed the marsh lights and came back cold; the Oracle speaks through him, a little. A child's voice: short words, no fear. Lines in parentheses are what he does. A name."
       de: "Pell"
@@ -289,6 +319,36 @@
       ru: ["Погребённый Дозор"]
       ar: ["الحرس المدفون"]
       zh: ["活葬之哨"]
+    }
+    {
+      en: "Cinder Sanctum"
+      note: "The Ember Cult's chapel, a side dungeon two floors under Emberhold's graveyard, and the name of its upper floor: scorched pews, every brazier lit again. \"Cinder\" as in the ash and embers of a fire."
+      de: ["Aschenheiligtum", "Aschenheiligtums"]
+      fr: ["Sanctuaire des Cendres", "Sanctuaire"]
+      it: ["Santuario delle Ceneri", "Santuario"]
+      ru: ["Пепельное Святилище", "Пепельного Святилища", "Пепельному Святилищу", "Пепельном Святилище", "Святилище"]
+      ar: ["محراب الرماد"]
+      zh: ["灰烬圣所"]
+    }
+    {
+      en: "Kindling"
+      note: "The Sanctum's lower floor: the Cult's digging toward the forge from below, earth walls and seeping fire, where the Cinder Prior waits. Kindling is what a fire is started with, and the lighting of it; keep both senses if you can, the first if not."
+      de: ["Zunder", "Zunders"]
+      fr: ["Amorce"]
+      it: ["Esca"]
+      ru: ["Растопка", "Растопки", "Растопке", "Растопку", "Растопкой"]
+      ar: ["الإشعال"]
+      zh: ["引火处"]
+    }
+    {
+      en: "Stolen Coal"
+      note: "The coal the Ember Cult took from Hadrik's forge thirty years ago, set in an iron cage on a chain: a unique amulet, \"The Stolen Coal\" in the game, and what Hadrik's quest brings back. A single coal out of the Ember, so a different word from the Ember where the language has one."
+      de: ["Gestohlene Kohle", "Gestohlenen Kohle", "gestohlene Kohle", "gestohlenen Kohle"]
+      fr: ["Charbon Volé", "Charbon volé"]
+      it: ["Carbone Rubato", "Carbone rubato"]
+      ru: ["Украденный Уголёк", "Украденного Уголька", "Украденному Угольку", "Украденным Угольком", "Украденном Угольке"]
+      ar: ["الفحمة المسروقة"]
+      zh: ["失窃之炭"]
     }
     {
       en: "Sunken Grotto"

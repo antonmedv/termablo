@@ -24,10 +24,11 @@ Add `-seed 42` and the world is the same every time. Share the seed, race a frie
 
 ## Latest update
 
-**2026-10-10:** Two new faces in Emberhold: Brother Aldous, the Ember
-Cult's last, and Pell, the boy who came back from the marsh. The town
-argues over the Oracle, and each part of the story has someone who
-tells it best.
+**2026-10-10:** The Cinder Sanctum, the Ember Cult's chapel under the
+town's own graveyard, with two new side quests: bring Hadrik back the
+coal the Cult stole from his forge, and put out the Cinder Prior for
+Brother Aldous. Also the Gravewardens' Barrow, and two new faces in
+Emberhold.
 
 See [`UPDATES.md`](UPDATES.md) for more.
 

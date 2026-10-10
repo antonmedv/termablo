@@ -85,6 +85,8 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 | 79 | 2026-10-08T13:50 | keep | 025a61b+ | 896af5f7dd | 1–48 | 15.16 (14.0–17.7) | +0.69 (-0.58…+3.42) | 92%/98% | 2%/8% | 10 | 0.06 | 13.19 | maps: Ashen Fields 150x90→180x108, Blackmarsh 130x80→156x96; packs, fires, ruins, stones scaled by area (fields 20→29 packs, marsh 24→35) | user: bigger surface areas; score noise on seeds 1–48 (+0.69) and 1001–1048 (+1.47), more kills/turns, fighter gold surplus up a little |
 | 80 | 2026-10-10T14:17 | baseline | 3157636 | 94fde9d5fd | 1–96 | 14.47 (13.7–15.3) | +1.28 (-0.63…+2.45) | 89%/97% | 2%/9% | 10 | 0.08 | 13.19 | baseline at 3157636: the Gravewardens' Barrow in the game, off the bot's route | base for routing the bot along the quest line |
 | 81 | 2026-10-10T14:17 | keep | 3157636+ | fda3c76492 | 1–96 | 13.38 (12.1–14.8) | -1.10 (-2.32…+0.16) | 89%/97% | 19%/23% | 10 | 0.08 | 13.19 | bot: walks the quest line (route.go) instead of its own chain: the Buried Captain after the Bone King, then the marsh | one route for the bot and docs/quests.md; the barrow lifts clvl at grotto1 13->17 and the Oracle 2%->19% (fighter), 9%->23% (caster); gold piles higher (5.8->7.8) |
+| 82 | 2026-10-10T15:02 | keep | 78cf2c9+ | 7beef44af5 | 1–96 | 13.35 (12.1–14.7) | -0.02 (-0.37…+0.39) | 89%/97% | 19%/20% | 11 | 0.08 | 13.19 | content: the Cinder Sanctum (sanctum1 lvl 10, sanctum2 lvl 11) under the town graveyard, after the Oracle on the quest line: Hadrik's coal (a bring-back quest) and Aldous's Cinder Prior | score 13.38 -> 13.35, noise; the post-Oracle runs that died on abyss1 (18/21) now die in the Sanctum (17/19), the same wall moved; one fighter stuck in town bumping Hadrik, who stood on his gift (seed 52) |
+| 83 | 2026-10-10T15:02 | keep | 78cf2c9+ | 4ec19fd57f | 1–96 | 13.35 (12.1–14.7) | -0.02 (-0.37…+0.39) | 89%/97% | 19%/20% | 11 | 0.08 | 13.19 | bot: waits a turn when a townsperson stands on its next step instead of walking into them (a talk spends no turn, so they never wandered off) | score 13.35, noise vs #80; stuck 1 -> 0; 14/10 runs take the coal and reach the Kindling, none kill the Prior: the Kindling is the wall abyss1 was |
 
 ## Rules per entry
 
@@ -169,3 +171,5 @@ One row per decided evaluation. `make eval` writes the run, `balance log` record
 - #79 `102-bigger-maps.json`: defaults
 - #80 `105-route-base.json`: defaults
 - #81 `106-route.json`: defaults
+- #82 `107-sanctum.json`: defaults
+- #83 `108-sanctum-npcwait.json`: defaults

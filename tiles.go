@@ -77,6 +77,9 @@ var (
 	lsLava     = &LightSpec{C(1, .28, .04), 5.5, 1.0, .12, .1}
 	lsAltar    = &LightSpec{C(.8, .25, 1), 5, .9, .05, .25}
 	lsFountain = &LightSpec{C(.35, .7, .9), 3, .45, .02, .15}
+	// a rare or unique item on the floor glows
+	lsRareDrop   = &LightSpec{C(1, .95, .45), 2.4, .7, .05, .3}
+	lsUniqueDrop = &LightSpec{C(1, .7, .3), 3.4, 1, .05, .35}
 )
 
 var tdefs = [TTileCount]TileDef{

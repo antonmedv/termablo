@@ -71,6 +71,11 @@
     oracle_lights: "Luci fredde si raccolgono attorno alla Sibilla."
     oracle_greets: "La Sibilla Annegata: «Ho visto la tua fine, piccola fiamma. È bagnata e fredda.»"
     oracle_dead: "Il canto della Sibilla si spegne. Più in basso ancora, qualcosa brucia... Torna da Voss."
+    prior_greets: "Il Priore delle Ceneri: «Un'altra lanterna giù per la scala. Zitto, ora. Ti spegnerò con dolcezza.»"
+    prior_kindles: "Il Priore delle Ceneri ravviva i bracieri. Diavoletti di fuoco escono dalle braci."
+    prior_burns: "Il fuoco prende il Priore delle Ceneri. Brucia, e canta."
+    prior_dead: "Il Priore delle Ceneri si sbriciola in cenere, cantando ancora. Lo scavo si ferma. Dillo a Fratello Aldous."
+    coal_taken: "Il carbone divampa nella tua mano. Ogni occhio del Santuario si volge verso di lui."
     wanderer_greets: "L'Ultimo Viandante: «Un altro straniero. Mandano sempre uno straniero.»"
     wanderer_portal: "L'Ultimo Viandante esce dal portale, che si chiude alle sue spalle."
     wanderer_follows: "L'Ultimo Viandante ti segue."
@@ -88,6 +93,14 @@
     quest_reward: {
         one: "{who} ti dà {n} moneta d'oro e {item}."
         other: "{who} ti dà {n} monete d'oro e {item}."
+      }
+    quest_take: {
+        m: "{who} si riprende il {item}."
+        f: "{who} si riprende la {item}."
+        mv: "{who} si riprende l'{item}."
+        fv: "{who} si riprende l'{item}."
+        mp: "{who} si riprende i {item}."
+        fp: "{who} si riprende le {item}."
       }
     quest_new: "Nuova missione: {name}."
     topic_new: "In città potresti chiedere di: {topic}."
@@ -141,7 +154,10 @@
       greet: "Acciaio contro il buio. Dai un'occhiata. La [forgia](forge) è calda; lo è sempre."
       greet_again: "Di nuovo qui. Cosa c'è da aggiustare?"
       greet_boneking: "Stamattina ho sentito le campane della cripta. Credevo di essere uscito di senno. Opera tua? Allora ti sei guadagnato l'acciaio buono."
-      greet_oracle: "L'ultimo [straniero](stranger) che ho armato per scendere nel profondo non è mai tornato a farsi riparare niente."
+      greet_oracle: "L'ultimo [straniero](stranger) che ho armato per il profondo non è mai tornato per le riparazioni. Tu sì. Bene.\nOra il pavimento è caldo, e ti dico perché. Trent'anni fa il [Culto](cult) ha preso un [carbone](coal) dalla mia forgia. Uno solo, l'unica notte che ho dormito. È ancora sotto il cimitero, nella loro cappella, e il fuoco di sotto lo sente. Riportalo a casa."
+      greet_coal: "La forgia brucia un po' più bianca da quando le hai riportato il suo carbone. Non dirlo a nessuno. Vorrebbero tutti venire a vedere."
+      desc_coal: "Hadrik sta più vicino al fuoco di prima. Ha una bruciatura fresca di traverso sul palmo, e ne sembra contento."
+      desc_coal_again: "Hadrik, il palmo bruciato rivolto al fuoco."
       greet_wanderer: "Quando lui è caduto, la forgia ha dato una vampata bianca, poi si è calmata. Quarant'anni, e non gliel'avevo mai visto fare. A questa incudine sei il benvenuto."
       greet_hurt: "Stai sanguinando sulla mia incudine. Prima Mirela. Poi l'acciaio."
       greet_broke: "Guardare è gratis. Il resto no."
@@ -158,6 +174,12 @@
       portals: "Cenere della forgia, piegata nella carta. Ogni scintilla conosce la strada per tornare al focolare, e così anche la cenere. Io la spazzo, Mirela la piega."
       aldous: "Aldous era uno di loro. Ora sta seduto tra le tombe e dice a chiunque si fermi che la [Brace](ember) è una ferita. Forse lo è. Meglio una ferita che una tomba. Non dirgli che ho detto forse."
       pell: "Il ragazzo vicino alla fontana. Una volta è venuto alla forgia a scaldarsi. È rimasto un'ora accanto al fuoco e non si è sgelato."
+      coal: "Un carbone dal ventre stesso della Brace, in una gabbia di ferro, a una catena. La gabbia l'ha fatta Osric. Era il lampionaio; sapeva da cosa si accendevano le lanterne.\nL'hanno appeso nella loro [cappella](sanctum) sotto le tombe, per far luce sulla via verso il basso. Brucia ancora laggiù. Trent'anni. Un carbone della Brace non si spegne.\nRiportamelo, e lo rimetterò dove deve stare."
+      coal_again: "Sotto il cimitero, nella cappella del Culto. Riportalo. E bada: laggiù ogni cosa lo sente."
+      coal_after: "Di nuovo nella forgia, dove deve stare. Lei se l'è ripreso come una madre si riprende un figlio. Non dire a Mirela che l'ho detto."
+      coal_reward: "Dammelo. Trent'anni in una gabbia sotto le tombe, e ancora abbastanza caldo da marchiare una mano.\nTorna nel fuoco, tu. Ecco. Prendi questo per la strada, e l'oro. La forgia ti è debitrice. E anch'io."
+      sanctum: "La cappella di Osric. L'ha scavata sotto le tombe perché nessuno chiedesse cosa pregavano laggiù. Non ci sono mai sceso. Alla forgia non piace che mi allontani."
+      prior: "Osric. Ha acceso ogni lanterna di questa città per vent'anni, e una notte ha spento la sua ed è venuto a bussare alla mia porta, con la sua banda dietro. Chiedi ad Aldous. Non sono in vena."
     }
     mirela: {
       desc: "Una bella donna di poco meno di quarant'anni, la figura piena stretta in un corpetto scuro, i capelli raccolti senza una ciocca fuori posto. Al collo le pende un cristallo pallido che ronza piano. Ti squadra come una maestra squadra un quaderno strappato."
@@ -184,6 +206,9 @@
       pell_oracle_again: "Ancora nemmeno una parola. Gli porto la minestra. Non la mangia, ma tiene in mano la scodella."
       pell_wanderer: "Stamattina ha parlato, tesoro! Ha chiesto del pane. Solo del pane. Ho pianto di nuovo."
       pell_wanderer_again: "È ancora freddo, ma mangia. È un inizio."
+      sanctum: "C'è una cappella sotto le tombe, tesoro, e il terreno sopra è caldo dalla morte della Sibilla. Un tempo ci posavo sopra il mio cristallo, e cantava al calore. Non più."
+      prior: "Per vent'anni Osric ha acceso la lampada davanti alla mia porta, ogni sera, e mi ha dato la buonanotte. Poi una sera non è venuto. Al crepuscolo lo cerco ancora, bambina mia. Non è sciocco?"
+      coal: "Il carbone di Hadrik. Non si è mai perdonato l'unica notte in cui ha dormito. Riportaglielo se puoi, tesoro, e forse si perdonerà."
     }
     voss: {
       desc: "Un uomo asciutto in una corazza ammaccata, una fascia nera legata a una manica. Sta in piedi come chi non si siede da anni."
@@ -224,6 +249,9 @@
       pell: "Il ragazzo è andato dietro alle luci della palude ed è tornato freddo. Quando lei non ci sarà più, si scalderà. È quello che dico a sua sorella."
       pell_oracle: "Il ragazzo non ha detto una parola da quando sei risalito. Dagli tempo. Il freddo ci mette un po' ad andarsene."
       pell_oracle_again: "Dai tempo al ragazzo."
+      sanctum: "Il buco del Culto sotto il mio cimitero. L'ho fatto riempire due volte. Due volte al mattino era di nuovo aperto. Aldous ci sta seduto sopra come una chioccia sull'uovo. Chiedi a lui."
+      prior: "Osric. Accendeva le lampade sotto la guardia di mio padre. A mio [padre](father) piaceva. Non dire ad Aldous che l'ho detto."
+      coal: "Chiedi a Hadrik. La forgia è sua, e anche la vergogna."
     }
     aldous: {
       desc: "Un uomo scarno con una tonaca da cultista. Metà di lui è bruciata fino a lucidarsi, l'occhio da quel lato bianco come latte. L'altra metà ti sorride."
@@ -233,13 +261,16 @@
       greet: "Un'altra delle lame di Voss. Siediti, se vuoi; alle tombe la compagnia non dispiace. Chiedimi del [Culto](cult). La città ti dirà cosa eravamo. Io ti dirò cosa abbiamo visto."
       greet_again: "Respiri ancora. Il fuoco non ha ancora deciso cosa fare di te."
       greet_boneking: "Così Edran si è coricato, finalmente. Gli hai fatto una gentilezza. Ti ringrazierebbe, se l'oscurità gli avesse lasciato una bocca."
-      greet_oracle: "Posa la mano a terra. Calda, vero? Era questo che lei tratteneva. Hai tolto il tappo, Viandante. Ora vediamo cosa sale."
-      greet_oracle_again: "Più caldo oggi. Più caldo ancora domani."
+      greet_oracle: "Metti la mano a terra. Calda, vero? È quello che lei tratteneva. Hai tolto il tappo, Viandante.\nE sotto questo cimitero c'è un uomo che aspetta esattamente questo da trent'anni. [Il Priore](prior). Osric. È stato lui a istruirmi. Scendi per la sua [cappella](sanctum) e spegnilo, prima che il fuoco salga a incontrarlo."
+      greet_oracle_again: "Più caldo, oggi. Sta scavando. Scendi a fermarlo, o non farlo; il fuoco arriva comunque."
+      greet_prior: "Stanotte ho dormito. La prima volta da quando sono risalito. La terra è ancora calda, ma non sta più in ascolto."
+      desc_prior: "Aldous siede con tutte e due le mani in grembo, per una volta. Il lato bruciato del volto è rivolto verso le lanterne."
+      desc_prior_again: "Aldous, le mani in grembo, che guarda le lanterne."
       greet_wanderer: "Era ciò che il fuoco vuole che ognuno di noi diventi. Tu l'hai abbattuto. Ne farà un altro. È paziente. Anch'io."
       greet_hurt: "Sanguini? Va' da Mirela. Al fuoco piace quell'odore."
       greet_crown: "La corona di Edran. La senti già? La sentirai."
       barrow: "Gli unici uomini di senno alla corte di Edran. Dissero no al carbone, e lui li seppellì per questo. La città li chiama spergiuri. Io li chiamo i primi che hanno ascoltato."
-      cult: "Non eravamo traditori. Eravamo gli unici che ascoltavano. La [Brace](ember) non è mai stata nostra, così siamo scesi a restituirla. Il fuoco è stato lieto di vederci. Ha rifatto quelli che sono rimasti. Io sono fuggito. Tutta la mia eresia è questa."
+      cult: "Non eravamo traditori. Eravamo gli unici che ascoltavano. La [Brace](ember) non è mai stata nostra, così siamo scesi a restituirla. Il fuoco è stato lieto di vederci. Ha rifatto quelli che sono rimasti. [Il Priore](prior) è rimasto. Io sono fuggito. Tutta la mia eresia è questa."
       ember: "La città dice che Edran l'ha portata su. L'ha tagliata via. L'oscurità non ha fame, Viandante. È una ferita che cerca di chiudersi, ed Emberhold è la scheggia. Chiedi a Hadrik perché non dorme mai."
       edran: "Un ladro con la corona. La sua stessa [Sibilla](oracle) lo supplicò di rimetterla al suo posto. Lui la tenne, e l'oscurità gli prese il volto come compenso."
       abyss: "Sono stato dove stai andando. Laggiù la roccia sanguina. È lì che Edran tagliò il carbone, e la ferita non si è mai chiusa. Quello da cui fu tagliato è laggiù, ed è sveglio."
@@ -250,6 +281,13 @@
       stranger_after: "Ecco cosa fa il fuoco di un uomo che scende fino in fondo a cercarlo. Speravo che ce l'avesse solo con me."
       pell: "Il ragazzo sente lei. Io sento l'altro. In due facciamo una brutta notte di sonno."
       aldous: "Fratello. Non resta nessun ordine di cui essere fratello. Tieniti pure il titolo, se vuoi; è tutto ciò che ho riportato su."
+      prior: "Osric era il lampionaio. Per vent'anni ha acceso ogni lanterna di Emberhold al fuoco di Hadrik, e una notte ha capito da cosa le stava accendendo. Ha spento la sua lanterna ed è venuto a cercare noi altri.\nCi ha guidati giù. Il fuoco ha rifatto lui per primo, e lui cantava mentre accadeva. È risalito col fuoco tra le mani, e da allora scava verso la forgia, dal basso.\nUccidilo. È quello che mi chiederebbe, se chiedesse ancora qualcosa a qualcuno."
+      prior_again: "Sotto le tombe, per la cappella, e giù. Sarà felice di vederti. È felice di vedere chiunque."
+      prior_after: "Osric è cenere. Ho acceso una candela per lui. Poi l'ho spenta. Lo avrebbe voluto così."
+      prior_reward: "Dunque. Il lampionaio è spento.\nNon ho niente di suo da darti. Ho questo, e l'oro che la città fa passare per me, perché nessun altro resterebbe seduto con me abbastanza a lungo da consegnartelo.\nAveva ragione sul fuoco, Viandante. Aveva torto solo su cosa fare."
+      sanctum: "La nostra cappella. L'abbiamo scavata sotto il cimitero, dove la terra era già aperta. I bracieri laggiù bruciano del [carbone](coal) che abbiamo preso; Hadrik lo rivorrà. Il fuoco lo vuole di più."
+      sanctum_after: "Vuota, adesso. Un buco sotto un cimitero con dentro qualche panca bruciata. È tutto quello che siamo mai stati."
+      coal: "L'abbiamo preso dalla forgia la notte in cui Hadrik ha dormito. Un solo carbone. Osric l'ha portato giù in una gabbia di ferro, cantando. A ogni passo, il buio si voltava a guardarlo. È così che conoscevamo la via."
     }
     pell: {
       desc: "Un ragazzino magro di nove o dieci anni. Ha i capelli bagnati benché non abbia piovuto, le labbra appena azzurre, e non trema."
@@ -268,6 +306,7 @@
       oracle: "Lei è fredda così noi non bruciamo. Mi ha chiesto di tenerne un po' per lei. Ho detto sì. Ora anch'io sono freddo."
       oracle_after: "(Pell scuote la testa. Di lei non vuole parlare.)"
       blackmarsh: "Le luci non chiamavano. Chiedevano. Quasi tutti dicono sì. Io ho detto sì."
+      sanctum: "La terra sotto le tombe è calda. L'acqua lì non ci va. A lei non piaceva guardare."
     }
     villager: {
       desc: "Un cittadino in un mantello grigio fuliggine, che continua a lanciare occhiate alla lanterna più vicina."
@@ -288,6 +327,12 @@
       oracle: "La Sibilla del re in persona. Gli disse di non prendere il carbone. Quando lui non volle ascoltarla, lei entrò nell'acqua sotto la [Palude Nera](blackmarsh) e non riemerse più."
       oracle_after: "Le luci della palude si sono spente. La gente dice che è finita. Mirela non dice niente."
       abyss: "Sotto la pozza della Sibilla la roccia brucia. Dicono che l'Abisso non abbia fondo. Il [Culto della Brace](cult) è andato da quella parte."
+      sanctum: "La cappella del Culto è sotto il cimitero, dicono. Il capitano l'ha fatta riempire. Non è rimasta riempita. [Fratello Aldous](aldous) ci sta seduto proprio sopra."
+      sanctum_after: "La terra sopra il cimitero è di nuovo fresca. Il capitano sta facendo riempire il buco. Di nuovo."
+      prior: "Osric il lampionaio ha fondato il [Culto della Brace](cult). Ha acceso ogni lampada della città per vent'anni, poi ha spento la sua ed è sceso. Chiedi a [Fratello Aldous](aldous); lui l'ha seguito."
+      prior_after: "Il lampionaio è cenere, finalmente, dicono. Aldous ha acceso una candela per lui in piazza. Poi l'ha spenta con due dita."
+      coal: "La forgia di Hadrik si è spenta una notte, trent'anni fa, per un'ora. Non ha mai detto cos'è successo. Chiediglielo. Con garbo."
+      coal_after: "La forgia brucia più bianca da quando sei risalito dalle tombe. Hadrik canticchia all'incudine. Nessuno l'aveva mai sentito canticchiare."
       cult: "Una generazione fa, certa gente decise che all'oscurità si doveva il suo carbone. Scesero a pagare. Il fuoco li rifece. Uno è tornato: [Fratello Aldous](aldous), vicino alle tombe. Non farlo cominciare."
       stranger: "Chiedi a Hadrik. Gli ha venduto la spada, e ha tenuto qualcosa di suo."
       aldous: "È tornato dall'Abisso l'inverno scorso, bruciato su un fianco. Si fa chiamare Fratello. Sta seduto nel cimitero e parla con le pietre."
@@ -311,6 +356,16 @@
       done: "Il canto della Sibilla è finito. Più in basso ancora, qualcosa brucia. Voss dovrebbe saperlo."
       rewarded: "Voss ti ha pagato, e ti ha avvertito: sotto la sua pozza la roccia brucia, e l'Abisso Ardente non ha fondo."
     }
+    coal: {
+      taken: "Hadrik vuole indietro il carbone che il Culto della Brace ha preso dalla sua forgia trent'anni fa. È appeso nella cappella del Culto, il Santuario delle Ceneri, sotto il cimitero stesso di Emberhold, e ogni cosa laggiù lo sente."
+      done: "Hai il Carbone Rubato. È caldo attraverso lo zaino, e tutto ciò che ti ha visto prenderlo è sveglio. Portalo a Hadrik."
+      rewarded: "Hadrik ha rimesso il carbone nella forgia e ti ha pagato per la strada. La forgia brucia un po' più bianca."
+    }
+    prior: {
+      taken: "Fratello Aldous vuole che il Priore delle Ceneri sia spento: Osric, il lampionaio che ha fondato il Culto della Brace e l'ha guidato giù. Il fuoco l'ha rifatto, e da allora scava verso la forgia dal basso. Aspetta nell'Esca, sotto la cappella del Culto, sotto il cimitero."
+      done: "Il Priore delle Ceneri è cenere. Lo scavo si è fermato. Aldous dovrebbe saperlo da te."
+      rewarded: "Aldous ti ha pagato quello che la città fa passare per lui, e ha detto che il Priore aveva ragione sul fuoco, e torto solo su cosa fare."
+    }
     wanderer: {
       taken: "Quando la Sibilla è caduta, qualcosa è risalito dall'Abisso. Ogni luce si spegne al suo passaggio, e ti somiglia: è lo straniero che Emberhold assoldò prima di te. Ferma l'Ultimo Viandante prima che raggiunga la forgia."
       done: "L'Ultimo Viandante è caduto. L'Oscurità ha lasciato andare il fuoco, e le lanterne di Emberhold ardono di nuovo."
@@ -331,6 +386,9 @@
     oracle: "Sibilla Annegata"
     abyss: "Abisso Ardente"
     cult: "Culto della Brace"
+    sanctum: "Santuario"
+    prior: "Priore"
+    coal: "Carbone Rubato"
     stranger: "Straniero"
     aldous: "Fratello Aldous"
     pell: "Pell"
@@ -348,10 +406,14 @@
     uncle: "Mio zio si è unito al [Culto della Brace](cult). Diceva che all'oscurità si doveva qualcosa. È sceso a pagare, ed è tornato l'inverno scorso, quel che ne resta. Ora si fa chiamare [Fratello Aldous](aldous)."
     shepherds: "I pastori non portano più le greggi nei campi a sud. Laggiù c'è un anello di terra, e di notte qualcosa, là dentro, chiama la [guardia](barrow)."
     holding: "Mirela dice che la [Sibilla](oracle) non dà la caccia a nessuno. Sta tenendo giù qualcosa."
+    lamplighter: "Osric il lampionaio ha acceso ogni lampada della città per vent'anni. Poi ha spento la sua ed è sceso col [Culto](cult). Adesso le lampade le accendono i ragazzini."
     bells: "Stamattina hanno suonato le campane della cripta. Nessuno tira quelle corde da trent'anni."
     face: "Dicono che un tempo il Re delle Ossa avesse il volto di [Re Edran](edran). O quel che il buio ne ha lasciato."
     lights: "Le luci fredde sopra la [Palude Nera](blackmarsh) si sono spente. Mio fratello ha dormito tutta la notte."
     wind: "Ora dai pozzi della palude sale un vento caldo. Sa di fucina. Di [Abisso](abyss), dice Mirela."
+    digging: "La terra sopra il cimitero è calda, di notte. Accostaci l'orecchio e qualcosa scava. Verso l'alto."
+    flare: "La forgia di Hadrik è divampata bianca la notte in cui sei risalito dalle tombe. L'ha vista tutta la piazza."
+    ash: "Il lampionaio è cenere, ormai, dicono. Aldous ha acceso una candela per lui in piazza, poi l'ha spenta con due dita."
     lanterns: "Da quando sei risalito, le lanterne ardono più ferme. Nessuno dice perché. Non serve."
   }
   area: {
@@ -362,6 +424,8 @@
     throne: "Trono del Re delle Ossa"
     barrow: "Tumulo dei Custodi {n}"
     buried_watch: "Guardia Sepolta"
+    sanctum: "Il Santuario delle Ceneri"
+    kindling: "L'Esca"
     grotto: "Grotta Sommersa {n}"
     oracle_pool: "Pozza della Sibilla"
     abyss: "Abisso Ardente {n}"
@@ -373,6 +437,7 @@
     marsh: "la Palude Nera"
     crypt: "la Cripta dei Caduti"
     barrow: "il Tumulo dei Custodi"
+    sanctum: "il Santuario delle Ceneri"
     grotto: "la Grotta Sommersa"
     abyss: "l'Abisso Ardente"
   }
@@ -382,6 +447,8 @@
     marsh: "La Palude Nera. Luci fredde vagano sull'acqua. Non seguirle."
     crypt: "{area}. Una tomba reale; l'aria sa di polvere."
     barrow: "{area}. Pareti di terra, e fosse scavate per seppellire uomini in piedi. Da qualche parte, più avanti, qualcuno monta ancora la guardia."
+    sanctum: "{area}. Panche bruciacchiate, e ogni braciere di nuovo acceso. Qualcuno ha tenuto in ordine la cappella."
+    kindling: "{area}. Le pareti sono di terra, e calde. Lo scavo scende, e in fondo qualcuno canta."
     grotto: "{area}. L'acqua fredda preme dall'alto; i cristalli ronzano."
     abyss: "{area}. La roccia stessa sanguina."
     hearth: "{area}. I bracieri si piegano lontano dal centro della sala."
@@ -544,6 +611,7 @@
           m: "{name} deve essere distrutto."
           f: "{name} deve essere distrutta."
         }
+      fetch: "{name} va riportato a {who}."
       return: "{who} ti aspetta per la ricompensa."
       over: "Completata."
       giver: "Affidata da {who}"
@@ -1158,6 +1226,10 @@
       name: { text: "Corazza della Stella Caduta", gender: "f" }
       flavor: "Forgiata da una stella caduta; ricorda il cielo."
     }
+    the_stolen_coal: {
+      name: { text: "Carbone Rubato", gender: "m" }
+      flavor: "Un carbone della Brace, incastonato nel ferro. Laggiù ogni cosa lo sente."
+    }
   }
   gamble: {
     weapon: { text: "Arma", gender: "fv" }
@@ -1189,8 +1261,10 @@
     imp: { text: "Diavoletto di fuoco", gender: "m" }
     hellspawn: { text: "Progenie infernale", gender: "f" }
     gravewarden: { text: "Custode delle tombe", gender: "m" }
+    penitent: { text: "Penitente di cenere", gender: "m" }
     boneking: { text: "Il Re delle Ossa", gender: "m" }
     buried: { text: "Il Capitano Sepolto", gender: "m" }
+    prior: { text: "Il Priore delle Ceneri", gender: "m" }
     oracle: { text: "La Sibilla Annegata", gender: "f" }
     wanderer: { text: "L'Ultimo Viandante", gender: "mv" }
     smith: { text: "Hadrik il Fabbro", gender: "m" }
@@ -1341,6 +1415,8 @@
         one: "{who} ti assesta un colpo: {n} danno."
         other: "{who} ti assesta un colpo: {n} danni."
       }
+    scalds: "{who} ti scotta: {n} danni."
+    burns: "{who} ti brucia: {n} danni."
     drowns: {
         one: "{who} ti trascina sott'acqua: {n} danno."
         other: "{who} ti trascina sott'acqua: {n} danni."

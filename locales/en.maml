@@ -76,6 +76,12 @@
     oracle_lights: "Cold lights gather around the Oracle."
     oracle_greets: "The Drowned Oracle: \"I have seen your ending, little flame. It is wet and cold.\""
     oracle_dead: "The Oracle's song ends. Deeper still, something burns... Return to Voss."
+    prior_greets: "The Cinder Prior: \"Another lantern come down the stair. Hush, now. I'll put you out gently.\""
+    prior_kindles: "The Cinder Prior kindles the braziers. Fire Imps climb out of the coals."
+    prior_burns: "The fire takes the Cinder Prior. He is burning, and he is singing."
+    prior_dead: "The Cinder Prior crumbles to ash, still singing. The digging stops. Tell Brother Aldous."
+    # The hero picks up the Stolen Coal in the Cinder Sanctum, and everything on the floor wakes
+    coal_taken: "The coal flares in your hand. Every eye in the Sanctum turns toward it."
     wanderer_greets: "The Last Wanderer: \"Another stranger. They always send a stranger.\""
     wanderer_portal: "The Last Wanderer steps out of the portal. It collapses behind him."
     wanderer_follows: "The Last Wanderer follows you."
@@ -94,9 +100,13 @@
     # townsperson as the subject.
     running: "{who} is running for their life."
     # A townsperson pays for a finished quest. {who}: their name ("Captain
-    # Voss"); {n}: gold; {item}: the unique they hand over. Only Voss pays
-    # for now; where a verb agrees with {who}, write it for a man
+    # Voss", "Hadrik the Smith", "Brother Aldous"); {n}: gold; {item}: the
+    # unique they hand over. The givers are all men; where a verb agrees
+    # with {who}, write it for a man
     quest_reward: "{who} gives you {n} gold and {item}."
+    # A townsperson takes back what their quest sent the hero for. {who}:
+    # their name ("Hadrik the Smith"); {item}: the unique ("The Stolen Coal")
+    quest_take: "{who} takes {item}."
     # Someone in town has asked the hero to kill a boss. {name}: the
     # boss's name ("Bone King"), as the quest list shows it
     quest_new: "New quest: {name}."
@@ -143,9 +153,9 @@
   # talk.<who>.greet is what a speaker says on meeting the hero, and
   # talk.<who>.<topic> what they say when asked. Speakers remember: a line
   # they have said before gives way to its <line>_again. What the town
-  # knows changes them too: <line>_boneking, _oracle and _wanderer are
-  # news, said once that boss is dead (and, for the first two, once its
-  # quest has been paid for). Only the newest news is told, after the
+  # knows changes them too: <line>_boneking, _barrow, _oracle, _coal,
+  # _prior and _wanderer are news, said once that quest is settled: its
+  # boss dead or its thing brought back, and its giver paid. Only the newest news is told, after the
   # plain line has been said once, and only once unless it has an
   # _again. Some lines give the hero a quest (quest.go). <topic>_after
   # is said for good once the topic's boss is dead.
@@ -177,7 +187,13 @@
       greet: "Steel for the dark. Take a look. The [forge](forge) is hot; it always is."
       greet_again: "Back. What needs mending?"
       greet_boneking: "Heard the crypt bells this morning. Thought I'd gone soft in the head. Your doing? Then you've earned the good steel."
-      greet_oracle: "Last [stranger](stranger) I armed for the deep never came back for repairs."
+      # news after the Oracle; this line gives the hero the coal quest
+      greet_oracle: """
+Last [stranger](stranger) I armed for the deep never came back for repairs. You did. Good.
+Now the floor's warm, and I'll tell you why. Thirty years back the [Cult](cult) took a [coal](coal) from my forge. One coal, the one night I slept. It's under the graveyard still, in their chapel, and the fire below can smell it. Bring it home."""
+      greet_coal: "The forge burns a shade whiter since you brought her coal home. Don't tell anyone. They'd want to come and look."
+      desc_coal: "Hadrik stands closer to the fire than he used to. There is a fresh burn across his palm, and he looks pleased about it."
+      desc_coal_again: "Hadrik, the burn on his palm turned toward the fire."
       greet_wanderer: "The forge flared white when he fell, then settled. Forty years, never seen her do that. You're welcome at this anvil."
       greet_hurt: "You're bleeding on my anvil. Mirela first. Steel after."
       greet_broke: "Looking's free. The rest isn't."
@@ -194,6 +210,18 @@
       portals: "Forge ash, folded in paper. Every spark knows the way home to the hearth, so the ash does too. I sweep it, Mirela folds it."
       aldous: "Aldous was one of them. Now he sits with the graves and tells anyone who stops that the [Ember](ember) is a wound. Maybe it is. A wound's better than a grave. Don't tell him I said maybe."
       pell: "The boy by the fountain. Came to the forge once to get warm. Stood by the fire an hour and didn't thaw."
+      # this line gives the hero the coal quest
+      coal: """
+A coal out of the Ember's own belly, in an iron cage, on a chain. Osric made the cage. He was the lamplighter; he knew what the lanterns were lit from.
+They hung it in their [chapel](sanctum) under the graves, to light the way down. It's burning there yet. Thirty years. A coal of the Ember doesn't go out.
+Bring it back to me, and I'll put it where it belongs."""
+      coal_again: "Under the graveyard, in the Cult's chapel. Bring it back. And mind: everything down there can smell it."
+      coal_after: "Back in the forge, where it belongs. She took it like a mother takes a child. Don't tell Mirela I said that."
+      coal_reward: """
+Give it here. Thirty years in a cage under the graves and still hot enough to brand a hand.
+Back in the fire with you. There. Take this for the walk, and the gold. The forge owes you. So do I."""
+      sanctum: "Osric's chapel. He dug it under the graves so nobody would ask what they were praying to down there. I've never been. The forge doesn't like me to leave."
+      prior: "Osric. Lit every lantern in this town for twenty years, and one night he put his own out and knocked on my door with his crew behind him. Ask Aldous. I'm not in the mood."
     }
     # Mirela, in her late thirties, is a schoolmistress with a healer's
     # hands: firm, never soft, and worried for the hero all the same.
@@ -229,6 +257,9 @@ Voss calls it ending her. I call it opening a door. Go down if you must, but lis
       pell_oracle_again: "Still not a word. I bring him soup. He doesn't eat it, but he holds the bowl."
       pell_wanderer: "He talked this morning, dear! He asked for bread. Just bread. I cried again."
       pell_wanderer_again: "He's cold, but he's eating. That's a start."
+      sanctum: "There's a chapel under the graves, dear, and the ground over it has been warm since the Oracle. I used to set my crystal on it and it would sing at the heat. Not anymore."
+      prior: "Osric lit the lamp outside my door every evening for twenty years, and said goodnight. Then one evening he didn't. I still look for him at dusk, child. Isn't that foolish."
+      coal: "Hadrik's coal. He has never forgiven himself the one night he slept. Bring it back if you can, dear, and he might."
     }
     # Captain Voss is earnest and clipped. He believes the town's story.
     voss: {
@@ -292,6 +323,9 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
       pell: "The boy went after the marsh lights and came back cold. When she's gone, he'll warm up. That's what I tell his sister."
       pell_oracle: "The boy hasn't said a word since you came up. Give him time. The cold takes a while to leave."
       pell_oracle_again: "Give the boy time."
+      sanctum: "The Cult's hole under my graveyard. I had it filled in twice. Twice it was open again by morning. Aldous sits on it like a hen on an egg. Ask him."
+      prior: "Osric. He lit the lamps on my father's watch. My [father](father) liked him. Don't tell Aldous I said so."
+      coal: "Ask Hadrik. The forge is his, and so is the shame of it."
     }
     # Brother Aldous was of the Ember Cult, went down to the Abyss with
     # them, and alone came back, burned. Bitter, wry, unafraid. He knows
@@ -304,13 +338,19 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
       greet: "Another of Voss's blades. Sit, if you like; the graves don't mind company. Ask me about the [Cult](cult). The town will tell you what we were. I'll tell you what we saw."
       greet_again: "Still breathing. The fire hasn't made up its mind about you."
       greet_boneking: "So Edran's lying down at last. You did him a kindness. He'd thank you, if the dark had left him a mouth."
-      greet_oracle: "Put your hand on the ground. Warm, isn't it? That's what she was holding. You've pulled out the stopper, Wanderer. Now we see what comes up."
-      greet_oracle_again: "Warmer today. Warmer still tomorrow."
+      # news after the Oracle; this line gives the hero the Prior quest
+      greet_oracle: """
+Put your hand on the ground. Warm, isn't it? That's what she was holding. You've pulled out the stopper, Wanderer.
+And there's a man under this graveyard who has waited thirty years for exactly that. [The Prior](prior). Osric. He taught me. Go down through his [chapel](sanctum) and put him out, before the fire comes up to meet him."""
+      greet_oracle_again: "Warmer today. He's digging. Go down and stop him, or don't; the fire comes either way."
+      greet_prior: "I slept last night. First time since I came up. The ground's still warm, but it isn't listening anymore."
+      desc_prior: "Aldous sits with both hands in his lap, for once. The burned side of his face is turned toward the lanterns."
+      desc_prior_again: "Aldous, hands in his lap, watching the lanterns."
       greet_wanderer: "He was what the fire wants every one of us to become. You put him down. It will make another. It's patient. So am I."
       greet_hurt: "Bleeding? Go and see Mirela. The fire likes the smell of it."
       greet_crown: "Edran's crown. Can you hear it yet? You will."
       barrow: "The only men at Edran's court with any sense. They said no to the coal, and he buried them for it. The town calls them oathbreakers. I call them the first ones who listened."
-      cult: "We weren't traitors. We were the only ones who listened. The [Ember](ember) was never ours, so we went down to give it back. The fire was glad to see us. It remade the ones who stayed. I ran. That's the whole of my heresy."
+      cult: "We weren't traitors. We were the only ones who listened. The [Ember](ember) was never ours, so we went down to give it back. The fire was glad to see us. It remade the ones who stayed. [The Prior](prior) stayed. I ran. That's the whole of my heresy."
       ember: "The town says Edran carried it up. He cut it out. The dark isn't hungry, Wanderer. It's a wound trying to close, and Emberhold is the splinter. Ask Hadrik why he never sleeps."
       edran: "A thief with a crown. His own [Oracle](oracle) begged him to put it back. He kept it, and the dark took his face for the fee."
       abyss: "I've been where you're going. The rock bleeds there. It's where Edran cut the coal, and it never closed. Whatever it was cut from is down there, and it's awake."
@@ -321,6 +361,20 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
       stranger_after: "So that's what the fire makes of a man who walks all the way down to it. I'd hoped it was only angry with me."
       pell: "The boy hears her. I hear the other one. Between us we make one bad night's sleep."
       aldous: "Brother. There's no order left to be a brother of. Keep the title if you like; it's all I brought back."
+      # this line gives the hero the Prior quest
+      prior: """
+Osric was the lamplighter. Twenty years he lit every lantern in Emberhold from Hadrik's fire, and one night he understood what he had been lighting them from. He put his own lantern out and came looking for the rest of us.
+He led us down. The fire remade him first, and he sang while it did. He came back up with it in his hands, and he has been digging toward the forge ever since, from below.
+Kill him. It's what he'd ask of me, if he still asked anyone for anything."""
+      prior_again: "Under the graves, through the chapel, and down. He'll be glad to see you. He's glad to see everyone."
+      prior_after: "Osric is ash. I lit a candle for him. Then I put it out. He'd have wanted that."
+      prior_reward: """
+So. The lamplighter's out.
+I've nothing of his to give you. I've this, and the gold the town sends through me, because nobody else would sit with me long enough to hand it over.
+He was right about the fire, Wanderer. He was only wrong about what to do."""
+      sanctum: "Our chapel. We dug it under the graveyard, where the ground was already open. The braziers down there burn from the [coal](coal) we took; Hadrik will want it back. The fire wants it more."
+      sanctum_after: "Empty now. A hole under a graveyard with some burned pews in it. That's all we ever were."
+      coal: "We took it from the forge the night Hadrik slept. One coal. Osric carried it down in an iron cage, singing. Every step we took, the dark turned to look at it. That's how we knew the way."
     }
     # Pell followed the marsh lights and came back cold: the Oracle speaks
     # through him, a little. A child, few words, no fear. When she dies he
@@ -343,6 +397,7 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
       oracle: "She's cold so we don't burn. She asked me to hold a little of it for her. I said yes. Now I'm cold too."
       oracle_after: "(Pell shakes his head. He won't speak of her.)"
       blackmarsh: "The lights didn't call. They asked. Most people say yes. I said yes."
+      sanctum: "The ground under the graves is warm. The water doesn't go there. She didn't like to look."
     }
     # Villagers only describe; what they say is a rumor.
     villager: {
@@ -365,6 +420,12 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
       oracle: "The king's own Oracle. She told him not to take the coal. When he wouldn't listen she walked into the water under [Blackmarsh](blackmarsh) and never came up."
       oracle_after: "The marsh lights have gone out. People say it's over. Mirela doesn't say anything."
       abyss: "Under the Oracle's pool the rock burns. They say the Abyss has no floor. The [Ember Cult](cult) went that way."
+      sanctum: "The Cult's chapel is under the graveyard, they say. The captain had it filled in. It didn't stay filled. [Brother Aldous](aldous) sits right on top of it."
+      sanctum_after: "The ground over the graveyard is cool again. The captain is filling the hole in. Again."
+      prior: "Osric the lamplighter founded the [Ember Cult](cult). Lit every lamp in town for twenty years, then put his own out and went below. Ask [Brother Aldous](aldous); he followed him."
+      prior_after: "The lamplighter is ash at last, they say. Aldous lit a candle for him in the square. Then he pinched it out."
+      coal: "Hadrik's forge went dark one night, thirty years back, for an hour. He has never said what happened. Ask him. Gently."
+      coal_after: "The forge burns whiter since you came up from the graves. Hadrik hums at the anvil. Nobody has ever heard him hum."
       cult: "A generation ago some folk decided the dark was owed its coal. They went down to pay. The fire remade them. One came back: [Brother Aldous](aldous), by the graves. Don't get him started."
       stranger: "Ask Hadrik. He sold him his sword, and kept something of his."
       aldous: "Came back from the Abyss last winter, burned down one side. Calls himself Brother. Sits in the graveyard and talks to the stones."
@@ -374,8 +435,8 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
   }
 
   # The quest journal's entries, journal.<quest>.<stage>: written when
-  # the quest is given (taken), when its boss dies (done), and when its
-  # giver pays (rewarded), and shown in that order. Second person, the
+  # the quest is given (taken), when its boss dies or its thing is picked
+  # up (done), and when its giver pays (rewarded), and shown in that order. Second person, the
   # voice of the log; a stage may come without the one before it: a boss
   # killed before anyone asked is still paid for.
   journal: {
@@ -393,6 +454,16 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
       taken: "Voss wants the Drowned Oracle ended. She walked into the water under Blackmarsh, north of the fields, and calls the lost down after her. Follow the cold lights down into the Sunken Grotto."
       done: "The Oracle's song has ended. Deeper still, something burns. Voss should hear of it."
       rewarded: "Voss paid, and warned you: beneath her pool the rock burns, and the Burning Abyss has no floor."
+    }
+    coal: {
+      taken: "Hadrik wants the coal the Ember Cult took from his forge thirty years ago brought back. It hangs in the Cult's chapel, the Cinder Sanctum, under Emberhold's own graveyard, and everything below can smell it."
+      done: "You have the Stolen Coal. It is warm through the pack, and everything that saw you take it is awake. Bring it to Hadrik."
+      rewarded: "Hadrik set the coal back in the forge and paid you for the walk. The forge burns a shade whiter."
+    }
+    prior: {
+      taken: "Brother Aldous wants the Cinder Prior put out: Osric, the lamplighter who founded the Ember Cult and led it down. The fire remade him, and he has been digging toward the forge from below ever since. He waits in the Kindling, under the Cult's chapel beneath the graveyard."
+      done: "The Cinder Prior is ash. The digging has stopped. Aldous should hear it from you."
+      rewarded: "Aldous paid you what the town sends through him, and said the Prior was right about the fire, and only wrong about what to do."
     }
     wanderer: {
       taken: "Something came up out of the Abyss when the Oracle fell. Every light goes out near it, and it looks like you: the stranger Emberhold hired before you. Stop the Last Wanderer before he reaches the forge."
@@ -418,6 +489,9 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     oracle: "Drowned Oracle"
     abyss: "Burning Abyss"
     cult: "Ember Cult"
+    sanctum: "Cinder Sanctum"
+    prior: "Cinder Prior"
+    coal: "Stolen Coal"
     stranger: "Stranger"
     aldous: "Brother Aldous"
     pell: "Pell"
@@ -440,12 +514,18 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     uncle: "My uncle joined the [Ember Cult](cult). Said the dark was owed. He went down to pay it, and came back last winter, what's left of him. [Brother Aldous](aldous), he calls himself now."
     shepherds: "Shepherds won't graze the south fields anymore. There's a ring of earth out there, and at night something in it calls the [watch](barrow)."
     holding: "Mirela says the [Oracle](oracle) isn't hunting anyone. She's holding something down."
+    lamplighter: "Osric the lamplighter lit every lamp in town for twenty years. Then he put his own out and went down with the [Cult](cult). Boys light the lamps now."
     # once the Bone King is dead
     bells: "The crypt bells rang this morning. Nobody has pulled those ropes in thirty years."
     face: "They say the Bone King wore [King Edran's](edran) face, once. Or what the dark left of it."
     # once the Oracle is dead
     lights: "The cold lights over [Blackmarsh](blackmarsh) have gone out. My brother slept the whole night through."
     wind: "Hot wind comes up the marsh wells now. Smells like a smithy. Like [the Abyss](abyss), Mirela says."
+    digging: "The ground over the graveyard is warm at night. Put your ear to it and something's digging. Upward."
+    # once the Stolen Coal is back in the forge
+    flare: "Hadrik's forge flared white the night you came up from the graves. The whole square saw it."
+    # once the Cinder Prior is dead
+    ash: "The lamplighter's ash now, they say. Aldous lit a candle for him in the square, then pinched it out."
     # once the Last Wanderer is dead
     lanterns: "The lanterns burn steadier since you came up. Nobody says why. Nobody needs to."
   }
@@ -463,6 +543,8 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     # max: 26 n=1
     barrow: "Gravewardens' Barrow {n}"
     buried_watch: "The Buried Watch"
+    sanctum: "The Cinder Sanctum"
+    kindling: "The Kindling"
     grotto: "Sunken Grotto {n}"
     oracle_pool: "The Oracle's Pool"
     abyss: "The Burning Abyss {n}"
@@ -476,6 +558,7 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     marsh: "Blackmarsh"
     crypt: "the Crypt of the Fallen"
     barrow: "the Gravewardens' Barrow"
+    sanctum: "the Cinder Sanctum"
     grotto: "the Sunken Grotto"
     abyss: "the Burning Abyss"
   }
@@ -487,6 +570,8 @@ Mirela will tell you she's holding something down. Mirela listens to a rock. I b
     marsh: "Blackmarsh. Cold lights drift over the water. Do not follow them."
     crypt: "{area}. A royal tomb; the air tastes of dust."
     barrow: "{area}. Earth walls, and graves dug standing up. Somewhere ahead, someone is still on watch."
+    sanctum: "{area}. Scorched pews, and every brazier lit again. Someone has been keeping the chapel."
+    kindling: "{area}. The walls are earth, and warm. The digging goes down, and at the bottom of it someone is singing."
     grotto: "{area}. Cold water presses down; the crystals hum."
     abyss: "{area}. The rock itself is bleeding."
     hearth: "{area}. The braziers lean away from the middle of the room."
@@ -661,6 +746,9 @@ Could be anything. No refunds."""
       # what to do now. {name}: the boss as its name reads ("The Bone
       # King"), a noun
       goal: "{name} must be destroyed."
+      # a thing to bring back. {name}: the thing ("The Stolen Coal"), a noun;
+      # {who}: who wants it ("Hadrik the Smith"), a noun
+      fetch: "{name} must be brought back to {who}."
       # the boss is dead and the giver yet to pay. {who}: who gave the
       # quest ("Captain Voss"), a noun
       return: "Return to {who} for your reward."
@@ -1159,6 +1247,12 @@ Could be anything. No refunds."""
       name: "Starfall Plate"
       flavor: "Forged from a fallen star; it remembers the sky."
     }
+    # the coal the Ember Cult took from the forge, set in an iron cage on a
+    # chain: what Hadrik's quest brings back
+    the_stolen_coal: {
+      name: "The Stolen Coal"
+      flavor: "A coal of the Ember, set in iron. Everything below can smell it."
+    }
   }
 
   # What an unidentified item from Hadrik is called by its slot: see item.unidentified.
@@ -1195,8 +1289,10 @@ Could be anything. No refunds."""
     imp: "Fire Imp"
     hellspawn: "Hellspawn"
     gravewarden: "Gravewarden"
+    penitent: { text: "Ashen Penitent", gender: "an" }
     boneking: "The Bone King"
     buried: "The Buried Captain"
+    prior: "The Cinder Prior"
     oracle: "The Drowned Oracle"
     wanderer: "The Last Wanderer"
     smith: "Hadrik the Smith"
@@ -1272,6 +1368,8 @@ Could be anything. No refunds."""
     smites: "{who} smites you for {n}."
     bashes: "{who} bashes you for {n}."
     strikes: "{who} strikes you for {n}."
+    scalds: "{who} scalds you for {n}."
+    burns: "{who} burns you for {n}."
     drowns: "{who} drowns you for {n}."
     cuts: "{who} cuts you for {n}."
     hits: "{who} hits you for {n}."

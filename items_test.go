@@ -157,7 +157,7 @@ func TestUniquesBudget(t *testing.T) {
 	r := DefaultRules()
 	r.BudgetMul = 1
 	over := 0
-	all := slices.Concat(uniques, []UniqueDef{lastShroud})
+	all := slices.Concat(uniques, []UniqueDef{lastShroud, stolenCoal})
 	for _, u := range all {
 		it := &Item{Kind: IKEquip, Base: baseByName(u.Base), Aff: u.Aff}
 		b := budget(u.Lvl, RUnique, r)

@@ -133,6 +133,17 @@ there, buried alive and standing, in rows. No braziers: the only fire is
 the watch's own, in the last room, where their captain stands. Earth,
 not stone; graves dug upright.
 
+**The Cinder Sanctum.** The Ember Cult's chapel, two floors under
+Emberhold's own graveyard, where Aldous sits. The Cult dug it where the
+ground was already open, so that nobody would ask what they prayed to
+down there. The upper floor is the chapel: scorched pews, carpets down
+the aisles, and every brazier lit again from the coal they took. In its
+reliquary hangs the Stolen Coal. Below it is the Kindling: the Cult's
+digging toward the forge from beneath, earth walls warm to the touch,
+the fire seeping up through the floor, and at the bottom the Cinder
+Prior, singing. Voss had the hole filled in twice. It did not stay
+filled.
+
 **Blackmarsh.** North of the fields, where the Oracle walked into the
 water. The standing stones with crystals are hers: she raised them as
 she went, the way Edran raised altars, and they are the top of the dam.
@@ -196,7 +207,7 @@ again, cold for the first time as himself.
 **Who tells what.** Each part of the story has an owner who tells it
 best, and the rest point the hero to them: Hadrik the forge and the
 Ember, Voss the crypt, his father and the hire, Mirela the marsh and
-the Oracle, Aldous the Cult and the Abyss. The villagers tell the legend
+the Oracle, Aldous the Cult, the Prior and the Abyss, Hadrik the coal. The villagers tell the legend
 as children learn it. The town's quarrel is over the Oracle: Voss sends
 the hero to end her, Mirela begs them to listen first, Aldous calls her
 the only one who ever paid. After her death Voss sleeps, Mirela is
@@ -250,10 +261,17 @@ to be attached to. They are not evil. They are a dam made of people.
 
 **The Ember Cult.** Emberhold's own. A generation ago a faction decided
 the Dark was owed its coal and the town's suffering was the debt
-collecting. They went down to carry the Ember's fire home, got as far
+collecting. Their founder was Osric, the lamplighter, who lit every
+lantern in Emberhold from Hadrik's forge for twenty years and one
+night understood what he had been lighting them from. He put his own
+lantern out and went looking for the rest of them. The night Hadrik
+slept, they took one coal from the forge, set it in an iron cage on a
+chain, and carried it down to light the way: everything in the Dark
+turned to look at it, and that is how they knew the way. They got as far
 as the Abyss, and the fire remade them. Ember Cultists cast fire; they
 are what a townsperson looks like after the Abyss agrees with them.
-Future hook: their founder is a name a villager could drop.
+Ashen Penitents are the ones who stayed longer: burned to the bone,
+still walking, warm to stand near. Osric stayed longest of all.
 
 **The Abyss-born.** Fire Imps and Hellspawn. The wound's own blood,
 climbing. Crystal Golems are not theirs: those are the Oracle's, and the
@@ -272,6 +290,17 @@ buried for it, and still stands watch, his lantern lit, over a king who
 is no longer there. Voss sends the hero to relieve him: "I'd want
 someone to do the same for me." Hurt, he calls his watch to stand to, and those near enough come.
 A side quest, not the story's spine; nothing opens when he falls.
+
+**The Cinder Prior.** Osric, the lamplighter, the Cult's founder and
+Aldous's teacher, remade first of them all; he sang while it was done.
+He came back up with the fire in his hands, to the chapel under the
+graveyard, and has been digging toward the forge from below ever since:
+a way for the fire that the Oracle's water does not cover. He throws
+fire, calls Fire Imps out of the braziers, and when hurt past half the
+fire takes him for good: faster, burning, still singing. He is glad to
+see everyone. Aldous sends the hero to put him out, and pays what the
+town sends through him. Aldous's verdict: right about the fire, wrong
+about what to do.
 
 **The Drowned Oracle.** The dam. Her name is not recorded; "Oracle" was
 her office. The Crown of the Drowned is hers, dripping. Killing her
@@ -315,6 +344,11 @@ in the game and should stay.
 - **Starfall Plate.** The one object in the game that came from above, not
   below. "Forged from a fallen star; it remembers the sky." Leave it as a
   mystery; it is the hook for a sky-side story if one is ever wanted.
+- **The Stolen Coal.** The coal the Cult took from the forge, in Osric's
+  iron cage, on a chain: an amulet, and a beacon. "A coal of the Ember,
+  set in iron. Everything below can smell it." Taking it up wakes the
+  Sanctum. Hadrik wants it back, and takes it back as he pays; the forge
+  burns a shade whiter after.
 
 ## Timeline
 
@@ -335,8 +369,11 @@ in the game and should stay.
    His last order: the guard who would not follow him down for the coal
    is buried alive outside his tomb, to keep it forever. The
    Gravewardens keep the crypt for a time, then stop.
-7. **The Schism.** A generation ago. The Ember Cult forms, goes down,
-   does not come back as itself.
+7. **The Schism.** A generation ago. Osric the lamplighter puts his own
+   lantern out and founds the Ember Cult. They dig a chapel under the
+   graveyard, take a coal from the forge the one night Hadrik sleeps,
+   and carry it down. The fire remakes them. Aldous runs; Osric comes
+   back up as the Cinder Prior and begins to dig.
 8. **The Captain's father.** Goes into the crypt with Kingsbane. Does not
    come back.
 9. **Now.** Hadrik has kept the forge forty years. The Fallen camp in the

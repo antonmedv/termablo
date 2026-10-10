@@ -93,6 +93,7 @@ type Game struct {
 
 	Quests  map[string]QuestState // by quest ID: how far the hero has come with each
 	Slain   map[string]bool       // the bosses dead, by template ID
+	Found   map[string]bool       // the uniques picked up, by name: what a quest brings back
 	Deepest int                   // deepest Depth entered: what the shops roll at
 	stocked int                   // Deepest at the last restock
 	shops   [2]*Shop
@@ -130,7 +131,7 @@ func NewGame(seed int64) *Game { return NewGameWith(seed, DefaultRules()) }
 // NewGameWith starts a game under a set of rules, which it shares with
 // its player, levels and monsters.
 func NewGameWith(seed int64, r *Rules) *Game {
-	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Known: map[string]bool{"rumors": true}, heard: map[string]bool{}, Quests: map[string]QuestState{}, Slain: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
+	g := &Game{Seed: seed, rng: rand.New(rand.NewSource(seed)), Levels: map[string]*Level{}, usedAltars: map[string]bool{}, Known: map[string]bool{"rumors": true}, heard: map[string]bool{}, Quests: map[string]QuestState{}, Slain: map[string]bool{}, Found: map[string]bool{}, Stats: newStats(), Rules: r, Deepest: 1, L: locales.Get(i18n.Source)}
 	g.P = NewPlayer(r)
 	g.portalLight = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 1)
 	g.townPortalL = NewLight(0, 0, &LightSpec{C(.35, .5, 1), 4.5, 1.1, .05, .3}, 2)
@@ -189,7 +190,7 @@ func (g *Game) getLevel(id string) *Level {
 		if n < 4 {
 			s.Down = fmt.Sprintf("crypt%d", n+1)
 		} else {
-			s.Boss = "boneking"
+			s.Boss, s.Guard = "boneking", "skel"
 			s.Name, s.NameKey = "Throne of the Bone King", "throne"
 		}
 		l = genDungeon(s, seed)
@@ -203,8 +204,23 @@ func (g *Game) getLevel(id string) *Level {
 		if n < 2 {
 			s.Down = fmt.Sprintf("barrow%d", n+1)
 		} else {
-			s.Boss = "buried"
+			s.Boss, s.Guard = "buried", "gravewarden"
 			s.Name, s.NameKey = "The Buried Watch", "buried_watch"
+		}
+		l = genDungeon(s, seed)
+	case strings.HasPrefix(id, "sanctum"):
+		// the Ember Cult's chapel under the graveyard, and beneath it their
+		// digging toward the forge from below
+		n := num("sanctum")
+		s := DungeonSpec{ID: id, Depth: 9 + n, Rules: g.Rules}
+		if n == 1 {
+			s.Name, s.NameKey, s.Style, s.SpawnTable = "The Cinder Sanctum", "sanctum", 4, "sanctum"
+			s.Up, s.Down = "town", "sanctum2"
+			s.Relic, s.Guard = &stolenCoal, "cultist"
+		} else {
+			s.Name, s.NameKey, s.Style, s.SpawnTable = "The Kindling", "kindling", 5, "kindling"
+			s.Up = "sanctum1"
+			s.Boss, s.Guard = "prior", "penitent"
 		}
 		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "grotto"):
@@ -218,7 +234,7 @@ func (g *Game) getLevel(id string) *Level {
 			s.Down = fmt.Sprintf("grotto%d", n+1)
 		} else {
 			s.Down = "abyss1"
-			s.Boss = "oracle"
+			s.Boss, s.Guard = "oracle", "wisp"
 			s.Name, s.NameKey = "The Oracle's Pool", "oracle_pool"
 		}
 		l = genDungeon(s, seed)
@@ -761,10 +777,21 @@ func (g *Game) pickup() {
 }
 
 // gain notes an item come into the pack, however it came: a unique may
-// teach a topic.
+// teach a topic, and may be what a quest is after.
 func (g *Game) gain(it *Item) {
 	if it.Rarity == RUnique {
 		g.see("item." + it.Name)
+		g.found(it)
+	}
+}
+
+// stir wakes everything on the level with a way to the hero.
+func (g *Game) stir() {
+	l := g.Lv
+	for _, o := range l.Monsters {
+		if !o.Dead && !o.Friendly && g.dist[l.Idx(o.X, o.Y)] >= 0 {
+			o.Awake, o.LostTurns = true, 0
+		}
 	}
 }
 
@@ -786,9 +813,9 @@ func (g *Game) dropItem(x, y int, it *Item) {
 	}
 	fi := &FloorItem{X: fx, Y: fy, It: it}
 	if it.Kind == IKEquip && it.Rarity >= RRare {
-		spec := &LightSpec{C(1, .95, .45), 2.4, .7, .05, .3}
+		spec := lsRareDrop
 		if it.Rarity == RUnique {
-			spec = &LightSpec{C(1, .7, .3), 3.4, 1, .05, .35}
+			spec = lsUniqueDrop
 		}
 		fi.Light = NewLight(fx, fy, spec, g.rng.Float32()*10)
 	}
@@ -872,6 +899,8 @@ func (g *Game) killMonster(m *Monster) {
 		g.say(colOrange, "msg.buried_dead")
 	case "oracle":
 		g.say(colOrange, "msg.oracle_dead")
+	case "prior":
+		g.say(colOrange, "msg.prior_dead")
 	case "wanderer":
 		g.relight()
 		g.say(m.T.Color, "msg.wanderer_last_words")
@@ -1344,15 +1373,28 @@ func (g *Game) monsterTurn(m *Monster) {
 	case AICaptain:
 		// hurt, he calls the watch: every sleeper with a way to the hero
 		// stands to and comes
-		if !m.Rallied && m.HP*2 < m.MaxHP {
-			m.Rallied = true
-			for _, o := range l.Monsters {
-				if !o.Dead && !o.Friendly && g.dist[l.Idx(o.X, o.Y)] >= 0 {
-					o.Awake, o.LostTurns = true, 0
-				}
-			}
+		if !m.Spent && m.HP*2 < m.MaxHP {
+			m.Spent = true
+			g.stir()
 			g.say(m.T.Color, "msg.buried_rallies")
 			g.novaFx(m.X, m.Y, m.T.Color, 2.5)
+			return
+		}
+	case AIPrior:
+		// hurt past half, the fire takes him: faster, burning, and his
+		// flock stands to
+		if !m.Spent && m.HP*2 < m.MaxHP {
+			m.Spent = true
+			m.Speed += 30
+			m.Mods = append(m.Mods, ModFire)
+			m.Light = NewLight(0, 0, &LightSpec{C(1, .35, .08), 5.5, 1.3, .3, 0}, 0)
+			g.stir()
+			g.say(m.T.Color, "msg.prior_burns")
+			g.novaFx(m.X, m.Y, colOrange, 3)
+			return
+		}
+		// now and then he calls the fire out of the braziers
+		if sees && m.Timer%10 == 0 && g.countMinions() < 6 && g.kindle(m) {
 			return
 		}
 	case AIWanderer:
@@ -1394,7 +1436,7 @@ func (g *Game) monsterTurn(m *Monster) {
 		g.monsterMelee(m)
 		return
 	}
-	ranged := m.T.AI == AIRanged || m.T.AI == AIOracle
+	ranged := m.T.AI == AIRanged || m.T.AI == AIOracle || m.T.AI == AIPrior
 	if ranged && sees && d <= m.T.Range && g.rng.Intn(100) < 70 {
 		if _, _, hitsP := g.traceBolt(m.X, m.Y, p.X, p.Y, m.T.Range+2, false); hitsP {
 			g.monsterShoot(m)
@@ -1406,6 +1448,35 @@ func (g *Game) monsterTurn(m *Monster) {
 		return
 	}
 	g.stepToward(m)
+}
+
+// kindle is the Cinder Prior calling the fire: a Fire Imp climbs out of
+// each of the two lit braziers nearest the hero, of those in sight. It
+// reports whether any burned near enough.
+func (g *Game) kindle(m *Monster) bool {
+	l, p := g.Lv, g.P
+	const reach = 10
+	var coals []Pos
+	for y := max(0, p.Y-reach); y <= min(l.H-1, p.Y+reach); y++ {
+		for x := max(0, p.X-reach); x <= min(l.W-1, p.X+reach); x++ {
+			if l.At(x, y) == TBrazier && g.fov[l.Idx(x, y)] == g.fovGen {
+				coals = append(coals, Pos{x, y})
+			}
+		}
+	}
+	if len(coals) == 0 {
+		return false
+	}
+	sort.Slice(coals, func(i, j int) bool {
+		return cheb(coals[i].X, coals[i].Y, p.X, p.Y) < cheb(coals[j].X, coals[j].Y, p.X, p.Y)
+	})
+	g.say(m.T.Color, "msg.prior_kindles")
+	for _, c := range coals[:min(2, len(coals))] {
+		imp := placeMonsterAvoid(l, "imp", c.X, c.Y, m.Level-1, RankNormal, p.X, p.Y)
+		imp.Awake, imp.Minion = true, true
+		g.novaFx(c.X, c.Y, colOrange, 2)
+	}
+	return true
 }
 
 func (g *Game) countMinions() int {
@@ -1426,6 +1497,8 @@ func (g *Game) bossTaunt(m *Monster) {
 		g.say(m.T.Color, "msg.buried_greets")
 	case "oracle":
 		g.say(colCyan, "msg.oracle_greets")
+	case "prior":
+		g.say(m.T.Color, "msg.prior_greets")
 	case "wanderer":
 		g.say(m.T.Color, "msg.wanderer_greets")
 	}

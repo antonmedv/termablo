@@ -68,6 +68,11 @@
     oracle_lights: "Kalte Lichter sammeln sich um die Seherin."
     oracle_greets: "Die Ertrunkene Seherin: „Ich habe dein Ende gesehen, kleine Flamme. Es ist nass und kalt.“"
     oracle_dead: "Der Gesang der Seherin verstummt. Noch tiefer brennt etwas ... Kehre zu Voss zurück."
+    prior_greets: "Der Aschenprior: „Noch eine Laterne, die Treppe herab. Still jetzt. Ich lösche dich sanft.“"
+    prior_kindles: "Der Aschenprior entfacht die Feuerschalen. Feuerkobolde klettern aus den Kohlen."
+    prior_burns: "Das Feuer nimmt den Aschenprior. Er brennt, und er singt."
+    prior_dead: "Der Aschenprior zerfällt zu Asche, noch singend. Das Graben verstummt. Sag es Bruder Aldous."
+    coal_taken: "Die Kohle flammt in deiner Hand auf. Jedes Auge im Heiligtum wendet sich ihr zu."
     wanderer_greets: "Der Letzte Wanderer: „Wieder ein Fremder. Sie schicken immer einen Fremden.“"
     wanderer_portal: "Der Letzte Wanderer tritt aus dem Portal. Es fällt hinter ihm in sich zusammen."
     wanderer_follows: "Der Letzte Wanderer folgt dir."
@@ -89,6 +94,12 @@
         other: "{who} rennt um sein Leben."
       }
     quest_reward: "{who} gibt dir {n} Gold und dazu: {item}."
+    quest_take: {
+        m: "{who} nimmt den {item} an sich."
+        f: "{who} nimmt die {item} an sich."
+        n: "{who} nimmt das {item} an sich."
+        other: "{who} nimmt {item} an sich."
+      }
     quest_new: "Neuer Auftrag: {name}."
     topic_new: "In der Stadt könntest du nachfragen: {topic}."
     cannot_afford: "Das kannst du dir nicht leisten."
@@ -132,7 +143,10 @@
       greet: "Stahl gegen das Dunkel. Sieh dich um. Die [Esse](forge) ist heiß; das ist sie immer."
       greet_again: "Wieder da. Was muss geflickt werden?"
       greet_boneking: "Heut früh die Glocken der Gruft gehört. Dachte schon, ich werd wunderlich. Dein Werk? Dann hast du dir den guten Stahl verdient."
-      greet_oracle: "Der letzte [Fremde](stranger), den ich für die Tiefe gerüstet hab, kam nie zur Reparatur zurück."
+      greet_oracle: "Der letzte [Fremde](stranger), den ich für die Tiefe gerüstet hab, kam nie zur Reparatur zurück. Du schon. Gut.\nJetzt ist der Boden warm, und ich sag dir, warum. Vor dreißig Jahren hat der [Kult](cult) eine [Kohle](coal) aus meiner Esse geholt. Eine Kohle, in der einen Nacht, in der ich geschlafen hab. Sie liegt noch immer unter dem Friedhof, in ihrer Kapelle, und das Feuer da unten kann sie riechen. Bring sie heim."
+      greet_coal: "Die Esse brennt eine Spur weißer, seit du ihre Kohle heimgebracht hast. Sag's keinem. Sonst wollen sie alle kommen und gucken."
+      desc_coal: "Hadrik steht näher am Feuer als früher. Quer über seiner Handfläche liegt eine frische Brandwunde, und er sieht zufrieden damit aus."
+      desc_coal_again: "Hadrik, die verbrannte Handfläche dem Feuer zugewandt."
       greet_wanderer: "Die Esse loderte weiß auf, als er fiel, dann beruhigte sie sich. Vierzig Jahre, so was hab ich nie an ihr gesehen. An diesem Amboss bist du willkommen."
       greet_hurt: "Du blutest mir auf den Amboss. Erst Mirela. Dann Stahl."
       greet_broke: "Schauen kostet nichts. Der Rest schon."
@@ -149,6 +163,12 @@
       portals: "Asche aus der Esse, in Papier gefaltet. Jeder Funke kennt den Heimweg zum Herd, also auch die Asche. Ich kehr sie zusammen, Mirela faltet sie."
       aldous: "Aldous war einer von denen. Jetzt hockt er bei den Gräbern und erzählt jedem, der stehen bleibt, die [Glut](ember) sei eine Wunde. Vielleicht ist sie das. Eine Wunde ist besser als ein Grab. Sag ihm nicht, dass ich vielleicht gesagt hab."
       pell: "Der Junge am Brunnen. Kam einmal an die Esse, um sich zu wärmen. Stand eine Stunde am Feuer und taute nicht auf."
+      coal: "Eine Kohle aus dem Bauch der Glut selbst, in einem Käfig aus Eisen, an einer Kette. Osric hat den Käfig gemacht. Er war der Laternenanzünder; er wusste, woran die Laternen entzündet werden.\nSie haben sie in ihrer [Kapelle](sanctum) unter den Gräbern aufgehängt, um den Weg nach unten zu leuchten. Dort brennt sie noch. Dreißig Jahre. Eine Kohle der Glut geht nicht aus.\nBring sie mir zurück, und ich leg sie dahin, wo sie hingehört."
+      coal_again: "Unter dem Friedhof, in der Kapelle des Kults. Bring sie zurück. Und pass auf: Alles da unten kann sie riechen."
+      coal_after: "Zurück in der Esse, wo sie hingehört. Sie hat sie genommen, wie eine Mutter ein Kind nimmt. Sag Mirela nicht, dass ich das gesagt hab."
+      coal_reward: "Gib her. Dreißig Jahre in einem Käfig unter den Gräbern, und noch heiß genug, um eine Hand zu brandmarken.\nZurück ins Feuer mit dir. So. Nimm das für den Weg, und das Gold. Die Esse schuldet dir was. Ich auch."
+      sanctum: "Osrics Kapelle. Er hat sie unter die Gräber gegraben, damit keiner fragt, wozu sie da unten beten. Ich war nie dort. Die Esse hat's nicht gern, wenn ich weggehe."
+      prior: "Osric. Zwanzig Jahre lang hat er jede Laterne in dieser Stadt angezündet, und eines Nachts hat er seine eigene gelöscht und an meine Tür geklopft, seine Leute hinter sich. Frag Aldous. Mir ist nicht danach."
     }
     mirela: {
       desc: "Eine schöne Frau Ende dreißig, ihre volle Gestalt in ein dunkles Mieder geschnürt, das Haar so streng hochgesteckt, dass keine Strähne entkommt. Am Hals hängt ein blasser Kristall und summt leise. Sie mustert dich, wie eine Lehrerin ein zerrissenes Schulheft mustert."
@@ -175,6 +195,9 @@
       pell_oracle_again: "Immer noch kein Wort. Ich bringe ihm Suppe. Er isst sie nicht, aber er hält die Schüssel."
       pell_wanderer: "Heute Morgen hat er gesprochen, Liebes! Er hat um Brot gebeten. Nur Brot. Ich habe wieder geweint."
       pell_wanderer_again: "Er ist kalt, aber er isst. Das ist ein Anfang."
+      sanctum: "Unter den Gräbern ist eine Kapelle, Liebes, und der Boden darüber ist warm, seit die Seherin tot ist. Früher hab ich meinen Kristall darauf gelegt, und er hat von der Wärme gesungen. Jetzt nicht mehr."
+      prior: "Zwanzig Jahre lang hat Osric jeden Abend die Laterne vor meiner Tür angezündet und gute Nacht gesagt. Dann kam ein Abend, an dem er es nicht tat. Ich halte in der Dämmerung immer noch nach ihm Ausschau, Kind. Ist das nicht töricht."
+      coal: "Hadriks Kohle. Er hat sich die eine Nacht, in der er geschlafen hat, nie verziehen. Bring sie zurück, wenn du kannst, Liebes. Dann vielleicht."
     }
     voss: {
       desc: "Ein sehniger Mann in einem verbeulten Brustpanzer, ein schwarzes Band um einen Ärmel gebunden. Er steht da wie einer, der sich seit Jahren nicht hingesetzt hat."
@@ -215,6 +238,9 @@
       pell: "Der Junge ist den Moorlichtern gefolgt und kalt zurückgekommen. Wenn sie fort ist, wird ihm wieder warm. Das sage ich seiner Schwester."
       pell_oracle: "Der Junge hat kein Wort gesagt, seit du heraufgekommen bist. Gib ihm Zeit. Die Kälte braucht eine Weile, bis sie geht."
       pell_oracle_again: "Gib dem Jungen Zeit."
+      sanctum: "Das Loch des Kults unter meinem Friedhof. Ich hab es zweimal zuschütten lassen. Zweimal war es am Morgen wieder offen. Aldous sitzt darauf wie eine Henne auf dem Ei. Frag ihn."
+      prior: "Osric. Er hat auf der Wache meines Vaters die Lampen angezündet. Mein [Vater](father) mochte ihn. Sag Aldous nicht, dass ich das gesagt hab."
+      coal: "Frag Hadrik. Die Esse ist seine, und die Schande auch."
     }
     aldous: {
       desc: "Ein hagerer Mann in einer Kultistenrobe. Eine Seite von ihm ist blank gebrannt, das Auge darin milchweiß. Die andere Seite lächelt dich an."
@@ -224,13 +250,16 @@
       greet: "Wieder eine von Voss' Klingen. Setz dich, wenn du magst; die Gräber haben nichts gegen Gesellschaft. Frag mich nach dem [Kult](cult). Die Stadt erzählt dir, was wir waren. Ich erzähle dir, was wir gesehen haben."
       greet_again: "Atmest noch. Das Feuer ist sich über dich noch nicht einig."
       greet_boneking: "Edran liegt also endlich still. Du hast ihm einen Gefallen getan. Er würde dir danken, hätte das Dunkel ihm einen Mund gelassen."
-      greet_oracle: "Leg deine Hand auf den Boden. Warm, nicht wahr? Das hat sie festgehalten. Du hast den Pfropfen gezogen, Wanderer. Jetzt sehen wir, was heraufkommt."
-      greet_oracle_again: "Heute wärmer. Morgen noch wärmer."
+      greet_oracle: "Leg deine Hand auf den Boden. Warm, nicht wahr? Das hat sie festgehalten. Du hast den Pfropfen gezogen, Wanderer.\nUnd unter diesem Friedhof sitzt ein Mann, der dreißig Jahre auf genau das gewartet hat. [Der Prior](prior). Osric. Er hat mich gelehrt. Geh hinab durch seine [Kapelle](sanctum) und lösch ihn aus, bevor das Feuer heraufkommt, um ihn zu holen."
+      greet_oracle_again: "Heute wärmer. Er gräbt. Geh hinab und halt ihn auf, oder lass es; das Feuer kommt so oder so."
+      greet_prior: "Ich hab letzte Nacht geschlafen. Zum ersten Mal, seit ich heraufgekommen bin. Der Boden ist noch warm, aber er lauscht nicht mehr."
+      desc_prior: "Aldous sitzt da, ausnahmsweise beide Hände im Schoß. Die verbrannte Seite seines Gesichts ist den Laternen zugewandt."
+      desc_prior_again: "Aldous, die Hände im Schoß, den Blick auf den Laternen."
       greet_wanderer: "Er war, was das Feuer aus jedem von uns machen will. Du hast ihn niedergestreckt. Es wird einen neuen machen. Es ist geduldig. Ich auch."
       greet_hurt: "Du blutest? Geh zu Mirela. Das Feuer mag den Geruch."
       greet_crown: "Edrans Krone. Hörst du sie schon? Du wirst."
       barrow: "Die einzigen Männer an Edrans Hof mit etwas Verstand. Sie sagten Nein zur Kohle, und er hat sie dafür begraben. Die Stadt nennt sie Eidbrecher. Ich nenne sie die Ersten, die zugehört haben."
-      cult: "Wir waren keine Verräter. Wir waren die Einzigen, die zugehört haben. Die [Glut](ember) hat nie uns gehört, also gingen wir hinab, um sie zurückzugeben. Das Feuer hat sich über uns gefreut. Die, die blieben, hat es neu geformt. Ich bin gerannt. Das ist meine ganze Ketzerei."
+      cult: "Wir waren keine Verräter. Wir waren die Einzigen, die zugehört haben. Die [Glut](ember) hat nie uns gehört, also gingen wir hinab, um sie zurückzugeben. Das Feuer hat sich über uns gefreut. Die, die blieben, hat es neu geformt. [Der Prior](prior) blieb. Ich bin gerannt. Das ist meine ganze Ketzerei."
       ember: "Die Stadt sagt, Edran habe sie heraufgetragen. Er hat sie herausgeschnitten. Das Dunkel ist nicht hungrig, Wanderer. Es ist eine Wunde, die sich schließen will, und Emberhold ist der Splitter darin. Frag Hadrik, warum er nie schläft."
       edran: "Ein Dieb mit Krone. Seine eigene [Seherin](oracle) flehte ihn an, sie zurückzulegen. Er behielt sie, und das Dunkel nahm sein Gesicht als Lohn."
       abyss: "Ich war dort, wo du hingehst. Der Fels blutet dort. Dort hat Edran die Kohle herausgeschnitten, und es hat sich nie geschlossen. Woraus sie auch geschnitten wurde, es ist dort unten, und es ist wach."
@@ -241,6 +270,13 @@
       stranger_after: "Das also macht das Feuer aus einem Mann, der den ganzen Weg zu ihm hinabgeht. Ich hatte gehofft, es sei nur auf mich zornig."
       pell: "Der Junge hört sie. Ich höre das andere. Zusammen ergibt das eine schlechte Nacht Schlaf."
       aldous: "Bruder. Es gibt keinen Orden mehr, dessen Bruder man sein könnte. Behalte den Titel, wenn du magst; er ist alles, was ich mit heraufgebracht habe."
+      prior: "Osric war der Laternenanzünder. Zwanzig Jahre lang hat er jede Laterne in Emberhold an Hadriks Feuer entzündet, und eines Nachts hat er begriffen, woran er sie all die Zeit entzündet hatte. Er löschte seine eigene Laterne und machte sich auf, uns andere zu suchen.\nEr führte uns hinab. Das Feuer hat ihn als Ersten neu geformt, und er sang dabei. Er kam mit dem Feuer in den Händen wieder herauf, und seither gräbt er sich zur Esse vor, von unten.\nTöte ihn. Er würde mich darum bitten, wenn er noch irgendwen um irgendwas bitten würde."
+      prior_again: "Unter den Gräbern, durch die Kapelle, und hinab. Er wird sich freuen, dich zu sehen. Er freut sich über jeden."
+      prior_after: "Osric ist Asche. Ich hab ihm eine Kerze angezündet. Dann hab ich sie ausgemacht. Das hätte er so gewollt."
+      prior_reward: "So. Der Laternenanzünder ist aus.\nIch hab nichts von ihm, das ich dir geben könnte. Ich hab das hier, und das Gold, das die Stadt durch mich schickt, weil sonst keiner lang genug bei mir sitzen würde, um es dir zu geben.\nEr hatte recht mit dem Feuer, Wanderer. Er hatte nur unrecht damit, was zu tun ist."
+      sanctum: "Unsere Kapelle. Wir haben sie unter den Friedhof gegraben, wo die Erde schon offen war. Die Feuerschalen da unten brennen von der [Kohle](coal), die wir genommen haben; Hadrik wird sie zurückwollen. Das Feuer will sie mehr."
+      sanctum_after: "Jetzt leer. Ein Loch unter einem Friedhof mit ein paar verbrannten Bänken drin. Mehr waren wir nie."
+      coal: "Wir haben sie aus der Esse genommen, in der Nacht, als Hadrik schlief. Eine Kohle. Osric trug sie hinab, in einem Käfig aus Eisen, und sang. Bei jedem Schritt wandte sich das Dunkel um, um sie anzusehen. So kannten wir den Weg."
     }
     pell: {
       desc: "Ein dünner Junge von neun oder zehn Jahren. Sein Haar ist nass, obwohl es nicht geregnet hat, seine Lippen sind leicht blau, und er zittert nicht."
@@ -259,6 +295,7 @@
       oracle: "Sie ist kalt, damit wir nicht brennen. Sie hat mich gefragt, ob ich ein bisschen davon für sie halte. Ich hab Ja gesagt. Jetzt bin ich auch kalt."
       oracle_after: "(Pell schüttelt den Kopf. Von ihr spricht er nicht.)"
       blackmarsh: "Die Lichter haben nicht gerufen. Sie haben gefragt. Die meisten sagen Ja. Ich hab Ja gesagt."
+      sanctum: "Der Boden unter den Gräbern ist warm. Das Wasser geht da nicht hin. Sie hat nicht gern hingesehen."
     }
     villager: {
       desc: "Ein Bewohner der Stadt in rußgrauem Umhang, der immer wieder zur nächsten Laterne blickt."
@@ -279,6 +316,12 @@
       oracle: "Des Königs eigene Seherin. Sie riet ihm, die Kohle nicht zu nehmen. Als er nicht hören wollte, ging sie unter dem [Schwarzmoor](blackmarsh) ins Wasser und kam nie wieder hoch."
       oracle_after: "Die Moorlichter sind erloschen. Die Leute sagen, es ist vorbei. Mirela sagt gar nichts."
       abyss: "Unter dem Teich der Seherin brennt der Fels. Es heißt, der Abgrund hat keinen Boden. Der [Glutkult](cult) ist dort hinabgegangen."
+      sanctum: "Die Kapelle des Kults liegt unter dem Friedhof, sagt man. Der Hauptmann hat sie zuschütten lassen. Zugeschüttet ist sie nicht geblieben. [Bruder Aldous](aldous) sitzt genau darauf."
+      sanctum_after: "Der Boden über dem Friedhof ist wieder kühl. Der Hauptmann lässt das Loch zuschütten. Schon wieder."
+      prior: "Osric, der Laternenanzünder, hat den [Glutkult](cult) gegründet. Zwanzig Jahre lang hat er jede Lampe in der Stadt angezündet, dann hat er seine eigene gelöscht und ist hinabgegangen. Frag [Bruder Aldous](aldous); der ist ihm gefolgt."
+      prior_after: "Der Laternenanzünder ist endlich Asche, sagt man. Aldous hat ihm auf dem Platz eine Kerze angezündet. Dann hat er sie ausgedrückt."
+      coal: "Hadriks Esse war vor dreißig Jahren eine Nacht lang dunkel. Eine Stunde. Er hat nie gesagt, was passiert ist. Frag ihn. Vorsichtig."
+      coal_after: "Die Esse brennt weißer, seit du aus den Gräbern heraufgekommen bist. Hadrik summt am Amboss. Niemand hat ihn je summen gehört."
       cult: "Vor einer Generation beschlossen einige, dem Dunkel stehe seine Kohle zu. Sie gingen hinab, um zu bezahlen. Das Feuer formte sie neu. Einer kam zurück: [Bruder Aldous](aldous), drüben bei den Gräbern. Bring ihn bloß nicht ins Reden."
       stranger: "Frag Hadrik. Er hat ihm sein Schwert verkauft und etwas von ihm behalten."
       aldous: "Kam letzten Winter aus dem Abgrund zurück, auf einer Seite verbrannt. Nennt sich Bruder. Sitzt auf dem Friedhof und redet mit den Steinen."
@@ -302,6 +345,16 @@
       done: "Der Gesang der Seherin ist verstummt. Noch tiefer brennt etwas. Voss sollte davon erfahren."
       rewarded: "Voss hat bezahlt und dich gewarnt: Unter ihrem Teich brennt der Fels, und der Brennende Abgrund hat keinen Boden."
     }
+    coal: {
+      taken: "Hadrik will die Kohle zurück, die der Glutkult vor dreißig Jahren aus seiner Esse genommen hat. Sie hängt in der Kapelle des Kults, dem Aschenheiligtum, unter Emberholds eigenem Friedhof, und alles da unten kann sie riechen."
+      done: "Du hast die Gestohlene Kohle. Sie ist warm durch den Rucksack hindurch, und alles, was dich sie nehmen sah, ist wach. Bring sie Hadrik."
+      rewarded: "Hadrik hat die Kohle zurück in die Esse gelegt und dich für den Weg bezahlt. Die Esse brennt eine Spur weißer."
+    }
+    prior: {
+      taken: "Bruder Aldous will, dass der Aschenprior ausgelöscht wird: Osric, der Laternenanzünder, der den Glutkult gründete und hinabführte. Das Feuer hat ihn neu geformt, und seither gräbt er sich von unten zur Esse vor. Er wartet im Zunder, unter der Kapelle des Kults unter dem Friedhof."
+      done: "Der Aschenprior ist Asche. Das Graben hat aufgehört. Aldous sollte es von dir hören."
+      rewarded: "Aldous hat dir bezahlt, was die Stadt durch ihn schickt, und gesagt, der Prior habe recht gehabt mit dem Feuer und nur unrecht damit, was zu tun ist."
+    }
     wanderer: {
       taken: "Etwas ist aus dem Abgrund heraufgestiegen, als die Seherin fiel. Jedes Licht erlischt in seiner Nähe, und es sieht aus wie du: der Fremde, den Emberhold vor dir angeheuert hat. Halte den Letzten Wanderer auf, bevor er die Esse erreicht."
       done: "Der Letzte Wanderer ist gefallen. Das Dunkel hat das Feuer losgelassen, und die Laternen von Emberhold brennen wieder."
@@ -322,6 +375,9 @@
     oracle: "Ertrunkene Seherin"
     abyss: "Brennender Abgrund"
     cult: "Glutkult"
+    sanctum: "Aschenheiligtum"
+    prior: "Aschenprior"
+    coal: "Gestohlene Kohle"
     stranger: "Der Fremde"
     aldous: "Bruder Aldous"
     pell: "Pell"
@@ -339,10 +395,14 @@
     uncle: "Mein Onkel ist dem [Glutkult](cult) beigetreten. Sagte, wir seien dem Dunkel etwas schuldig. Er ging hinab, um zu bezahlen, und kam letzten Winter zurück, was von ihm übrig ist. [Bruder Aldous](aldous) nennt er sich jetzt."
     shepherds: "Die Schäfer treiben ihre Herden nicht mehr auf die Südfelder. Dort draußen liegt ein Ring aus Erde, und nachts ruft etwas darin die [Wache](barrow) auf ihre Posten."
     holding: "Mirela sagt, die [Seherin](oracle) jagt niemanden. Sie hält etwas nieder."
+    lamplighter: "Osric, der Laternenanzünder, hat zwanzig Jahre lang jede Lampe in der Stadt angezündet. Dann hat er seine eigene gelöscht und ist mit dem [Kult](cult) hinabgegangen. Jetzt zünden Jungen die Lampen an."
     bells: "Heute früh haben die Glocken der Gruft geläutet. Seit dreißig Jahren hat niemand an diesen Seilen gezogen."
     face: "Es heißt, der Knochenkönig trug einst das Gesicht von [König Edran](edran). Oder was das Dunkel davon übrig ließ."
     lights: "Die kalten Lichter über dem [Schwarzmoor](blackmarsh) sind erloschen. Mein Bruder hat die ganze Nacht durchgeschlafen."
     wind: "Aus den Brunnen im Moor steigt jetzt heißer Wind. Riecht nach Schmiede. Nach [dem Abgrund](abyss), sagt Mirela."
+    digging: "Der Boden über dem Friedhof ist nachts warm. Leg dein Ohr darauf, und da gräbt etwas. Nach oben."
+    flare: "Hadriks Esse ist weiß aufgeflammt, in der Nacht, als du aus den Gräbern heraufkamst. Der ganze Platz hat es gesehen."
+    ash: "Der Laternenanzünder ist jetzt Asche, sagt man. Aldous hat ihm auf dem Platz eine Kerze angezündet und sie dann ausgedrückt."
     lanterns: "Die Laternen brennen ruhiger, seit du heraufgekommen bist. Niemand sagt, warum. Niemand muss es."
   }
   area: {
@@ -353,6 +413,8 @@
     throne: "Thron des Knochenkönigs"
     barrow: "Hügelgrab der Wächter {n}"
     buried_watch: "Begrabene Wache"
+    sanctum: "Aschenheiligtum"
+    kindling: "Zunder"
     grotto: "Versunkene Grotte {n}"
     oracle_pool: "Teich der Seherin"
     abyss: "Brennender Abgrund {n}"
@@ -364,6 +426,7 @@
     marsh: "Schwarzmoor"
     crypt: "Gruft der Gefallenen"
     barrow: "Hügelgrab der Grabwächter"
+    sanctum: "Aschenheiligtum"
     grotto: "Versunkene Grotte"
     abyss: "Brennender Abgrund"
   }
@@ -373,6 +436,8 @@
     marsh: "Das Schwarzmoor. Kalte Lichter treiben über dem Wasser. Folge ihnen nicht."
     crypt: "{area}. Ein Königsgrab; die Luft schmeckt nach Staub."
     barrow: "{area}. Wände aus Erde und senkrecht ausgehobene Gräber. Irgendwo voraus hält noch jemand Wache."
+    sanctum: "{area}. Verkohlte Bänke, und jede Feuerschale brennt wieder. Jemand hat die Kapelle in Ordnung gehalten."
+    kindling: "{area}. Die Wände sind aus Erde, und warm. Der Stollen führt hinab, und ganz unten singt jemand."
     grotto: "{area}. Kaltes Wasser drückt herab; die Kristalle summen."
     abyss: "{area}. Der Fels selbst blutet."
     hearth: "{area}. Die Kohlenbecken neigen sich von der Mitte des Raumes weg."
@@ -529,6 +594,7 @@
       keys: "↑↓ Auftrag · esc schließen"
       none: "Noch hat niemand etwas von dir verlangt. Sprich mit den Leuten von Emberhold."
       goal: "{name} muss vernichtet werden."
+      fetch: "{name} muss zu {who} zurückgebracht werden."
       return: "{who} schuldet dir noch deinen Lohn. Kehre zurück."
       over: "Abgeschlossen."
       giver: "Auftraggeber: {who}"
@@ -1339,6 +1405,10 @@
       name: { text: "Sternfallharnisch", gender: "m" }
       flavor: "Aus einem gefallenen Stern geschmiedet; er erinnert sich an den Himmel."
     }
+    the_stolen_coal: {
+      name: { text: "Gestohlene Kohle", gender: "f" }
+      flavor: "Eine Kohle der Glut, in Eisen gefasst. Alles da unten kann sie riechen."
+    }
   }
   gamble: {
     weapon: { text: "Waffe", gender: "f" }
@@ -1370,8 +1440,10 @@
     imp: { text: "Feuerkobold", gender: "m" }
     hellspawn: { text: "Höllenbrut", gender: "f" }
     gravewarden: { text: "Grabwächter", gender: "m" }
+    penitent: { text: "Aschenbüßer", gender: "m" }
     boneking: { text: "Der Knochenkönig", gender: "m" }
     buried: { text: "Der Begrabene Hauptmann", gender: "m" }
+    prior: { text: "Der Aschenprior", gender: "m" }
     oracle: { text: "Die Ertrunkene Seherin", gender: "f" }
     wanderer: { text: "Der Letzte Wanderer", gender: "m" }
     smith: { text: "Hadrik der Schmied", gender: "m" }
@@ -1483,6 +1555,8 @@
     smites: "{who} schmettert dich nieder: {n} Schaden."
     bashes: "{who} rammt dich: {n} Schaden."
     strikes: "{who} stößt nach dir: {n} Schaden."
+    scalds: "{who} verbrüht dich: {n} Schaden."
+    burns: "{who} verbrennt dich: {n} Schaden."
     drowns: "{who} zieht dich unter Wasser: {n} Schaden."
     cuts: "{who} schneidet dich: {n} Schaden."
     hits: "{who} trifft dich: {n} Schaden."

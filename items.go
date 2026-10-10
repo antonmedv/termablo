@@ -302,6 +302,11 @@ type UniqueDef struct {
 // lastShroud drops only from the Last Wanderer, never from the pool.
 var lastShroud = UniqueDef{"Last Wanderer's Shroud", "Rags", 13, []Affix{{StArmor, 40}, {StLife, 45}, {StAllAttr, 8}, {StLight, -2}}, "Still warm. It was never yours, and now it is."}
 
+// stolenCoal lies in the Cinder Sanctum's reliquary, never in the pool:
+// the coal the Ember Cult took from Hadrik's forge, and the thing his
+// quest brings back (quest.go). Worn, it is a beacon.
+var stolenCoal = UniqueDef{"The Stolen Coal", "Amulet", 10, []Affix{{StLight, 3}, {StSpellPct, 20}, {StLifeRegen, 2}, {StAllAttr, 3}}, "A coal of the Ember, set in iron. Everything below can smell it."}
+
 // uniqueItem makes a unique as it drops at ilvl.
 func uniqueItem(u UniqueDef, ilvl int) *Item {
 	it := &Item{Kind: IKEquip, Base: baseByName(u.Base), Name: u.Name, Rarity: RUnique, ILvl: maxi(ilvl, u.Lvl), Flavor: u.Flavor}

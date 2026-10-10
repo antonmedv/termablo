@@ -3,9 +3,9 @@ package main
 import "github.com/antonmedv/termablo/internal/i18n"
 
 // The quest journal: the quests given down the left, the one picked on
-// the right, with what to do now, who gave it, where its boss is and
-// what it pays, and below a journal entry for each stage it has reached,
-// journal.<id>.<stage> in the catalog.
+// the right, with what to do now, who gave it, where its boss or its
+// thing is and what it pays, and below a journal entry for each stage
+// it has reached, journal.<id>.<stage> in the catalog.
 
 // journalStages are the stages a quest's journal has entries for, in
 // the order they are reached.
@@ -102,7 +102,7 @@ func (g *Game) drawJournal(s *Screen, mapW, mapH int) {
 	// fifths of the box
 	lw := 0
 	for _, q := range list {
-		lw = maxi(lw, i18n.Width(L.T("monster."+q.Boss))+4)
+		lw = maxi(lw, i18n.Width(L.T(q.nameKey()))+4)
 	}
 	lw = clampi(lw, 14, w*2/5)
 	tw := w - lw - 5
@@ -135,7 +135,7 @@ func (g *Game) drawJournal(s *Screen, mapW, mapH int) {
 		} else if g.hoverOn && hb.in(g.hoverX, g.hoverY) {
 			s.Fill(lx, yy, lw, 1, colTalkPick.Scale(.6).C8())
 		}
-		name := L.T("monster." + q.Boss)
+		name := L.T(q.nameKey())
 		nc := colWhite
 		switch {
 		case i == g.cur:
@@ -169,17 +169,19 @@ func (g *Game) drawJournal(s *Screen, mapW, mapH int) {
 			row++
 		}
 	}
-	boss := L.Noun("monster." + q.Boss)
-	line(boss.Text, colGold, true)
+	name := L.Noun(q.nameKey())
+	line(name.Text, colGold, true)
 	st := g.status(q)
 	_, mc := g.questMark(q)
-	switch st {
-	case QuestOver:
+	switch {
+	case st == QuestOver:
 		line(L.T("ui.journal.over"), mc, false)
-	case QuestOwed:
+	case st == QuestOwed:
 		line(L.T("ui.journal.return", "who", L.Noun("monster."+q.Giver)), mc, false)
+	case q.Item != "":
+		line(L.T("ui.journal.fetch", "name", name, "who", L.Noun("monster."+q.Giver)), colWhite, false)
 	default:
-		line(L.T("ui.journal.goal", "name", boss), colWhite, false)
+		line(L.T("ui.journal.goal", "name", name), colWhite, false)
 	}
 	row++
 	if q.Giver != "" {

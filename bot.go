@@ -1030,6 +1030,8 @@ func botDepth(id string) int {
 		return 1 + n
 	case "barrow":
 		return 5 + n
+	case "sanctum":
+		return 9 + n
 	case "marsh":
 		return 6
 	case "grotto":
@@ -1307,6 +1309,17 @@ func (b *Bot) stepTo(i int) bool {
 	start := l.Idx(p.X, p.Y)
 	for int(b.par[i]) != start {
 		i = int(b.par[i])
+	}
+	if m := l.MonsterAt(i%l.W, i/l.W); m != nil && m.Friendly {
+		// a townsperson in the way, on the loot, say: walking into them
+		// opens a talk and spends no turn, so they would never wander
+		// off. Wait a few turns out instead, then give the goal up.
+		if !b.linger() {
+			return false
+		}
+		b.say("waiting for %s to move", m.Name)
+		g.wait()
+		return true
 	}
 	turn, lv := g.Turn, g.Lv
 	g.move(i%l.W-p.X, i/l.W-p.Y)

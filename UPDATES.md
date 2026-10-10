@@ -4,6 +4,20 @@
 
 ## 2026-10-10
 
+- **The Cinder Sanctum.** A new area under Emberhold's own graveyard:
+  the Ember Cult's chapel, every brazier lit again, and beneath it the
+  Kindling, their digging toward the forge from below. Level 10 and 11,
+  for after the Oracle. Its door is a stair among the graves, where
+  Brother Aldous sits.
+- **Two new side quests, from new givers.** Hadrik wants the coal the
+  Cult took from his forge thirty years ago brought back: the first
+  quest that is a thing to carry, not a head to bring. Pick it up and
+  the whole floor wakes. Wear it on the way out if you dare. Aldous
+  wants the Cinder Prior put out: Osric, the lamplighter who founded the
+  Cult, remade by the fire. He throws fire, calls imps out of the
+  braziers, and when hurt the fire takes him for good.
+- **The Gravewardens' Barrow.** An earth ring south of the crypt road,
+  two floors down to the Buried Captain, Edran's first guard. Ask Voss.
 - **Two new faces in Emberhold.** Brother Aldous, the Ember Cult's last,
   sits among the graves and tells you what the town won't. Pell, the boy
   who followed the marsh lights, sits by the fountain and listens to
