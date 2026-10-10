@@ -42,6 +42,9 @@ msg.no_scrolls 659b9eb6
 msg.boneking_raises 5efe2b8d
 msg.boneking_greets 5072a97c
 msg.boneking_dead fed605e2
+msg.buried_greets 85570096
+msg.buried_rallies 0d2e14a7
+msg.buried_dead 88b2db39
 msg.oracle_reforms fd1c75a4
 msg.oracle_lights da2a9f68
 msg.oracle_greets 573026b3
@@ -136,7 +139,7 @@ talk.voss.greet 5e9f25b6
 talk.voss.greet_again 2afce606
 talk.voss.boneking_reward e32c4aa5
 talk.voss.oracle_reward 2fb238bf
-talk.voss.greet_boneking 8f8e7daf
+talk.voss.greet_boneking 03964cf1
 talk.voss.greet_boneking_again 19b69c68
 talk.voss.greet_oracle 510e45c7
 talk.voss.greet_oracle_again 2b5fdb29
@@ -153,6 +156,10 @@ talk.voss.boneking_after 67cb00bb
 talk.voss.father a594dae3
 talk.voss.father_again bc09f22e
 talk.voss.father_after 3428e769
+talk.voss.barrow 685cd17c
+talk.voss.barrow_again 65231161
+talk.voss.barrow_after 578241e4
+talk.voss.barrow_reward 1f354dbe
 talk.voss.oracle 489c72f1
 talk.voss.oracle_after 386dcdc2
 talk.voss.stranger 601f15c5
@@ -174,6 +181,7 @@ talk.aldous.greet_oracle_again 0bf1b969
 talk.aldous.greet_wanderer 1c1d7b47
 talk.aldous.greet_hurt d93f5cbd
 talk.aldous.greet_crown 04e92de9
+talk.aldous.barrow 5ad60626
 talk.aldous.cult 58e621d7
 talk.aldous.ember fdaa314e
 talk.aldous.edran bf98608f
@@ -211,6 +219,8 @@ talk.any.crypt 79a5b878
 talk.any.boneking 5ee24a4a
 talk.any.boneking_after 7b756678
 talk.any.father b2f46335
+talk.any.barrow 10a1082f
+talk.any.barrow_after bd7cf7fe
 talk.any.blackmarsh b0ca1fa0
 talk.any.oracle adf580ce
 talk.any.oracle_after 5ef0cf68
@@ -223,6 +233,9 @@ talk.any.stranger_after d609d783
 journal.boneking.taken 59a46e77
 journal.boneking.done 78432bb4
 journal.boneking.rewarded a9fcaf27
+journal.barrow.taken 4105ed15
+journal.barrow.done 53c00a29
+journal.barrow.rewarded 4053747d
 journal.oracle.taken 7b5bb95b
 journal.oracle.done 145467f0
 journal.oracle.rewarded ffefd61e
@@ -237,6 +250,7 @@ topic.portals b452e117
 topic.crypt 77e84bca
 topic.boneking 8190d47e
 topic.father cdc76d1b
+topic.barrow 078787bb
 topic.blackmarsh c725de86
 topic.oracle 21180c97
 topic.abyss 811d6d55
@@ -254,6 +268,7 @@ rumor.scroll c2129167
 rumor.stranger a46669ae
 rumor.edran d624a18e
 rumor.uncle 7093c8d3
+rumor.shepherds 25242466
 rumor.holding 9638fe94
 rumor.bells 0cfb5167
 rumor.face cf922365
@@ -265,6 +280,8 @@ area.fields be2fc785
 area.marsh c725de86
 area.crypt 32d8fb9c
 area.throne 890dfeb6
+area.barrow 2d452de1
+area.buried_watch 2387c23d
 area.grotto 1bffa3f4
 area.oracle_pool 23ffe22b
 area.abyss 4a0319e1
@@ -273,12 +290,14 @@ region.town d0850c2e
 region.fields fd4e9a03
 region.marsh c725de86
 region.crypt 0d53631e
+region.barrow e28ce2c1
 region.grotto ad2d53fd
 region.abyss 07b17f0b
 lore.town ec4be181
 lore.fields d35e4521
 lore.marsh a9c652d7
 lore.crypt 42d9f0eb
+lore.barrow 5e7b9974
 lore.grotto 28b59c93
 lore.abyss 9ee05daf
 lore.hearth f6dfb734
@@ -744,7 +763,9 @@ monster.spider 93e07476
 monster.golem 4a837758
 monster.imp 363fc872
 monster.hellspawn d039b7f9
+monster.gravewarden 9937c67a
 monster.boneking 4cd34e9d
+monster.buried 0e982f9d
 monster.oracle 5504201b
 monster.wanderer 995a0ce5
 monster.smith 75470033
@@ -799,6 +820,8 @@ hit.pummels 64f7c6cc
 hit.spits_fire_at 79cbd8b2
 hit.cleaves 35005f1d
 hit.smites e0783f36
+hit.bashes 0c26af2c
+hit.strikes c6cfac32
 hit.drowns fb1ade7b
 hit.cuts 85f3303b
 hit.hits 74a22c9b
@@ -825,6 +848,7 @@ tile.mud 49ade829
 tile.reeds 0aafb614
 tile.cave_floor 78ed9a7b
 tile.cave_wall 2def119d
+tile.earth_wall 1bc05e71
 tile.glowing_crystal 2d6d29b3
 tile.brazier b668c852
 tile.street_lamp 3aba5ce9

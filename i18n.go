@@ -231,7 +231,7 @@ func areaName(loc *i18n.Catalog, l *Level) string {
 
 // regionName is where a link leads, as hover text: "the Ashen Fields".
 func regionName(loc *i18n.Catalog, id string) string {
-	for _, r := range []string{"town", "fields", "marsh", "crypt", "grotto", "abyss"} {
+	for _, r := range []string{"town", "fields", "marsh", "crypt", "barrow", "grotto", "abyss"} {
 		if strings.HasPrefix(id, r) {
 			return loc.T("region." + r)
 		}

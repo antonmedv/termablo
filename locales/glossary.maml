@@ -131,6 +131,26 @@
       zh: ["骸骨之王"]
     }
     {
+      en: "Buried Captain"
+      note: "The first captain of Edran's guard, the post Voss holds now. Edran buried him and his men alive in a barrow for refusing to follow him down for the coal, and ordered them to stand watch forever. He still does. Male. A boss's name."
+      de: ["Begrabene Hauptmann", "Begrabenen Hauptmann", "Begrabener Hauptmann"]
+      fr: ["Capitaine Enseveli"]
+      it: ["Capitano Sepolto"]
+      ru: ["Погребённый Капитан", "Погребённого Капитана", "Погребённому Капитану", "Погребённым Капитаном"]
+      ar: ["القائد المدفون"]
+      zh: ["活葬统领"]
+    }
+    {
+      en: "Gravewarden"
+      note: "Edran's first guard, buried alive in their barrow, still standing watch: shielded, armored undead. A monster; plural Gravewardens. The barrow is named after them."
+      de: ["Grabwächter"]
+      fr: ["Gardien des tombes", "Gardiens des tombes"]
+      it: ["Custode delle tombe", "Custodi delle tombe"]
+      ru: ["Могильный страж", "Могильного стража", "Могильные стражи", "Могильных Стражей", "Могильных стражей"]
+      ar: ["حارس القبور", "حراس القبور", "حرّاس القبور"]
+      zh: ["守墓卫士"]
+    }
+    {
       en: "Drowned Oracle"
       note: "Edran's seer, who drowned herself in the grotto's pool to hold the fire down. Female. A boss's name."
       de: ["Ertrunkene Seherin", "Ertrunkenen Seherin"]
@@ -249,6 +269,26 @@
       ru: ["Павш"]
       ar: ["ساقط", "الساقطين", "الساقطون"]
       zh: ["堕落"]
+    }
+    {
+      en: "Gravewardens' Barrow"
+      note: "A side dungeon, two floors under an earth ring in the south of the Ashen Fields, where the Gravewardens were buried."
+      de: ["Hügelgrab der Grabwächter", "Hügelgrab der Wächter"]
+      fr: ["Tertre des Gardiens"]
+      it: ["Tumulo dei Custodi"]
+      ru: ["Курган Могильных Стражей", "Кургана Могильных Стражей", "Кургане Могильных Стражей"]
+      ar: ["رابية حرّاس القبور", "رابية حراس القبور"]
+      zh: ["守墓卫士古冢"]
+    }
+    {
+      en: "Buried Watch"
+      note: "The barrow's second floor, where the Buried Captain stands. \"Watch\" is the guard on duty, the men and their duty both."
+      de: ["Begrabene Wache"]
+      fr: ["Garde Ensevelie"]
+      it: ["Guardia Sepolta"]
+      ru: ["Погребённый Дозор"]
+      ar: ["الحرس المدفون"]
+      zh: ["活葬之哨"]
     }
     {
       en: "Sunken Grotto"

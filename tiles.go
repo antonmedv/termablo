@@ -42,6 +42,7 @@ const (
 	TShelf
 	TAltar
 	TColdBrazier
+	TEarthWall
 	TTileCount
 )
 
@@ -101,6 +102,7 @@ var tdefs = [TTileCount]TileDef{
 	TReeds:       {Name: "reeds", Glyphs: []rune("\"'\""), Albedo: C(.45, .55, .28), BG: .05},
 	TCaveFloor:   {Name: "cave floor", Glyphs: []rune("··.·,··"), Albedo: C(.44, .39, .35), BG: .18},
 	TCaveWall:    {Name: "cave wall", Glyphs: []rune("▓"), Albedo: C(.5, .44, .38), BG: .05, BlockMove: true, BlockSight: true, Solid: true},
+	TEarthWall:   {Name: "earth wall", Glyphs: []rune("▓"), Albedo: C(.44, .35, .25), BG: .05, BlockMove: true, BlockSight: true, Solid: true},
 	TCrystal:     {Name: "glowing crystal", Glyphs: []rune("♦"), Albedo: C(.5, .75, 1), BG: .25, BlockMove: true, BlockSight: true, Emit: true, Emissive: C(.5, .78, 1), Light: lsCrystal, Solid: true},
 	TBrazier:     {Name: "brazier", Glyphs: []rune("Ψ"), Albedo: C(1, .6, .25), BG: .3, BlockMove: true, Emit: true, Emissive: C(1, .62, .22), Light: lsBrazier},
 	TLamp:        {Name: "street lamp", Glyphs: []rune("¥"), Albedo: C(1, .8, .45), BG: .25, BlockMove: true, Emit: true, Emissive: C(1, .85, .5), Light: lsLamp},

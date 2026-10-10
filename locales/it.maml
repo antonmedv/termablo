@@ -64,6 +64,9 @@
     boneking_raises: "Il Re delle Ossa risveglia i morti!"
     boneking_greets: "Il Re delle Ossa: «Un'altra torcia da spegnere. Inginocchiati, e unisciti alla mia corte.»"
     boneking_dead: "Le cripte tacciono. Torna dal capitano Voss."
+    buried_greets: "Il Capitano Sepolto: «Alt. La guardia non ha il cambio. Non lo ha mai.»"
+    buried_rallies: "Il Capitano Sepolto: «Guardia, ai posti!» Il tumulo si ridesta."
+    buried_dead: "Il Capitano Sepolto abbassa infine la lancia. La guardia ha avuto il cambio. Torna dal capitano Voss."
     oracle_reforms: "La Sibilla si dissolve in nebbia e si ricompone."
     oracle_lights: "Luci fredde si raccolgono attorno alla Sibilla."
     oracle_greets: "La Sibilla Annegata: «Ho visto la tua fine, piccola fiamma. È bagnata e fredda.»"
@@ -191,7 +194,7 @@
       greet_again: "Respiri ancora. Bene. Il [Re delle Ossa](boneking) è quattro piani sotto la [cripta](crypt). Portami la sua polvere."
       boneking_reward: "Il Re delle Ossa è polvere? Allora le campane della cripta potranno suonare di nuovo.\nPrendi questo: era di [mio padre](father). E l'oro, naturalmente."
       oracle_reward: "La Sibilla, messa a tacere... Non credevo che avrei mai dormito senza sentirla.\nSotto la sua pozza, la roccia brucia. Dicono che [l'Abisso](abyss) non abbia fondo. Fa' attenzione.\nUna volta ci ho mandato [qualcuno](stranger). Ho smesso di contare i giorni."
-      greet_boneking: "La cripta tace. Ora la [Palude Nera](blackmarsh), a nord dei campi.\nSegui le luci fredde giù nella grotta. Metti fine alla [Sibilla](oracle)."
+      greet_boneking: "La cripta tace. Ora la [Palude Nera](blackmarsh), a nord dei campi.\nSegui le luci fredde giù nella grotta. Metti fine alla [Sibilla](oracle).\nE se hai stomaco per un'altra tomba, chiedimi del [tumulo](barrow) a sud della strada della cripta."
       greet_boneking_again: "La [Palude Nera](blackmarsh), a nord dei campi. Segui le luci fredde giù. Non farti seguire al ritorno."
       greet_oracle: "Hai fatto più di quanto chiunque di noi abbia mai osato.\nMirela dice che ora il vento sa di forgia. Lasciala dire. Se devi scendere ancora, [l'Abisso](abyss) attende sotto la pozza della Sibilla."
       greet_oracle_again: "Qualunque cosa attenda nell'[Abisso](abyss), è oltre le mie mappe. Va' con prudenza, o non andare."
@@ -208,6 +211,10 @@
       father: "Ha portato il Flagello dei Re nella [cripta](crypt) e non è tornato. La guardia ha scelto me la mattina dopo. Non c'era nessun altro da scegliere."
       father_again: "Ti ho detto quello che c'è da dire. Lascia stare."
       father_after: "Hai riportato ciò che era suo. È più di quanto siamo riusciti a fare noialtri. Non chiedermi altro."
+      barrow: "La prima guardia di Emberhold. La guardia personale di Re [Edran](edran), prima che ci fosse una città da sorvegliare.\nQuando scese a prendere il carbone, si rifiutarono di seguirlo. Così li seppellì vivi in un tumulo a sud della strada della cripta e ordinò loro di montare la guardia. Per sempre.\nIl loro capitano teneva il mio posto prima che avesse un nome. Lo tiene ancora. Dagli il cambio. Vorrei che qualcuno facesse lo stesso per me."
+      barrow_again: "A sud della strada della cripta, un anello di terra. Il loro capitano è ancora al suo posto. Dagli il cambio."
+      barrow_after: "Ha avuto il cambio, dunque. Ora il posto è soltanto mio. Pesa più di quanto credessi."
+      barrow_reward: "Il Capitano Sepolto, finalmente in pace. Ha montato la guardia più a lungo di quanto chiunque di noi farà mai.\nPrendi questo, e l'oro. La prossima volta che maledico il turno di notte, ricordami di lui."
       oracle: "Si è annegata nella grotta sotto la [Palude Nera](blackmarsh), e ora chiama gli smarriti a seguirla giù. Mettici fine.\nMirela ti dirà che sta tenendo giù qualcosa. Mirela dà retta a un sasso. Io seppellisco la gente a cui quel sasso canta."
       oracle_after: "Messa a tacere. Ora dormo. Strano quanto rumore possa fare il silenzio."
       stranger: "Ce n'era uno prima di te. Bravo con la lama. L'ho mandato oltre la pozza della Sibilla. Di regola, non assumo due volte per lo stesso lavoro."
@@ -231,6 +238,7 @@
       greet_wanderer: "Era ciò che il fuoco vuole che ognuno di noi diventi. Tu l'hai abbattuto. Ne farà un altro. È paziente. Anch'io."
       greet_hurt: "Sanguini? Va' da Mirela. Al fuoco piace quell'odore."
       greet_crown: "La corona di Edran. La senti già? La sentirai."
+      barrow: "Gli unici uomini di senno alla corte di Edran. Dissero no al carbone, e lui li seppellì per questo. La città li chiama spergiuri. Io li chiamo i primi che hanno ascoltato."
       cult: "Non eravamo traditori. Eravamo gli unici che ascoltavano. La [Brace](ember) non è mai stata nostra, così siamo scesi a restituirla. Il fuoco è stato lieto di vederci. Ha rifatto quelli che sono rimasti. Io sono fuggito. Tutta la mia eresia è questa."
       ember: "La città dice che Edran l'ha portata su. L'ha tagliata via. L'oscurità non ha fame, Viandante. È una ferita che cerca di chiudersi, ed Emberhold è la scheggia. Chiedi a Hadrik perché non dorme mai."
       edran: "Un ladro con la corona. La sua stessa [Sibilla](oracle) lo supplicò di rimetterla al suo posto. Lui la tenne, e l'oscurità gli prese il volto come compenso."
@@ -274,6 +282,8 @@
       boneking: "Siede sul suo trono di costole quattro piani più giù, sotto una corona vuota. Dicono che non abbia ancora finito di fare il re."
       boneking_after: "Il Re delle Ossa è polvere, dicono. Le campane della cripta potranno suonare di nuovo."
       father: "Il padre del capitano portò una vecchia ascia nella cripta. Il capitano non ne parla. E non dovresti nemmeno tu."
+      barrow: "Un anello di terra a sud della strada della cripta. Dentro c'è la guardia di Edran, quelli che non vollero seguirlo giù. Sepolti in piedi, dicono, ancora di guardia. Tenevano il posto del capitano; chiedi a Voss."
+      barrow_after: "Ora di notte i campi a sud sono quieti. I pastori sono tornati."
       blackmarsh: "A nord dei campi. Luci fredde vagano sull'acqua. Non seguirle. Tutti le seguono. Mirela ascolta quell'acqua; chiedi a lei."
       oracle: "La Sibilla del re in persona. Gli disse di non prendere il carbone. Quando lui non volle ascoltarla, lei entrò nell'acqua sotto la [Palude Nera](blackmarsh) e non riemerse più."
       oracle_after: "Le luci della palude si sono spente. La gente dice che è finita. Mirela non dice niente."
@@ -290,6 +300,11 @@
       taken: "Il capitano Voss vuole che il Re delle Ossa sia distrutto. Siede sul suo trono di costole quattro piani sotto la Cripta dei Caduti, a est della porta, oltre i Campi di Cenere. Il padre di Voss scese a cercarlo con un'ascia e non tornò più."
       done: "Il Re delle Ossa è polvere, e le cripte tacciono. Voss vorrà sentirlo da te."
       rewarded: "Voss ti ha pagato in oro, e ti ha dato qualcosa che era di suo padre. Le campane della cripta potranno suonare di nuovo."
+    }
+    barrow: {
+      taken: "Il capitano Voss vuole che si dia il cambio al Capitano Sepolto. Re Edran seppellì vivi gli uomini della sua guardia in un tumulo a sud della strada della cripta, nei Campi di Cenere, perché si erano rifiutati di seguirlo giù. Il loro capitano teneva il posto di Voss prima che avesse un nome, ed è ancora di guardia due piani più sotto."
+      done: "Il Capitano Sepolto ha abbassato la lancia. La guardia ha avuto il cambio. Voss vorrà sentirlo da te."
+      rewarded: "Voss ti ha pagato in oro, e ti ha chiesto di ricordargli il Capitano Sepolto la prossima volta che maledirà il turno di notte."
     }
     oracle: {
       taken: "Voss vuole che si metta fine alla Sibilla Annegata. Entrò nell'acqua sotto la Palude Nera, a nord dei campi, e chiama gli smarriti a seguirla giù. Segui le luci fredde fin dentro la Grotta Sommersa."
@@ -311,6 +326,7 @@
     crypt: "Cripta"
     boneking: "Re delle Ossa"
     father: "Padre di Voss"
+    barrow: "Tumulo dei Custodi"
     blackmarsh: "Palude Nera"
     oracle: "Sibilla Annegata"
     abyss: "Abisso Ardente"
@@ -330,6 +346,7 @@
     stranger: "C'era uno [straniero](stranger), prima di te. Comprò la stessa spada. Andò oltre la palude e non si fermò più."
     edran: "[Re Edran](edran) portò su la [Brace](ember) a mani nude. Gli costò il volto."
     uncle: "Mio zio si è unito al [Culto della Brace](cult). Diceva che all'oscurità si doveva qualcosa. È sceso a pagare, ed è tornato l'inverno scorso, quel che ne resta. Ora si fa chiamare [Fratello Aldous](aldous)."
+    shepherds: "I pastori non portano più le greggi nei campi a sud. Laggiù c'è un anello di terra, e di notte qualcosa, là dentro, chiama la [guardia](barrow)."
     holding: "Mirela dice che la [Sibilla](oracle) non dà la caccia a nessuno. Sta tenendo giù qualcosa."
     bells: "Stamattina hanno suonato le campane della cripta. Nessuno tira quelle corde da trent'anni."
     face: "Dicono che un tempo il Re delle Ossa avesse il volto di [Re Edran](edran). O quel che il buio ne ha lasciato."
@@ -343,6 +360,8 @@
     marsh: "Palude Nera"
     crypt: "Cripta dei Caduti {n}"
     throne: "Trono del Re delle Ossa"
+    barrow: "Tumulo dei Custodi {n}"
+    buried_watch: "Guardia Sepolta"
     grotto: "Grotta Sommersa {n}"
     oracle_pool: "Pozza della Sibilla"
     abyss: "Abisso Ardente {n}"
@@ -353,6 +372,7 @@
     fields: "i Campi di Cenere"
     marsh: "la Palude Nera"
     crypt: "la Cripta dei Caduti"
+    barrow: "il Tumulo dei Custodi"
     grotto: "la Grotta Sommersa"
     abyss: "l'Abisso Ardente"
   }
@@ -361,6 +381,7 @@
     fields: "I Campi di Cenere. Luce di luna sulla cenere di una foresta bruciata."
     marsh: "La Palude Nera. Luci fredde vagano sull'acqua. Non seguirle."
     crypt: "{area}. Una tomba reale; l'aria sa di polvere."
+    barrow: "{area}. Pareti di terra, e fosse scavate per seppellire uomini in piedi. Da qualche parte, più avanti, qualcuno monta ancora la guardia."
     grotto: "{area}. L'acqua fredda preme dall'alto; i cristalli ronzano."
     abyss: "{area}. La roccia stessa sanguina."
     hearth: "{area}. I bracieri si piegano lontano dal centro della sala."
@@ -1167,7 +1188,9 @@
     golem: { text: "Golem di cristallo", gender: "m" }
     imp: { text: "Diavoletto di fuoco", gender: "m" }
     hellspawn: { text: "Progenie infernale", gender: "f" }
+    gravewarden: { text: "Custode delle tombe", gender: "m" }
     boneking: { text: "Il Re delle Ossa", gender: "m" }
+    buried: { text: "Il Capitano Sepolto", gender: "m" }
     oracle: { text: "La Sibilla Annegata", gender: "f" }
     wanderer: { text: "L'Ultimo Viandante", gender: "mv" }
     smith: { text: "Hadrik il Fabbro", gender: "m" }
@@ -1310,6 +1333,14 @@
         one: "{who} ti percuote: {n} danno."
         other: "{who} ti percuote: {n} danni."
       }
+    bashes: {
+        one: "{who} ti colpisce con lo scudo: {n} danno."
+        other: "{who} ti colpisce con lo scudo: {n} danni."
+      }
+    strikes: {
+        one: "{who} ti assesta un colpo: {n} danno."
+        other: "{who} ti assesta un colpo: {n} danni."
+      }
     drowns: {
         one: "{who} ti trascina sott'acqua: {n} danno."
         other: "{who} ti trascina sott'acqua: {n} danni."
@@ -1350,6 +1381,7 @@
     reeds: "canneto"
     cave_floor: "suolo della caverna"
     cave_wall: "parete della caverna"
+    earth_wall: "muro di terra"
     glowing_crystal: "cristallo luminoso"
     brazier: "braciere"
     street_lamp: "lampione"

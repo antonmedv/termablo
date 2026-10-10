@@ -75,6 +75,9 @@
     boneking_raises: "Le Roi des Os relève les morts !"
     boneking_greets: "Le Roi des Os : « Encore une torche à moucher. À genoux, et rejoignez ma cour. »"
     boneking_dead: "Les cryptes retombent dans le silence. Retournez voir le capitaine Voss."
+    buried_greets: "Le Capitaine Enseveli : « Halte. La garde n'est pas relevée. Elle ne l'est jamais. »"
+    buried_rallies: "Le Capitaine Enseveli : « La garde, à vos postes ! » Le tertre s'éveille."
+    buried_dead: "Le Capitaine Enseveli abaisse enfin sa lance. La garde est relevée. Retournez voir le capitaine Voss."
     oracle_reforms: "La Sibylle se dissout en brume, puis se reforme."
     oracle_lights: "Des lumières froides s'assemblent autour de la Sibylle."
     oracle_greets: "La Sibylle Noyée : « J'ai vu votre fin, petite flamme. Elle est humide et froide. »"
@@ -235,7 +238,7 @@
       greet_again: "Toujours en vie. Bien. Le [Roi des Os](boneking) se trouve quatre niveaux sous la [crypte](crypt). Rapportez-moi sa poussière."
       boneking_reward: "Le Roi des Os n'est plus que poussière ? Alors les cloches de la crypte pourront de nouveau sonner.\nPrenez ceci — c'était à [mon père](father). Et l'or, bien sûr."
       oracle_reward: "La Sibylle, réduite au silence... Je n'aurais jamais cru pouvoir dormir sans l'entendre.\nSous son bassin, la roche brûle. [L'Abîme](abyss) n'a pas de fond, dit-on. Soyez prudent.\nJ'ai envoyé [quelqu'un](stranger) là-dessous, une fois. J'ai cessé de compter les jours."
-      greet_boneking: "La crypte est silencieuse. Maintenant : le [Marais-Noir](blackmarsh), au nord des champs.\nSuivez les lumières froides jusque dans la grotte. Achevez la [Sibylle](oracle)."
+      greet_boneking: "La crypte est silencieuse. Maintenant : le [Marais-Noir](blackmarsh), au nord des champs.\nSuivez les lumières froides jusque dans la grotte. Achevez la [Sibylle](oracle).\nEt si vous avez l'estomac pour une tombe de plus, interrogez-moi sur le [tertre](barrow) au sud de la route de la crypte."
       greet_boneking_again: "Le [Marais-Noir](blackmarsh), au nord des champs. Suivez les lumières froides jusqu'en bas. Ne les laissez pas vous suivre au retour."
       greet_oracle: "Vous avez fait plus qu'aucun de nous n'a osé.\nMirela dit que le vent sent la forge, maintenant. Qu'elle le dise. S'il vous faut descendre plus bas, [l'Abîme](abyss) attend sous le bassin de la Sibylle."
       greet_oracle_again: "Ce qui attend dans l'[Abîme](abyss) dépasse mes cartes. Allez-y prudemment, ou n'y allez pas."
@@ -252,6 +255,10 @@
       father: "Il a emporté Fléau-des-Rois dans la [crypte](crypt) et n'en est pas revenu. La garde m'a choisi le lendemain matin. Il n'y avait personne d'autre à choisir."
       father_again: "Je vous ai dit ce qu'il y avait à dire. N'y revenez pas."
       father_after: "Vous avez rapporté ce qui était à lui. C'est plus que nous autres n'avons su faire. Ne m'en demandez pas davantage."
+      barrow: "La première garde d'Emberhold. La garde personnelle du roi [Edran](edran), avant même qu'il y ait une ville à garder.\nQuand il est descendu chercher le charbon, ils ont refusé de le suivre. Alors il les a enterrés vivants dans un tertre au sud de la route de la crypte, avec ordre de monter la garde. Pour toujours.\nLeur capitaine tenait mon poste avant qu'il ait un nom. Il le tient encore. Relevez-le. J'aimerais qu'on en fasse autant pour moi."
+      barrow_again: "Au sud de la route de la crypte, un anneau de terre. Leur capitaine est toujours à son poste. Relevez-le."
+      barrow_after: "Relevé, donc. Le poste n'est plus qu'à moi. Il pèse plus lourd que je ne le croyais."
+      barrow_reward: "Le Capitaine Enseveli, en paix. Il a monté la garde plus longtemps qu'aucun de nous ne le fera jamais.\nPrenez ceci, et l'or. La prochaine fois que je maudirai la garde de nuit, rappelez-le-moi."
       oracle: "Elle s'est noyée dans la grotte sous le [Marais-Noir](blackmarsh), et maintenant elle attire les égarés à sa suite. Finissez-en.\nMirela vous dira qu'elle retient quelque chose. Mirela écoute une pierre. Moi, j'enterre ceux à qui cette pierre chante."
       oracle_after: "Réduite au silence. Je dors, maintenant. Étrange, ce que le silence peut faire de bruit."
       stranger: "Il y en a eu un avant vous. Habile à la lame. Je l'ai envoyé au-delà du bassin de la Sibylle. En règle générale, je n'engage pas deux fois pour la même besogne."
@@ -275,6 +282,7 @@
       greet_wanderer: "Il était ce que le feu veut faire de chacun de nous. Vous l'avez abattu. Il en fera un autre. Il est patient. Moi aussi."
       greet_hurt: "Vous saignez ? Allez voir Mirela. Le feu aime cette odeur."
       greet_crown: "La couronne d'Edran. Vous l'entendez déjà ? Ça viendra."
+      barrow: "Les seuls hommes sensés de la cour d'Edran. Ils ont dit non au charbon, et il les a enterrés pour ça. La ville les traite de parjures. Moi, je dis qu'ils ont été les premiers à écouter."
       cult: "Nous n'étions pas des traîtres. Nous étions les seuls à écouter. La [Braise](ember) n'a jamais été à nous, alors nous sommes descendus la rendre. Le feu a été heureux de nous voir. Il a refait ceux qui sont restés. Moi, j'ai fui. Voilà toute mon hérésie."
       ember: "La ville dit qu'Edran l'a remontée. Il l'a arrachée. Les ténèbres n'ont pas faim, Vagabond. C'est une plaie qui cherche à se refermer, et Emberhold est l'écharde. Demandez à Hadrik pourquoi il ne dort jamais."
       edran: "Un voleur couronné. Sa propre [Sibylle](oracle) l'a supplié de la remettre en place. Il l'a gardée, et les ténèbres lui ont pris son visage en guise de paiement."
@@ -318,6 +326,8 @@
       boneking: "Il siège sur son trône de côtes, quatre niveaux plus bas, sous une couronne creuse. On dit qu'il n'a pas fini d'être roi."
       boneking_after: "Le Roi des Os n'est plus que poussière, dit-on. Les cloches de la crypte pourront de nouveau sonner."
       father: "Le père du capitaine a emporté une vieille hache dans la crypte. Le capitaine n'en parle pas. Vous feriez bien d'en faire autant."
+      barrow: "Un anneau de terre au sud de la route de la crypte. Les gardes d'Edran lui-même y reposent, ceux qui ont refusé de le suivre en bas. Enterrés debout, dit-on, toujours de garde. Ils tenaient le poste du capitaine ; demandez à Voss."
+      barrow_after: "Les champs du sud sont calmes la nuit, maintenant. Les bergers y sont retournés."
       blackmarsh: "Au nord des champs. Des lumières froides dérivent sur l'eau. Ne les suivez pas. Tout le monde les suit. Mirela écoute cette eau ; demandez-lui."
       oracle: "La Sibylle du roi en personne. Elle lui avait dit de ne pas prendre le charbon. Comme il ne voulait rien entendre, elle est entrée dans l'eau sous le [Marais-Noir](blackmarsh) et n'en est jamais ressortie."
       oracle_after: "Les lumières du marais se sont éteintes. Les gens disent que c'est fini. Mirela, elle, ne dit rien."
@@ -334,6 +344,11 @@
       taken: "Le capitaine Voss veut la destruction du Roi des Os. Il siège sur son trône de côtes, quatre niveaux sous la Crypte des Déchus, à l'est de la porte, au-delà des Champs de Cendres. Le père de Voss est descendu l'affronter avec une hache, et n'est jamais revenu."
       done: "Le Roi des Os n'est plus que poussière, et les cryptes se sont tues. Voss voudra l'entendre de votre bouche."
       rewarded: "Voss vous a payé en or, et vous a remis un objet qui appartenait à son père. Les cloches de la crypte pourront de nouveau sonner."
+    }
+    barrow: {
+      taken: "Le capitaine Voss veut que le Capitaine Enseveli soit relevé. Le roi Edran a enterré sa garde vivante dans un tertre au sud de la route de la crypte, dans les Champs de Cendres, parce qu'elle refusait de le suivre en bas. Son capitaine tenait le poste de Voss avant qu'il ait un nom, et il monte toujours la garde, deux niveaux plus bas."
+      done: "Le Capitaine Enseveli a abaissé sa lance. La garde est relevée. Voss voudra l'entendre de votre bouche."
+      rewarded: "Voss vous a payé en or, et vous a demandé de lui rappeler le Capitaine Enseveli la prochaine fois qu'il maudira la garde de nuit."
     }
     oracle: {
       taken: "Voss veut qu'on en finisse avec la Sibylle Noyée. Elle s'est enfoncée dans les eaux sous le Marais-Noir, au nord des champs, et attire les égarés à sa suite. Suivez les lumières froides jusqu'au fond de la Grotte Engloutie."
@@ -355,6 +370,7 @@
     crypt: "Crypte"
     boneking: "Roi des Os"
     father: "Père de Voss"
+    barrow: "Gardiens"
     blackmarsh: "Marais-Noir"
     oracle: "Sibylle Noyée"
     abyss: "Abîme Ardent"
@@ -374,6 +390,7 @@
     stranger: "Il y a eu un [étranger](stranger) avant vous. Il a acheté la même épée. Il a passé le marais et il a continué."
     edran: "[Le roi Edran](edran) a porté la [Braise](ember) jusqu'ici à mains nues. Il y a laissé son visage."
     uncle: "Mon oncle a rejoint le [Culte de la Braise](cult). Il disait qu'on avait une dette envers les ténèbres. Il est descendu la payer, et il est revenu l'hiver dernier, ce qu'il en reste. [Frère Aldous](aldous), qu'il se fait appeler maintenant."
+    shepherds: "Les bergers ne mènent plus leurs bêtes dans les champs du sud. Il y a un anneau de terre, là-bas, et la nuit, quelque chose à l'intérieur appelle la [garde](barrow)."
     holding: "Mirela dit que la [Sibylle](oracle) ne chasse personne. Elle retient quelque chose."
     bells: "Les cloches de la crypte ont sonné ce matin. Personne n'a tiré ces cordes depuis trente ans."
     face: "On dit que le Roi des Os portait autrefois le visage du [roi Edran](edran). Ou ce que les ténèbres en avaient laissé."
@@ -387,6 +404,8 @@
     marsh: "Marais-Noir"
     crypt: "Crypte des Déchus {n}"
     throne: "Trône du Roi des Os"
+    barrow: "Tertre des Gardiens {n}"
+    buried_watch: "La Garde Ensevelie"
     grotto: "Grotte Engloutie {n}"
     oracle_pool: "Bassin de la Sibylle"
     abyss: "Abîme Ardent {n}"
@@ -397,6 +416,7 @@
     fields: "les Champs de Cendres"
     marsh: "le Marais-Noir"
     crypt: "la Crypte des Déchus"
+    barrow: "le Tertre des Gardiens"
     grotto: "la Grotte Engloutie"
     abyss: "l'Abîme Ardent"
   }
@@ -405,6 +425,7 @@
     fields: "Les Champs de Cendres. Le clair de lune sur les cendres d'une forêt brûlée."
     marsh: "Le Marais-Noir. Des lumières froides dérivent sur l'eau. Ne les suivez pas."
     crypt: "{area}. Un tombeau royal ; l'air a le goût de la poussière."
+    barrow: "{area}. Des murs de terre, et des tombes creusées debout. Quelque part devant, quelqu'un monte encore la garde."
     grotto: "{area}. Le poids de l'eau froide pèse sur vous ; les cristaux bourdonnent."
     abyss: "{area}. La roche elle-même saigne."
     hearth: "{area}. Les braseros se penchent loin du centre de la salle."
@@ -1231,7 +1252,9 @@
     golem: { text: "Golem de cristal", gender: "m" }
     imp: { text: "Diablotin de feu", gender: "m" }
     hellspawn: { text: "Engeance infernale", gender: "fv" }
+    gravewarden: { text: "Gardien des tombes", gender: "m" }
     boneking: { text: "Le Roi des Os", gender: "m" }
+    buried: { text: "Le Capitaine Enseveli", gender: "m" }
     oracle: { text: "La Sibylle Noyée", gender: "f" }
     wanderer: { text: "Le Dernier Vagabond", gender: "m" }
     smith: { text: "Hadrik le Forgeron", gender: "m" }
@@ -1323,6 +1346,8 @@
     spits_fire_at: "{who} vous crache du feu dessus (-{n} PV)."
     cleaves: "{who} vous fend (-{n} PV)."
     smites: "{who} vous accable (-{n} PV)."
+    bashes: "{who} vous cogne (-{n} PV)."
+    strikes: "{who} vous porte un coup (-{n} PV)."
     drowns: "{who} vous noie (-{n} PV)."
     cuts: "{who} vous entaille (-{n} PV)."
     hits: "{who} vous frappe (-{n} PV)."
@@ -1351,6 +1376,7 @@
     reeds: "roseaux"
     cave_floor: "sol de caverne"
     cave_wall: "paroi de caverne"
+    earth_wall: "mur de terre"
     glowing_crystal: "cristal luisant"
     brazier: "brasero"
     street_lamp: "réverbère"

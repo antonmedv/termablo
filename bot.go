@@ -1028,6 +1028,8 @@ func botDepth(id string) int {
 		return 1
 	case "crypt":
 		return 1 + n
+	case "barrow":
+		return 5 + n
 	case "marsh":
 		return 6
 	case "grotto":
@@ -1043,7 +1045,7 @@ func botHome(id string) string {
 	switch id {
 	case "fields":
 		return "town"
-	case "crypt1", "marsh":
+	case "crypt1", "barrow1", "marsh":
 		return "fields"
 	case "grotto1":
 		return "marsh"

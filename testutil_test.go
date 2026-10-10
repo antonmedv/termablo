@@ -203,7 +203,7 @@ func npc(t *testing.T, g *Game, id string) *Monster {
 
 // ------------------------------------------------------------ generated world
 
-var worldIDs = []string{"town", "fields", "marsh", "crypt1", "crypt2", "crypt3", "crypt4", "grotto1", "grotto2", "grotto3", "abyss1", "abyss2"}
+var worldIDs = []string{"town", "fields", "marsh", "crypt1", "crypt2", "crypt3", "crypt4", "barrow1", "barrow2", "grotto1", "grotto2", "grotto3", "abyss1", "abyss2"}
 
 const worldSeeds = 40
 

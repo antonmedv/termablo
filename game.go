@@ -193,6 +193,20 @@ func (g *Game) getLevel(id string) *Level {
 			s.Name, s.NameKey = "Throne of the Bone King", "throne"
 		}
 		l = genDungeon(s, seed)
+	case strings.HasPrefix(id, "barrow"):
+		n := num("barrow")
+		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Gravewardens' Barrow %d", n), NameKey: "barrow", NameN: n, Depth: 5 + n, Style: 3, SpawnTable: "barrow", Rules: g.Rules}
+		s.Up = "fields"
+		if n > 1 {
+			s.Up = fmt.Sprintf("barrow%d", n-1)
+		}
+		if n < 2 {
+			s.Down = fmt.Sprintf("barrow%d", n+1)
+		} else {
+			s.Boss = "buried"
+			s.Name, s.NameKey = "The Buried Watch", "buried_watch"
+		}
+		l = genDungeon(s, seed)
 	case strings.HasPrefix(id, "grotto"):
 		n := num("grotto")
 		s := DungeonSpec{ID: id, Name: fmt.Sprintf("Sunken Grotto %d", n), NameKey: "grotto", NameN: n, Depth: 6 + n, Style: 1, SpawnTable: "grotto", Rules: g.Rules}
@@ -854,6 +868,8 @@ func (g *Game) killMonster(m *Monster) {
 	switch m.T.ID {
 	case "boneking":
 		g.say(colOrange, "msg.boneking_dead")
+	case "buried":
+		g.say(colOrange, "msg.buried_dead")
 	case "oracle":
 		g.say(colOrange, "msg.oracle_dead")
 	case "wanderer":
@@ -1325,6 +1341,20 @@ func (g *Game) monsterTurn(m *Monster) {
 			g.novaFx(m.X, m.Y, C(.5, 1, .45), 2.5)
 			return
 		}
+	case AICaptain:
+		// hurt, he calls the watch: every sleeper with a way to the hero
+		// stands to and comes
+		if !m.Rallied && m.HP*2 < m.MaxHP {
+			m.Rallied = true
+			for _, o := range l.Monsters {
+				if !o.Dead && !o.Friendly && g.dist[l.Idx(o.X, o.Y)] >= 0 {
+					o.Awake, o.LostTurns = true, 0
+				}
+			}
+			g.say(m.T.Color, "msg.buried_rallies")
+			g.novaFx(m.X, m.Y, m.T.Color, 2.5)
+			return
+		}
 	case AIWanderer:
 		if l.Kind == KTown {
 			if prey := g.prey(m); prey != nil {
@@ -1392,6 +1422,8 @@ func (g *Game) bossTaunt(m *Monster) {
 	switch m.T.ID {
 	case "boneking":
 		g.say(C(.8, 1, .6), "msg.boneking_greets")
+	case "buried":
+		g.say(m.T.Color, "msg.buried_greets")
 	case "oracle":
 		g.say(colCyan, "msg.oracle_greets")
 	case "wanderer":

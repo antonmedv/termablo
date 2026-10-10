@@ -61,6 +61,9 @@
     boneking_raises: "Der Knochenkönig erweckt die Toten!"
     boneking_greets: "Der Knochenkönig: „Wieder eine Fackel zum Auslöschen. Knie nieder und tritt meinem Hofstaat bei.“"
     boneking_dead: "Die Grüfte verstummen. Kehre zu Hauptmann Voss zurück."
+    buried_greets: "Der Begrabene Hauptmann: „Halt. Die Wache wird nicht abgelöst. Sie wird nie abgelöst.“"
+    buried_rallies: "Der Begrabene Hauptmann: „Wache, zu den Waffen!“ Das Hügelgrab regt sich."
+    buried_dead: "Der Begrabene Hauptmann senkt endlich seinen Speer. Die Wache ist abgelöst. Kehre zu Hauptmann Voss zurück."
     oracle_reforms: "Die Seherin zerfließt zu Nebel und formt sich neu."
     oracle_lights: "Kalte Lichter sammeln sich um die Seherin."
     oracle_greets: "Die Ertrunkene Seherin: „Ich habe dein Ende gesehen, kleine Flamme. Es ist nass und kalt.“"
@@ -182,7 +185,7 @@
       greet_again: "Du atmest noch. Gut. Der [Knochenkönig](boneking) sitzt vier Ebenen tief in der [Gruft](crypt). Bring mir seinen Staub."
       boneking_reward: "Der Knochenkönig ist Staub? Dann dürfen die Glocken der Gruft wieder läuten.\nNimm das — es gehörte [meinem Vater](father). Und das Gold, natürlich."
       oracle_reward: "Die Seherin, verstummt ... Ich hätte nie gedacht, dass ich schlafen könnte, ohne sie zu hören.\nUnter ihrem Teich brennt der Fels. [Der Abgrund](abyss) hat keinen Boden, sagt man. Sei vorsichtig.\nIch habe schon einmal [jemanden](stranger) hinuntergeschickt. Irgendwann habe ich aufgehört, die Tage zu zählen."
-      greet_boneking: "In der Gruft ist es still. Jetzt: das [Schwarzmoor](blackmarsh), nördlich der Felder.\nFolge den kalten Lichtern hinab in die Grotte. Mach der [Seherin](oracle) ein Ende."
+      greet_boneking: "In der Gruft ist es still. Jetzt: das [Schwarzmoor](blackmarsh), nördlich der Felder.\nFolge den kalten Lichtern hinab in die Grotte. Mach der [Seherin](oracle) ein Ende.\nUnd wenn dein Magen noch ein Grab verträgt, frag mich nach dem [Hügelgrab](barrow) südlich der Gruftstraße."
       greet_boneking_again: "Das [Schwarzmoor](blackmarsh), nördlich der Felder. Folge den kalten Lichtern hinab. Lass sie dir nicht nach Hause folgen."
       greet_oracle: "Du hast mehr getan, als irgendeiner von uns gewagt hätte.\nMirela sagt, der Wind riecht jetzt nach Schmiede. Soll sie. Wenn du tiefer musst, [der Abgrund](abyss) wartet unter dem Teich der Seherin."
       greet_oracle_again: "Was im [Abgrund](abyss) wartet, steht auf keiner meiner Karten. Geh vorsichtig, oder geh gar nicht."
@@ -199,6 +202,10 @@
       father: "Er nahm Königstöter mit in die [Gruft](crypt) und kam nicht zurück. Am nächsten Morgen wählte die Wache mich. Es gab niemanden sonst."
       father_again: "Ich habe dir gesagt, was es zu sagen gibt. Lass es."
       father_after: "Du hast zurückgebracht, was ihm gehörte. Das ist mehr, als wir anderen geschafft haben. Frag mich nicht weiter."
+      barrow: "Die erste Wache von Emberhold. König [Edrans](edran) eigene Garde, bevor es eine Stadt zu bewachen gab.\nAls er hinabstieg, um die Kohle zu holen, wollten sie ihm nicht folgen. Also begrub er sie lebendig in einem Hügelgrab südlich der Gruftstraße und befahl ihnen, Wache zu stehen. Für immer.\nIhr Hauptmann hielt meinen Posten, bevor der einen Namen hatte. Er hält ihn noch immer. Löse ihn ab. Ich würde mir wünschen, dass jemand das auch für mich tut."
+      barrow_again: "Südlich der Gruftstraße, ein Ring aus Erde. Ihr Hauptmann steht noch auf seinem Posten. Löse ihn ab."
+      barrow_after: "Abgelöst also. Der Posten gehört jetzt mir allein. Er wiegt schwerer, als ich dachte."
+      barrow_reward: "Der Begrabene Hauptmann, endlich zur Ruhe gekommen. Er hat länger Wache gehalten, als es je einer von uns tun wird.\nNimm das, und das Gold. Wenn ich das nächste Mal über die Nachtwache fluche, erinnere mich an ihn."
       oracle: "Sie hat sich in der Grotte unter dem [Schwarzmoor](blackmarsh) ertränkt, und jetzt ruft sie die Verirrten zu sich hinab. Mach dem ein Ende.\nMirela wird dir sagen, dass sie etwas niederhält. Mirela hört auf einen Stein. Ich begrabe die Leute, denen dieser Stein vorsingt."
       oracle_after: "Verstummt. Jetzt schlafe ich. Seltsam, wie laut eine Stille sein kann."
       stranger: "Vor dir war schon einer da. Gut mit der Klinge. Ich schickte ihn hinab, am Teich der Seherin vorbei. Für dieselbe Arbeit heuere ich in der Regel nicht zweimal an."
@@ -222,6 +229,7 @@
       greet_wanderer: "Er war, was das Feuer aus jedem von uns machen will. Du hast ihn niedergestreckt. Es wird einen neuen machen. Es ist geduldig. Ich auch."
       greet_hurt: "Du blutest? Geh zu Mirela. Das Feuer mag den Geruch."
       greet_crown: "Edrans Krone. Hörst du sie schon? Du wirst."
+      barrow: "Die einzigen Männer an Edrans Hof mit etwas Verstand. Sie sagten Nein zur Kohle, und er hat sie dafür begraben. Die Stadt nennt sie Eidbrecher. Ich nenne sie die Ersten, die zugehört haben."
       cult: "Wir waren keine Verräter. Wir waren die Einzigen, die zugehört haben. Die [Glut](ember) hat nie uns gehört, also gingen wir hinab, um sie zurückzugeben. Das Feuer hat sich über uns gefreut. Die, die blieben, hat es neu geformt. Ich bin gerannt. Das ist meine ganze Ketzerei."
       ember: "Die Stadt sagt, Edran habe sie heraufgetragen. Er hat sie herausgeschnitten. Das Dunkel ist nicht hungrig, Wanderer. Es ist eine Wunde, die sich schließen will, und Emberhold ist der Splitter darin. Frag Hadrik, warum er nie schläft."
       edran: "Ein Dieb mit Krone. Seine eigene [Seherin](oracle) flehte ihn an, sie zurückzulegen. Er behielt sie, und das Dunkel nahm sein Gesicht als Lohn."
@@ -265,6 +273,8 @@
       boneking: "Er sitzt vier Ebenen tief auf seinem Thron aus Rippen, unter einer hohlen Krone. Es heißt, er sei noch nicht fertig damit, König zu sein."
       boneking_after: "Der Knochenkönig ist Staub, heißt es. Die Glocken der Gruft dürfen wieder läuten."
       father: "Der Vater des Hauptmanns nahm eine alte Axt mit in die Gruft. Der Hauptmann redet nicht darüber. Du solltest es auch nicht."
+      barrow: "Ein Ring aus Erde südlich der Gruftstraße. Edrans eigene Garde liegt darin, die Männer, die ihm nicht in die Tiefe folgen wollten. Stehend begraben, heißt es, noch immer auf Wache. Sie hielten den Posten des Hauptmanns; frag Voss."
+      barrow_after: "Auf den Südfeldern ist es nachts jetzt still. Die Schäfer treiben ihre Herden wieder hinaus."
       blackmarsh: "Nördlich der Felder. Kalte Lichter treiben über dem Wasser. Folge ihnen nicht. Alle folgen ihnen. Mirela lauscht diesem Wasser; frag sie."
       oracle: "Des Königs eigene Seherin. Sie riet ihm, die Kohle nicht zu nehmen. Als er nicht hören wollte, ging sie unter dem [Schwarzmoor](blackmarsh) ins Wasser und kam nie wieder hoch."
       oracle_after: "Die Moorlichter sind erloschen. Die Leute sagen, es ist vorbei. Mirela sagt gar nichts."
@@ -281,6 +291,11 @@
       taken: "Hauptmann Voss will den Knochenkönig vernichtet sehen. Er sitzt auf seinem Thron aus Rippen, vier Ebenen tief in der Gruft der Gefallenen, östlich des Tors hinter den Aschefeldern. Voss' Vater ist ihm mit einer Axt nachgestiegen und nicht zurückgekehrt."
       done: "Der Knochenkönig ist Staub, und die Grüfte sind verstummt. Voss wird es von dir hören wollen."
       rewarded: "Voss hat in Gold bezahlt und dir etwas gegeben, das seinem Vater gehörte. Die Glocken der Gruft dürfen wieder läuten."
+    }
+    barrow: {
+      taken: "Hauptmann Voss will, dass der Begrabene Hauptmann abgelöst wird. König Edran begrub seine Garde lebendig in einem Hügelgrab südlich der Gruftstraße, in den Aschefeldern, weil sie ihm nicht in die Tiefe folgen wollte. Ihr Hauptmann hielt Voss' Posten, bevor dieser einen Namen hatte, und steht noch immer Wache, zwei Ebenen tief."
+      done: "Der Begrabene Hauptmann hat seinen Speer gesenkt. Die Wache ist abgelöst. Voss wird es von dir hören wollen."
+      rewarded: "Voss hat in Gold bezahlt und dich gebeten, ihn an den Begrabenen Hauptmann zu erinnern, wenn er das nächste Mal über die Nachtwache flucht."
     }
     oracle: {
       taken: "Voss will, dass die Ertrunkene Seherin ein Ende findet. Sie ging ins Wasser unter dem Schwarzmoor, nördlich der Felder, und ruft die Verirrten zu sich hinab. Folge den kalten Lichtern hinab in die Versunkene Grotte."
@@ -302,6 +317,7 @@
     crypt: "Gruft"
     boneking: "Knochenkönig"
     father: "Voss' Vater"
+    barrow: "Grabwächter"
     blackmarsh: "Schwarzmoor"
     oracle: "Ertrunkene Seherin"
     abyss: "Brennender Abgrund"
@@ -321,6 +337,7 @@
     stranger: "Vor dir war schon ein [Fremder](stranger) hier. Kaufte dasselbe Schwert. Ging am Moor vorbei und immer weiter."
     edran: "[König Edran](edran) trug die [Glut](ember) mit bloßen Händen herauf. Es kostete ihn sein Gesicht."
     uncle: "Mein Onkel ist dem [Glutkult](cult) beigetreten. Sagte, wir seien dem Dunkel etwas schuldig. Er ging hinab, um zu bezahlen, und kam letzten Winter zurück, was von ihm übrig ist. [Bruder Aldous](aldous) nennt er sich jetzt."
+    shepherds: "Die Schäfer treiben ihre Herden nicht mehr auf die Südfelder. Dort draußen liegt ein Ring aus Erde, und nachts ruft etwas darin die [Wache](barrow) auf ihre Posten."
     holding: "Mirela sagt, die [Seherin](oracle) jagt niemanden. Sie hält etwas nieder."
     bells: "Heute früh haben die Glocken der Gruft geläutet. Seit dreißig Jahren hat niemand an diesen Seilen gezogen."
     face: "Es heißt, der Knochenkönig trug einst das Gesicht von [König Edran](edran). Oder was das Dunkel davon übrig ließ."
@@ -334,6 +351,8 @@
     marsh: "Schwarzmoor"
     crypt: "Gruft der Gefallenen {n}"
     throne: "Thron des Knochenkönigs"
+    barrow: "Hügelgrab der Wächter {n}"
+    buried_watch: "Begrabene Wache"
     grotto: "Versunkene Grotte {n}"
     oracle_pool: "Teich der Seherin"
     abyss: "Brennender Abgrund {n}"
@@ -344,6 +363,7 @@
     fields: "Aschefelder"
     marsh: "Schwarzmoor"
     crypt: "Gruft der Gefallenen"
+    barrow: "Hügelgrab der Grabwächter"
     grotto: "Versunkene Grotte"
     abyss: "Brennender Abgrund"
   }
@@ -352,6 +372,7 @@
     fields: "Die Aschefelder. Mondlicht auf der Asche eines verbrannten Waldes."
     marsh: "Das Schwarzmoor. Kalte Lichter treiben über dem Wasser. Folge ihnen nicht."
     crypt: "{area}. Ein Königsgrab; die Luft schmeckt nach Staub."
+    barrow: "{area}. Wände aus Erde und senkrecht ausgehobene Gräber. Irgendwo voraus hält noch jemand Wache."
     grotto: "{area}. Kaltes Wasser drückt herab; die Kristalle summen."
     abyss: "{area}. Der Fels selbst blutet."
     hearth: "{area}. Die Kohlenbecken neigen sich von der Mitte des Raumes weg."
@@ -1348,7 +1369,9 @@
     golem: { text: "Kristallgolem", gender: "m" }
     imp: { text: "Feuerkobold", gender: "m" }
     hellspawn: { text: "Höllenbrut", gender: "f" }
+    gravewarden: { text: "Grabwächter", gender: "m" }
     boneking: { text: "Der Knochenkönig", gender: "m" }
+    buried: { text: "Der Begrabene Hauptmann", gender: "m" }
     oracle: { text: "Die Ertrunkene Seherin", gender: "f" }
     wanderer: { text: "Der Letzte Wanderer", gender: "m" }
     smith: { text: "Hadrik der Schmied", gender: "m" }
@@ -1458,6 +1481,8 @@
     spits_fire_at: "{who} spuckt Feuer auf dich: {n} Schaden."
     cleaves: "{who} hackt auf dich ein: {n} Schaden."
     smites: "{who} schmettert dich nieder: {n} Schaden."
+    bashes: "{who} rammt dich: {n} Schaden."
+    strikes: "{who} stößt nach dir: {n} Schaden."
     drowns: "{who} zieht dich unter Wasser: {n} Schaden."
     cuts: "{who} schneidet dich: {n} Schaden."
     hits: "{who} trifft dich: {n} Schaden."
@@ -1486,6 +1511,7 @@
     reeds: "Schilf"
     cave_floor: "Höhlenboden"
     cave_wall: "Höhlenwand"
+    earth_wall: "Erdwall"
     glowing_crystal: "leuchtender Kristall"
     brazier: "Kohlenbecken"
     street_lamp: "Straßenlaterne"

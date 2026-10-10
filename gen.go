@@ -246,7 +246,7 @@ func genFields(seed int64, r *Rules) *Level {
 	}
 	cy := H / 2
 	road := func(x, y int) {
-		if t := l.At(x, y); t != TWall && t != TFloor && t != TBrazier && t != TStairsDown {
+		if t := l.At(x, y); t != TWall && t != TEarthWall && t != TFloor && t != TBrazier && t != TStairsDown {
 			l.Set(x, y, TDirt)
 		}
 	}
@@ -267,12 +267,34 @@ func genFields(seed int64, r *Rules) *Level {
 			l.Set(gx, gy, TGrave)
 		}
 	}
-	// Roads: town -> crypt, branch -> marsh
+	// The Gravewardens' barrow: an earth ring south of the crypt road, open
+	// to the north, its watch buried around it
+	bx, by := 104, 96
+	l.circle(bx, by, 4.6, func(x, y int, d float64) {
+		if d > 3.4 {
+			l.Set(x, y, TEarthWall)
+		} else {
+			l.Set(x, y, TDirt)
+		}
+	})
+	for y := by - 5; y <= by-3; y++ {
+		l.Fill(bx-1, y, bx+1, y, TDirt)
+	}
+	l.Set(bx, by, TStairsDown)
+	l.Links = append(l.Links, Link{bx, by, bx, by, "barrow1", -1, -1})
+	l.circle(bx, by, 8, func(x, y int, d float64) {
+		if d > 6.5 && l.At(x, y) == TGrass && y > by-5 && (x+y)%3 == 0 {
+			l.Set(x, y, TGrave)
+		}
+	})
+	// Roads: town -> crypt, branch -> marsh, branch -> barrow
 	main := l.carvePath(1, cy, ex-8, ey, 2, road)
 	l.carvePath(ex-8, ey, ex-6, ey, 3, road)
 	mid := main[len(main)/2]
 	north := l.carvePath(mid.X, mid.Y, 120, 1, 2, road)
-	roadPts := append(append([]Pos{}, main...), north...)
+	fork := main[len(main)*3/4]
+	south := l.carvePath(fork.X, fork.Y, bx, by-6, 2, road)
+	roadPts := append(append(append([]Pos{}, main...), north...), south...)
 	trail := func(x, y int) {
 		switch l.At(x, y) {
 		case TTree, TRock, TDeadTree, TGrass:
@@ -308,7 +330,7 @@ func genFields(seed int64, r *Rules) *Level {
 	// Ruins scattered in the fields
 	for range 10 {
 		rx, ry := 20+l.rng.Intn(W-50), 8+l.rng.Intn(H-20)
-		if cheb(rx, ry, ex, ey) < 16 || cheb(rx, ry, 2, cy) < 15 {
+		if cheb(rx, ry, ex, ey) < 16 || cheb(rx, ry, 2, cy) < 15 || cheb(rx, ry, bx, by) < 26 {
 			continue
 		}
 		w, h := 6+l.rng.Intn(8), 4+l.rng.Intn(4)
@@ -326,7 +348,7 @@ func genFields(seed int64, r *Rules) *Level {
 	var fires []Pos
 	for tries := 0; tries < 60 && len(fires) < 7; tries++ {
 		fx, fy := 20+l.rng.Intn(W-40), 10+l.rng.Intn(H-20)
-		if cheb(fx, fy, 2, cy) < 20 || cheb(fx, fy, ex, ey) < 12 {
+		if cheb(fx, fy, 2, cy) < 20 || cheb(fx, fy, ex, ey) < 12 || cheb(fx, fy, bx, by) < 24 {
 			continue
 		}
 		apart := true
@@ -467,7 +489,7 @@ type DungeonSpec struct {
 	NameKey    string // area.<NameKey> with {n} = NameN, the name the player reads
 	NameN      int
 	Depth      int
-	Style      int // 0 crypt, 1 grotto, 2 abyss
+	Style      int // 0 crypt, 1 grotto, 2 abyss, 3 barrow
 	Up, Down   string
 	SealedDown string // a down link that opens when the boss dies
 	Boss       string
@@ -476,7 +498,7 @@ type DungeonSpec struct {
 }
 
 func genDungeon(s DungeonSpec, seed int64) *Level {
-	if s.Style == 0 {
+	if s.Style == 0 || s.Style == 3 {
 		return genCrypt(s, seed)
 	}
 	return genCave(s, seed)
@@ -487,7 +509,14 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 	l := newLevel(s.ID, s.Name, KDungeon, W, H, s.Depth, seed, s.Rules)
 	l.NameKey, l.NameN = s.NameKey, s.NameN
 	l.Ambient = C(0, 0, 0)
-	l.Fill(0, 0, W-1, H-1, TWall)
+	// a barrow is the crypt dug in earth: dirt between earthen walls, and
+	// no fire but the watch's own
+	barrow := s.Style == 3
+	wall, floor := TWall, TFloor
+	if barrow {
+		wall, floor = TEarthWall, TDirt
+	}
+	l.Fill(0, 0, W-1, H-1, wall)
 	var rooms []Room
 	for tries := 0; tries < 400 && len(rooms) < 17; tries++ {
 		w, h := 6+l.rng.Intn(11), 4+l.rng.Intn(7)
@@ -506,7 +535,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 	}
 	sort.Slice(rooms, func(i, j int) bool { return rooms[i].X0+rooms[i].Y0/2 < rooms[j].X0+rooms[j].Y0/2 })
 	for _, r := range rooms {
-		l.Fill(r.X0, r.Y0, r.X1, r.Y1, TFloor)
+		l.Fill(r.X0, r.Y0, r.X1, r.Y1, floor)
 	}
 	corridor := func(a, b Pos) {
 		x, y := a.X, a.Y
@@ -522,8 +551,8 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 				} else if y > ty {
 					y--
 				}
-				if l.At(x, y) == TWall {
-					l.Set(x, y, TFloor)
+				if l.At(x, y) == wall {
+					l.Set(x, y, floor)
 				}
 			}
 		}
@@ -556,14 +585,14 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 	for _, r := range rooms {
 		for x := r.X0 - 1; x <= r.X1+1; x++ {
 			for _, y := range []int{r.Y0 - 1, r.Y1 + 1} {
-				if l.At(x, y) == TFloor && !inRoom(x, y) && l.At(x-1, y) == TWall && l.At(x+1, y) == TWall && l.rng.Intn(3) == 0 {
+				if l.At(x, y) == floor && !inRoom(x, y) && l.At(x-1, y) == wall && l.At(x+1, y) == wall && l.rng.Intn(3) == 0 {
 					l.Set(x, y, TDoor)
 				}
 			}
 		}
 		for y := r.Y0 - 1; y <= r.Y1+1; y++ {
 			for _, x := range []int{r.X0 - 1, r.X1 + 1} {
-				if l.At(x, y) == TFloor && !inRoom(x, y) && l.At(x, y-1) == TWall && l.At(x, y+1) == TWall && l.rng.Intn(3) == 0 {
+				if l.At(x, y) == floor && !inRoom(x, y) && l.At(x, y-1) == wall && l.At(x, y+1) == wall && l.rng.Intn(3) == 0 {
 					l.Set(x, y, TDoor)
 				}
 			}
@@ -579,7 +608,18 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 				}
 			}
 		}
-		if l.rng.Intn(100) < 55 || i == len(rooms)-1 {
+		if barrow {
+			if i == len(rooms)-1 {
+				l.Set(r.X0, r.Y0, TBrazier)
+				l.Set(r.X1, r.Y1, TBrazier)
+			}
+			// the watch, buried standing in rows
+			for x := r.X0 + 1; x < r.X1; x += 3 {
+				if l.At(x, r.Y0-1) == wall && l.rng.Intn(3) == 0 {
+					l.Set(x, r.Y0, TGrave)
+				}
+			}
+		} else if l.rng.Intn(100) < 55 || i == len(rooms)-1 {
 			l.Set(r.X0, r.Y0, TBrazier)
 			l.Set(r.X1, r.Y1, TBrazier)
 		} else if l.rng.Intn(3) == 0 {
@@ -595,7 +635,7 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 		}
 		for range w * h / 12 {
 			x, y := r.X0+l.rng.Intn(w+1), r.Y0+l.rng.Intn(h+1)
-			if l.At(x, y) == TFloor {
+			if l.At(x, y) == floor {
 				if l.rng.Intn(2) == 0 {
 					l.Set(x, y, TBones)
 				} else {
@@ -621,11 +661,18 @@ func genCrypt(s DungeonSpec, seed int64) *Level {
 		c := last.Center()
 		b := placeMonster(l, s.Boss, c.X-2, c.Y, s.Depth, RankBoss)
 		b.Awake = false
+		guard := "skel"
+		if barrow {
+			guard = "gravewarden"
+		}
 		for range 4 {
-			placeMonster(l, "skel", c.X+l.rng.Intn(5)-2, c.Y+l.rng.Intn(3)-1, s.Depth, RankNormal)
+			placeMonster(l, guard, c.X+l.rng.Intn(5)-2, c.Y+l.rng.Intn(3)-1, s.Depth, RankNormal)
 		}
 	}
 	l.LoreKey = "crypt"
+	if barrow {
+		l.LoreKey = "barrow"
+	}
 	populate(l, s.SpawnTable, 14+s.Depth*2, []Pos{up})
 	l.finalize()
 	return l

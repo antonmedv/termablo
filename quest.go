@@ -25,6 +25,8 @@ type Quest struct {
 var quests = []Quest{
 	{ID: "boneking", Boss: "boneking", Depth: 5, Area: "throne", Giver: "captain", Reward: "talk.voss.boneking_reward",
 		Offers: []string{"talk.voss.greet", "talk.voss.greet_again", "talk.voss.boneking"}},
+	{ID: "barrow", Boss: "buried", Depth: 7, Area: "buried_watch", Giver: "captain", Reward: "talk.voss.barrow_reward",
+		Offers: []string{"talk.voss.barrow"}},
 	{ID: "oracle", Boss: "oracle", Depth: 9, Area: "oracle_pool", Giver: "captain", Reward: "talk.voss.oracle_reward",
 		Offers: []string{"talk.voss.greet_boneking", "talk.voss.greet_boneking_again", "talk.voss.oracle"}},
 	{ID: "wanderer", Boss: "wanderer", Area: "hearth", After: "oracle"},

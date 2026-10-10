@@ -50,7 +50,7 @@ func (h talkHit) in(x, y int) bool { return y == h.Y && x >= h.X0 && x <= h.X1 }
 // topics are every topic there is, topic.<id> in the catalog. What
 // a speaker says on one is found by says. Rumors are the villagers',
 // rumor.<key>.
-var topics = []string{"rumors", "ember", "edran", "altars", "forge", "portals", "crypt", "boneking", "father", "blackmarsh", "oracle", "abyss", "cult", "stranger", "aldous", "pell"}
+var topics = []string{"rumors", "ember", "edran", "altars", "forge", "portals", "crypt", "boneking", "father", "barrow", "blackmarsh", "oracle", "abyss", "cult", "stranger", "aldous", "pell"}
 
 // rumorDef is a rumor villagers tell, rumor.<Key>: from the start, or
 // once the fact After holds, and no more once Until does. A fact holds
@@ -61,7 +61,7 @@ type rumorDef struct{ Key, After, Until string }
 var rumors = []rumorDef{
 	{Key: "braziers"}, {Key: "brother", Until: "oracle"}, {Key: "torch"}, {Key: "forge"},
 	{Key: "glimmer"}, {Key: "crystal", Until: "oracle"}, {Key: "scroll"},
-	{Key: "stranger", Until: "wanderer"}, {Key: "edran"}, {Key: "uncle"}, {Key: "holding", Until: "oracle"},
+	{Key: "stranger", Until: "wanderer"}, {Key: "edran"}, {Key: "uncle"}, {Key: "shepherds", Until: "barrow"}, {Key: "holding", Until: "oracle"},
 	{Key: "bells", After: "boneking"}, {Key: "face", After: "boneking"},
 	{Key: "lights", After: "oracle"}, {Key: "wind", After: "oracle"},
 	{Key: "lanterns", After: "wanderer"},
@@ -92,7 +92,7 @@ func (g *Game) rumor(last string) string {
 // entered, area.<lore key>; a monster killed, kill.<template>; a unique
 // picked up, item.<name>; an altar bled on; a portal opened.
 var sights = map[string]string{
-	"area.crypt": "crypt", "area.marsh": "blackmarsh", "area.grotto": "oracle", "area.abyss": "abyss",
+	"area.crypt": "crypt", "area.barrow": "barrow", "area.marsh": "blackmarsh", "area.grotto": "oracle", "area.abyss": "abyss",
 	"kill.cultist": "cult", "kill.boneking": "edran",
 	"item.Kingsbane": "father", "item.Hollow Crown": "edran",
 	"altar": "altars", "portal": "portals",
@@ -162,7 +162,7 @@ func (g *Game) facts() []string {
 
 // topicFact is the fact that settles a topic: its <id>_after is said
 // instead once that boss is dead.
-var topicFact = map[string]string{"boneking": "boneking", "father": "boneking", "oracle": "oracle", "abyss": "oracle", "stranger": "wanderer"}
+var topicFact = map[string]string{"boneking": "boneking", "father": "boneking", "barrow": "barrow", "oracle": "oracle", "abyss": "oracle", "stranger": "wanderer"}
 
 func (g *Game) fact(id string) bool {
 	q := questByID(id)

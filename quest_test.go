@@ -176,7 +176,7 @@ func TestQuestsShown(t *testing.T) {
 	}
 	settle(g, "boneking")
 	got := g.questsShown(2)
-	if len(got) != 2 || got[0].ID != "oracle" || got[1].ID != "wanderer" {
+	if len(got) != 2 || got[0].ID != "barrow" || got[1].ID != "oracle" {
 		t.Errorf("shown %v", got)
 	}
 }
@@ -200,9 +200,9 @@ func TestReadyQuests(t *testing.T) {
 		depth int
 		want  map[string]QuestState
 	}{
-		{3, map[string]QuestState{"boneking": QuestTaken, "oracle": QuestTaken}},
-		{7, map[string]QuestState{"boneking": QuestRewarded, "oracle": QuestTaken}},
-		{11, map[string]QuestState{"boneking": QuestRewarded, "oracle": QuestRewarded, "wanderer": QuestTaken}},
+		{3, map[string]QuestState{"boneking": QuestTaken, "barrow": QuestTaken, "oracle": QuestTaken}},
+		{7, map[string]QuestState{"boneking": QuestRewarded, "barrow": QuestTaken, "oracle": QuestTaken}},
+		{11, map[string]QuestState{"boneking": QuestRewarded, "barrow": QuestRewarded, "oracle": QuestRewarded, "wanderer": QuestTaken}},
 	} {
 		g := NewGame(1)
 		g.readyQuests(c.depth)
@@ -262,5 +262,63 @@ func TestJournal(t *testing.T) {
 	press(m, "J")
 	if g.Mode != ModePlay {
 		t.Errorf("J left the journal in mode %v", g.Mode)
+	}
+}
+
+// Voss gives the barrow when asked about it, and pays once the Buried
+// Captain, waiting on the second floor, lowers his spear.
+func TestBarrowQuest(t *testing.T) {
+	g := NewGame(1)
+	g.Known["barrow"] = true
+	talkWith(t, g, "captain")
+	g.ask("barrow")
+	if g.Quests["barrow"] != QuestTaken {
+		t.Fatal("asking Voss about the barrow does not give it")
+	}
+	g.Mode = ModePlay
+	g.changeLevel("barrow2", "", nil)
+	for _, m := range g.Lv.Monsters {
+		if m.T.ID == "buried" {
+			g.killMonster(m)
+		}
+	}
+	g.changeLevel("town", "", nil)
+	if g.status(questByID("barrow")) != QuestOwed {
+		t.Fatalf("the Buried Captain is not on barrow2, or his death does not count: %v", g.Slain)
+	}
+	gold := g.P.Gold
+	if got := greetings(t, g, "captain", 1); got[0] != g.L.T("talk.voss.barrow_reward") || g.P.Gold <= gold {
+		t.Errorf("Voss on the barrow: %q, gold %d->%d", got, gold, g.P.Gold)
+	}
+}
+
+// Hurt past half, the Buried Captain wakes his watch, every sleeper
+// with a way to the hero, once.
+func TestBuriedCaptainRallies(t *testing.T) {
+	g := NewGame(1)
+	g.changeLevel("barrow2", "", nil)
+	var c *Monster
+	for _, m := range g.Lv.Monsters {
+		if m.T.ID == "buried" {
+			c = m
+		}
+	}
+	if c == nil {
+		t.Fatal("no Buried Captain on barrow2")
+	}
+	g.P.X, g.P.Y = g.Lv.FreeNear(c.X+3, c.Y, -1, -1)
+	g.computeDist()
+	c.Awake, c.HP = true, c.MaxHP/3
+	g.monsterTurn(c)
+	for _, m := range g.Lv.Monsters {
+		if g.dist[g.Lv.Idx(m.X, m.Y)] < 0 {
+			continue // too far to come
+		}
+		if !m.Dead && !m.Awake {
+			t.Fatalf("%s still sleeps after the rally", m.Name)
+		}
+	}
+	if !c.Rallied {
+		t.Error("the rally is not remembered")
 	}
 }

@@ -13,6 +13,10 @@ flowchart TD
         crypt3["<b>Crypt of the Fallen 3</b><br/>lvl 4"]
         crypt4["<b>Throne of the Bone King</b><br/>lvl 5<br/>boss: The Bone King"]
     end
+    subgraph barrow [Gravewardens' Barrow]
+        barrow1["<b>Gravewardens' Barrow 1</b><br/>lvl 6"]
+        barrow2["<b>The Buried Watch</b><br/>lvl 7<br/>boss: The Buried Captain"]
+    end
     subgraph grotto [Sunken Grotto]
         grotto1["<b>Sunken Grotto 1</b><br/>lvl 7"]
         grotto2["<b>Sunken Grotto 2</b><br/>lvl 8"]
@@ -26,8 +30,10 @@ flowchart TD
     end
     town --> fields
     fields --> crypt1
+    fields --> barrow1
     fields --> marsh
     crypt1 --> crypt2
+    barrow1 --> barrow2
     marsh --> grotto1
     crypt2 --> crypt3
     grotto1 --> grotto2

@@ -127,6 +127,12 @@ Bone King on the fourth. "Of the Fallen" meant the honored dead when it
 was carved. It means something else now. Cold, dust, and vigil braziers
 that nobody tends.
 
+**The Gravewardens' Barrow.** An earth ring in the south of the Ashen
+Fields, below the crypt road, two floors deep. Edran's first guard lie
+there, buried alive and standing, in rows. No braziers: the only fire is
+the watch's own, in the last room, where their captain stands. Earth,
+not stone; graves dug upright.
+
 **Blackmarsh.** North of the fields, where the Oracle walked into the
 water. The standing stones with crystals are hers: she raised them as
 she went, the way Edran raised altars, and they are the top of the dam.
@@ -230,6 +236,14 @@ warmth seeps into the ground and wakes what the ground holds. In the
 crypt they are Edran's court and still obey him. Elsewhere they are
 simply awake and angry about it.
 
+**The Gravewardens.** Edran's first guard, who walked out of the west
+with him. When he went down for the coal they would not follow, and he
+never forgave it. Dying, he ordered them buried alive outside his tomb,
+to keep his crypt forever. They kept it for a time, then the earth
+kept them. The Ember's warmth woke them like the rest of the dead, and
+they woke still on watch. Shields and armor, slow to fall. The town
+calls them oathbreakers; Aldous calls them the first ones who listened.
+
 **The Drowned.** The Oracle's. The Drowned Dead are the lost she called
 into the water; the Will-o'-Wisps are her cold light with nothing left
 to be attached to. They are not evil. They are a dam made of people.
@@ -251,6 +265,13 @@ two fight where they meet.
 line "the king it belonged to did not need a skull." Killing him does not
 end the Dark's climb, it only ends his part in it, which is why the
 quest line says "the crypt bells may ring again" and nothing larger.
+
+**The Buried Captain.** The first captain of Edran's guard, the post
+Voss holds now, held before it had a name. He refused the coal and was
+buried for it, and still stands watch, his lantern lit, over a king who
+is no longer there. Voss sends the hero to relieve him: "I'd want
+someone to do the same for me." Hurt, he calls his watch to stand to, and those near enough come.
+A side quest, not the story's spine; nothing opens when he falls.
 
 **The Drowned Oracle.** The dam. Her name is not recorded; "Oracle" was
 her office. The Crown of the Drowned is hers, dripping. Killing her
@@ -311,7 +332,9 @@ in the game and should stay.
    light begins. The lost begin to follow it.
 6. **The Vigil.** Edran dies. Laid in the crypt with his court. The
    braziers light themselves the first dusk after and every dusk since.
-   The Gravewardens keep the crypt for a time, then stop.
+   His last order: the guard who would not follow him down for the coal
+   is buried alive outside his tomb, to keep it forever. The
+   Gravewardens keep the crypt for a time, then stop.
 7. **The Schism.** A generation ago. The Ember Cult forms, goes down,
    does not come back as itself.
 8. **The Captain's father.** Goes into the crypt with Kingsbane. Does not

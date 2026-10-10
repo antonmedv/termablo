@@ -14,6 +14,7 @@ const (
 	AIBoneKing
 	AIOracle
 	AIWanderer
+	AICaptain
 )
 
 type MTemplate struct {
@@ -58,9 +59,11 @@ var mtList = []*MTemplate{
 	{ID: "spider", Name: "Grotto Spider", Glyph: 'x', Color: C(.75, .62, .42), HP: 16, MinD: 3, MaxD: 7, Dodge: 15, Speed: 120, XP: 16, Pack: [2]int{2, 4}, Verb: "bites"},
 	{ID: "golem", Name: "Crystal Golem", Glyph: 'g', Color: C(.6, .85, 1), HP: 55, MinD: 6, MaxD: 12, Armor: 20, Speed: 80, XP: 45, Light: &LightSpec{C(.3, .55, 1), 3.5, .8, .02, .15}, Pack: [2]int{1, 1}, Verb: "pummels"},
 	{ID: "imp", Name: "Fire Imp", Glyph: 'i', Color: C(1, .6, .22), HP: 20, MinD: 3, MaxD: 7, Dodge: 20, Speed: 110, XP: 25, AI: AIRanged, Range: 6, ProjColor: C(1, .45, .1), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(1, .45, .12), 3, .8, .3, 0}, Pack: [2]int{2, 4}, Verb: "spits fire at"},
+	{ID: "gravewarden", Name: "Gravewarden", Glyph: 'S', Color: C(.78, .72, .55), HP: 30, MinD: 3, MaxD: 8, Armor: 18, Speed: 85, XP: 24, Pack: [2]int{2, 3}, Undead: true, Verb: "bashes"},
 	{ID: "hellspawn", Name: "Hellspawn", Glyph: 'H', Color: C(.95, .28, .22), HP: 70, MinD: 7, MaxD: 16, Armor: 15, Speed: 100, XP: 60, Light: &LightSpec{C(1, .2, .08), 2.5, .6, .2, 0}, Pack: [2]int{1, 2}, Verb: "cleaves"},
 
 	{ID: "boneking", Name: "The Bone King", Glyph: 'K', Color: C(1, 1, .75), HP: 150, MinD: 7, MaxD: 14, Armor: 25, Speed: 100, XP: 500, AI: AIBoneKing, Light: &LightSpec{C(.5, 1, .45), 4.5, 1, .08, .2}, Undead: true, Verb: "smites"},
+	{ID: "buried", Name: "The Buried Captain", Glyph: 'C', Color: C(.9, .78, .5), HP: 160, MinD: 7, MaxD: 15, Armor: 28, Speed: 90, XP: 750, AI: AICaptain, Light: &LightSpec{C(1, .7, .35), 3.5, .9, .1, .2}, Undead: true, Verb: "strikes"},
 	{ID: "oracle", Name: "The Drowned Oracle", Glyph: 'O', Color: C(.45, .9, 1), HP: 170, MinD: 6, MaxD: 12, Armor: 20, Speed: 100, XP: 1100, AI: AIOracle, Range: 8, ProjColor: C(.45, .8, 1), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(.3, .8, 1), 5.5, 1, .05, .3}, Verb: "drowns"},
 	{ID: "wanderer", Name: "The Last Wanderer", Glyph: '@', Color: C(1, .32, .26), HP: 210, MinD: 7, MaxD: 15, Armor: 22, Speed: 100, XP: 1800, AI: AIWanderer, Range: 7, ProjColor: C(1, .25, .12), ProjGlyph: '*', ProjLight: true, Light: &LightSpec{C(1, .1, .06), drinkRadius + 1, 1.25, .12, .15}, Verb: "cuts"},
 
@@ -130,6 +133,7 @@ type Monster struct {
 	Gone      bool // left the level this turn; cleanup drops it
 	Talk      int
 	Flee      int
+	Rallied   bool // the Buried Captain has called his watch
 	// a unique's rolled name, for monsterNoun
 	UFirst, ULast string
 }
@@ -165,7 +169,7 @@ func NewMonster(rng *rand.Rand, t *MTemplate, lvl, rank int, r *Rules) *Monster 
 	l1 := float64(lvl - 1)
 	hpMul := 1 + r.HpLin*l1 + r.HpQuad*l1*l1
 	dMul := 1 + r.DmgLin*l1 + r.DmgQuad*l1*l1
-	if t.AI == AIBoneKing || t.AI == AIOracle || t.AI == AIWanderer {
+	if t.AI == AIBoneKing || t.AI == AICaptain || t.AI == AIOracle || t.AI == AIWanderer {
 		rank = RankBoss
 		hpMul = 1 + r.BossHpLin*l1
 	}
@@ -259,6 +263,7 @@ var spawnTables = map[string][]spawnEntry{
 	"fields": {{"rat", 4, 0}, {"fallen", 5, 0}, {"shaman", 2, 0}, {"zombie", 3, 0}, {"wolf", 3, 1}, {"bat", 2, 0}},
 	"crypt":  {{"zombie", 4, 0}, {"skel", 5, 0}, {"archer", 3, 0}, {"fallen", 3, 0}, {"shaman", 1, 0}, {"bat", 2, 0}, {"ghoul", 3, 3}, {"cultist", 3, 3}, {"wraith", 2, 4}},
 	"marsh":  {{"wisp", 4, 0}, {"drowned", 5, 0}, {"horror", 2, 0}, {"bat", 2, 0}, {"cultist", 2, 0}, {"wolf", 2, 0}},
+	"barrow": {{"gravewarden", 5, 0}, {"skel", 4, 0}, {"archer", 3, 0}, {"ghoul", 3, 0}, {"zombie", 2, 0}, {"wraith", 2, 0}, {"bat", 1, 0}},
 	"grotto": {{"spider", 5, 0}, {"golem", 2, 0}, {"wisp", 3, 0}, {"drowned", 3, 0}, {"ghoul", 2, 0}, {"wraith", 2, 8}},
 	"abyss":  {{"imp", 5, 0}, {"hellspawn", 3, 0}, {"wraith", 3, 0}, {"skel", 2, 0}, {"cultist", 3, 0}, {"golem", 1, 0}, {"spider", 2, 0}},
 }
