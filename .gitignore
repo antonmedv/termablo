@@ -9,6 +9,7 @@
 *.png
 !/demo/og.png
 !/demo/zones.png
+!/docs/world.png
 err.log
 
 # editors / OS
